@@ -1,0 +1,98 @@
+:root {
+  /* Slate */
+  --brand-slate-50:  #f3f5f7;
+  --brand-slate-100: #e7eaed;
+  --brand-slate-150: #dbe0e5;
+  --brand-slate-200: #cfd5dc;
+  --brand-slate-300: #b6bfca;
+  --brand-slate-400: #9eaab9;
+  --brand-slate-500: #8695a7;
+  --brand-slate-600: #6b7786;
+  --brand-slate-700: #505964;
+  --brand-slate-800: #363c43;
+  --brand-slate-900: #1b1e21;
+  --brand-slate-950: #0d0f11;
+
+  /* Blue */
+  --brand-blue-100: #cde2ff;
+  --brand-blue-150: #b4d4ff;
+  --brand-blue-200: #9bc5ff;
+  --brand-blue-300: #68a8ff;
+  --brand-blue-400: #368bff;
+  --brand-blue-500: #046eff;
+  --brand-blue-600: #0358cc;
+  --brand-blue-700: #024299;
+  --brand-blue-800: #022c66;
+  --brand-blue-900: #011633;
+  --brand-blue-950: #000b19;
+
+  /* Grey */
+  --brand-grey-50:  #f8f8f8;
+  --brand-grey-100: #f1f1f1;
+  --brand-grey-150: #eaeaea;
+  --brand-grey-200: #e3e3e3;
+  --brand-grey-300: #d4d4d4;
+  --brand-grey-400: #c6c6c6;
+  --brand-grey-500: #b8b8b8;
+  --brand-grey-600: #939393;
+  --brand-grey-700: #6e6e6e;
+  --brand-grey-800: #4a4a4a;
+  --brand-grey-900: #252525;
+  --brand-grey-950: #121212;
+
+  /* Red */
+  --brand-red-100: #fbdcdc;
+  --brand-red-150: #f9cbcc;
+  --brand-red-200: #f7b9ba;
+  --brand-red-300: #f39597;
+  --brand-red-400: #ef7275;
+  --brand-red-500: #eb4f52;
+  --brand-red-600: #bc3f42;
+  --brand-red-700: #8d2f31;
+  --brand-red-800: #5e2021;
+  --brand-red-900: #2f1010;
+  --brand-red-950: #170808;
+
+  /* Orange */
+  --brand-orange-100: #ffe8da;
+  --brand-orange-150: #ffdcc8;
+  --brand-orange-200: #ffd0b5;
+  --brand-orange-300: #ffb991;
+  --brand-orange-400: #ffa16c;
+  --brand-orange-500: #ff8a47;
+  --brand-orange-600: #cc6e39;
+  --brand-orange-700: #99532b;
+  --brand-orange-800: #66371c;
+  --brand-orange-900: #331c0e;
+  --brand-orange-950: #190e07;
+
+  /* Green */
+  --brand-green-100: #dcf5e4;
+  --brand-green-150: #caf0d6;
+  --brand-green-200: #b8ebc8;
+  --brand-green-300: #95e1ad;
+  --brand-green-400: #71d791;
+  --brand-green-500: #4ecd76;
+  --brand-green-600: #3ea45e;
+  --brand-green-700: #2f7b47;
+  --brand-green-800: #1f522f;
+  --brand-green-900: #102918;
+  --brand-green-950: #08140c;
+
+  /* Cyan */
+  --brand-cyan-100: #cceefa;
+  --brand-cyan-150: #b3e7f8;
+  --brand-cyan-200: #99def5;
+  --brand-cyan-300: #66cdef;
+  --brand-cyan-400: #33bdea;
+  --brand-cyan-500: #00ace5;
+  --brand-cyan-600: #008ab7;
+  --brand-cyan-700: #006789;
+  --brand-cyan-800: #00455c;
+  --brand-cyan-900: #00222e;
+  --brand-cyan-950: #001117;
+
+  /* Foundations */
+  --brand-white: #ffffff;
+  --brand-black: #000000;
+}
