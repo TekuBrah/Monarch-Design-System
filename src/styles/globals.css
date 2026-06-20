@@ -161,6 +161,29 @@
   --brand-violet-800: #592462;
   --brand-violet-900: #2d1231;
   --brand-violet-950: #160919;
+
+  /* Scale */
+  --brand-scale-25: 1px;
+  --brand-scale-50: 2px;
+  --brand-scale-100: 4px;
+  --brand-scale-200: 8px;
+  --brand-scale-250: 10px;
+  --brand-scale-300: 12px;
+  --brand-scale-400: 16px;
+  --brand-scale-500: 20px;
+  --brand-scale-600: 24px;
+  --brand-scale-700: 28px;
+  --brand-scale-800: 32px;
+  --brand-scale-900: 36px;
+  --brand-scale-1000: 40px;
+  --brand-scale-1100: 48px;
+  --brand-scale-1200: 56px;
+  --brand-scale-1300: 64px;
+  --brand-scale-1400: 72px;
+  --brand-scale-1500: 96px;
+  --brand-scale-1600: 128px;
+  --brand-scale-1700: 256px;
+  --brand-scale-1800: 512px;
 }
 
 /* === Alias === */
@@ -657,4 +680,75 @@
   --mapped-blanket-default: var(--alias-surface-900);
   --mapped-blanket-default-default: #10121499;
   --mapped-blanket-on-color: var(--alias-foundations-black);
+}
+
+/* === Spacing === */
+:root {
+  --spacing-25: var(--brand-scale-25);
+  --spacing-50: var(--brand-scale-50);
+  --spacing-100: var(--brand-scale-100);
+  --spacing-200: var(--brand-scale-200);
+  --spacing-300: var(--brand-scale-300);
+  --spacing-400: var(--brand-scale-400);
+  --spacing-500: var(--brand-scale-500);
+  --spacing-600: var(--brand-scale-600);
+  --spacing-800: var(--brand-scale-800);
+  --spacing-1000: var(--brand-scale-1000);
+  --spacing-1100: var(--brand-scale-1100);
+  --spacing-1300: var(--brand-scale-1300);
+  --spacing-1400: var(--brand-scale-1400);
+  --spacing-none: 0;
+}
+
+/* === Responsive Font === */
+:root {
+  --responsive-font-headings-h1-text-size: 48px;
+  --responsive-font-headings-h1-paragraph-spacing: 56px;
+  --responsive-font-headings-h1-line-height: 56px;
+  --responsive-font-headings-h2-text-size: 40px;
+  --responsive-font-headings-h2-paragraph-spacing: 48px;
+  --responsive-font-headings-h2-line-height: 48px;
+  --responsive-font-headings-h3-text-size: 32px;
+  --responsive-font-headings-h3-paragraph-spacing: 40px;
+  --responsive-font-headings-h3-line-height: 40px;
+  --responsive-font-headings-h4-text-size: 28px;
+  --responsive-font-headings-h4-paragraph-spacing: 32px;
+  --responsive-font-headings-h4-line-height: 32px;
+  --responsive-font-headings-h5-text-size: 24px;
+  --responsive-font-headings-h5-paragraph-spacing: 28px;
+  --responsive-font-headings-h5-line-height: 28px;
+  --responsive-font-headings-h6-text-size: 20px;
+  --responsive-font-headings-h6-paragraph-spacing: 24px;
+  --responsive-font-headings-h6-line-height: 24px;
+  --responsive-font-copy-body-lg-text-size: 20px;
+  --responsive-font-copy-body-lg-paragraph-spacing: 24px;
+  --responsive-font-copy-body-lg-line-height: 24px;
+  --responsive-font-copy-body-text-size: 16px;
+  --responsive-font-copy-body-paragraph-spacing: 20px;
+  --responsive-font-copy-body-line-height: 24px;
+  --responsive-font-copy-body-sm-text-size: 14px;
+  --responsive-font-copy-body-sm-paragraph-spacing: 16px;
+  --responsive-font-copy-body-sm-line-height: 16px;
+  --responsive-font-copy-caption-text-size: 12px;
+  --responsive-font-copy-caption-paragraph-spacing: 16px;
+  --responsive-font-copy-caption-line-height: 16px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --responsive-font-headings-h1-text-size: 60px;
+    --responsive-font-headings-h1-paragraph-spacing: 72px;
+    --responsive-font-headings-h1-line-height: 72px;
+    --responsive-font-headings-h2-text-size: 48px;
+    --responsive-font-headings-h2-paragraph-spacing: 56px;
+    --responsive-font-headings-h2-line-height: 56px;
+    --responsive-font-headings-h3-text-size: 40px;
+    --responsive-font-headings-h3-paragraph-spacing: 48px;
+    --responsive-font-headings-h3-line-height: 48px;
+    --responsive-font-headings-h4-text-size: 32px;
+    --responsive-font-headings-h4-paragraph-spacing: 40px;
+    --responsive-font-headings-h4-line-height: 40px;
+    --responsive-font-copy-body-sm-paragraph-spacing: 20px;
+    --responsive-font-copy-body-sm-line-height: 20px;
+  }
 }

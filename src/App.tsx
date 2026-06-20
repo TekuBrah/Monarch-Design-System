@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import './styles/globals.css'
-import { brand, alias, mapped } from './tokens'
+import { brand, alias, mapped, spacing } from './tokens'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -85,18 +85,75 @@ function AliasGroupRow({ name, steps }: { name: string; steps: Record<string, st
   )
 }
 
-// ── Mapped swatches ───────────────────────────────────────────────────────────
+// ── Mapped tree — derived from flat slugs using a static structure manifest ────
+// Slugs can't encode segment boundaries, so we match each (category, subgroup)
+// prefix against the known structure from Mapped/Light.json. Subgroups are
+// sorted by length (desc) during matching so longer names win over prefixes
+// (e.g. "page-secondary" before "page", "subtlest" before "subtle").
 
-function MappedSwatch({ slug, varName }: { slug: string; varName: string }) {
+type MEntry = { varName: string; stateLabel: string }
+type MSubgroup = { name: string; entries: MEntry[] }
+type MCategory = { name: string; subgroups: MSubgroup[] }
+
+// Order mirrors Light.json; lowercase/hyphenated to match slugs.
+const MAPPED_STRUCTURE: { cat: string; subs: string[] }[] = [
+  { cat: 'text',    subs: ['on-color','primary','error','information','warning','success','disabled','default','subtlest','subtle','interactive'] },
+  { cat: 'icon',    subs: ['primary','error','information','warning','success','disabled','default','subtlest','subtle','interactive'] },
+  { cat: 'surface', subs: ['primary','page-secondary','page','subtlest','subtle','error','information','warning','success','disabled','interactive','default','elevation','overlay'] },
+  { cat: 'border',  subs: ['primary','on-color','error','information','warning','success','disabled','subtlest','subtle','interactive','default'] },
+  { cat: 'blanket', subs: ['on-color','default'] },
+]
+
+function buildMappedTree(): MCategory[] {
+  const allEntries = Object.entries(mapped) as [string, string][]
+  const claimed = new Set<string>()
+
+  return MAPPED_STRUCTURE.map(({ cat, subs }) => {
+    // Match slugs longest-subgroup-first to avoid prefix ambiguity
+    const byLen = [...subs].sort((a, b) => b.length - a.length)
+    const subMap = new Map<string, MEntry[]>()
+
+    for (const sub of byLen) {
+      const prefix = `${cat}-${sub}`
+      const entries = allEntries
+        .filter(([slug]) => !claimed.has(slug) && (slug === prefix || slug.startsWith(`${prefix}-`)))
+        .map(([slug, varName]) => {
+          claimed.add(slug)
+          const stateLabel = slug === prefix ? sub : slug.slice(prefix.length + 1)
+          return { varName: varName as string, stateLabel }
+        })
+      if (entries.length > 0) subMap.set(sub, entries)
+    }
+
+    // Restore display order (original Light.json order)
+    const subgroups = subs
+      .filter(sub => subMap.has(sub))
+      .map(sub => ({ name: sub, entries: subMap.get(sub)! }))
+
+    return { name: cat, subgroups }
+  })
+}
+
+const MAPPED_TREE = buildMappedTree()
+const MAPPED_TOTAL = MAPPED_TREE.reduce((n, c) => n + c.subgroups.reduce((m, s) => m + s.entries.length, 0), 0)
+
+// ── Mapped section components ─────────────────────────────────────────────────
+
+const SUBGROUP_LABEL: React.CSSProperties = {
+  fontSize: '0.63rem', fontWeight: 600,
+  color: 'var(--mapped-text-subtle-default, #888)',
+  marginBottom: '0.4rem', marginTop: '1rem',
+}
+
+function MappedStateCard({ varName, stateLabel }: MEntry) {
   return (
-    <div style={{
-      width: '9rem', borderRadius: '0.5rem', overflow: 'hidden',
-      border: '1px solid rgba(128,128,128,0.2)',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-    }}>
+    <div style={CARD}>
       <div style={{ background: `var(${varName})`, height: '3rem' }} />
-      <div style={{ padding: '0.4rem 0.5rem', background: 'var(--mapped-surface-elevation-default, #fff)' }}>
-        <div style={{ fontSize: '0.6rem', fontWeight: 600, color: 'var(--mapped-text-default-default, #333)', fontFamily: 'monospace', wordBreak: 'break-all' }}>
+      <div style={{ ...CARD_BODY, background: 'var(--mapped-surface-elevation-default, #fff)' }}>
+        <div style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--mapped-text-default-default, #333)', wordBreak: 'break-all' }}>
+          {stateLabel}
+        </div>
+        <div style={{ fontSize: '0.55rem', color: 'var(--mapped-text-subtle-default, #888)', fontFamily: 'monospace', marginTop: '0.15rem', wordBreak: 'break-all' }}>
           {varName}
         </div>
       </div>
@@ -104,16 +161,83 @@ function MappedSwatch({ slug, varName }: { slug: string; varName: string }) {
   )
 }
 
-function MappedGroupSection({ group, entries }: { group: string; entries: [string, string][] }) {
+function MappedSubgroupCluster({ name, entries }: MSubgroup) {
+  return (
+    <div style={{ marginBottom: '1.25rem' }}>
+      <div style={SUBGROUP_LABEL}>{name}</div>
+      <div style={SWATCH_GRID}>
+        {entries.map(e => <MappedStateCard key={e.varName} {...e} />)}
+      </div>
+    </div>
+  )
+}
+
+function MappedCategorySection({ name, subgroups }: MCategory) {
   return (
     <section style={SECTION}>
-      <h2 style={{ ...GROUP_LABEL, color: 'var(--mapped-text-subtle-default, #888)' }}>{group}</h2>
-      <div style={SWATCH_GRID}>
-        {entries.map(([slug, varName]) => (
-          <MappedSwatch key={slug} slug={slug} varName={varName} />
-        ))}
-      </div>
+      <h2 style={{ ...GROUP_LABEL, color: 'var(--mapped-text-subtlest-subtlest, #888)' }}>{name}</h2>
+      {subgroups.map(sg => <MappedSubgroupCluster key={sg.name} {...sg} />)}
     </section>
+  )
+}
+
+// ── Spacing bars ─────────────────────────────────────────────────────────────
+
+function SpacingSection() {
+  return (
+    <div style={{ maxWidth: '480px' }}>
+      {Object.entries(spacing).map(([step, varName]) => (
+        <div key={step} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+          <span style={{ fontSize: '0.63rem', fontFamily: 'monospace', color: '#888', minWidth: '10rem', textAlign: 'right' }}>
+            {varName}
+          </span>
+          {step === 'none'
+            ? <span style={{ fontSize: '0.63rem', color: '#bbb', fontFamily: 'monospace' }}>0</span>
+            : <div style={{ height: '1.5rem', width: `var(${varName})`, background: 'var(--alias-primary-500, #046eff)', borderRadius: '2px', minWidth: '2px' }} />
+          }
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ── Responsive type samples ───────────────────────────────────────────────────
+
+const HEADINGS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const
+const COPY_STYLES = ['body-lg', 'body', 'body-sm', 'caption'] as const
+
+function ResponsiveTypeSection() {
+  return (
+    <>
+      <section style={SECTION}>
+        <h2 style={GROUP_LABEL}>Headings (H1–H4 scale up at 768px)</h2>
+        {HEADINGS.map(h => (
+          <div key={h} style={{
+            fontSize: `var(--responsive-font-headings-${h}-text-size)`,
+            lineHeight: `var(--responsive-font-headings-${h}-line-height)`,
+            marginBottom: '0.75rem',
+            fontWeight: 700,
+          }}>
+            {h.toUpperCase()} — The quick brown fox
+          </div>
+        ))}
+      </section>
+      <section style={SECTION}>
+        <h2 style={GROUP_LABEL}>Copy</h2>
+        {COPY_STYLES.map(s => (
+          <div key={s} style={{
+            fontSize: `var(--responsive-font-copy-${s}-text-size)`,
+            lineHeight: `var(--responsive-font-copy-${s}-line-height)`,
+            marginBottom: '1rem',
+          }}>
+            <span style={{ fontWeight: 700, color: '#aaa', fontSize: '0.6rem', fontFamily: 'monospace', marginRight: '0.5rem' }}>
+              {s}
+            </span>
+            The quick brown fox jumps over the lazy dog.
+          </div>
+        ))}
+      </section>
+    </>
   )
 }
 
@@ -121,24 +245,12 @@ function MappedGroupSection({ group, entries }: { group: string; entries: [strin
 
 const brandScales: [string, Record<string, string>][] = []
 let brandFoundations: Record<string, string> = {}
-for (const [name, group] of Object.entries(brand) as [string, Record<string, string>][]) {
-  if (name === 'foundations') brandFoundations = group
-  else brandScales.push([name, group])
+for (const [name, group] of Object.entries(brand) as [string, Record<string, unknown>][]) {
+  if (name === 'foundations') brandFoundations = group as Record<string, string>
+  else if (name !== 'Scale') brandScales.push([name, group as Record<string, string>])
 }
 
 const aliasGroups = Object.entries(alias) as [string, Record<string, string>][]
-
-// Group mapped tokens by first slug segment
-const SHOW_MAPPED_GROUPS = ['surface', 'text', 'icon', 'border', 'blanket']
-const mappedByGroup = new Map<string, [string, string][]>()
-for (const [slug, varName] of Object.entries(mapped) as [string, string][]) {
-  const group = slug.split('-')[0]
-  if (!mappedByGroup.has(group)) mappedByGroup.set(group, [])
-  mappedByGroup.get(group)!.push([slug, varName])
-}
-const mappedGroups = SHOW_MAPPED_GROUPS
-  .filter(g => mappedByGroup.has(g))
-  .map(g => [g, mappedByGroup.get(g)!] as [string, [string, string][]])
 
 // ── App ───────────────────────────────────────────────────────────────────────
 
@@ -212,15 +324,39 @@ export default function App() {
           Mapped / Semantic surfaces
         </h1>
         <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '0.5rem' }}>
-          Mapped/Light.json + Dark.json — {Object.keys(mapped).length} tokens — toggle above to flip modes
+          Mapped/Light.json + Dark.json — {MAPPED_TOTAL} tokens — toggle above to flip modes
         </p>
         <p style={{ color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontSize: '0.75rem', marginBottom: '2rem' }}>
           Current mode: <strong style={{ color: 'var(--mapped-text-primary-default)' }}>{dark ? 'dark' : 'light'}</strong>
         </p>
 
-        {mappedGroups.map(([group, entries]) => (
-          <MappedGroupSection key={group} group={group} entries={entries} />
-        ))}
+        {MAPPED_TREE.map(cat => <MappedCategorySection key={cat.name} {...cat} />)}
+      </div>
+
+      <hr style={HR} />
+
+      {/* ── Spacing scale ── */}
+      <div style={{ padding: '2rem', background: '#f9f9f9' }}>
+        <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+          Spacing scale
+        </h1>
+        <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+          --spacing-* → var(--brand-scale-*) in px &nbsp;·&nbsp; {Object.keys(spacing).length} tokens
+        </p>
+        <SpacingSection />
+      </div>
+
+      <hr style={HR} />
+
+      {/* ── Responsive type ── */}
+      <div style={{ padding: '2rem', background: '#f9f9f9' }}>
+        <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+          Responsive type
+        </h1>
+        <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+          Base values: mobile. Resize past 768px to see headings change (H1–H4 + body-sm grow).
+        </p>
+        <ResponsiveTypeSection />
       </div>
 
     </div>

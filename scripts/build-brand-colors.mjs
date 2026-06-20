@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'fs'
-import { resolve, dirname } from 'path'
+import { resolve } from 'path'
 import { fileURLToPath } from 'url'
 
 const root = resolve(fileURLToPath(import.meta.url), '../..')
@@ -13,34 +13,53 @@ const isSolidColor = (token) =>
   typeof token.value === 'string' &&
   token.value.startsWith('#')
 
-// Collect solid-color steps from a group object. Returns [] if none found.
-const collectSteps = (group) =>
+const collectColorSteps = (group) =>
   Object.entries(group)
     .filter(([, v]) => isSolidColor(v))
     .map(([step, v]) => [step, v.value])
 
-// Gather all color scales in source order
-const scales = [] // [{ name, steps: [[step, hex], ...], isFoundation }]
+const collectScaleSteps = (group) =>
+  Object.entries(group)
+    .filter(([, v]) => v !== null && typeof v === 'object' && v.type === 'number' && typeof v.value === 'number')
+    .map(([step, v]) => [step, v.value])
+
+// Gather color groups and the Scale group in source order
+const colorGroups = [] // [{ name, steps: [[step, hex], ...], isFoundation }]
+let scaleSteps = []   // [[step, number], ...]
 
 for (const [name, group] of Object.entries(src)) {
-  if (group === null || typeof group !== 'object') continue
-  const steps = collectSteps(group)
+  if (!group || typeof group !== 'object') continue
+  if (name === 'Scale') {
+    scaleSteps = collectScaleSteps(group)
+    continue
+  }
+  const steps = collectColorSteps(group)
   if (steps.length === 0) continue
-  scales.push({ name, steps, isFoundation: name === 'foundations' })
+  colorGroups.push({ name, steps, isFoundation: name === 'foundations' })
 }
 
-// ── brand.ts ─────────────────────────────────────────────────────────────────
+if (scaleSteps.length === 0) {
+  console.error('ERROR: No Scale entries found in Brand/Value.json')
+  process.exit(1)
+}
+
+// ── src/tokens/brand.ts ───────────────────────────────────────────────────────
 const tsLines = ['export const brand = {']
 
-for (const { name, steps } of scales) {
+for (const { name, steps } of colorGroups) {
   tsLines.push(`  ${name}: {`)
   for (const [step, hex] of steps) {
-    // Numeric steps stay unquoted; string steps (white, black) get quoted
     const key = /^\d+$/.test(step) ? step : `'${step}'`
     tsLines.push(`    ${key}: '${hex}',`)
   }
   tsLines.push(`  },`)
 }
+
+tsLines.push(`  Scale: {`)
+for (const [step, value] of scaleSteps) {
+  tsLines.push(`    ${step}: ${value},`)
+}
+tsLines.push(`  },`)
 
 tsLines.push('} as const', '', 'export type Brand = typeof brand', '')
 
@@ -48,16 +67,12 @@ mkdirSync(resolve(root, 'src/tokens'), { recursive: true })
 writeFileSync(resolve(root, 'src/tokens/brand.ts'), tsLines.join('\n'))
 console.log('✓ src/tokens/brand.ts')
 
-// index.ts — only touch if it doesn't already re-export correctly
-const indexPath = resolve(root, 'src/tokens/index.ts')
-const indexContent = `export { brand } from './brand'\nexport type { Brand } from './brand'\n`
-writeFileSync(indexPath, indexContent)
-console.log('✓ src/tokens/index.ts')
-
-// ── globals.css ───────────────────────────────────────────────────────────────
+// ── src/styles/globals.css ────────────────────────────────────────────────────
+// Build the brand :root block (colors + scale), then preserve everything from
+// /* === Alias === */ onward so downstream scripts don't need to re-run.
 const cssLines = [':root {']
 
-for (const { name, steps, isFoundation } of scales) {
+for (const { name, steps, isFoundation } of colorGroups) {
   cssLines.push(`  /* ${name} */`)
   for (const [step, hex] of steps) {
     const varName = isFoundation
@@ -68,18 +83,33 @@ for (const { name, steps, isFoundation } of scales) {
   cssLines.push('')
 }
 
-// Remove trailing blank line before closing brace
-if (cssLines.at(-1) === '') cssLines.pop()
+cssLines.push('  /* Scale */')
+for (const [step, value] of scaleSteps) {
+  cssLines.push(`  --brand-scale-${step}: ${value}px;`)
+}
+
 cssLines.push('}', '')
 
+const brandBlock = cssLines.join('\n')
+
+// Preserve everything from === Alias === onward (alias/mapped/responsive
+// scripts don't need to re-run when only the brand block changes).
+let preserved = ''
+try {
+  const existing = readFileSync(resolve(root, 'src/styles/globals.css'), 'utf8')
+  const cutAt = existing.indexOf('/* === Alias === */')
+  if (cutAt !== -1) preserved = '\n' + existing.slice(cutAt)
+} catch { /* first run — nothing to preserve */ }
+
 mkdirSync(resolve(root, 'src/styles'), { recursive: true })
-writeFileSync(resolve(root, 'src/styles/globals.css'), cssLines.join('\n'))
+writeFileSync(resolve(root, 'src/styles/globals.css'), brandBlock + preserved)
 console.log('✓ src/styles/globals.css')
 
-// ── summary ───────────────────────────────────────────────────────────────────
-const colorScales = scales.filter(s => !s.isFoundation)
-const foundationsScale = scales.find(s => s.isFoundation)
+// ── Summary ───────────────────────────────────────────────────────────────────
+const colorScales = colorGroups.filter(s => !s.isFoundation)
+const foundations = colorGroups.find(s => s.isFoundation)
 console.log(
   `\nExtracted ${colorScales.length} color scales: ${colorScales.map(s => s.name).join(', ')}` +
-  (foundationsScale ? `\nFoundations: ${foundationsScale.steps.map(([k]) => k).join(', ')}` : '')
+  (foundations ? `\nFoundations: ${foundations.steps.map(([k]) => k).join(', ')}` : '') +
+  `\nScale: ${scaleSteps.length} steps (${scaleSteps[0][0]}→${scaleSteps[0][1]}px … ${scaleSteps.at(-1)[0]}→${scaleSteps.at(-1)[1]}px)`
 )

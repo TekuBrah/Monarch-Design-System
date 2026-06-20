@@ -1,0 +1,53 @@
+export const spacing = {
+  '25': '--spacing-25',
+  '50': '--spacing-50',
+  '100': '--spacing-100',
+  '200': '--spacing-200',
+  '300': '--spacing-300',
+  '400': '--spacing-400',
+  '500': '--spacing-500',
+  '600': '--spacing-600',
+  '800': '--spacing-800',
+  '1000': '--spacing-1000',
+  '1100': '--spacing-1100',
+  '1300': '--spacing-1300',
+  '1400': '--spacing-1400',
+  'none': '--spacing-none',
+} as const
+
+export type Spacing = typeof spacing
+
+export const responsiveFont = {
+  'font-headings-h1-text-size': '--responsive-font-headings-h1-text-size',
+  'font-headings-h1-paragraph-spacing': '--responsive-font-headings-h1-paragraph-spacing',
+  'font-headings-h1-line-height': '--responsive-font-headings-h1-line-height',
+  'font-headings-h2-text-size': '--responsive-font-headings-h2-text-size',
+  'font-headings-h2-paragraph-spacing': '--responsive-font-headings-h2-paragraph-spacing',
+  'font-headings-h2-line-height': '--responsive-font-headings-h2-line-height',
+  'font-headings-h3-text-size': '--responsive-font-headings-h3-text-size',
+  'font-headings-h3-paragraph-spacing': '--responsive-font-headings-h3-paragraph-spacing',
+  'font-headings-h3-line-height': '--responsive-font-headings-h3-line-height',
+  'font-headings-h4-text-size': '--responsive-font-headings-h4-text-size',
+  'font-headings-h4-paragraph-spacing': '--responsive-font-headings-h4-paragraph-spacing',
+  'font-headings-h4-line-height': '--responsive-font-headings-h4-line-height',
+  'font-headings-h5-text-size': '--responsive-font-headings-h5-text-size',
+  'font-headings-h5-paragraph-spacing': '--responsive-font-headings-h5-paragraph-spacing',
+  'font-headings-h5-line-height': '--responsive-font-headings-h5-line-height',
+  'font-headings-h6-text-size': '--responsive-font-headings-h6-text-size',
+  'font-headings-h6-paragraph-spacing': '--responsive-font-headings-h6-paragraph-spacing',
+  'font-headings-h6-line-height': '--responsive-font-headings-h6-line-height',
+  'font-copy-body-lg-text-size': '--responsive-font-copy-body-lg-text-size',
+  'font-copy-body-lg-paragraph-spacing': '--responsive-font-copy-body-lg-paragraph-spacing',
+  'font-copy-body-lg-line-height': '--responsive-font-copy-body-lg-line-height',
+  'font-copy-body-text-size': '--responsive-font-copy-body-text-size',
+  'font-copy-body-paragraph-spacing': '--responsive-font-copy-body-paragraph-spacing',
+  'font-copy-body-line-height': '--responsive-font-copy-body-line-height',
+  'font-copy-body-sm-text-size': '--responsive-font-copy-body-sm-text-size',
+  'font-copy-body-sm-paragraph-spacing': '--responsive-font-copy-body-sm-paragraph-spacing',
+  'font-copy-body-sm-line-height': '--responsive-font-copy-body-sm-line-height',
+  'font-copy-caption-text-size': '--responsive-font-copy-caption-text-size',
+  'font-copy-caption-paragraph-spacing': '--responsive-font-copy-caption-paragraph-spacing',
+  'font-copy-caption-line-height': '--responsive-font-copy-caption-line-height',
+} as const
+
+export type ResponsiveFont = typeof responsiveFont
