@@ -201,6 +201,45 @@ function SpacingSection() {
   )
 }
 
+// ── Typography samples ────────────────────────────────────────────────────────
+
+const TYPOGRAPHY_HEADERS = [
+  'type-header-h1', 'type-header-h2', 'type-header-h3',
+  'type-header-h4', 'type-header-h5', 'type-header-h6',
+] as const
+
+const TYPOGRAPHY_BODY = [
+  'type-body-lg', 'type-body-lg-medium', 'type-body-lg-semibold', 'type-body-lg-link',
+  'type-body-m', 'type-body-m-medium', 'type-body-m-semibold', 'type-body-m-link',
+  'type-body-sm', 'type-body-sm-medium', 'type-body-sm-semibold', 'type-body-sm-link',
+  'type-body-caption', 'type-body-caption-medium', 'type-body-caption-semibold', 'type-body-caption-link',
+] as const
+
+function TypographySection() {
+  return (
+    <>
+      <section style={SECTION}>
+        <h2 style={GROUP_LABEL}>Headings — H1–H6 (responsive, resize past 768 px)</h2>
+        {TYPOGRAPHY_HEADERS.map(cls => (
+          <div key={cls} style={{ marginBottom: '0.75rem' }}>
+            <div style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: '#aaa', marginBottom: '0.1rem' }}>.{cls}</div>
+            <div className={cls}>The quick brown fox</div>
+          </div>
+        ))}
+      </section>
+      <section style={SECTION}>
+        <h2 style={GROUP_LABEL}>Body</h2>
+        {TYPOGRAPHY_BODY.map(cls => (
+          <div key={cls} style={{ marginBottom: '0.5rem', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '0.4rem' }}>
+            <div style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: '#aaa', marginBottom: '0.1rem' }}>.{cls}</div>
+            <div className={cls}>The quick brown fox jumps over the lazy dog.</div>
+          </div>
+        ))}
+      </section>
+    </>
+  )
+}
+
 // ── Responsive type samples ───────────────────────────────────────────────────
 
 const HEADINGS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const
@@ -357,6 +396,19 @@ export default function App() {
           Base values: mobile. Resize past 768px to see headings change (H1–H4 + body-sm grow).
         </p>
         <ResponsiveTypeSection />
+      </div>
+
+      <hr style={HR} />
+
+      {/* ── Typography ── */}
+      <div style={{ padding: '2rem', background: '#fff' }}>
+        <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+          Typography
+        </h1>
+        <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+          22 composite styles — Poppins 400 / 500 / 600 — headings responsive at 768 px
+        </p>
+        <TypographySection />
       </div>
 
     </div>
