@@ -1,94 +1,136 @@
 import './styles/globals.css'
-import { brand } from './tokens'
+import { brand, alias } from './tokens'
 
-type HexMap = Record<string, string>
+// ── Types ─────────────────────────────────────────────────────────────────────
 
-function isDark(hex: string): boolean {
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
-  return (r * 299 + g * 587 + b * 114) / 1000 < 128
+type HexMap    = Record<string, string>
+type VarMap    = Record<string, string>
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+const SECTION: React.CSSProperties = { marginBottom: '2.5rem' }
+const LABEL: React.CSSProperties = {
+  fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase' as const,
+  letterSpacing: '0.08em', color: '#888', marginBottom: '0.5rem',
 }
+const SWATCH_GRID: React.CSSProperties = { display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }
+const CARD: React.CSSProperties = {
+  width: '7.5rem', borderRadius: '0.5rem', overflow: 'hidden',
+  border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+}
+const CARD_BODY: React.CSSProperties = { padding: '0.4rem 0.5rem', background: '#fff' }
+const NAME_TEXT: React.CSSProperties = { fontSize: '0.68rem', fontWeight: 600, color: '#333' }
+const VAR_TEXT: React.CSSProperties  = { fontSize: '0.6rem', color: '#888', fontFamily: 'monospace', marginTop: '0.1rem' }
+const HEX_TEXT: React.CSSProperties  = { fontSize: '0.6rem', color: '#aaa', fontFamily: 'monospace' }
 
-function Swatch({ scaleName, step, hex }: { scaleName: string; step: string; hex: string }) {
+// ── Brand swatch ──────────────────────────────────────────────────────────────
+
+function BrandSwatch({ scaleName, step, hex }: { scaleName: string; step: string; hex: string }) {
   const isFoundation = scaleName === 'foundations'
-  const varName = isFoundation
-    ? `--brand-${step}`
-    : `--brand-${scaleName.toLowerCase()}-${step}`
+  const varName = isFoundation ? `--brand-${step}` : `--brand-${scaleName.toLowerCase()}-${step}`
   return (
-    <div style={{
-      width: '7rem',
-      borderRadius: '0.5rem',
-      overflow: 'hidden',
-      border: '1px solid rgba(0,0,0,0.08)',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-    }}>
+    <div style={CARD}>
       <div style={{ background: hex, height: '3.5rem' }} />
-      <div style={{ padding: '0.4rem 0.5rem', background: '#fff' }}>
-        <div style={{ fontSize: '0.7rem', fontWeight: 600, color: '#333' }}>
-          {isFoundation ? step : `${scaleName} ${step}`}
-        </div>
-        <div style={{ fontSize: '0.65rem', color: '#888', marginTop: '0.1rem', fontFamily: 'monospace' }}>
-          {varName}
-        </div>
-        <div style={{ fontSize: '0.65rem', color: '#aaa', fontFamily: 'monospace' }}>
-          {hex}
-        </div>
+      <div style={CARD_BODY}>
+        <div style={NAME_TEXT}>{isFoundation ? step : `${scaleName} ${step}`}</div>
+        <div style={VAR_TEXT}>{varName}</div>
+        <div style={HEX_TEXT}>{hex}</div>
       </div>
     </div>
   )
 }
 
-function ScaleRow({ name, steps }: { name: string; steps: HexMap }) {
+function BrandScaleRow({ name, steps }: { name: string; steps: HexMap }) {
   return (
-    <section style={{ marginBottom: '2rem' }}>
-      <h2 style={{
-        fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase',
-        letterSpacing: '0.08em', color: '#888', marginBottom: '0.5rem',
-      }}>
-        {name}
-      </h2>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+    <section style={SECTION}>
+      <h2 style={LABEL}>{name}</h2>
+      <div style={SWATCH_GRID}>
         {Object.entries(steps).map(([step, hex]) => (
-          <Swatch key={step} scaleName={name} step={step} hex={hex} />
+          <BrandSwatch key={step} scaleName={name} step={step} hex={hex} />
         ))}
       </div>
     </section>
   )
 }
 
-// Split brand into color scales and foundations, preserving source order
-const colorScales: [string, HexMap][] = []
-let foundationsSteps: HexMap = {}
+// ── Alias swatch ──────────────────────────────────────────────────────────────
+
+function AliasSwatch({ groupName, step, brandVar }: { groupName: string; step: string; brandVar: string }) {
+  const aliasVar = `--alias-${groupName.toLowerCase()}-${step}`
+  // Strip leading '--' for the readable label
+  const brandLabel = brandVar.replace(/^--/, '')
+  return (
+    <div style={CARD}>
+      {/* Background via alias CSS var — resolves through the cascade at runtime */}
+      <div style={{ background: `var(${aliasVar})`, height: '3.5rem' }} />
+      <div style={CARD_BODY}>
+        <div style={NAME_TEXT}>{groupName.toLowerCase()}-{step}</div>
+        <div style={VAR_TEXT}>{aliasVar}</div>
+        <div style={{ ...HEX_TEXT, color: '#b07e00' }}>→ {brandLabel}</div>
+      </div>
+    </div>
+  )
+}
+
+function AliasGroupRow({ name, steps }: { name: string; steps: VarMap }) {
+  return (
+    <section style={SECTION}>
+      <h2 style={LABEL}>{name}</h2>
+      <div style={SWATCH_GRID}>
+        {Object.entries(steps).map(([step, brandVar]) => (
+          <AliasSwatch key={step} groupName={name} step={step} brandVar={brandVar} />
+        ))}
+      </div>
+    </section>
+  )
+}
+
+// ── Data assembly ─────────────────────────────────────────────────────────────
+
+const brandScales: [string, HexMap][] = []
+let brandFoundations: HexMap = {}
 
 for (const [name, group] of Object.entries(brand) as [string, HexMap][]) {
-  if (name === 'foundations') {
-    foundationsSteps = group
-  } else {
-    colorScales.push([name, group])
-  }
+  if (name === 'foundations') brandFoundations = group
+  else brandScales.push([name, group])
 }
+
+const aliasGroups = Object.entries(alias) as [string, VarMap][]
+
+// ── App ───────────────────────────────────────────────────────────────────────
 
 export default function App() {
   return (
-    <div style={{
-      fontFamily: 'system-ui, sans-serif',
-      padding: '2rem',
-      background: '#f9f9f9',
-      minHeight: '100vh',
-    }}>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem', color: '#111' }}>
+    <div style={{ fontFamily: 'system-ui, sans-serif', padding: '2rem', background: '#f9f9f9', minHeight: '100vh' }}>
+
+      {/* ── Brand primitives ── */}
+      <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
         Brand Primitives
       </h1>
-      <p style={{ color: '#666', marginBottom: '2.5rem', fontSize: '0.875rem' }}>
-        Brand/Value.json — {colorScales.length} color scales + foundations
+      <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+        Brand/Value.json — {brandScales.length} color scales + foundations
       </p>
 
-      {colorScales.map(([name, steps]) => (
-        <ScaleRow key={name} name={name} steps={steps} />
+      {brandScales.map(([name, steps]) => (
+        <BrandScaleRow key={name} name={name} steps={steps} />
+      ))}
+      <BrandScaleRow name="foundations" steps={brandFoundations} />
+
+      {/* ── Divider ── */}
+      <hr style={{ border: 'none', borderTop: '2px solid #e5e5e5', margin: '2rem 0 2.5rem' }} />
+
+      {/* ── Alias / Semantic ── */}
+      <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+        Alias / Semantic
+      </h1>
+      <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+        Alias/Alias.json — {aliasGroups.length} groups — chain shown as alias → brand token
+      </p>
+
+      {aliasGroups.map(([name, steps]) => (
+        <AliasGroupRow key={name} name={name} steps={steps} />
       ))}
 
-      <ScaleRow name="foundations" steps={foundationsSteps} />
     </div>
   )
 }

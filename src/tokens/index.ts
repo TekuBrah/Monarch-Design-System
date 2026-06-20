@@ -1,2 +1,4 @@
 export { brand } from './brand'
 export type { Brand } from './brand'
+export { alias } from './alias'
+export type { Alias } from './alias'
