@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import './styles/globals.css'
-import { brand, alias, mapped, spacing } from './tokens'
+import { brand, alias, mapped, spacing, gradients } from './tokens'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -280,6 +280,41 @@ function ResponsiveTypeSection() {
   )
 }
 
+// ── Gradient swatches ────────────────────────────────────────────────────────
+
+function GradientCard({ name, token }: { name: string; token: { var: string; value: string; description: string } }) {
+  const TILE: React.CSSProperties = {
+    position: 'relative', width: '10rem', height: '6rem', borderRadius: '0.4rem', overflow: 'hidden',
+    border: '1px solid rgba(0,0,0,0.1)',
+  }
+  const OVERLAY: React.CSSProperties = {
+    position: 'absolute', inset: 0, background: `var(${token.var})`,
+  }
+  return (
+    <div style={{ marginBottom: '1.5rem' }}>
+      <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#333', marginBottom: '0.2rem' }}>{name}</div>
+      <div style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: '#888', marginBottom: '0.1rem' }}>{token.var}</div>
+      {token.description && (
+        <div style={{ fontSize: '0.6rem', color: '#aaa', marginBottom: '0.5rem' }}>{token.description}</div>
+      )}
+      <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div>
+          <div style={{ fontSize: '0.55rem', color: '#aaa', marginBottom: '0.2rem' }}>light bg</div>
+          <div style={{ ...TILE, background: '#e5e7eb' }}>
+            <div style={OVERLAY} />
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: '0.55rem', color: '#aaa', marginBottom: '0.2rem' }}>dark bg</div>
+          <div style={{ ...TILE, background: '#1b1e21' }}>
+            <div style={OVERLAY} />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Data assembly ─────────────────────────────────────────────────────────────
 
 const brandScales: [string, Record<string, string>][] = []
@@ -409,6 +444,21 @@ export default function App() {
           22 composite styles — Poppins 400 / 500 / 600 — headings responsive at 768 px
         </p>
         <TypographySection />
+      </div>
+
+      <hr style={HR} />
+
+      {/* ── Gradients ── */}
+      <div style={{ padding: '2rem', background: '#f9f9f9' }}>
+        <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+          Gradients
+        </h1>
+        <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+          Brand/Value.json → Gradient — {Object.keys(gradients).length} tokens — shown over light + dark backgrounds
+        </p>
+        {(Object.entries(gradients) as [string, { var: string; value: string; description: string }][]).map(
+          ([name, token]) => <GradientCard key={name} name={name} token={token} />
+        )}
       </div>
 
     </div>
