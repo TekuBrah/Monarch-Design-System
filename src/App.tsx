@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import './styles/globals.css'
-import { brand, alias, mapped, spacing, gradients } from './tokens'
+import { brand, alias, mapped, spacing, gradients, shadows } from './tokens'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -315,6 +315,41 @@ function GradientCard({ name, token }: { name: string; token: { var: string; val
   )
 }
 
+// ── Shadow cards ──────────────────────────────────────────────────────────────
+
+type ShadowToken = { var: string; value: string; description: string }
+
+function ShadowCard({ name, token }: { name: string; token: ShadowToken }) {
+  const TILE: React.CSSProperties = {
+    width: '10rem', height: '5rem', borderRadius: '0.5rem',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontSize: '0.6rem', fontFamily: 'monospace', color: '#888',
+  }
+  return (
+    <div style={{ marginBottom: '1.75rem' }}>
+      <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#333', marginBottom: '0.2rem' }}>{name}</div>
+      <div style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: '#888', marginBottom: '0.1rem' }}>{token.var}</div>
+      {token.description && (
+        <div style={{ fontSize: '0.6rem', color: '#aaa', marginBottom: '0.6rem' }}>{token.description}</div>
+      )}
+      <div style={{ display: 'flex', gap: '1.5rem' }}>
+        <div>
+          <div style={{ fontSize: '0.55rem', color: '#aaa', marginBottom: '0.4rem' }}>light surface</div>
+          <div style={{ ...TILE, background: '#ffffff', boxShadow: `var(${token.var})` }}>
+            {token.var}
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: '0.55rem', color: '#aaa', marginBottom: '0.4rem' }}>dark surface</div>
+          <div style={{ ...TILE, background: '#1b1e21', color: '#555', boxShadow: `var(${token.var})` }}>
+            {token.var}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Data assembly ─────────────────────────────────────────────────────────────
 
 const brandScales: [string, Record<string, string>][] = []
@@ -458,6 +493,21 @@ export default function App() {
         </p>
         {(Object.entries(gradients) as [string, { var: string; value: string; description: string }][]).map(
           ([name, token]) => <GradientCard key={name} name={name} token={token} />
+        )}
+      </div>
+
+      <hr style={HR} />
+
+      {/* ── Shadows / Effects ── */}
+      <div style={{ padding: '2rem', background: '#f0f2f4' }}>
+        <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+          Shadows / Effects
+        </h1>
+        <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+          Brand/Value.json → Dropshadow_* — {Object.keys(shadows).length} tokens — shown over light + dark surfaces
+        </p>
+        {(Object.entries(shadows) as [string, ShadowToken][]).map(
+          ([name, token]) => <ShadowCard key={name} name={name} token={token} />
         )}
       </div>
 
