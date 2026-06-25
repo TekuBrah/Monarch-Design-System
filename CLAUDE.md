@@ -80,6 +80,15 @@ Build the first component (e.g. Button) on top of the token foundation:
 - Consume only CSS vars (`--mapped-*`, `--spacing-*`, `.type-*` classes).
 - No hardcoded colors, spacing, or font sizes anywhere in component code.
 
+## Component rules
+- Components consume our existing token CSS variables ONLY — never hardcode
+  colors, spacing, radius, shadows, or type. Use var(--mapped-*), var(--spacing-*),
+  var(--brand-scale-*) for radius/borders, var(--shadow-*), and the .type-* classes.
+- Map interaction states to tokens: default/hover/pressed/subtle → the matching
+  --mapped-surface-* / --mapped-text-* tokens (that's why they exist).
+- React + TypeScript. One component per folder: src/components/<Name>/<Name>.tsx + index.ts.
+- Build one component at a time. Show output for review before moving on.
+
 ## Working conventions
 - Incremental. One layer/component at a time. Verify before proceeding.
 - Do not generate many files unseen — show output, review, then continue.
