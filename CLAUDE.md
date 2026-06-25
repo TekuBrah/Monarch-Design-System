@@ -89,6 +89,11 @@ Build the first component (e.g. Button) on top of the token foundation:
 - React + TypeScript. One component per folder: src/components/<Name>/<Name>.tsx + index.ts.
 - Build one component at a time. Show output for review before moving on.
 
+## Git workflow
+- You may stage and commit locally with clear messages.
+- Do NOT push to the remote, and do NOT create pull requests. I handle all
+  pushes manually via Sourcetree. Never run git push or /create-pr.
+
 ## Working conventions
 - Incremental. One layer/component at a time. Verify before proceeding.
 - Do not generate many files unseen — show output, review, then continue.
