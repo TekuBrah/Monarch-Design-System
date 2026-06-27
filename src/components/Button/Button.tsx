@@ -1,5 +1,7 @@
 import React from 'react'
 import './Button.css'
+import { ElementWrapper } from '../ElementWrapper'
+import type { ElementWrapperSize } from '../ElementWrapper'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'tertiary'
 export type ButtonAppearance = 'default' | 'inverse'
@@ -129,6 +131,12 @@ const TOKENS: Record<ButtonVariant, Record<ButtonAppearance, TokenSet>> = {
   },
 }
 
+const ICON_SIZE: Record<ButtonSize, ElementWrapperSize> = {
+  s: 's',  // 16px
+  m: 'm',  // 20px
+  l: 'l',  // 24px
+}
+
 export function Button({
   variant = 'primary',
   appearance = 'default',
@@ -165,9 +173,9 @@ export function Button({
         '--btn-focus-ring':      t.focusRing,
       } as React.CSSProperties}
     >
-      {leadingIcon && <span className="btn__icon" aria-hidden="true">{leadingIcon}</span>}
+      {leadingIcon && <ElementWrapper size={ICON_SIZE[size]}>{leadingIcon}</ElementWrapper>}
       <span className="type-body-sm-semibold">{label}</span>
-      {trailingIcon && <span className="btn__icon" aria-hidden="true">{trailingIcon}</span>}
+      {trailingIcon && <ElementWrapper size={ICON_SIZE[size]}>{trailingIcon}</ElementWrapper>}
     </button>
   )
 }
