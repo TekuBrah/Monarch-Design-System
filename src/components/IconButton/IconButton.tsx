@@ -1,7 +1,6 @@
 import React from 'react'
 import '../Button/Button.css'
 import './IconButton.css'
-import { ElementWrapper } from '../ElementWrapper'
 import type { ButtonVariant, ButtonAppearance } from '../Button'
 
 export type { ButtonVariant as IconButtonVariant, ButtonAppearance as IconButtonAppearance }
@@ -164,9 +163,7 @@ export function IconButton({
         '--btn-focus-ring':      t.focusRing,
       } as React.CSSProperties}
     >
-      <ElementWrapper size="l">
-        {icon}
-      </ElementWrapper>
+      {icon}
     </button>
   )
 }

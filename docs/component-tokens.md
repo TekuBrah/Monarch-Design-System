@@ -236,3 +236,62 @@ Both Button and Icon Button:
 
 - **Inverse token assignments**: Inferred from the `interactive-on-color` and `on-color-label` token families — same inference as Button. No direct Figma read on Inverse Icon Button states.
 - **L size not confirmed from Figma**: The L icon button size (12px padding) is observed in the XML but not verified in a Figma Dev Mode inspection.
+
+---
+
+## Icon
+
+**Source:** `@material-design-icons/svg` npm package — Round style  
+**Not exported from Figma.** The Figma file uses Material Icons (453 icons, 5 styles, all 24×24px in the Action category). Round was chosen to match the button corner language.
+
+A sized, colour-inheriting wrapper around a single Material Round SVG. Renders `<ElementWrapper>` + SVG; the SVG's `fill` is always `currentColor`, so the icon colour is driven entirely by the nearest CSS `color` value.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `name` | `IconName` | — | Required. Key of the bundled icon registry |
+| `size` | `IconSize` | `'m'` | `'s'` \| `'m'` \| `'l'` |
+
+### Size → token mapping
+
+| size | px | ElementWrapper size | `--brand-scale-*` token |
+|---|---|---|---|
+| `s` | 16px | `s` | `--brand-scale-400` |
+| `m` | 20px | `m` | `--brand-scale-500` |
+| `l` | 24px | `l` | `--brand-scale-600` |
+
+### Starter set (10 icons)
+
+| `IconName` | File |
+|---|---|
+| `add` | `round/add.svg` |
+| `close` | `round/close.svg` |
+| `check` | `round/check.svg` |
+| `chevron_right` | `round/chevron_right.svg` |
+| `expand_more` | `round/expand_more.svg` |
+| `search` | `round/search.svg` |
+| `arrow_forward` | `round/arrow_forward.svg` |
+| `menu` | `round/menu.svg` |
+| `more_vert` | `round/more_vert.svg` |
+| `info` | `round/info.svg` |
+
+Only these 10 are bundled. Add new icons by importing in `src/components/Icon/icons.ts` and adding an entry to the `ICONS` const.
+
+### Color inheritance
+
+`Icon` sets no colour of its own — `fill="currentColor"` on the SVG root means the icon always matches the nearest CSS `color`. Usage patterns:
+
+- **Default body text**: wrap in nothing — inherits `--mapped-text-default-default`
+- **On coloured surface**: set `color: var(--mapped-text-primary-on-color)` on the parent element — icon renders white
+- **Semantic colours**: set `color: var(--mapped-text-error-default-default)` / `--mapped-text-success-default-default` on the wrapper
+
+### Composition with Button / IconButton
+
+Button and IconButton render their icon props directly (no extra wrapper). Pass `<Icon name="..." size={buttonSize} />` as `leadingIcon` / `trailingIcon`. The Icon's own `ElementWrapper` provides the sizing and alignment.
+
+For IconButton: the icon slot always expects `size="l"` (24px) since IconButton padding is designed around a 24px glyph.
+
+### SVGR setup
+
+`vite-plugin-svgr` transforms `*.svg?react` imports into React components. Configured in `vite.config.ts`. Type declarations come from `/// <reference types="vite-plugin-svgr/client" />` in `src/vite-env.d.ts`.
