@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import './styles/globals.css'
 import { brand, alias, mapped, spacing, gradients, shadows } from './tokens'
+import { Badge } from './components/Badge'
+import type { BadgeAppearance } from './components/Badge'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -367,18 +369,38 @@ const HR: React.CSSProperties = { border: 'none', borderTop: '2px solid rgba(128
 
 export default function App() {
   const { dark, toggle } = useTheme()
+  const [tab, setTab] = useState<'foundations' | 'components'>('components')
+
+  const tabBtn = (id: typeof tab, label: string) => (
+    <button
+      onClick={() => setTab(id)}
+      style={{
+        padding: '0.35rem 0.9rem', borderRadius: '999px', border: 'none',
+        cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600,
+        background: tab === id ? (dark ? '#fff' : '#111') : 'transparent',
+        color: tab === id ? (dark ? '#111' : '#fff') : (dark ? '#888' : '#555'),
+        transition: 'all 0.15s',
+      }}
+    >
+      {label}
+    </button>
+  )
 
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', minHeight: '100vh' }}>
 
-      {/* Sticky toggle bar */}
+      {/* Sticky bar — tabs left, toggle right */}
       <div style={{
         position: 'sticky', top: 0, zIndex: 100,
-        display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0.5rem 2rem',
         background: dark ? '#111' : '#f0f0f0',
         borderBottom: '1px solid rgba(128,128,128,0.2)',
       }}>
+        <div style={{ display: 'flex', gap: '0.25rem' }}>
+          {tabBtn('foundations', 'Foundations')}
+          {tabBtn('components', 'Components')}
+        </div>
         <button
           onClick={toggle}
           style={{
@@ -392,124 +414,157 @@ export default function App() {
         </button>
       </div>
 
-      {/* ── Brand primitives ── */}
-      <div style={{ padding: '2rem', background: '#f9f9f9' }}>
-        <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
-          Brand Primitives
-        </h1>
-        <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
-          Brand/Value.json — {brandScales.length} color scales + foundations
-        </p>
-        {brandScales.map(([name, steps]) => (
-          <BrandScaleRow key={name} name={name} steps={steps} />
-        ))}
-        <BrandScaleRow name="foundations" steps={brandFoundations} />
-      </div>
+      {/* ── FOUNDATIONS TAB ── */}
+      {tab === 'foundations' && (
+        <>
+          {/* Brand primitives */}
+          <div style={{ padding: '2rem', background: '#f9f9f9' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+              Brand Primitives
+            </h1>
+            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              Brand/Value.json — {brandScales.length} color scales + foundations
+            </p>
+            {brandScales.map(([name, steps]) => (
+              <BrandScaleRow key={name} name={name} steps={steps} />
+            ))}
+            <BrandScaleRow name="foundations" steps={brandFoundations} />
+          </div>
 
-      <hr style={HR} />
+          <hr style={HR} />
 
-      {/* ── Alias / Semantic ── */}
-      <div style={{ padding: '0 2rem 2rem', background: '#f9f9f9' }}>
-        <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
-          Alias / Semantic
-        </h1>
-        <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
-          Alias/Alias.json — {aliasGroups.length} groups — alias → brand token
-        </p>
-        {aliasGroups.map(([name, steps]) => (
-          <AliasGroupRow key={name} name={name} steps={steps} />
-        ))}
-      </div>
+          {/* Alias / Semantic */}
+          <div style={{ padding: '0 2rem 2rem', background: '#f9f9f9' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+              Alias / Semantic
+            </h1>
+            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              Alias/Alias.json — {aliasGroups.length} groups — alias → brand token
+            </p>
+            {aliasGroups.map(([name, steps]) => (
+              <AliasGroupRow key={name} name={name} steps={steps} />
+            ))}
+          </div>
 
-      <hr style={HR} />
+          <hr style={HR} />
 
-      {/* ── Mapped / Semantic surfaces — themed ── */}
-      <div style={{
-        padding: '2rem',
-        background: 'var(--mapped-surface-page, #fff)',
-        transition: 'background 0.2s',
-      }}>
-        <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-          Mapped / Semantic surfaces
-        </h1>
-        <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '0.5rem' }}>
-          Mapped/Light.json + Dark.json — {MAPPED_TOTAL} tokens — toggle above to flip modes
-        </p>
-        <p style={{ color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontSize: '0.75rem', marginBottom: '2rem' }}>
-          Current mode: <strong style={{ color: 'var(--mapped-text-primary-default)' }}>{dark ? 'dark' : 'light'}</strong>
-        </p>
+          {/* Mapped / Semantic surfaces */}
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Mapped / Semantic surfaces
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '0.5rem' }}>
+              Mapped/Light.json + Dark.json — {MAPPED_TOTAL} tokens — toggle above to flip modes
+            </p>
+            <p style={{ color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontSize: '0.75rem', marginBottom: '2rem' }}>
+              Current mode: <strong style={{ color: 'var(--mapped-text-primary-default)' }}>{dark ? 'dark' : 'light'}</strong>
+            </p>
+            {MAPPED_TREE.map(cat => <MappedCategorySection key={cat.name} {...cat} />)}
+          </div>
 
-        {MAPPED_TREE.map(cat => <MappedCategorySection key={cat.name} {...cat} />)}
-      </div>
+          <hr style={HR} />
 
-      <hr style={HR} />
+          {/* Spacing scale */}
+          <div style={{ padding: '2rem', background: '#f9f9f9' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+              Spacing scale
+            </h1>
+            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              --spacing-* → var(--brand-scale-*) in px &nbsp;·&nbsp; {Object.keys(spacing).length} tokens
+            </p>
+            <SpacingSection />
+          </div>
 
-      {/* ── Spacing scale ── */}
-      <div style={{ padding: '2rem', background: '#f9f9f9' }}>
-        <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
-          Spacing scale
-        </h1>
-        <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
-          --spacing-* → var(--brand-scale-*) in px &nbsp;·&nbsp; {Object.keys(spacing).length} tokens
-        </p>
-        <SpacingSection />
-      </div>
+          <hr style={HR} />
 
-      <hr style={HR} />
+          {/* Responsive type */}
+          <div style={{ padding: '2rem', background: '#f9f9f9' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+              Responsive type
+            </h1>
+            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              Base values: mobile. Resize past 768px to see headings change (H1–H4 + body-sm grow).
+            </p>
+            <ResponsiveTypeSection />
+          </div>
 
-      {/* ── Responsive type ── */}
-      <div style={{ padding: '2rem', background: '#f9f9f9' }}>
-        <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
-          Responsive type
-        </h1>
-        <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
-          Base values: mobile. Resize past 768px to see headings change (H1–H4 + body-sm grow).
-        </p>
-        <ResponsiveTypeSection />
-      </div>
+          <hr style={HR} />
 
-      <hr style={HR} />
+          {/* Typography */}
+          <div style={{ padding: '2rem', background: '#fff' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+              Typography
+            </h1>
+            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              22 composite styles — Poppins 400 / 500 / 600 — headings responsive at 768 px
+            </p>
+            <TypographySection />
+          </div>
 
-      {/* ── Typography ── */}
-      <div style={{ padding: '2rem', background: '#fff' }}>
-        <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
-          Typography
-        </h1>
-        <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
-          22 composite styles — Poppins 400 / 500 / 600 — headings responsive at 768 px
-        </p>
-        <TypographySection />
-      </div>
+          <hr style={HR} />
 
-      <hr style={HR} />
+          {/* Gradients */}
+          <div style={{ padding: '2rem', background: '#f9f9f9' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+              Gradients
+            </h1>
+            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              Brand/Value.json → Gradient — {Object.keys(gradients).length} tokens — shown over light + dark backgrounds
+            </p>
+            {(Object.entries(gradients) as [string, { var: string; value: string; description: string }][]).map(
+              ([name, token]) => <GradientCard key={name} name={name} token={token} />
+            )}
+          </div>
 
-      {/* ── Gradients ── */}
-      <div style={{ padding: '2rem', background: '#f9f9f9' }}>
-        <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
-          Gradients
-        </h1>
-        <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
-          Brand/Value.json → Gradient — {Object.keys(gradients).length} tokens — shown over light + dark backgrounds
-        </p>
-        {(Object.entries(gradients) as [string, { var: string; value: string; description: string }][]).map(
-          ([name, token]) => <GradientCard key={name} name={name} token={token} />
-        )}
-      </div>
+          <hr style={HR} />
 
-      <hr style={HR} />
+          {/* Shadows / Effects */}
+          <div style={{ padding: '2rem', background: '#f0f2f4' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+              Shadows / Effects
+            </h1>
+            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              Brand/Value.json → Dropshadow_* — {Object.keys(shadows).length} tokens — shown over light + dark surfaces
+            </p>
+            {(Object.entries(shadows) as [string, ShadowToken][]).map(
+              ([name, token]) => <ShadowCard key={name} name={name} token={token} />
+            )}
+          </div>
+        </>
+      )}
 
-      {/* ── Shadows / Effects ── */}
-      <div style={{ padding: '2rem', background: '#f0f2f4' }}>
-        <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
-          Shadows / Effects
-        </h1>
-        <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
-          Brand/Value.json → Dropshadow_* — {Object.keys(shadows).length} tokens — shown over light + dark surfaces
-        </p>
-        {(Object.entries(shadows) as [string, ShadowToken][]).map(
-          ([name, token]) => <ShadowCard key={name} name={name} token={token} />
-        )}
-      </div>
+      {/* ── COMPONENTS TAB ── */}
+      {tab === 'components' && (
+        <>
+          {/* Badge */}
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Badge
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              7 appearances × 2 types — tokens only — responds to light/dark toggle
+            </p>
+            <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: 'left', padding: '0.4rem 1rem 0.4rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>appearance</th>
+                  <th style={{ textAlign: 'left', padding: '0.4rem 1rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>type=default</th>
+                  <th style={{ textAlign: 'left', padding: '0.4rem 1rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>type=dot</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(['default', 'primary', 'inverted', 'important', 'added', 'removed', 'dark'] as BadgeAppearance[]).map(ap => (
+                  <tr key={ap}>
+                    <td style={{ padding: '0.5rem 1rem 0.5rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>{ap}</td>
+                    <td style={{ padding: '0.5rem 1rem' }}><Badge appearance={ap} type="default" label="25" /></td>
+                    <td style={{ padding: '0.5rem 1rem', verticalAlign: 'middle' }}><Badge appearance={ap} type="dot" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
     </div>
   )
