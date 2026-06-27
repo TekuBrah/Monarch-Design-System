@@ -3,6 +3,8 @@ import './styles/globals.css'
 import { brand, alias, mapped, spacing, gradients, shadows } from './tokens'
 import { Badge } from './components/Badge'
 import type { BadgeAppearance } from './components/Badge'
+import { Button } from './components/Button'
+import type { ButtonVariant, ButtonAppearance as BtnAppearance } from './components/Button'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -562,6 +564,72 @@ export default function App() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          <hr style={HR} />
+
+          {/* Button */}
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Button
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              3 variants × 2 appearances × 3 sizes — tokens only — states forced for preview
+            </p>
+
+            {/* Default appearance — one table per size */}
+            {(['s', 'm', 'l'] as const).map(size => (
+              <div key={size} style={{ marginBottom: '2rem' }}>
+                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                  Size {size.toUpperCase()} — appearance: default
+                </p>
+                <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
+                  <thead>
+                    <tr>
+                      <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>state</th>
+                      {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(v => (
+                        <th key={v} style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{v}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {([
+                      [undefined,   'default'],
+                      ['hover',     'hover'],
+                      ['pressed',   'pressed'],
+                      ['focus',     'focus'],
+                    ] as const).map(([ps, label]) => (
+                      <tr key={label}>
+                        <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>{label}</td>
+                        {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
+                          <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
+                            <Button variant={variant} size={size} label="Button" previewState={ps} />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                    <tr>
+                      <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>disabled</td>
+                      {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
+                        <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
+                          <Button variant={variant} size={size} label="Button" disabled />
+                        </td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            ))}
+
+            {/* Inverse appearance — dark bg required */}
+            <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+              Appearance: inverse (shown on colored surface)
+            </p>
+            <div style={{ background: 'var(--mapped-surface-primary-default)', padding: '1.5rem', borderRadius: 'var(--brand-scale-200)', display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center' }}>
+              {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
+                <Button key={variant} variant={variant} appearance="inverse" size="m" label={variant} />
+              ))}
+            </div>
           </div>
         </>
       )}

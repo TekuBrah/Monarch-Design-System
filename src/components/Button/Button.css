@@ -1,0 +1,82 @@
+/* ── Button base ─────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--brand-scale-100);
+  border: var(--brand-scale-25) solid;
+  border-radius: var(--brand-scale-200);
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  background: var(--btn-bg);
+  border-color: var(--btn-border);
+  color: var(--btn-text);
+}
+
+/* ── Interaction states ──────────────────────────────────────────── */
+.btn:hover:not(:disabled) {
+  background: var(--btn-bg-hover);
+  border-color: var(--btn-border-hover);
+  color: var(--btn-text-hover);
+}
+
+.btn:active:not(:disabled) {
+  background: var(--btn-bg-pressed);
+  border-color: var(--btn-border-pressed);
+  color: var(--btn-text-pressed);
+}
+
+.btn:disabled {
+  background: var(--btn-bg-disabled);
+  border-color: var(--btn-border-disabled);
+  color: var(--btn-text-disabled);
+  cursor: not-allowed;
+}
+
+.btn:focus-visible {
+  outline: var(--brand-scale-50) solid var(--btn-focus-ring);
+  outline-offset: var(--brand-scale-50);
+}
+
+/* Preview overrides — showcase only, not for production use */
+.btn[data-preview="hover"] {
+  background: var(--btn-bg-hover) !important;
+  border-color: var(--btn-border-hover) !important;
+  color: var(--btn-text-hover) !important;
+}
+
+.btn[data-preview="pressed"] {
+  background: var(--btn-bg-pressed) !important;
+  border-color: var(--btn-border-pressed) !important;
+  color: var(--btn-text-pressed) !important;
+}
+
+.btn[data-preview="focus"] {
+  outline: var(--brand-scale-50) solid var(--btn-focus-ring) !important;
+  outline-offset: var(--brand-scale-50) !important;
+}
+
+/* ── Size variants ───────────────────────────────────────────────── */
+.btn--s {
+  padding: var(--brand-scale-100);
+}
+
+.btn--m {
+  padding: var(--brand-scale-200) var(--brand-scale-300);
+}
+
+.btn--l {
+  padding: var(--brand-scale-300) var(--brand-scale-400);
+}
+
+/* ── Icon slot ───────────────────────────────────────────────────── */
+.btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--brand-scale-500);
+  height: var(--brand-scale-500);
+  flex-shrink: 0;
+}
