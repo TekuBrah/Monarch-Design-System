@@ -358,3 +358,55 @@ A circular identity element with a three-state fallback chain: photo → initial
 - **Border width**: Figma shows `0.5px` hairline on the initials variant. No `0.5px` token; `--brand-scale-25` (1px) used — same precedent as Button's `border-width/xs` gap.
 - **`--surface/default/default`**: Figma token for placeholder background. Confirmed as `--mapped-surface-default-default` in our mapped layer (resolves to a neutral gray in light mode).
 - **Figma size label inconsistency**: Initials variant labels small size "S 24"; placeholder labels it "S 20" — both render at 24px. Normalised to `s = 24px` in code.
+
+---
+
+## Logo
+
+**Source:** `Assets/logo/brand/`, `Assets/logo/company/`, `Assets/logo/crypto/`  
+**Not from Figma tokens.** Logos are full-colour brand assets — they must never have colour tokens applied.
+
+### Critical rule: no colour tokens
+
+Logo SVGs preserve their original fills exactly. Do **not** pass `fill`, `color`, or `currentColor` to a Logo component or its container. The `<Logo>` component intentionally omits all colour props.
+
+### Registration
+
+Logos are auto-registered via `import.meta.glob` in `src/components/Logo/logos.ts`. Every `.svg` dropped into `Assets/logo/<category>/` is picked up at the next build without any code change. The `LogoName` union type must be updated manually to keep TS autocomplete in sync.
+
+### Categories (folder-driven)
+
+| Category | Folder | Count |
+|---|---|---|
+| `brand` | `Assets/logo/brand/` | 2 |
+| `company` | `Assets/logo/company/` | 18 |
+| `crypto` | `Assets/logo/crypto/` | 10 |
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `name` | `LogoName` | — | Required. Normalized filename (lowercase, non-alphanumeric → `_`) |
+| `size` | `LogoSize` | `'m'` | `'s'` \| `'m'` \| `'l'` — controls height only |
+
+### Size → token mapping
+
+Height is constrained via token; width is `auto` to preserve each logo's natural aspect ratio.
+
+| size | height | `--brand-scale-*` token |
+|---|---|---|
+| `s` | 32px | `--brand-scale-800` |
+| `m` | 40px | `--brand-scale-1000` |
+| `l` | 56px | `--brand-scale-1200` |
+
+### Name normalization
+
+Filename → `LogoName`: lowercase, replace runs of non-alphanumeric characters with `_`, strip leading/trailing `_`.
+
+Examples: `"Monarch logo, Style = Thick.svg"` → `monarch_logo_style_thick` · `"Bili bili Inc.svg"` → `bili_bili_inc` · `"Lotus's.svg"` → `lotus_s`
+
+### Adding a new logo
+
+1. Drop the `.svg` into the correct `Assets/logo/<category>/` folder.
+2. Add its normalized name to the `LogoName` union in `src/components/Logo/logos.ts`.
+3. No other changes — the glob picks it up automatically.

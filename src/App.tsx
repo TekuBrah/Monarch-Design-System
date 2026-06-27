@@ -13,6 +13,7 @@ import { Icon } from './components/Icon'
 import type { IconName } from './components/Icon'
 import { Avatar } from './components/Avatar'
 import type { AvatarSize } from './components/Avatar'
+import { Logo, LOGOS_BY_CATEGORY } from './components/Logo'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -840,6 +841,43 @@ export default function App() {
                     <Avatar size={size} />
                     <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>placeholder</span>
                   </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <hr style={HR} />
+
+          {/* Logo */}
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Logo
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              30 logos auto-registered from Assets/logo/ — full color preserved — no token coloring
+            </p>
+
+            {(['brand', 'company', 'crypto'] as const).map(category => (
+              <div key={category} style={{ marginBottom: '2.5rem' }}>
+                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '1rem' }}>
+                  {category}
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', alignItems: 'center' }}>
+                  {LOGOS_BY_CATEGORY[category].map(({ name }) => (
+                    <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                      <div style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        padding: '0.5rem', borderRadius: 'var(--brand-scale-200)',
+                        background: 'var(--mapped-surface-subtle-default, #f5f5f5)',
+                        minWidth: '3rem',
+                      }}>
+                        <Logo name={name} size="m" />
+                      </div>
+                      <span style={{ fontSize: '0.55rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', maxWidth: '4.5rem', textAlign: 'center', wordBreak: 'break-all' }}>
+                        {name}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}
