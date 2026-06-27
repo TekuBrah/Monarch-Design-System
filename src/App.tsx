@@ -7,6 +7,8 @@ import { Button } from './components/Button'
 import type { ButtonVariant, ButtonAppearance as BtnAppearance } from './components/Button'
 import { ElementWrapper } from './components/ElementWrapper'
 import type { ElementWrapperSize } from './components/ElementWrapper'
+import { IconButton } from './components/IconButton'
+import type { IconButtonSize } from './components/IconButton'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -592,6 +594,85 @@ export default function App() {
                 </div>
               ))}
             </div>
+          </div>
+
+          <hr style={HR} />
+
+          {/* Icon Button */}
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Icon Button
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              3 variants × 2 appearances × 3 sizes — same token matrix as Button — states forced for preview
+            </p>
+
+            {/* Placeholder icon — simple plus cross */}
+            {(() => {
+              const PlaceholderIcon = () => (
+                <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              )
+
+              return (
+                <>
+                  {/* Default appearance — table per size */}
+                  {(['s', 'm', 'l'] as IconButtonSize[]).map(size => (
+                    <div key={size} style={{ marginBottom: '2rem' }}>
+                      <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                        Size {size.toUpperCase()} — appearance: default
+                      </p>
+                      <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
+                        <thead>
+                          <tr>
+                            <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>state</th>
+                            {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(v => (
+                              <th key={v} style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{v}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {([
+                            [undefined,   'default'],
+                            ['hover',     'hover'],
+                            ['pressed',   'pressed'],
+                            ['focus',     'focus'],
+                          ] as const).map(([ps, label]) => (
+                            <tr key={label}>
+                              <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>{label}</td>
+                              {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
+                                <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
+                                  <IconButton variant={variant} size={size} icon={<PlaceholderIcon />} ariaLabel={variant} previewState={ps} />
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                          <tr>
+                            <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>disabled</td>
+                            {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
+                              <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
+                                <IconButton variant={variant} size={size} icon={<PlaceholderIcon />} ariaLabel={variant} disabled />
+                              </td>
+                            ))}
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  ))}
+
+                  {/* Inverse appearance */}
+                  <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                    Appearance: inverse (shown on colored surface)
+                  </p>
+                  <div style={{ background: 'var(--mapped-surface-primary-default)', padding: '1.5rem', borderRadius: 'var(--brand-scale-200)', display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center' }}>
+                    {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
+                      <IconButton key={variant} variant={variant} appearance="inverse" size="m" icon={<PlaceholderIcon />} ariaLabel={variant} />
+                    ))}
+                  </div>
+                </>
+              )
+            })()}
           </div>
 
           <hr style={HR} />

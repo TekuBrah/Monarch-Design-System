@@ -185,3 +185,54 @@ Content is centred via `display:inline-flex; align-items:center; justify-content
 ### Nested instances
 
 None. `children` is a free slot — no sub-component dependency required before building.
+
+---
+
+## Icon Button
+
+**Figma node:** 140:6651 (component set), 140:6652 (M/Primary/Default instance)  
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 148:986 (Buttons frame)
+
+An icon-only action trigger. Shares the full token matrix with Button — same `variant × appearance × state` mapping. Differs only in geometry (square padding, no label) and contains a single icon slot wrapped in `ElementWrapper size="l"`.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `variant` | `ButtonVariant` | `'primary'` | `'primary'` \| `'secondary'` \| `'tertiary'` |
+| `appearance` | `ButtonAppearance` | `'default'` | `'default'` \| `'inverse'` |
+| `size` | `IconButtonSize` | `'m'` | `'s'` \| `'m'` \| `'l'` |
+| `icon` | `ReactNode` | — | The icon content; wrapped in `ElementWrapper size="l"` (24px) |
+| `ariaLabel` | `string` | — | Accessible name — required in production for icon-only buttons |
+| `disabled` | `boolean` | `false` | |
+| `onClick` | `MouseEventHandler` | — | |
+| `previewState` | `'hover' \| 'pressed' \| 'focus'` | — | Showcase-only |
+
+### Geometry tokens
+
+| Property | Token | Value | Notes |
+|---|---|---|---|
+| Border radius | `--brand-scale-200` | 8px | Same as Button |
+| Border width | `--brand-scale-25` | 1px | Same as Button |
+| S padding (all sides) | `--brand-scale-100` | 4px | Square — total 32px with 24px icon |
+| M padding (all sides) | `--brand-scale-200` | 8px | Square — total 40px with 24px icon |
+| L padding (all sides) | `--brand-scale-300` | 12px | Square — total 48px with 24px icon |
+| Icon slot size | `ElementWrapper size="l"` | 24px | `--brand-scale-600` |
+| Focus outline width | `--brand-scale-50` | 2px | Same as Button |
+| Focus outline offset | `--brand-scale-50` | 2px | Same as Button |
+
+### Surface / border / text tokens — identical to Button
+
+See the Button section above for the full token table. The Icon Button uses the same `TOKENS` record (`variant × appearance → { bg, bgHover, bgPressed, bgDisabled, border, borderHover, borderPressed, borderDisabled, text, textHover, textPressed, textDisabled, focusRing }`).
+
+### Shared styling system
+
+Both Button and Icon Button:
+- Use the `.btn` CSS class for base styles + all interaction state rules (`:hover`, `:active`, `:disabled`, `:focus-visible`)
+- Pass tokens via inline CSS custom properties (`--btn-bg`, `--btn-border`, `--btn-text`, etc.)
+- Add a size modifier class for padding: `.btn--{s/m/l}` (Button, h/v split) vs `.btn--icon-{s/m/l}` (Icon Button, square)
+
+### Known Figma gaps / inferences
+
+- **Inverse token assignments**: Inferred from the `interactive-on-color` and `on-color-label` token families — same inference as Button. No direct Figma read on Inverse Icon Button states.
+- **L size not confirmed from Figma**: The L icon button size (12px padding) is observed in the XML but not verified in a Figma Dev Mode inspection.

@@ -1,0 +1,12 @@
+/* IconButton size variants — square uniform padding (no h/v split) */
+.btn--icon-s {
+  padding: var(--brand-scale-100);
+}
+
+.btn--icon-m {
+  padding: var(--brand-scale-200);
+}
+
+.btn--icon-l {
+  padding: var(--brand-scale-300);
+}
