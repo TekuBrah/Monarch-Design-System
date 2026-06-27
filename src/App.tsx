@@ -722,7 +722,7 @@ export default function App() {
                               <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>{label}</td>
                               {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
                                 <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
-                                  <Button variant={variant} size={size} label="Button" leadingIcon={<BtnIcon />} previewState={ps} />
+                                  <Button variant={variant} size={size} label="Button" leadingIcon={<BtnIcon />} trailingIcon={<BtnIcon />} previewState={ps} />
                                 </td>
                               ))}
                             </tr>
@@ -731,7 +731,7 @@ export default function App() {
                             <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>disabled</td>
                             {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
                               <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
-                                <Button variant={variant} size={size} label="Button" leadingIcon={<BtnIcon />} disabled />
+                                <Button variant={variant} size={size} label="Button" leadingIcon={<BtnIcon />} trailingIcon={<BtnIcon />} disabled />
                               </td>
                             ))}
                           </tr>
@@ -751,6 +751,12 @@ export default function App() {
               {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
                 <Button key={variant} variant={variant} appearance="inverse" size="m" label={variant}
                   leadingIcon={
+                    <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <circle cx="12" cy="12" r="4" fill="currentColor" />
+                      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                  }
+                  trailingIcon={
                     <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <circle cx="12" cy="12" r="4" fill="currentColor" />
                       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
