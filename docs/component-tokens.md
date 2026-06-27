@@ -141,3 +141,47 @@ Focus ring (all inverse variants): `--mapped-border-interactive-on-color` at 2px
 - **L size not confirmed**: Geometry (py=12px, px=16px) inferred from the S→M progression. Verify with Figma L-size sublayer if exact spacing matters.
 - **Inverse token assignments**: No Figma call was made on an Inverse variant. Tokens were inferred from the `interactive-on-color` and `on-color-label` families in our mapped layer. Verify with Figma when finalising Inverse behaviour.
 - **Secondary default bg**: `--mapped-surface-primary-default-subtle` is used as the "ghost fill" for Secondary buttons. This token exists and resolves to a very light blue in the mapped layer.
+
+---
+
+## Element Wrapper
+
+**Figma node:** 46:920  
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 46:920  
+
+A square flex container that standardises size and alignment for swappable content (Icon, Avatar, Logo). Has no background, border, or border-radius — it is purely a sizing and centering shell.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `size` | `ElementWrapperSize` | `'l'` | Controls both width and height |
+| `children` | `ReactNode` | — | The swappable content (icon, avatar, logo) |
+
+### Size → token mapping
+
+| size prop | Figma label | px | `--brand-scale-*` token |
+|---|---|---|---|
+| `xs` | `Xs 12` | 12px | `--brand-scale-300` |
+| `s` | `S 16` | 16px | `--brand-scale-400` |
+| `m` | `M 20` | 20px | `--brand-scale-500` |
+| `l` | `L 24` | 24px | `--brand-scale-600` |
+| `xl` | `XL 32` | 32px | `--brand-scale-800` |
+| `xxl` | `XXL 40` | 40px | `--brand-scale-1000` |
+| `xxxl` | `XXXL 56` | 56px | `--brand-scale-1200` |
+
+All 7 sizes map exactly to `--brand-scale-*` tokens — no gaps.
+
+### Geometry
+
+| Property | Token | Value |
+|---|---|---|
+| Width = Height | `--brand-scale-{N}` (varies by size) | 12–56px |
+| Border radius | — | none (always square) |
+| Padding | — | none (container IS the bounds) |
+
+Content is centred via `display:inline-flex; align-items:center; justify-content:center`.
+
+### Nested instances
+
+None. `children` is a free slot — no sub-component dependency required before building.

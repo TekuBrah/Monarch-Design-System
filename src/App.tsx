@@ -5,6 +5,8 @@ import { Badge } from './components/Badge'
 import type { BadgeAppearance } from './components/Badge'
 import { Button } from './components/Button'
 import type { ButtonVariant, ButtonAppearance as BtnAppearance } from './components/Button'
+import { ElementWrapper } from './components/ElementWrapper'
+import type { ElementWrapperSize } from './components/ElementWrapper'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -564,6 +566,32 @@ export default function App() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          <hr style={HR} />
+
+          {/* Element Wrapper */}
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Element Wrapper
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              7 sizes — square centering shell for Icon / Avatar / Logo — tokens only
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+              {(['xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl'] as ElementWrapperSize[]).map(size => (
+                <div key={size} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                  <ElementWrapper size={size}>
+                    {/* placeholder SVG — fills the wrapper */}
+                    <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <rect x="1" y="1" width="22" height="22" rx="3" stroke="var(--mapped-border-primary-default, #046eff)" strokeWidth="1.5" strokeDasharray="4 2" />
+                      <circle cx="12" cy="12" r="3" fill="var(--mapped-surface-primary-default, #046eff)" />
+                    </svg>
+                  </ElementWrapper>
+                  <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>{size}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
           <hr style={HR} />
