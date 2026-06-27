@@ -857,7 +857,7 @@ export default function App() {
               30 logos auto-registered from Assets/logo/ — full color preserved — no token coloring
             </p>
 
-            {(['brand', 'company', 'crypto'] as const).map(category => (
+            {(['brand', 'crypto'] as const).map(category => (
               <div key={category} style={{ marginBottom: '2.5rem' }}>
                 <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '1rem' }}>
                   {category}
