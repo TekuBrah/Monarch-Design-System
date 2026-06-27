@@ -295,3 +295,66 @@ For IconButton: the icon slot always expects `size="l"` (24px) since IconButton 
 ### SVGR setup
 
 `vite-plugin-svgr` transforms `*.svg?react` imports into React components. Configured in `vite.config.ts`. Type declarations come from `/// <reference types="vite-plugin-svgr/client" />` in `src/vite-env.d.ts`.
+
+---
+
+## Avatar
+
+**Figma node:** 102:2756 (Parts frame — Default + Label subsections)
+
+A circular identity element with a three-state fallback chain: photo → initials → placeholder icon.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `size` | `AvatarSize` | `'m'` | `'s'` \| `'m'` \| `'l'` |
+| `src` | `string` | — | Image URL. When present, renders full-bleed photo (highest priority) |
+| `name` | `string` | — | Full name. Derives initials if `initials` not provided (`"Margaret Green"` → `"MG"`) |
+| `initials` | `string` | — | Explicit abbreviation, overrides `name`-derived initials |
+| `alt` | `string` | — | Alt text for the photo `<img>`. Falls back to `name` |
+
+### Fallback chain
+
+`src` → photo state · `initials` or `name` → initials state · neither → placeholder state
+
+### Size → token mapping
+
+| size | px | `--brand-scale-*` token |
+|---|---|---|
+| `s` | 24px | `--brand-scale-600` |
+| `m` | 32px | `--brand-scale-800` |
+| `l` | 40px | `--brand-scale-1000` |
+
+### Shape
+
+`border-radius: 50%` + `overflow: hidden`. Figma uses `--border-radius/round = 512px`; no equivalent exists in our token system. `50%` is used as a CSS geometric primitive (always circular regardless of dimension — not a hardcoded px value).
+
+### State tokens
+
+| State | Surface | Border | Text |
+|---|---|---|---|
+| photo | — (image fills circle) | none | — |
+| initials | `--mapped-surface-primary-default-subtle` | `--brand-scale-25` (1px) solid `--mapped-border-subtlest-default` | `--mapped-text-subtle-default` |
+| placeholder | `--mapped-surface-default-default` | none | — (icon inherits `currentColor`) |
+
+### Typography (initials state)
+
+| size | class | px | weight |
+|---|---|---|---|
+| `s` | `.type-body-caption-semibold` | 12px | 600 |
+| `m` | `.type-body-sm-semibold` | 14px | 600 |
+| `l` | `.type-body-m-semibold` | 16px | 600 |
+
+### Nested instances
+
+- **photo**: raw `<img>` with `object-fit: cover` — no sub-component dependency
+- **initials**: no sub-components
+- **placeholder**: `<Icon name="person" size={size} />` — depends on Icon component
+
+### Known Figma gaps / inferences
+
+- **Border radius**: Figma `--border-radius/round = 512px` has no token equivalent. `border-radius: 50%` used.
+- **Border width**: Figma shows `0.5px` hairline on the initials variant. No `0.5px` token; `--brand-scale-25` (1px) used — same precedent as Button's `border-width/xs` gap.
+- **`--surface/default/default`**: Figma token for placeholder background. Confirmed as `--mapped-surface-default-default` in our mapped layer (resolves to a neutral gray in light mode).
+- **Figma size label inconsistency**: Initials variant labels small size "S 24"; placeholder labels it "S 20" — both render at 24px. Normalised to `s = 24px` in code.

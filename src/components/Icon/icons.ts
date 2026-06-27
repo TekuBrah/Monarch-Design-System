@@ -8,6 +8,7 @@ import ArrowForwardIcon from '@material-design-icons/svg/round/arrow_forward.svg
 import MenuIcon from '@material-design-icons/svg/round/menu.svg?react'
 import MoreVertIcon from '@material-design-icons/svg/round/more_vert.svg?react'
 import InfoIcon from '@material-design-icons/svg/round/info.svg?react'
+import PersonIcon from '@material-design-icons/svg/round/person.svg?react'
 
 export const ICONS = {
   add:           AddIcon,
@@ -20,4 +21,5 @@ export const ICONS = {
   menu:          MenuIcon,
   more_vert:     MoreVertIcon,
   info:          InfoIcon,
+  person:        PersonIcon,
 } as const

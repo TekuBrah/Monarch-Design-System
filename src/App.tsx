@@ -11,6 +11,8 @@ import { IconButton } from './components/IconButton'
 import type { IconButtonSize } from './components/IconButton'
 import { Icon } from './components/Icon'
 import type { IconName } from './components/Icon'
+import { Avatar } from './components/Avatar'
+import type { AvatarSize } from './components/Avatar'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -804,6 +806,44 @@ export default function App() {
               </div>
             )
           })()}
+
+          <hr style={HR} />
+
+          {/* Avatar */}
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Avatar
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              3 states (photo / initials / placeholder) × 3 sizes — tokens only
+            </p>
+
+            {(['l', 'm', 's'] as AvatarSize[]).map(size => (
+              <div key={size} style={{ marginBottom: '2rem' }}>
+                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                  Size {size.toUpperCase()} — {size === 'l' ? '40px' : size === 'm' ? '32px' : '24px'}
+                </p>
+                <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                    <Avatar size={size} src="https://i.pravatar.cc/80?img=47" alt="Sample photo" />
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>photo</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                    <Avatar size={size} name="Margaret Green" />
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>initials (name)</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                    <Avatar size={size} initials="MG" />
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>initials (explicit)</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                    <Avatar size={size} />
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>placeholder</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </>
       )}
 
