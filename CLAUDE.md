@@ -89,6 +89,16 @@ Build the first component (e.g. Button) on top of the token foundation:
 - React + TypeScript. One component per folder: src/components/<Name>/<Name>.tsx + index.ts.
 - Build one component at a time. Show output for review before moving on.
 
+## Component composition / nesting
+- When a Figma component contains an INSTANCE of another component we've already
+  built, import and reuse that real component — never re-implement its markup.
+- If a component nests another that does NOT exist in code yet, STOP and tell me
+  which — do not inline a copy. We build the child first, then compose.
+- Flexible/swappable content (icons, arbitrary children) is exposed as slots/props
+  (ReactNode), not hardcoded inside the parent.
+- When reading a component via MCP, first REPORT which nested component instances
+  it contains, so we can confirm build order before building.
+
 ## Git workflow
 - You may stage and commit locally with clear messages.
 - Do NOT push to the remote, and do NOT create pull requests. I handle all
