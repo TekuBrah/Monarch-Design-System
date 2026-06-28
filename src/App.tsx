@@ -748,59 +748,80 @@ export default function App() {
 
           {/* Icon */}
           {(() => {
-            const ICON_NAMES: IconName[] = ['add', 'close', 'check', 'chevron_right', 'expand_more', 'search', 'arrow_forward', 'menu', 'more_vert', 'info']
-            const PX: Record<string, string> = { s: '16px', m: '20px', l: '24px' }
+            const GROUPS: { label: string; names: IconName[] }[] = [
+              { label: 'Actions', names: ['add', 'remove', 'edit', 'delete', 'close', 'content_copy', 'refresh', 'share', 'download', 'upload', 'open_in_new', 'attach_file'] },
+              { label: 'Navigation', names: ['home', 'menu', 'arrow_back', 'arrow_forward', 'arrow_upward', 'arrow_downward', 'chevron_left', 'chevron_right', 'expand_more', 'expand_less', 'unfold_more'] },
+              { label: 'Search & Controls', names: ['search', 'filter_list', 'sort', 'settings', 'tune', 'more_vert', 'more_horiz'] },
+              { label: 'Status & Feedback', names: ['info', 'warning', 'error', 'check_circle', 'check', 'done', 'cancel', 'help_outline', 'visibility', 'visibility_off'] },
+              { label: 'People & Comms', names: ['person', 'account_circle', 'group', 'login', 'logout', 'notifications', 'mail'] },
+              { label: 'App & Content', names: ['dashboard', 'calendar_today', 'schedule', 'link'] },
+              { label: 'Ratings', names: ['star', 'star_border', 'favorite', 'favorite_border'] },
+              { label: 'Form Controls', names: ['radio_button_unchecked', 'radio_button_checked', 'check_box', 'check_box_outline_blank'] },
+            ]
+            const iconCell = (name: IconName) => (
+              <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}>
+                <Icon name={name} size="m" />
+                <span style={{ fontSize: '0.5rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', maxWidth: '4rem', textAlign: 'center', wordBreak: 'break-all' }}>{name}</span>
+              </div>
+            )
             return (
               <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
                 <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
                   Icon
                 </h1>
                 <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-                  10 starter icons — Material Round — sized via --brand-scale-* — inherits currentColor
+                  59 icons — Material Round — sized via --brand-scale-* — inherits currentColor
                 </p>
 
-                {/* All icons × all sizes */}
-                {(['s', 'm', 'l'] as const).map(size => (
-                  <div key={size} style={{ marginBottom: '2rem' }}>
+                {GROUPS.map(({ label, names }) => (
+                  <div key={label} style={{ marginBottom: '1.75rem' }}>
                     <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-                      Size {size.toUpperCase()} — {PX[size]}
+                      {label}
                     </p>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'flex-end' }}>
-                      {ICON_NAMES.map(name => (
-                        <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                          <Icon name={name} size={size} />
-                          <span style={{ fontSize: '0.55rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', maxWidth: '3.5rem', textAlign: 'center', wordBreak: 'break-all' }}>{name}</span>
-                        </div>
-                      ))}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', alignItems: 'flex-end' }}>
+                      {names.map(iconCell)}
                     </div>
                   </div>
                 ))}
 
+                {/* Size comparison */}
+                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem', marginTop: '0.5rem' }}>
+                  Sizes — s 16px · m 20px · l 24px
+                </p>
+                <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-end', marginBottom: '1.75rem' }}>
+                  {(['s', 'm', 'l'] as const).map(sz => (
+                    <div key={sz} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}>
+                      <Icon name="search" size={sz} />
+                      <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>{sz}</span>
+                    </div>
+                  ))}
+                </div>
+
                 {/* Color inheritance */}
                 <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-                  Color inheritance — icon inherits parent color token
+                  Color inheritance
                 </p>
                 <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
                     <Icon name="search" size="l" />
-                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>body (default)</span>
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>body</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
                     <span style={{ color: 'var(--mapped-text-primary-default)' }}><Icon name="search" size="l" /></span>
-                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>primary blue</span>
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>primary</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
                     <div style={{ background: 'var(--mapped-surface-primary-default)', padding: 'var(--brand-scale-200)', borderRadius: 'var(--brand-scale-200)', color: 'var(--mapped-text-primary-on-color)', display: 'inline-flex' }}>
                       <Icon name="search" size="l" />
                     </div>
-                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>on-color (white)</span>
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>on-color</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                    <span style={{ color: 'var(--mapped-text-error-default-default, #c00)' }}><Icon name="info" size="l" /></span>
+                    <span style={{ color: 'var(--mapped-text-error-default-default, #c00)' }}><Icon name="error" size="l" /></span>
                     <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>error</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                    <span style={{ color: 'var(--mapped-text-success-default-default, #1a7a3a)' }}><Icon name="check" size="l" /></span>
+                    <span style={{ color: 'var(--mapped-text-success-default-default, #1a7a3a)' }}><Icon name="check_circle" size="l" /></span>
                     <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>success</span>
                   </div>
                 </div>
