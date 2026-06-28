@@ -261,22 +261,24 @@ A sized, colour-inheriting wrapper around a single Material Round SVG. Renders `
 | `m` | 20px | `m` | `--brand-scale-500` |
 | `l` | 24px | `l` | `--brand-scale-600` |
 
-### Starter set (10 icons)
+### Bundled set
 
-| `IconName` | File |
-|---|---|
-| `add` | `round/add.svg` |
-| `close` | `round/close.svg` |
-| `check` | `round/check.svg` |
-| `chevron_right` | `round/chevron_right.svg` |
-| `expand_more` | `round/expand_more.svg` |
-| `search` | `round/search.svg` |
-| `arrow_forward` | `round/arrow_forward.svg` |
-| `menu` | `round/menu.svg` |
-| `more_vert` | `round/more_vert.svg` |
-| `info` | `round/info.svg` |
+**96 icons total** — 59 Material Round + 37 Custom. All keys are in `IconName` (derived from `keyof typeof ICONS`).
 
-Only these 10 are bundled. Add new icons by importing in `src/components/Icon/icons.ts` and adding an entry to the `ICONS` const.
+**Material Round (59):** `add`, `remove`, `close`, `check`, `edit`, `delete`, `content_copy`, `search`, `filter_list`, `sort`, `refresh`, `more_vert`, `more_horiz`, `settings`, `tune`, `download`, `upload`, `share`, `arrow_back`, `arrow_forward`, `arrow_upward`, `arrow_downward`, `chevron_left`, `chevron_right`, `expand_more`, `expand_less`, `unfold_more`, `open_in_new`, `info`, `warning`, `error`, `check_circle`, `cancel`, `help_outline`, `visibility`, `visibility_off`, `done`, `person`, `account_circle`, `group`, `logout`, `login`, `notifications`, `mail`, `home`, `menu`, `dashboard`, `calendar_today`, `schedule`, `attach_file`, `link`, `star`, `star_border`, `favorite`, `favorite_border`, `radio_button_unchecked`, `radio_button_checked`, `check_box`, `check_box_outline_blank`
+
+**Custom (37):** `icon_finance`, `icon_bank`, `icon_wallet`, `icon_stocks`, `icon_crypto`, `icon_gold`, `icon_battery_horizontal`, `icon_transfer`, `icon_receive`, `icon_spend`, `icon_buy_and_sell_crypto`, `icon_crypto_transfers`, `icon_grocery`, `icon_grocery_1`, `icon_food`, `icon_car`, `icon_healthcare`, `icon_healthcare_1`, `icon_shopping`, `icon_bills`, `icon_budget`, `icon_duration`, `icon_aiinsights`, `icon_aimage`, `icon_track_spending`, `icon_spending_alert`, `icon_scheduled_payments`, `icon_automatic_savings`, `icon_home`, `icon_more`, `icon_filter01`, `icon_chevron_expand_less`, `icon_chevron_expand_more`, `icon_triangle_up`, `icon_triangle_down`, `icon_pdf`, `icon_monarchacademy`
+
+Add new icons by importing in `src/components/Icon/icons.ts` and adding an entry to the `ICONS` const.
+
+### Custom icon normalization
+
+Source SVGs in `Assets/icons-custom/` had hardcoded `fill="black"` on their path elements, which would override `currentColor` and prevent token-driven recolouring. They were normalized in a one-time rewrite via `scripts/normalize-custom-icons.mjs`:
+
+- `fill="black"` → `fill="currentColor"` on all path/shape elements
+- Files renamed to `lowercase_underscore.svg` convention (spaces and hyphens → `_`) so they can be used as static ES module imports
+
+The `fill="none"` on each SVG's root element is intentionally left untouched. Logo SVGs in `Assets/logo/` were **not touched** — they keep their original fills because logos are full-colour brand assets, not recolourable icons.
 
 ### Color inheritance
 

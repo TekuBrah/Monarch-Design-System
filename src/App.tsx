@@ -758,6 +758,14 @@ export default function App() {
               { label: 'Ratings', names: ['star', 'star_border', 'favorite', 'favorite_border'] },
               { label: 'Form Controls', names: ['radio_button_unchecked', 'radio_button_checked', 'check_box', 'check_box_outline_blank'] },
             ]
+            const CUSTOM_GROUPS: { label: string; names: IconName[] }[] = [
+              { label: 'Finance & Accounts', names: ['icon_finance', 'icon_bank', 'icon_wallet', 'icon_stocks', 'icon_crypto', 'icon_gold', 'icon_battery_horizontal'] },
+              { label: 'Transactions', names: ['icon_transfer', 'icon_receive', 'icon_buy_and_sell_crypto', 'icon_crypto_transfers'] },
+              { label: 'Categories', names: ['icon_grocery', 'icon_grocery_1', 'icon_food', 'icon_car', 'icon_healthcare', 'icon_healthcare_1', 'icon_shopping', 'icon_bills'] },
+              { label: 'Budgeting & Insights', names: ['icon_budget', 'icon_duration', 'icon_aiinsights', 'icon_aimage', 'icon_track_spending', 'icon_spending_alert', 'icon_scheduled_payments', 'icon_automatic_savings'] },
+              { label: 'UI & Navigation', names: ['icon_home', 'icon_more', 'icon_chevron_expand_less', 'icon_chevron_expand_more', 'icon_triangle_up', 'icon_triangle_down'] },
+              { label: 'Other', names: ['icon_pdf', 'icon_monarchacademy'] },
+            ]
             const iconCell = (name: IconName) => (
               <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}>
                 <Icon name={name} size="m" />
@@ -770,7 +778,7 @@ export default function App() {
                   Icon
                 </h1>
                 <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-                  59 icons — Material Round — sized via --brand-scale-* — inherits currentColor
+                  94 icons (59 Material Round + 35 Custom) — sized via --brand-scale-* — inherits currentColor
                 </p>
 
                 {GROUPS.map(({ label, names }) => (
@@ -783,6 +791,33 @@ export default function App() {
                     </div>
                   </div>
                 ))}
+
+                {/* Custom icons */}
+                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--mapped-text-primary-default)', marginBottom: '1rem', marginTop: '0.25rem', borderTop: '1px solid var(--mapped-border-subtlest-default)', paddingTop: '1.5rem' }}>
+                  Custom icons — currentColor normalized
+                </p>
+                {CUSTOM_GROUPS.map(({ label, names }) => (
+                  <div key={label} style={{ marginBottom: '1.75rem' }}>
+                    <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                      {label}
+                    </p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', alignItems: 'flex-end' }}>
+                      {names.map(iconCell)}
+                    </div>
+                  </div>
+                ))}
+
+                {/* currentColor test: custom icon inside a primary button */}
+                <div style={{ marginBottom: '1.75rem' }}>
+                  <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                    currentColor test — custom inside primary button (should be white)
+                  </p>
+                  <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <Button variant="primary" size="m" leadingIcon={<Icon name="icon_wallet" size="m" />}>Wallet</Button>
+                    <Button variant="primary" size="m" leadingIcon={<Icon name="icon_finance" size="m" />}>Finance</Button>
+                    <Button variant="primary" size="m" leadingIcon={<Icon name="icon_transfer" size="m" />}>Transfer</Button>
+                  </div>
+                </div>
 
                 {/* Size comparison */}
                 <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem', marginTop: '0.5rem' }}>
