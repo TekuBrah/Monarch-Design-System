@@ -569,4 +569,356 @@ Form field label with optional required indicator and leading/trailing icon slot
 
 - **Required `*` size differs by size**: In size S, the asterisk is caption (12px) while label text is body-sm (14px). In size M, both share the same body/m font. Preserved as-is from Figma.
 - Figma shows `help_outline` as the default icon; in code the icon slots are ReactNode for flexibility.
-3. No other changes — the glob picks it up automatically.
+
+---
+
+## Toggle
+
+**Figma node:** 59:2721  
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 59:2721
+
+A binary on/off control rendered as a sliding pill track. Uses a hidden native `<input type="checkbox" role="switch">` for semantics; all visual state is driven via CSS sibling combinators.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `size` | `ToggleSize` | `'regular'` | `'regular'` \| `'large'` |
+| `isChecked` | `boolean` | `false` | Controlled; triggers `onChange` |
+| `isDisabled` | `boolean` | `false` | |
+| `onChange` | `(checked: boolean) => void` | — | |
+| `ariaLabel` | `string` | — | Required for icon-only / standalone usage |
+
+### Track × state → token mapping
+
+| state | track background token |
+|---|---|
+| unchecked default | `--mapped-icon-subtlest-subtlest` |
+| unchecked hover | `--mapped-icon-subtlest-subtlest-hover` |
+| checked default | `--mapped-surface-primary-default` |
+| checked hover | `--mapped-surface-primary-default-hover` |
+| disabled (any) | `--mapped-icon-disabled-default` |
+| focus ring | `--mapped-border-primary-default` (2px outline, 2px offset) |
+
+### Dot tokens
+
+| Property | Token | Notes |
+|---|---|---|
+| Background | `--mapped-text-primary-on-color` | Resolves to `#ffffff` in both light and dark |
+| Shadow | `--shadow-subtle` | Depth cue — same as card shadow |
+
+### Geometry tokens
+
+| Property | Token | Resolved value |
+|---|---|---|
+| Track border-radius | `--brand-scale-1800` | 512px → always pill |
+| Dot offset (top/left unchecked) | `--brand-scale-50` | 2px |
+| **Regular** track width | `--brand-scale-800` | 32px |
+| **Regular** track height | `--brand-scale-400` | 16px |
+| **Regular** dot size | `--brand-scale-300` | 12px |
+| **Regular** dot checked left | `calc(--brand-scale-800 - --brand-scale-300 - --brand-scale-50)` | 18px |
+| **Large** track width | `calc(--brand-scale-1100 - --brand-scale-50)` | 46px (no 46px token — pure scale math) |
+| **Large** track height | `--brand-scale-600` | 24px |
+| **Large** dot size | `--brand-scale-500` | 20px |
+| **Large** dot checked left | `--brand-scale-600` | 24px |
+
+### Known Figma inconsistencies
+
+- **Large track width = 46px**: No `--brand-scale-*` token resolves to 46px. Used `calc(var(--brand-scale-1100) - var(--brand-scale-50))` = 48−2 = 46px.
+- **Figma dot is an image asset**: The Figma file shows the dot as a raster image asset. Replaced with pure CSS (`border-radius: 50%`, `--shadow-subtle`).
+- **No `checked-hover` mapped surface token prior to investigation**: Initial build used `--alias-primary-600` directly. Corrected to `--mapped-surface-primary-default-hover` after confirming the mapped token exists and resolves to `alias-primary-500` in dark mode (vs 600 in light mode) — dark-mode behaviour was wrong before the fix.
+
+---
+
+## Progress Stepper
+
+**Figma node:** 275:4076 (Parts), 275:3988 (component)  
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST`
+
+A horizontal series of fixed-width pill bars showing progress through a numbered sequence. Active bars (steps completed + current) render in primary blue; future bars render in neutral gray.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `totalSteps` | `number` | `7` | Number of bars to render |
+| `currentStep` | `number` | `1` | Steps 1 through `currentStep` render as active |
+
+### State → token mapping
+
+| state | token |
+|---|---|
+| Active (completed/current) | `--mapped-icon-primary-default` |
+| Inactive (future) | `--mapped-surface-default-default` |
+
+### Geometry tokens
+
+| Property | Token | Resolved value |
+|---|---|---|
+| Bar width | `--brand-scale-600` | 24px |
+| Bar height | `--brand-scale-100` | 4px |
+| Bar border-radius | `--brand-scale-1800` | 512px → pill |
+| Gap between bars | `--brand-scale-100` | 4px |
+
+### Accessibility
+
+`role="progressbar"` on container with `aria-valuenow`, `aria-valuemin=1`, `aria-valuemax` wired to props.
+
+### Known Figma inconsistencies
+
+None recorded.
+
+---
+
+## Tag
+
+**Figma node:** 105:690  
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST`
+
+A filter/selection pill rendered as a `<button>`. Two appearances (default on white; overlay on dark surfaces) × two sizes. The "selected" state maps to Figma's "Focus" visual (blue fill).
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `label` | `string` | `'Tag'` | Visible text |
+| `appearance` | `TagAppearance` | `'default'` | `'default'` \| `'overlay'` |
+| `size` | `TagSize` | `'M'` | `'M'` \| `'S'` |
+| `isSelected` | `boolean` | `false` | Blue fill — maps to Figma "Focus" state |
+| `isDisabled` | `boolean` | `false` | |
+| `iconBefore` | `ReactNode` | — | Leading icon slot |
+| `iconAfter` | `ReactNode` | — | Trailing icon slot |
+| `onClick` | `MouseEventHandler` | — | |
+
+### Default appearance — state × token mapping
+
+| state | background | border | text/icon |
+|---|---|---|---|
+| default | `transparent` | `transparent` | `--mapped-text-subtle-default` |
+| hover | `--alias-primary-50` | `--mapped-border-primary-default-hover` | `--mapped-text-primary-default-hover` |
+| press | `--alias-primary-100` | `--mapped-border-primary-default-pressed` | `--mapped-text-primary-default-pressed` |
+| selected | `--mapped-surface-primary-default` | `--mapped-surface-primary-default` | `--mapped-text-primary-on-color` |
+| disabled | `transparent` | `--mapped-border-disabled-default` | `--mapped-text-disabled-default` |
+| focus ring | — | `--mapped-border-primary-default` (2px / 2px offset) | — |
+
+### Overlay appearance — state × token mapping
+
+| state | background | text/icon |
+|---|---|---|
+| default | `--mapped-surface-overlay-default` | `--mapped-text-primary-on-color` |
+| hover | `--mapped-surface-overlay-hover` | `--mapped-text-primary-on-color` |
+| press | `--mapped-surface-overlay-label-pressed` | `--mapped-text-primary-on-color` |
+| disabled | `--mapped-surface-overlay-default` (opacity 0.5) | `--mapped-text-primary-on-color` |
+| focus ring | — | `white` (hardcoded — overlay is always on dark surface) |
+
+### Geometry tokens
+
+| Property | Token | Resolved value |
+|---|---|---|
+| Border radius | `--brand-scale-100` | 4px |
+| Size M padding | `--brand-scale-100` (v) `--brand-scale-50` (h) | 4px / 2px |
+| Size S padding | `--brand-scale-50` (all) | 2px |
+| Icon/label gap | `--brand-scale-100` | 4px |
+
+### Typography
+
+| size | class | px |
+|---|---|---|
+| M | `type-body-sm` | 14px regular |
+| S | `type-body-caption` | 12px regular |
+
+### Known Figma inconsistencies
+
+- **Hover/press backgrounds (`alias-primary-50/100`) at alias layer**: No mapped token for subtle hover/press tint backgrounds (`--mapped-surface-primary-default-subtle-hover` resolves to `alias-surface-50`, not `alias-primary-50`). Figma source explicitly uses `color.blue.50` and `color.blue.100`. Alias fallback is intentional and confirmed against Figma; these will not dark-flip.
+- **Overlay focus ring**: Uses hardcoded `white` for the focus outline — overlay context is always dark, so the token `--mapped-text-primary-on-color` (#ffffff) would resolve identically.
+- **FilterChips (148:2279)**: Blocked during build — Figma desktop had wrong file open. Not built; not in this batch.
+
+---
+
+## Icon Object
+
+**Figma node:** 221:20  
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST`
+
+A container that pairs a colored background (circle or square) with an icon child. All 12 solid colors use their brand-400 level; the AI color uses a three-stop gradient.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `color` | `IconObjectColor` | `'gray'` | 12 solid + `'ai'` gradient — see table |
+| `shape` | `IconObjectShape` | `'circle'` | `'circle'` \| `'square'` |
+| `size` | `IconObjectSize` | `'xl'` | `'small'` \| `'medium'` \| `'large'` \| `'xl'` \| `'xxl'` |
+| `children` | `ReactNode` | — | Icon slot; container sets `color: var(--mapped-text-primary-on-color)` so icons inherit white via `currentColor` |
+| `ariaLabel` | `string` | — | When provided, renders `role="img"` |
+
+### Color → token mapping
+
+| color | background token |
+|---|---|
+| `slate` | `--brand-slate-400` |
+| `blue` | `--brand-blue-400` |
+| `gray` | `--brand-gray-400` |
+| `red` | `--brand-red-400` |
+| `orange` | `--brand-orange-400` |
+| `green` | `--brand-green-400` |
+| `teal` | `--brand-teal-400` |
+| `purple` | `--brand-purple-400` |
+| `cyan` | `--brand-cyan-400` |
+| `yellow` | `--brand-yellow-400` |
+| `lime` | `--brand-lime-400` |
+| `violet` | `--brand-violet-400` |
+| `ai` | `linear-gradient(132.61deg, --brand-blue-400 7.662%, --brand-blue-500 27.411%, --brand-violet-500 78.849%)` |
+
+### Size → token mapping
+
+| size | token | resolved px |
+|---|---|---|
+| `small` | `--brand-scale-500` | 20px |
+| `medium` | `--brand-scale-600` | 24px |
+| `large` | `--brand-scale-800` | 32px |
+| `xl` | `--brand-scale-1000` | 40px |
+| `xxl` | `--brand-scale-1200` | 56px |
+
+### Shape → border-radius
+
+| shape | token | value |
+|---|---|---|
+| `circle` | `--brand-scale-1800` | 512px → always circular |
+| `square` | `--brand-scale-200` | 8px |
+
+### Icon color inheritance
+
+Container sets `color: var(--mapped-text-primary-on-color)` (resolves to `#ffffff` in both light and dark). Child `<Icon>` SVGs use `fill="currentColor"` and inherit white.
+
+### Known Figma inconsistencies
+
+- **No mapped token for brand-400 backgrounds**: The 12 solid colors use brand-layer tokens directly. No `--mapped-surface-[color]-default` equivalents exist in the mapped layer for these specific colors/levels.
+- **AI gradient**: Extracted from Figma as `linear-gradient(132.61deg, blue-400 → blue-500 → violet-500)`. Uses brand tokens, not alias or mapped.
+- **`color: white` remaining hardcode**: The container still uses `color: white` to drive icon `currentColor` inheritance. Step 2 fixes were scoped to Toggle/Checkbox/Radio only. This should be replaced with `var(--mapped-text-primary-on-color)` (confirmed #ffffff in both modes) in a follow-up pass.
+
+---
+
+## Checkbox
+
+**Figma node:** 148:2139 (component set), 148:2110 (Parts)  
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST`
+
+A form control with three selection states (unchecked/checked/indeterminate) and error/required/disabled modifiers. Indeterminate state is set via `inputRef.current.indeterminate` in a `useEffect` — HTML does not support a declarative `indeterminate` attribute.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `label` | `string` | `'Label'` | |
+| `size` | `CheckboxSize` | `'medium'` | `'medium'` \| `'large'` |
+| `isChecked` | `boolean` | `false` | |
+| `isIndeterminate` | `boolean` | `false` | Sets `input.indeterminate`; renders dash icon; `aria-checked="mixed"` |
+| `isInvalid` | `boolean` | `false` | Red border + red fill when marked |
+| `isRequired` | `boolean` | `false` | Appends `*` in error color |
+| `isDisabled` | `boolean` | `false` | |
+| `onChange` | `(checked: boolean) => void` | — | |
+| `id` | `string` | — | Forwarded to `<input>` |
+
+### Box × state → token mapping
+
+| state | background | border | icon color |
+|---|---|---|---|
+| unchecked default | `--mapped-surface-page` | `--mapped-border-default-default` | — |
+| unchecked hover | `--mapped-surface-primary-default-subtle-hover` | `--mapped-border-disabled-default` | — |
+| unchecked press | `--mapped-surface-primary-default-subtle-pressed` | `--mapped-border-subtlest-default` | — |
+| checked/indeterminate default | `--mapped-surface-primary-default` | `--mapped-surface-primary-default` | `--mapped-text-primary-on-color` |
+| checked/indeterminate hover | `--mapped-surface-primary-default-hover` | `--mapped-border-primary-default-hover` | `--mapped-text-primary-on-color` |
+| checked/indeterminate press | `--mapped-surface-primary-default-pressed` | `--mapped-border-primary-default-pressed` | `--mapped-text-primary-on-color` |
+| invalid unchecked | `--mapped-surface-page` | `--mapped-border-error-default` | — |
+| invalid checked | `--mapped-surface-error-default` | `--mapped-surface-error-default` | `--mapped-text-primary-on-color` |
+| disabled | `--mapped-surface-page` (opacity 0.5) | `--mapped-border-disabled-default` | — |
+| disabled checked | `--mapped-icon-disabled-default` | `--mapped-icon-disabled-default` | — |
+| focus ring | — | `--mapped-border-primary-default` (2px / 2px offset) | — |
+
+### Required asterisk
+
+`color: --mapped-text-error-default`
+
+### Geometry tokens
+
+| Property | Token | Resolved value |
+|---|---|---|
+| Box-wrap (medium) | `24×24px` — `--brand-scale-600` would be 24px but expressed as literal in CSS |
+| Box-wrap (large) | `32×32px` — `--brand-scale-800` |
+| Visual box | `inset: 25%` inside box-wrap — medium: 12×12px; large: 16×16px |
+| Box border-radius | `--brand-scale-50` | 2px |
+| Label gap | `--brand-scale-100` | 4px |
+
+### Typography
+
+Label: `type-body-sm` (14px regular). Required asterisk: `type-body-caption-semibold` (12px 600).
+
+### Known Figma inconsistencies
+
+- **Figma shows checkmarks/states as image assets**: Pure CSS + inline SVG used instead. SVG paths: checkmark `M1 4L3.5 6.5L9 1` (10×8 viewBox), dash `x1=1 y1=1 x2=9 y2=1` (10×2 viewBox).
+- **Required `*` uses `color.text.danger` (#ae2e24) in Figma**: No matching token in our system. Mapped to `--mapped-text-error-default` as closest semantic equivalent. Confirmed inconsistency.
+- **Initial build used alias fallbacks for hover/press-checked**: `--alias-primary-600/700` used directly, bypassing `--mapped-surface-primary-default-hover/pressed`. Fixed after token investigation confirmed mapped tokens exist and resolve correctly in both light and dark mode.
+
+---
+
+## Radio
+
+**Figma node:** 149:9752 (component set), 149:9736 (Parts)  
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST`
+
+A single radio button. Intended to be used in groups via shared `name` attribute on the native `<input>`. Visual structure: hidden native input → 24px icon-wrap → 14×14px circle → 6px inner dot (when checked).
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `label` | `string` | `'Label'` | |
+| `isChecked` | `boolean` | `false` | Controlled |
+| `isInvalid` | `boolean` | `false` | Red border |
+| `isRequired` | `boolean` | `false` | Appends `*` in error color |
+| `isDisabled` | `boolean` | `false` | |
+| `onChange` | `() => void` | — | |
+| `name` | `string` | — | Groups radios for mutual exclusion |
+| `value` | `string` | — | Form value |
+| `id` | `string` | — | |
+
+### Circle × state → token mapping
+
+| state | background | border | dot |
+|---|---|---|---|
+| unchecked default | `--mapped-surface-page` | `--mapped-border-subtlest-default` | — |
+| unchecked hover | `--mapped-surface-primary-default-subtle-hover` | `--mapped-border-subtlest-default` | — |
+| unchecked press | `--mapped-surface-primary-default-subtle-pressed` | `--mapped-border-subtlest-default` | — |
+| checked default | `--mapped-surface-primary-default` | `--mapped-surface-primary-default` | `--mapped-text-primary-on-color` |
+| checked hover | `--mapped-surface-primary-default-hover` | `--mapped-border-primary-default-hover` | `--mapped-text-primary-on-color` |
+| checked press | `--mapped-surface-primary-default-pressed` | `--mapped-border-primary-default-pressed` | `--mapped-text-primary-on-color` |
+| invalid unchecked | `--mapped-surface-page` | `--mapped-border-error-default` | — |
+| invalid checked | `--mapped-surface-error-default` | `--mapped-surface-error-default` | `--mapped-text-primary-on-color` |
+| disabled | `--mapped-surface-disabled-default` | `--mapped-border-disabled-default` | — |
+| disabled checked | `--mapped-icon-disabled-default` | `--mapped-icon-disabled-default` | — |
+| focus ring | — | `--mapped-border-primary-default` (2px / 2px offset, radius: `--brand-scale-1800`) | — |
+
+### Required asterisk
+
+`color: --mapped-text-error-default`
+
+### Geometry tokens
+
+| Property | Token | Resolved value |
+|---|---|---|
+| Icon-wrap size | `24×24px` (explicit) | — |
+| Circle size | `14×14px` (explicit) | — |
+| Circle border-radius | `--brand-scale-1800` | 512px → always round |
+| Inner dot size | `6×6px` (explicit) | — |
+| Label gap | `--brand-scale-100` | 4px |
+
+### Typography
+
+Label: `type-body-sm` (14px regular). Required asterisk: `type-body-caption-semibold` (12px 600).
+
+### Known Figma inconsistencies
+
+- **Circle and dot sizes (14px, 6px) have no exact token**: `--brand-scale-300 = 12px`, `--brand-scale-400 = 16px` — 14px falls between them. Similarly 6px has no token. Sizes set as explicit pixel values.
+- **Required `*` color**: Same as Checkbox — Figma `color.text.danger` (#ae2e24) has no token match; `--mapped-text-error-default` used.
+- **Initial build used alias fallbacks for hover/press-checked**: `--alias-primary-600/700` used directly, same class of bug as Checkbox. Fixed after token investigation.

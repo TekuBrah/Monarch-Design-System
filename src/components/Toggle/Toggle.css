@@ -49,7 +49,7 @@
   position: absolute;
   top: var(--brand-scale-50); /* 2px */
   left: var(--brand-scale-50); /* 2px — unchecked position */
-  background: white;
+  background: var(--mapped-text-primary-on-color);
   border-radius: 50%;
   box-shadow: var(--shadow-subtle);
   transition: left 0.15s ease;
@@ -89,9 +89,8 @@
 }
 
 /* === Hover (checked) === */
-/* No direct mapped token — falls back to alias layer (--alias-primary-600 = hover-primary-blue) */
 .toggle:hover:not(.toggle--disabled) .toggle__input:checked + .toggle__track {
-  background: var(--alias-primary-600);
+  background: var(--mapped-surface-primary-default-hover);
 }
 
 /* === Disabled === */

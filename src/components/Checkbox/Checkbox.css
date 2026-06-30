@@ -50,7 +50,7 @@
 .checkbox__box--marked {
   background: var(--mapped-surface-primary-default);
   border-color: var(--mapped-surface-primary-default);
-  color: white; /* checkmark/dash color via currentColor */
+  color: var(--mapped-text-primary-on-color); /* checkmark/dash color via currentColor */
 }
 
 /* === Invalid === */
@@ -78,14 +78,20 @@
 
 /* === Hover (checked/indeterminate) === */
 .checkbox:hover:not(.checkbox--disabled) .checkbox__box--marked {
-  background: var(--alias-primary-600); /* hover primary — no mapped token, fallback to alias */
-  border-color: var(--alias-primary-600);
+  background: var(--mapped-surface-primary-default-hover);
+  border-color: var(--mapped-border-primary-default-hover);
 }
 
-/* === Active / press === */
+/* === Active / press (unchecked) === */
 .checkbox:active:not(.checkbox--disabled) .checkbox__box:not(.checkbox__box--marked) {
-  background: var(--alias-primary-700); /* press: very dark blue fill on unchecked */
+  background: var(--mapped-surface-primary-default-subtle-pressed);
   border-color: var(--mapped-border-subtlest-default);
+}
+
+/* === Active / press (checked/indeterminate) === */
+.checkbox:active:not(.checkbox--disabled) .checkbox__box--marked {
+  background: var(--mapped-surface-primary-default-pressed);
+  border-color: var(--mapped-border-primary-default-pressed);
 }
 
 /* === Focus ring (via :focus-visible on hidden input + adjacent sibling) === */

@@ -59,7 +59,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: white;
+  background: var(--mapped-text-primary-on-color);
   flex-shrink: 0;
 }
 
@@ -81,14 +81,20 @@
 
 /* === Hover (checked) === */
 .radio:hover:not(.radio--disabled) .radio__circle--checked {
-  background: var(--alias-primary-600); /* no direct mapped hover token — fallback alias */
-  border-color: var(--alias-primary-600);
+  background: var(--mapped-surface-primary-default-hover);
+  border-color: var(--mapped-border-primary-default-hover);
 }
 
-/* === Active / press === */
+/* === Active / press (unchecked) === */
 .radio:active:not(.radio--disabled) .radio__circle:not(.radio__circle--checked) {
-  background: var(--alias-primary-700);
+  background: var(--mapped-surface-primary-default-subtle-pressed);
   border-color: var(--mapped-border-subtlest-default);
+}
+
+/* === Active / press (checked) === */
+.radio:active:not(.radio--disabled) .radio__circle--checked {
+  background: var(--mapped-surface-primary-default-pressed);
+  border-color: var(--mapped-border-primary-default-pressed);
 }
 
 /* === Focus ring === */
