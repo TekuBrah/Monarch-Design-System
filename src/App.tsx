@@ -14,6 +14,11 @@ import type { IconName } from './components/Icon'
 import { Avatar } from './components/Avatar'
 import type { AvatarSize } from './components/Avatar'
 import { Logo, LOGOS_BY_CATEGORY } from './components/Logo'
+import { Blanket } from './components/Blanket'
+import { Divider } from './components/Divider'
+import { Chips } from './components/Chips'
+import type { ChipsAppearance } from './components/Chips'
+import { Label } from './components/Label'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -373,6 +378,41 @@ for (const [name, group] of Object.entries(brand) as [string, Record<string, unk
 }
 
 const aliasGroups = Object.entries(alias) as [string, Record<string, string>][]
+
+// ── Blanket demo (owns its own toggle state) ──────────────────────────────────
+
+function BlanketDemo() {
+  const [open, setOpen] = useState(false)
+  return (
+    <div>
+      <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '1rem' }}>
+        Click to show the fixed overlay — click again or press the button to close.
+      </p>
+      <Button variant="secondary" size="m" label="Show Blanket" onClick={() => setOpen(true)} />
+      {open && (
+        <>
+          <Blanket onClick={() => setOpen(false)} />
+          <div style={{
+            position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+            background: 'var(--mapped-surface-elevation-default)', borderRadius: 'var(--brand-scale-200)',
+            padding: '2rem', zIndex: 101, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
+          }}>
+            <span className="type-body-m-semibold" style={{ color: 'var(--mapped-text-default-default)' }}>
+              Blanket is visible
+            </span>
+            <Button variant="primary" size="s" label="Close" onClick={() => setOpen(false)} />
+          </div>
+        </>
+      )}
+      <div style={{ marginTop: '1.5rem', padding: '1rem', borderRadius: 'var(--brand-scale-200)', background: 'var(--mapped-surface-subtle-default)' }}>
+        <span style={{ fontSize: '0.7rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtle-default)' }}>
+          Token: --mapped-blanket-default-default — light #091e427d · dark #10121499
+        </span>
+      </div>
+    </div>
+  )
+}
 
 // ── App ───────────────────────────────────────────────────────────────────────
 
@@ -937,6 +977,109 @@ export default function App() {
                 </div>
               </div>
             ))}
+          </div>
+
+          <hr style={HR} />
+
+          {/* Blanket */}
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Blanket
+            </h1>
+            <BlanketDemo />
+          </div>
+
+          <hr style={HR} />
+
+          {/* Divider */}
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Divider
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              2 weights × 2 orientations — token: --mapped-border-subtle-default
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '400px' }}>
+              <div>
+                <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>horizontal weight=1</span>
+                <div style={{ marginTop: '0.5rem' }}><Divider weight={1} orientation="horizontal" /></div>
+              </div>
+              <div>
+                <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>horizontal weight=2</span>
+                <div style={{ marginTop: '0.5rem' }}><Divider weight={2} orientation="horizontal" /></div>
+              </div>
+              <div style={{ display: 'flex', gap: '2rem', alignItems: 'stretch', height: '48px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+                  <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>vertical w=1</span>
+                  <Divider weight={1} orientation="vertical" />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+                  <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>vertical w=2</span>
+                  <Divider weight={2} orientation="vertical" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr style={HR} />
+
+          {/* Chips */}
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Chips
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              6 appearances × 2 bold states — lozenge / status badge — always shows done icon
+            </p>
+            <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>appearance</th>
+                  <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>subtle (isBold=false)</th>
+                  <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>bold (isBold=true)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(['default', 'inprogress', 'moved', 'new', 'removed', 'success'] as ChipsAppearance[]).map(ap => (
+                  <tr key={ap}>
+                    <td style={{ padding: '0.5rem 1.5rem 0.5rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>{ap}</td>
+                    <td style={{ padding: '0.5rem 1.5rem 0.5rem 0' }}><Chips appearance={ap} isBold={false} label={ap} /></td>
+                    <td style={{ padding: '0.5rem 1.5rem 0.5rem 0' }}><Chips appearance={ap} isBold={true} label={ap} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <hr style={HR} />
+
+          {/* Label */}
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Label
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              2 sizes × optional required asterisk × optional leading/trailing icons
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              {(['M', 'S'] as const).map(size => (
+                <div key={size} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>size={size}</span>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'center' }}>
+                    <Label label="Label" size={size} />
+                    <Label label="Required" size={size} isRequired />
+                    <Label label="With icons" size={size}
+                      iconBefore={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
+                      iconAfter={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
+                    />
+                    <Label label="Required + icons" size={size} isRequired
+                      iconBefore={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
+                      iconAfter={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </>
       )}

@@ -411,4 +411,162 @@ Examples: `"Monarch logo, Style = Thick.svg"` → `monarch_logo_style_thick` · 
 
 1. Drop the `.svg` into the correct `Assets/logo/<category>/` folder.
 2. Add its normalized name to the `LogoName` union in `src/components/Logo/logos.ts`.
+
+---
+
+## Blanket
+
+**Figma node:** 158:3308  
+**Source frame:** node 155:250
+
+Full-screen fixed overlay used to visually separate modal/drawer content from the page behind it. Clicking the blanket typically closes the overlaying element.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `onClick` | `MouseEventHandler<HTMLDivElement>` | — | Close handler for clicking outside the modal |
+
+### Token mapping
+
+| Property | Token | Notes |
+|---|---|---|
+| Background | `--mapped-blanket-default-default` | Semi-transparent dark fill — light: `#091e427d`, dark: `#10121499` |
+| z-index | `100` (hardcoded) | Above page content, below modal content |
+
+### Geometry
+
+| Property | Value |
+|---|---|
+| Position | `fixed; inset: 0` |
+
+### Known Figma inconsistencies
+
+- Figma shows fixed pixel dimensions (409×428) — these are artboard demo sizes; real Blanket is always full-screen.
+
+---
+
+## Divider
+
+**Figma node:** 191:13048 (2px), 191:13653 (1px)  
+**Source frame:** node 191:12980 (Parts frame)
+
+A visual separator line. Figma specifies a vertical orientation only; horizontal is added as a standard extension.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `weight` | `1 \| 2` | `1` | Line thickness in px |
+| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Figma only specifies vertical; horizontal added for standard use |
+
+### Token mapping
+
+| Property | Token |
+|---|---|
+| Color | `--mapped-border-subtle-default` |
+| Weight 1 | `--brand-scale-25` (1px) |
+| Weight 2 | `--brand-scale-50` (2px) |
+
+### Known Figma inconsistencies
+
+- Figma Parts frame shows only vertical dividers (width × height: 5×47px, 6×47px). Horizontal orientation is a standard extension not in Figma source — marked as inferred.
+- Figma wrapper has 2px horizontal padding (`--scale/50`) around the line; omitted in code since it's demo scaffolding.
+
+---
+
+## Chips
+
+**Figma node:** 105:321–105:347  
+**Source frame:** node 105:101
+
+Status lozenge (Atlassian Lozenge pattern). Always shows a `done` checkmark icon; icon inherits `currentColor` from the container.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `appearance` | `ChipsAppearance` | `'default'` | See table below |
+| `isBold` | `boolean` | `false` | `false` = subtle tinted fill; `true` = solid saturated fill with white text |
+| `label` | `string` | `'LABEL'` | Visible text |
+
+### Appearance × Bold → token mapping
+
+| appearance | isBold | Background token | Text/icon token |
+|---|---|---|---|
+| `default` | false | `--alias-surface-100` | `--mapped-text-subtle-default` |
+| `default` | true | `--alias-neutral-800` | `--mapped-text-primary-on-color` |
+| `inprogress` | false | `--alias-primary-100` | `--mapped-text-primary-default-hover` |
+| `inprogress` | true | `--mapped-surface-primary-default` | `--mapped-text-primary-on-color` |
+| `moved` | false | `--alias-warning-100` | `--mapped-text-warning-default-hover` |
+| `moved` | true | `--mapped-surface-warning-default` | `--mapped-text-warning-on-color` |
+| `new` | false | `--alias-interactive-100` | `--mapped-text-interactive-default-hover` |
+| `new` | true | `--mapped-surface-interactive-default` | `--mapped-text-interactive-on-color` |
+| `removed` | false | `--alias-error-100` | `--mapped-text-error-default-hover` |
+| `removed` | true | `--mapped-surface-error-default` | `--mapped-text-error-on-color` |
+| `success` | false | `--alias-success-100` | `--mapped-text-success-default-hover` |
+| `success` | true | `--alias-success-400` | `--mapped-text-success-on-color` |
+
+### Geometry tokens
+
+| Property | Token | Value |
+|---|---|---|
+| Gap (icon→text) | `--brand-scale-50` | 2px |
+| Padding (horizontal) | `--brand-scale-100` | 4px |
+| Border radius | `--brand-scale-200` | 8px |
+
+### Typography
+
+`.type-body-caption-semibold` — Poppins SemiBold 12px
+
+### Known Figma inconsistencies
+
+- **Subtle background tokens at alias layer only**: `--alias-surface-100`, `--alias-neutral-800`, `--alias-primary-100`, `--alias-warning-100`, `--alias-interactive-100`, `--alias-error-100`, `--alias-success-100` are alias-layer tokens with no mapped equivalent and **no dark-mode flip**. These will render the same color in both themes. (Confirmed from Figma source — only light-mode values specified.)
+- **success bold uses green/400**: Figma maps success bold background to `--green/400` (`--alias-success-400`), not green/500. Only level in the system that uses a 400 shade for a bold background. Preserved as-is.
+- Figma component description says `🧬 <Lozenge appearance="default">Label</Lozenge>` — named "Chips" in our system to match the Figma frame name.
+
+---
+
+## Label
+
+**Figma node:** 39:145–39:163  
+**Source frame:** node 73:2778
+
+Form field label with optional required indicator and leading/trailing icon slots.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `label` | `string` | `'Label'` | Visible text |
+| `size` | `'M' \| 'S'` | `'S'` | M = 16px / S = 14px body |
+| `isRequired` | `boolean` | `false` | Shows `*` in error color after label text |
+| `iconBefore` | `ReactNode` | — | Leading icon slot (Figma uses `help_outline`) |
+| `iconAfter` | `ReactNode` | — | Trailing icon slot (Figma uses `help_outline`) |
+
+### Token mapping
+
+| Element | Token |
+|---|---|
+| Label text | `--mapped-text-default-default` |
+| Required `*` | `--mapped-text-error-default` |
+| Icon color | `--mapped-icon-default-default` |
+
+### Typography
+
+| Size | Label class | Required `*` class |
+|---|---|---|
+| M | `type-body-m-semibold` (16px) | `type-body-m-semibold` (same size) |
+| S | `type-body-sm-semibold` (14px) | `type-body-caption-semibold` (12px — smaller) |
+
+### Geometry tokens
+
+| Property | Token | Value |
+|---|---|---|
+| Gap between elements | `--brand-scale-100` | 4px |
+
+### Known Figma inconsistencies
+
+- **Required `*` size differs by size**: In size S, the asterisk is caption (12px) while label text is body-sm (14px). In size M, both share the same body/m font. Preserved as-is from Figma.
+- Figma shows `help_outline` as the default icon; in code the icon slots are ReactNode for flexibility.
 3. No other changes — the glob picks it up automatically.

@@ -1,0 +1,22 @@
+.divider {
+  background: var(--mapped-border-subtle-default);
+  flex-shrink: 0;
+}
+
+.divider--horizontal {
+  width: 100%;
+  height: var(--brand-scale-25);
+}
+
+.divider--horizontal.divider--w2 {
+  height: var(--brand-scale-50);
+}
+
+.divider--vertical {
+  align-self: stretch;
+  width: var(--brand-scale-25);
+}
+
+.divider--vertical.divider--w2 {
+  width: var(--brand-scale-50);
+}

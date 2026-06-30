@@ -1,0 +1,23 @@
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--brand-scale-100);
+}
+
+.label__text {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--brand-scale-100);
+  color: var(--mapped-text-default-default);
+}
+
+.label__required {
+  color: var(--mapped-text-error-default);
+}
+
+.label__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mapped-icon-default-default);
+}

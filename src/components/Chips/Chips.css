@@ -1,0 +1,67 @@
+.chips {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--brand-scale-50);
+  padding: 0 var(--brand-scale-100);
+  border-radius: var(--brand-scale-200);
+}
+
+/* ── default ────────────────────────────────────────────── */
+.chips--default.chips--subtle {
+  background: var(--alias-surface-100);
+  color: var(--mapped-text-subtle-default);
+}
+.chips--default.chips--bold {
+  background: var(--alias-neutral-800);
+  color: var(--mapped-text-primary-on-color);
+}
+
+/* ── inprogress (blue/primary) ──────────────────────────── */
+.chips--inprogress.chips--subtle {
+  background: var(--alias-primary-100);
+  color: var(--mapped-text-primary-default-hover);
+}
+.chips--inprogress.chips--bold {
+  background: var(--mapped-surface-primary-default);
+  color: var(--mapped-text-primary-on-color);
+}
+
+/* ── moved (orange/warning) ─────────────────────────────── */
+.chips--moved.chips--subtle {
+  background: var(--alias-warning-100);
+  color: var(--mapped-text-warning-default-hover);
+}
+.chips--moved.chips--bold {
+  background: var(--mapped-surface-warning-default);
+  color: var(--mapped-text-warning-on-color);
+}
+
+/* ── new (purple/interactive) ───────────────────────────── */
+.chips--new.chips--subtle {
+  background: var(--alias-interactive-100);
+  color: var(--mapped-text-interactive-default-hover);
+}
+.chips--new.chips--bold {
+  background: var(--mapped-surface-interactive-default);
+  color: var(--mapped-text-interactive-on-color);
+}
+
+/* ── removed (red/error) ────────────────────────────────── */
+.chips--removed.chips--subtle {
+  background: var(--alias-error-100);
+  color: var(--mapped-text-error-default-hover);
+}
+.chips--removed.chips--bold {
+  background: var(--mapped-surface-error-default);
+  color: var(--mapped-text-error-on-color);
+}
+
+/* ── success (green) ────────────────────────────────────── */
+.chips--success.chips--subtle {
+  background: var(--alias-success-100);
+  color: var(--mapped-text-success-default-hover);
+}
+.chips--success.chips--bold {
+  background: var(--alias-success-400);
+  color: var(--mapped-text-success-on-color);
+}
