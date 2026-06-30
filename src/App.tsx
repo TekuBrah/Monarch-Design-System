@@ -28,6 +28,7 @@ import type { IconObjectColor, IconObjectSize } from './components/IconObject'
 import { Checkbox } from './components/Checkbox'
 import { Radio } from './components/Radio'
 import { Tab } from './components/Tab'
+import { Tabs } from './components/Tabs'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -430,6 +431,7 @@ const HR: React.CSSProperties = { border: 'none', borderTop: '2px solid rgba(128
 export default function App() {
   const { dark, toggle } = useTheme()
   const [tab, setTab] = useState<'foundations' | 'components'>('components')
+  const [tabsSelected, setTabsSelected] = useState('overview')
 
   const tabBtn = (id: typeof tab, label: string) => (
     <button
@@ -1237,6 +1239,36 @@ export default function App() {
               <Radio label="Required" isRequired />
               <Radio label="Disabled" isDisabled />
               <Radio label="Checked + disabled" isChecked isDisabled />
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Tabs ───────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
+            <h2 style={{ marginBottom: '0.25rem' }}>Tabs</h2>
+            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+              Controlled wrapper composing Tab instances — flex container, no tokens of its own
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ padding: '0.5rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem', width: 'fit-content' }}>
+                <Tabs
+                  tabs={[
+                    { id: 'overview', label: 'Overview' },
+                    { id: 'activity', label: 'Activity' },
+                    { id: 'settings', label: 'Settings' },
+                    { id: 'members', label: 'Members' },
+                  ]}
+                  selectedId={tabsSelected}
+                  onChange={setTabsSelected}
+                  ariaLabel="Section navigation"
+                />
+              </div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)' }}>
+                Selected: <strong>{tabsSelected}</strong> — click tabs above to switch
+              </div>
             </div>
           </div>
         </>

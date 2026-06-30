@@ -977,3 +977,42 @@ Focus ring: `--mapped-border-primary-default`, 2px outline, 0 offset, `border-ra
 - **`color.border.selected` (#0c66e4) missing from token source** ⚠️: Figma uses this Atlassian token for the underline on `default + isSelected`. No equivalent exists in our mapped layer (nearest blues: `--brand-blue-500 = #046eff`, `--brand-blue-600 = #0358cc`). `--mapped-border-primary-default` (#046eff) used as fallback. Fix requires adding `color.border.selected` to Figma Variables → Token Studio sync.
 - **`Snackbar / Text (Paragraph)` in Parts frame (110:4145)**: An annotation/example element with Figma description "This should be replaced by your own slot component, this is just an example." Not a component dependency — not built.
 - **Node 149:9246 is the Parts documentation frame**, not the Tab component itself. The actual component is node 67:1987.
+
+---
+
+## Tabs
+
+**Figma node:** 70:1995 (`Tabs`)
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 149:9124 (Components documentation frame)
+
+A controlled wrapper that composes multiple `Tab` instances inside a `role="tablist"` container. All visual tokens live in the child `Tab` component — `Tabs` itself has no surface, border, shadow, or typography tokens of its own.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `tabs` | `TabItem[]` | — | Array of `{ id: string; label: string }` |
+| `selectedId` | `string` | — | Controlled selected tab ID |
+| `onChange` | `(id: string) => void` | — | Called on tab click |
+| `ariaLabel` | `string` | — | `aria-label` on the `role="tablist"` div |
+
+`TabItem` type: `{ id: string; label: string }`
+
+### Nested components
+
+- **`Tab`** (67:1987) — imported from `../Tab`. Each `TabItem` maps to one `<Tab>` with `isSelected`, `ariaControls`, and `onClick` wired.
+
+### Token mapping
+
+No tokens consumed at the Tabs level. Container CSS:
+
+```css
+.tabs { display: flex; align-items: center; }
+```
+
+All token usage is delegated to `Tab`.
+
+### Known Figma inconsistencies
+
+- **Figma node 149:9124 is a Components documentation frame** containing a section header, label, and a single `Tabs` instance (70:1995) — the actual composable component. All annotation scaffolding (purple header, "Tab" label chip) is irrelevant to the code output.
+- **Figma renders 4 hardcoded `Tab` children** in the Parts frame. In code, Tabs is data-driven via the `tabs` prop array.
