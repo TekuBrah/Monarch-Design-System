@@ -5,7 +5,7 @@
   justify-content: center;
   flex-shrink: 0;
   overflow: clip;
-  color: white; /* children (Icon) inherit this via currentColor */
+  color: var(--mapped-text-primary-on-color); /* drives child icon glyph via currentColor; resolves #fff in both modes */
 }
 
 /* === Shape === */
