@@ -922,3 +922,58 @@ Label: `type-body-sm` (14px regular). Required asterisk: `type-body-caption-semi
 - **Circle and dot sizes (14px, 6px) have no exact token**: `--brand-scale-300 = 12px`, `--brand-scale-400 = 16px` — 14px falls between them. Similarly 6px has no token. Sizes set as explicit pixel values.
 - **Required `*` color**: Same as Checkbox — Figma `color.text.danger` (#ae2e24) has no token match; `--mapped-text-error-default` used.
 - **Initial build used alias fallbacks for hover/press-checked**: `--alias-primary-600/700` used directly, same class of bug as Checkbox. Fixed after token investigation.
+
+---
+
+## Tab
+
+**Figma node:** 67:1987 (`Code parts / <Tab>`)
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 149:9246 (Parts documentation frame)
+
+A single interactive tab unit. Intended to be composed inside a `Tabs` container with `role="tablist"`. Draws its label text directly — does not compose the Label component. No Icon or Badge instances.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `label` | `string` | `'Tab'` | Visible text |
+| `isSelected` | `boolean` | `false` | Controlled by parent Tabs |
+| `onClick` | `MouseEventHandler` | — | |
+| `previewState` | `'hover' \| 'press' \| 'focus'` | — | Showcase-only: forces a visual state |
+| `ariaControls` | `string` | — | ID of the controlled tab panel |
+| `id` | `string` | — | Forwarded to `<button>` |
+
+### State × token mapping
+
+| state | isSelected | background | text token | underline | shadow |
+|---|---|---|---|---|---|
+| default | false | `transparent` | `--mapped-text-subtlest-subtlest` | — | — |
+| default | true | `--mapped-surface-primary-default-subtle` | `--mapped-text-default-default` | `--mapped-border-primary-default` ⚠️ | `--shadow-subtlest` |
+| hover | false | `--mapped-surface-primary-default-subtle-hover` | `--mapped-text-subtle-hover` | — | `--shadow-subtlest` |
+| press | false | `transparent` | `--mapped-text-subtle-subtle-pressed` | — | — |
+| focus | false | `--mapped-surface-primary-default-subtle` | `--mapped-text-subtle-subtle-pressed` | — | focus ring |
+| focus | true | `--mapped-surface-primary-default-subtle` | `--mapped-text-default-default` | `--mapped-border-primary-default` | focus ring |
+
+Focus ring: `--mapped-border-primary-default`, 2px outline, 0 offset, `border-radius: --brand-scale-300` (10px = Figma `border-radius/lg`)
+
+### Geometry tokens
+
+| Property | Token | Resolved value |
+|---|---|---|
+| Padding H | `--brand-scale-400` | 16px |
+| Padding V | `--brand-scale-200` | 8px |
+| Container border-radius | `--brand-scale-200` | 8px |
+| Underline height | `--brand-scale-50` | 2px |
+| Underline inset (left/right) | `--brand-scale-200` | 8px |
+| Underline bottom offset | `--brand-scale-100` | 4px |
+| Underline border-radius | `--brand-scale-50` | 2px |
+
+### Typography
+
+`.type-body-caption-semibold` — Poppins 600 / 12px
+
+### Known Figma inconsistencies
+
+- **`color.border.selected` (#0c66e4) missing from token source** ⚠️: Figma uses this Atlassian token for the underline on `default + isSelected`. No equivalent exists in our mapped layer (nearest blues: `--brand-blue-500 = #046eff`, `--brand-blue-600 = #0358cc`). `--mapped-border-primary-default` (#046eff) used as fallback. Fix requires adding `color.border.selected` to Figma Variables → Token Studio sync.
+- **`Snackbar / Text (Paragraph)` in Parts frame (110:4145)**: An annotation/example element with Figma description "This should be replaced by your own slot component, this is just an example." Not a component dependency — not built.
+- **Node 149:9246 is the Parts documentation frame**, not the Tab component itself. The actual component is node 67:1987.

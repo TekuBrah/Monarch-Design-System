@@ -27,6 +27,7 @@ import { IconObject } from './components/IconObject'
 import type { IconObjectColor, IconObjectSize } from './components/IconObject'
 import { Checkbox } from './components/Checkbox'
 import { Radio } from './components/Radio'
+import { Tab } from './components/Tab'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -1236,6 +1237,40 @@ export default function App() {
               <Radio label="Required" isRequired />
               <Radio label="Disabled" isDisabled />
               <Radio label="Checked + disabled" isChecked isDisabled />
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Tab ────────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
+            <h2 style={{ marginBottom: '0.25rem' }}>Tab</h2>
+            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+              2 selection states × 4 interaction states — type-body-caption-semibold — tokens: --mapped-surface-primary-default-subtle, --mapped-border-primary-default
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>State matrix</div>
+                <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center', flexWrap: 'wrap', padding: '0.5rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem' }}>
+                  <Tab label="Default" />
+                  <Tab label="Selected" isSelected />
+                  <Tab label="Hover" previewState="hover" />
+                  <Tab label="Press" previewState="press" />
+                  <Tab label="Focus" previewState="focus" />
+                  <Tab label="Focus+Sel" isSelected previewState="focus" />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Example group (Overview selected)</div>
+                <div role="tablist" style={{ display: 'flex', gap: '0', padding: '0.25rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem', width: 'fit-content' }}>
+                  <Tab label="Overview" isSelected />
+                  <Tab label="Activity" />
+                  <Tab label="Settings" />
+                  <Tab label="Members" />
+                </div>
+              </div>
             </div>
           </div>
         </>

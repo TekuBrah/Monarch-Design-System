@@ -1,0 +1,90 @@
+/* === Base === */
+.tab {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--brand-scale-200) var(--brand-scale-400); /* 8px 16px */
+  border-radius: var(--brand-scale-200); /* 8px */
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s ease;
+}
+
+/* === Default label (unselected) === */
+.tab .tab__label {
+  color: var(--mapped-text-subtlest-subtlest);
+  position: relative;
+  z-index: 1;
+}
+
+/* === Selected === */
+.tab--selected {
+  background: var(--mapped-surface-primary-default-subtle);
+  box-shadow: var(--shadow-subtlest);
+}
+
+.tab--selected .tab__label {
+  color: var(--mapped-text-default-default);
+}
+
+/* === Selected underline bar === */
+/* Figma uses color.border.selected (#0c66e4) — not in our token source.
+   Fallback: --mapped-border-primary-default. See docs for full inconsistency note. */
+.tab--selected::after {
+  content: '';
+  position: absolute;
+  bottom: var(--brand-scale-100); /* 4px */
+  left: var(--brand-scale-200);  /* 8px */
+  right: var(--brand-scale-200); /* 8px */
+  height: var(--brand-scale-50); /* 2px */
+  border-radius: var(--brand-scale-50); /* 2px */
+  background: var(--mapped-border-primary-default);
+}
+
+/* === Hover (unselected only) === */
+.tab:hover:not(.tab--selected):not(.tab--press):not(.tab--focus),
+.tab--hover:not(.tab--selected) {
+  background: var(--mapped-surface-primary-default-subtle-hover);
+  box-shadow: var(--shadow-subtlest);
+}
+
+.tab:hover:not(.tab--selected):not(.tab--press):not(.tab--focus) .tab__label,
+.tab--hover:not(.tab--selected) .tab__label {
+  color: var(--mapped-text-subtle-hover);
+}
+
+/* === Press (unselected) === */
+.tab:active:not(.tab--selected),
+.tab--press:not(.tab--selected) {
+  background: transparent;
+  box-shadow: none;
+}
+
+.tab:active .tab__label,
+.tab--press .tab__label {
+  color: var(--mapped-text-subtle-subtle-pressed);
+}
+
+/* === Focus === */
+.tab:focus-visible,
+.tab--focus {
+  outline: 2px solid var(--mapped-border-primary-default);
+  outline-offset: 0;
+  border-radius: var(--brand-scale-300); /* 10px = border-radius/lg from Figma */
+  background: var(--mapped-surface-primary-default-subtle);
+  box-shadow: var(--shadow-subtlest);
+}
+
+.tab:focus-visible .tab__label,
+.tab--focus .tab__label {
+  color: var(--mapped-text-subtle-subtle-pressed);
+}
+
+/* Focus+selected: label stays in selected (default-default) color */
+.tab--selected:focus-visible .tab__label,
+.tab--selected.tab--focus .tab__label {
+  color: var(--mapped-text-default-default);
+}
