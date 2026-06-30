@@ -1,0 +1,18 @@
+.progress-stepper {
+  display: flex;
+  gap: var(--brand-scale-100); /* 4px */
+  align-items: flex-start;
+}
+
+.progress-stepper__step {
+  display: block;
+  flex-shrink: 0;
+  width: var(--brand-scale-600);  /* 24px */
+  height: var(--brand-scale-100); /* 4px */
+  border-radius: var(--brand-scale-1800); /* 512px → pill */
+  background: var(--mapped-surface-default-default); /* future */
+}
+
+.progress-stepper__step--active {
+  background: var(--mapped-icon-primary-default); /* current/past */
+}

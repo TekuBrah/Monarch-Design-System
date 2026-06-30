@@ -1,0 +1,50 @@
+/* === Base === */
+.icon-object {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: clip;
+  color: white; /* children (Icon) inherit this via currentColor */
+}
+
+/* === Shape === */
+.icon-object--circle {
+  border-radius: var(--brand-scale-1800); /* 512px → always circular */
+}
+
+.icon-object--square {
+  border-radius: var(--brand-scale-200); /* 8px = border-radius/md */
+}
+
+/* === Sizes (outer container) === */
+.icon-object--small  { width: var(--brand-scale-500);  height: var(--brand-scale-500);  } /* 20px */
+.icon-object--medium { width: var(--brand-scale-600);  height: var(--brand-scale-600);  } /* 24px */
+.icon-object--large  { width: var(--brand-scale-800);  height: var(--brand-scale-800);  } /* 32px */
+.icon-object--xl     { width: var(--brand-scale-1000); height: var(--brand-scale-1000); } /* 40px */
+.icon-object--xxl    { width: var(--brand-scale-1200); height: var(--brand-scale-1200); } /* 56px */
+
+/* === Solid brand-400 backgrounds === */
+/* All use the 400-level brand color — alias layer has no single mapped token for these */
+.icon-object--slate  { background: var(--brand-slate-400);  }
+.icon-object--blue   { background: var(--brand-blue-400);   }
+.icon-object--gray   { background: var(--brand-gray-400);   }
+.icon-object--red    { background: var(--brand-red-400);    }
+.icon-object--orange { background: var(--brand-orange-400); }
+.icon-object--green  { background: var(--brand-green-400);  }
+.icon-object--teal   { background: var(--brand-teal-400);   }
+.icon-object--purple { background: var(--brand-purple-400); }
+.icon-object--cyan   { background: var(--brand-cyan-400);   }
+.icon-object--yellow { background: var(--brand-yellow-400); }
+.icon-object--lime   { background: var(--brand-lime-400);   }
+.icon-object--violet { background: var(--brand-violet-400); }
+
+/* AI: gradient from blue-400 → blue-500 → violet-500 */
+.icon-object--ai {
+  background-image: linear-gradient(
+    132.61deg,
+    var(--brand-blue-400)   7.662%,
+    var(--brand-blue-500)  27.411%,
+    var(--brand-violet-500) 78.849%
+  );
+}

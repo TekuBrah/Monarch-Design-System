@@ -1,0 +1,131 @@
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--brand-scale-100); /* 4px = space.050 */
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox--disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Visually hidden native input */
+.checkbox__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* === Box wrapper (provides touch area + focus ring anchor) === */
+.checkbox__box-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.checkbox--medium .checkbox__box-wrap { width: 24px; height: 24px; }
+.checkbox--large  .checkbox__box-wrap { width: 32px; height: 32px; }
+
+/* === Visual box (inset 25% inside wrapper) === */
+.checkbox__box {
+  position: absolute;
+  inset: 25%; /* medium: 6px → 12×12px box; large: 8px → 16×16px box */
+  border-radius: var(--brand-scale-50); /* 2px */
+  border: 1px solid var(--mapped-border-default-default);
+  background: var(--mapped-surface-page);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+/* === Checked / Indeterminate fill === */
+.checkbox__box--marked {
+  background: var(--mapped-surface-primary-default);
+  border-color: var(--mapped-surface-primary-default);
+  color: white; /* checkmark/dash color via currentColor */
+}
+
+/* === Invalid === */
+.checkbox--invalid .checkbox__box:not(.checkbox__box--marked) {
+  border-color: var(--mapped-border-error-default);
+}
+
+.checkbox__box--invalid.checkbox__box--marked {
+  background: var(--mapped-surface-error-default);
+  border-color: var(--mapped-surface-error-default);
+}
+
+/* === SVG check / dash === */
+.checkbox__check {
+  width: 80%;
+  height: 80%;
+  display: block;
+}
+
+/* === Hover (unchecked) === */
+.checkbox:hover:not(.checkbox--disabled) .checkbox__box:not(.checkbox__box--marked) {
+  background: var(--mapped-surface-primary-default-subtle-hover);
+  border-color: var(--mapped-border-disabled-default);
+}
+
+/* === Hover (checked/indeterminate) === */
+.checkbox:hover:not(.checkbox--disabled) .checkbox__box--marked {
+  background: var(--alias-primary-600); /* hover primary — no mapped token, fallback to alias */
+  border-color: var(--alias-primary-600);
+}
+
+/* === Active / press === */
+.checkbox:active:not(.checkbox--disabled) .checkbox__box:not(.checkbox__box--marked) {
+  background: var(--alias-primary-700); /* press: very dark blue fill on unchecked */
+  border-color: var(--mapped-border-subtlest-default);
+}
+
+/* === Focus ring (via :focus-visible on hidden input + adjacent sibling) === */
+.checkbox__input:focus-visible + .checkbox__box-wrap {
+  outline: 2px solid var(--mapped-border-primary-default);
+  outline-offset: 2px;
+  border-radius: var(--brand-scale-100);
+}
+
+/* === Disabled === */
+.checkbox--disabled .checkbox__box {
+  border-color: var(--mapped-border-disabled-default);
+  opacity: 0.5;
+}
+
+.checkbox--disabled .checkbox__box--marked {
+  background: var(--mapped-icon-disabled-default);
+  border-color: var(--mapped-icon-disabled-default);
+}
+
+/* === Label text === */
+.checkbox__label {
+  color: var(--mapped-text-default-default);
+  transition: color 0.12s ease;
+}
+
+.checkbox:hover:not(.checkbox--disabled) .checkbox__label {
+  color: var(--mapped-text-default-hover);
+}
+
+.checkbox:active:not(.checkbox--disabled) .checkbox__label {
+  color: var(--mapped-text-default-pressed);
+}
+
+.checkbox--disabled .checkbox__label {
+  color: var(--mapped-text-disabled-default);
+}
+
+/* Required asterisk — uses error token (Figma uses `color.text.danger` #ae2e24, no match; mapped to --mapped-text-error-default) */
+.checkbox__required {
+  color: var(--mapped-text-error-default);
+  margin-left: var(--brand-scale-25);
+}

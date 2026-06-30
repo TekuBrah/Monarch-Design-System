@@ -1,0 +1,106 @@
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle--disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Visually hidden input — siblings still work via CSS + combinator */
+.toggle__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* === Track === */
+.toggle__track {
+  position: relative;
+  flex-shrink: 0;
+  background: var(--mapped-icon-subtlest-subtlest);
+  border-radius: var(--brand-scale-1800); /* 512px → pill */
+  transition: background 0.15s ease;
+}
+
+/* regular: 32×16px */
+.toggle--regular .toggle__track {
+  width: var(--brand-scale-800);  /* 32px */
+  height: var(--brand-scale-400); /* 16px */
+}
+
+/* large: 46×24px  (46 = 48-2 via scale math) */
+.toggle--large .toggle__track {
+  width: calc(var(--brand-scale-1100) - var(--brand-scale-50)); /* 48-2 = 46px */
+  height: var(--brand-scale-600); /* 24px */
+}
+
+/* === Dot === */
+.toggle__dot {
+  position: absolute;
+  top: var(--brand-scale-50); /* 2px */
+  left: var(--brand-scale-50); /* 2px — unchecked position */
+  background: white;
+  border-radius: 50%;
+  box-shadow: var(--shadow-subtle);
+  transition: left 0.15s ease;
+}
+
+/* regular dot: 12px */
+.toggle--regular .toggle__dot {
+  width: var(--brand-scale-300);  /* 12px */
+  height: var(--brand-scale-300); /* 12px */
+}
+
+/* large dot: 20px */
+.toggle--large .toggle__dot {
+  width: var(--brand-scale-500);  /* 20px */
+  height: var(--brand-scale-500); /* 20px */
+}
+
+/* === Checked — dot slides to right === */
+/* regular: left = 32-12-2 = 18px = (800 - 300 - 50) = 18px */
+.toggle--regular .toggle__input:checked + .toggle__track .toggle__dot {
+  left: calc(var(--brand-scale-800) - var(--brand-scale-300) - var(--brand-scale-50));
+}
+
+/* large: left = 46-20-2 = 24px */
+.toggle--large .toggle__input:checked + .toggle__track .toggle__dot {
+  left: var(--brand-scale-600); /* 24px */
+}
+
+/* === Track colour — checked === */
+.toggle__input:checked + .toggle__track {
+  background: var(--mapped-surface-primary-default);
+}
+
+/* === Hover (unchecked) === */
+.toggle:hover:not(.toggle--disabled) .toggle__track {
+  background: var(--mapped-icon-subtlest-subtlest-hover);
+}
+
+/* === Hover (checked) === */
+/* No direct mapped token — falls back to alias layer (--alias-primary-600 = hover-primary-blue) */
+.toggle:hover:not(.toggle--disabled) .toggle__input:checked + .toggle__track {
+  background: var(--alias-primary-600);
+}
+
+/* === Disabled === */
+.toggle--disabled .toggle__track {
+  background: var(--mapped-icon-disabled-default);
+}
+
+/* === Focus ring === */
+.toggle__input:focus-visible + .toggle__track {
+  outline: 2px solid var(--mapped-border-primary-default);
+  outline-offset: 2px;
+}

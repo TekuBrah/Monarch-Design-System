@@ -1,0 +1,120 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--brand-scale-100); /* 4px */
+  border-radius: var(--brand-scale-100); /* 4px = border-radius/sm */
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: none;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+/* === Size M === */
+.tag--m {
+  padding: var(--brand-scale-100) var(--brand-scale-50); /* 4px 2px */
+}
+
+/* === Size S === */
+.tag--s {
+  padding: var(--brand-scale-50); /* 2px all */
+}
+
+/* === Icon slot === */
+.tag__icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ===== Default appearance ===== */
+
+/* Default state */
+.tag--default .tag__label {
+  color: var(--mapped-text-subtle-default);
+}
+.tag--default .tag__icon {
+  color: var(--mapped-text-subtle-default);
+}
+
+/* Hover */
+.tag--default:not(.tag--disabled):hover {
+  /* No mapped token — alias-primary-50 = --brand-blue-50 (#e6f1ff), confirmed in Figma */
+  background: var(--alias-primary-50);
+  border-color: var(--mapped-border-primary-default-hover);
+}
+.tag--default:not(.tag--disabled):hover .tag__label,
+.tag--default:not(.tag--disabled):hover .tag__icon {
+  color: var(--mapped-text-primary-default-hover);
+}
+
+/* Press / active */
+.tag--default:not(.tag--disabled):active {
+  /* alias-primary-100 = --brand-blue-100 (#cde2ff), confirmed in Figma */
+  background: var(--alias-primary-100);
+  border-color: var(--mapped-border-primary-default-pressed);
+}
+.tag--default:not(.tag--disabled):active .tag__label,
+.tag--default:not(.tag--disabled):active .tag__icon {
+  color: var(--mapped-text-primary-default-pressed);
+}
+
+/* Focus (keyboard) */
+.tag--default:focus-visible {
+  outline: 2px solid var(--mapped-border-primary-default);
+  outline-offset: 2px;
+}
+
+/* Selected state (Figma "focus" visual — blue fill) */
+.tag--default.tag--selected {
+  background: var(--mapped-surface-primary-default);
+  border-color: var(--mapped-surface-primary-default);
+}
+.tag--default.tag--selected .tag__label,
+.tag--default.tag--selected .tag__icon {
+  color: var(--mapped-text-primary-on-color);
+}
+
+/* Disabled */
+.tag--default.tag--disabled {
+  border-color: var(--mapped-border-disabled-default);
+  cursor: not-allowed;
+}
+.tag--default.tag--disabled .tag__label,
+.tag--default.tag--disabled .tag__icon {
+  color: var(--mapped-text-disabled-default);
+}
+
+/* ===== Overlay appearance ===== */
+
+/* Default */
+.tag--overlay {
+  background: var(--mapped-surface-overlay-default);
+}
+.tag--overlay .tag__label,
+.tag--overlay .tag__icon {
+  color: var(--mapped-text-primary-on-color); /* white */
+}
+
+/* Hover */
+.tag--overlay:not(.tag--disabled):hover {
+  background: var(--mapped-surface-overlay-hover);
+}
+
+/* Press */
+.tag--overlay:not(.tag--disabled):active {
+  background: var(--mapped-surface-overlay-label-pressed);
+}
+
+/* Focus ring */
+.tag--overlay:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+/* Disabled */
+.tag--overlay.tag--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

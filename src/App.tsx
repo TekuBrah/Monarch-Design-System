@@ -19,6 +19,14 @@ import { Divider } from './components/Divider'
 import { Chips } from './components/Chips'
 import type { ChipsAppearance } from './components/Chips'
 import { Label } from './components/Label'
+import { Toggle } from './components/Toggle'
+import { ProgressStepper } from './components/ProgressStepper'
+import { Tag } from './components/Tag'
+import type { TagAppearance } from './components/Tag'
+import { IconObject } from './components/IconObject'
+import type { IconObjectColor, IconObjectSize } from './components/IconObject'
+import { Checkbox } from './components/Checkbox'
+import { Radio } from './components/Radio'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -1079,6 +1087,155 @@ export default function App() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Toggle ─────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
+            <h2 style={{ marginBottom: '0.25rem' }}>Toggle</h2>
+            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+              2 sizes × checked/unchecked × disabled — tokens: --mapped-surface-primary-default, --mapped-icon-subtlest-subtlest
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {(['regular', 'large'] as const).map(size => (
+                <div key={size} style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+                  <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '80px' }}>size={size}</span>
+                  <Toggle size={size} isChecked={false} ariaLabel={`${size} unchecked`} />
+                  <Toggle size={size} isChecked={true} ariaLabel={`${size} checked`} />
+                  <Toggle size={size} isChecked={false} isDisabled ariaLabel={`${size} disabled unchecked`} />
+                  <Toggle size={size} isChecked={true} isDisabled ariaLabel={`${size} disabled checked`} />
+                </div>
+              ))}
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)' }}>
+                unchecked · checked · disabled unchecked · disabled checked
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── ProgressStepper ────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
+            <h2 style={{ marginBottom: '0.25rem' }}>Progress Stepper</h2>
+            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+              7 steps, active bar = --mapped-icon-primary-default · inactive = --mapped-surface-default-default
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {[1, 3, 5, 7].map(step => (
+                <div key={step} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                  <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '80px' }}>step {step}/7</span>
+                  <ProgressStepper totalSteps={7} currentStep={step} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Tag ────────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
+            <h2 style={{ marginBottom: '0.25rem' }}>Tag</h2>
+            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+              2 appearances × 2 sizes × states (hover/active via pseudo-classes) + selected + disabled
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {(['default', 'overlay'] as TagAppearance[]).map(ap => (
+                <div key={ap} style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap', padding: ap === 'overlay' ? '0.75rem' : '0', background: ap === 'overlay' ? 'var(--mapped-text-default-default)' : 'transparent', borderRadius: '0.5rem' }}>
+                  <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '80px', color: ap === 'overlay' ? 'white' : 'inherit' }}>{ap}</span>
+                  <Tag appearance={ap} label="Tag M" size="M" iconBefore={<Icon name="filter_list" size="s" />} iconAfter={<Icon name="close" size="s" />} />
+                  <Tag appearance={ap} label="Tag S" size="S" />
+                  <Tag appearance={ap} label="Selected" size="M" isSelected />
+                  <Tag appearance={ap} label="Disabled" size="M" isDisabled />
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Icon Object ────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
+            <h2 style={{ marginBottom: '0.25rem' }}>Icon Object</h2>
+            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+              13 colors × circle/square × 5 sizes — --brand-[color]-400 backgrounds, white icon via currentColor
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Colors (circle, xl)</div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  {(['slate', 'blue', 'gray', 'red', 'orange', 'green', 'teal', 'purple', 'cyan', 'yellow', 'lime', 'violet', 'ai'] as IconObjectColor[]).map(c => (
+                    <IconObject key={c} color={c} shape="circle" size="xl"><Icon name="person" size="m" /></IconObject>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Sizes × shapes (blue)</div>
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                  {(['small', 'medium', 'large', 'xl', 'xxl'] as IconObjectSize[]).map(sz => (
+                    <div key={sz} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+                      <IconObject color="blue" shape="circle" size={sz}><Icon name="person" size={sz === 'small' ? 's' : sz === 'medium' ? 's' : sz === 'large' ? 'm' : 'l'} /></IconObject>
+                      <IconObject color="blue" shape="square" size={sz}><Icon name="person" size={sz === 'small' ? 's' : sz === 'medium' ? 's' : sz === 'large' ? 'm' : 'l'} /></IconObject>
+                      <span style={{ fontFamily: 'monospace', fontSize: '0.6rem' }}>{sz}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Checkbox ───────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
+            <h2 style={{ marginBottom: '0.25rem' }}>Checkbox</h2>
+            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+              medium / large × unchecked / checked / indeterminate × invalid × required × disabled
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {(['medium', 'large'] as const).map(size => (
+                <div key={size} style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '60px' }}>{size}</span>
+                  <Checkbox size={size} label="Unchecked" />
+                  <Checkbox size={size} label="Checked" isChecked />
+                  <Checkbox size={size} label="Indeterminate" isIndeterminate />
+                  <Checkbox size={size} label="Invalid" isInvalid />
+                  <Checkbox size={size} label="Required" isRequired />
+                  <Checkbox size={size} label="Disabled" isDisabled />
+                  <Checkbox size={size} label="Checked + disabled" isChecked isDisabled />
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Radio ──────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
+            <h2 style={{ marginBottom: '0.25rem' }}>Radio</h2>
+            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+              unchecked / checked / invalid / required / disabled states — 14×14px radio circle inside 24px wrap
+            </p>
+            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <Radio label="Unchecked" />
+              <Radio label="Checked" isChecked />
+              <Radio label="Invalid" isInvalid />
+              <Radio label="Required" isRequired />
+              <Radio label="Disabled" isDisabled />
+              <Radio label="Checked + disabled" isChecked isDisabled />
             </div>
           </div>
         </>
