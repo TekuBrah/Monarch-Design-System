@@ -1101,12 +1101,14 @@ export default function App() {
         </>
       )}
 
+      <hr style={HR} />
+
       {/* ── Toggle ─────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
-            <h2 style={{ marginBottom: '0.25rem' }}>Toggle</h2>
-            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Toggle</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               2 sizes × checked/unchecked × disabled — tokens: --mapped-surface-primary-default, --mapped-icon-subtlest-subtlest
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -1127,12 +1129,14 @@ export default function App() {
         </>
       )}
 
+      <hr style={HR} />
+
       {/* ── ProgressStepper ────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
-            <h2 style={{ marginBottom: '0.25rem' }}>Progress Stepper</h2>
-            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Progress Stepper</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               7 steps, active bar = --mapped-icon-primary-default · inactive = --mapped-surface-default-default
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -1147,12 +1151,14 @@ export default function App() {
         </>
       )}
 
+      <hr style={HR} />
+
       {/* ── Tag ────────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
-            <h2 style={{ marginBottom: '0.25rem' }}>Tag</h2>
-            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Tag</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               2 appearances × 2 sizes × states (hover/active via pseudo-classes) + selected + disabled
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -1170,12 +1176,14 @@ export default function App() {
         </>
       )}
 
+      <hr style={HR} />
+
       {/* ── Icon Object ────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
-            <h2 style={{ marginBottom: '0.25rem' }}>Icon Object</h2>
-            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Icon Object</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               13 colors × circle/square × 5 sizes — --brand-[color]-400 backgrounds, white icon via currentColor
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -1204,12 +1212,14 @@ export default function App() {
         </>
       )}
 
+      <hr style={HR} />
+
       {/* ── Checkbox ───────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
-            <h2 style={{ marginBottom: '0.25rem' }}>Checkbox</h2>
-            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Checkbox</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               medium / large × unchecked / checked / indeterminate × invalid × required × disabled
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -1230,12 +1240,14 @@ export default function App() {
         </>
       )}
 
+      <hr style={HR} />
+
       {/* ── Radio ──────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
-            <h2 style={{ marginBottom: '0.25rem' }}>Radio</h2>
-            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Radio</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               unchecked / checked / invalid / required / disabled states — 14×14px radio circle inside 24px wrap
             </p>
             <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -1250,12 +1262,14 @@ export default function App() {
         </>
       )}
 
+      <hr style={HR} />
+
       {/* ── Tabs ───────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
-            <h2 style={{ marginBottom: '0.25rem' }}>Tabs</h2>
-            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Tabs</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               Controlled wrapper composing Tab instances — flex container, no tokens of its own
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -1280,12 +1294,14 @@ export default function App() {
         </>
       )}
 
+      <hr style={HR} />
+
       {/* ── Tab ────────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
-            <h2 style={{ marginBottom: '0.25rem' }}>Tab</h2>
-            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Tab</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               2 selection states × 4 interaction states — type-body-caption-semibold — tokens: --mapped-surface-primary-default-subtle, --mapped-border-primary-default
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -1314,12 +1330,14 @@ export default function App() {
         </>
       )}
 
+      <hr style={HR} />
+
       {/* ── Button Group ───────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
-            <h2 style={{ marginBottom: '0.25rem' }}>Button Group</h2>
-            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Button Group</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               Composite: leading IconButton (tertiary, more_horiz) + 2–N Button (primary, m) — data-driven via buttons prop
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -1336,12 +1354,14 @@ export default function App() {
         </>
       )}
 
+      <hr style={HR} />
+
       {/* ── Filter Chips ───────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
-            <h2 style={{ marginBottom: '0.25rem' }}>Filter Chips</h2>
-            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Filter Chips</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               2 states × 4 icon combos — selected bg via color-mix() (no opacity token in source) — hover/press on unselected only (deliberate addition, see docs)
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -1390,12 +1410,14 @@ export default function App() {
         </>
       )}
 
+      <hr style={HR} />
+
       {/* ── Link ───────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
-            <h2 style={{ marginBottom: '0.25rem' }}>Link</h2>
-            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Link</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               3 appearances × 3 states × visited — Size=M renders smaller than Size=S (Figma source, not a bug) — leaf dependency for Breadcrumbs
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -1441,12 +1463,14 @@ export default function App() {
         </>
       )}
 
+      <hr style={HR} />
+
       {/* ── Breadcrumbs ────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
-            <h2 style={{ marginBottom: '0.25rem' }}>Breadcrumbs</h2>
-            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Breadcrumbs</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               Composes Link (subtle) + Icon (chevron_right separator) — data-driven via items array — last item gets isCurrent (underline + aria-current)
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -1474,12 +1498,14 @@ export default function App() {
         </>
       )}
 
+      <hr style={HR} />
+
       {/* ── Loader ─────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
-            <h2 style={{ marginBottom: '0.25rem' }}>Loader</h2>
-            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Loader</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               First CSS @keyframes animation in this codebase — 32px container + color confirmed from source; stroke width and rotation speed are estimates (see docs)
             </p>
             <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
