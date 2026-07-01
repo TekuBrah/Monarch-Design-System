@@ -29,6 +29,7 @@ import { Checkbox } from './components/Checkbox'
 import { Radio } from './components/Radio'
 import { Tab } from './components/Tab'
 import { Tabs } from './components/Tabs'
+import { ButtonGroup } from './components/ButtonGroup'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -1302,6 +1303,28 @@ export default function App() {
                   <Tab label="Settings" />
                   <Tab label="Members" />
                 </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Button Group ───────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
+            <h2 style={{ marginBottom: '0.25rem' }}>Button Group</h2>
+            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+              Composite: leading IconButton (tertiary, more_horiz) + 2–N Button (primary, m) — data-driven via buttons prop
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Count = 2</div>
+                <ButtonGroup buttons={[{ label: 'Button' }, { label: 'Button' }]} />
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Count = 3</div>
+                <ButtonGroup buttons={[{ label: 'Button' }, { label: 'Button' }, { label: 'Button' }]} />
               </div>
             </div>
           </div>

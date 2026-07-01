@@ -1016,3 +1016,43 @@ All token usage is delegated to `Tab`.
 
 - **Figma node 149:9124 is a Components documentation frame** containing a section header, label, and a single `Tabs` instance (70:1995) — the actual composable component. All annotation scaffolding (purple header, "Tab" label chip) is irrelevant to the code output.
 - **Figma renders 4 hardcoded `Tab` children** in the Parts frame. In code, Tabs is data-driven via the `tabs` prop array.
+
+---
+
+## Button Group
+
+**Figma node:** 70:2317 (`Button group`)
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 148:1570 (Components documentation frame)
+
+A composite that pairs a leading "more actions" trigger with a row of primary action buttons. Figma models this as a `count` variant (`"2"` | `"3"`) with a fixed number of hardcoded `Button` children; the code version is data-driven via a `buttons` array so it supports any count ≥ 2, matching the pattern used for `Tabs`.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `buttons` | `ButtonGroupItem[]` | — | Array of `{ label, onClick?, disabled? }` — one `Button` per item |
+| `onMoreClick` | `(e) => void` | — | Click handler for the leading `IconButton` trigger |
+| `moreAriaLabel` | `string` | `'More actions'` | `aria-label` on the leading `IconButton` |
+
+`ButtonGroupItem` type: `{ label: string; onClick?: MouseEventHandler; disabled?: boolean }`
+
+### Nested components
+
+- **`IconButton`** (from `../IconButton`) — leading trigger, `variant="tertiary"` `size="m"`, icon = `more_horiz` (`Icon name="more_horiz" size="l"`). Figma's "icon / button" element has no background/border in any screenshot, matching `tertiary`'s transparent default state.
+- **`Button`** (from `../Button`) — one per `buttons` entry, `variant="primary"` `size="m"`, `appearance="default"` (Figma: `type="Primary"`, `state="Default"`).
+
+### Token mapping
+
+No new tokens introduced — `ButtonGroup` only lays out its children:
+
+```css
+.button-group { display: inline-flex; align-items: center; gap: var(--brand-scale-100); /* 4px, Figma Scale/100 */ }
+```
+
+All surface/border/text/focus tokens are inherited unchanged from `IconButton` and `Button`'s existing token tables (see their respective entries above).
+
+### Known Figma inconsistencies
+
+- **Figma node 148:1570 is a Components documentation frame** containing a section header, a "Button groups" label chip, and the `Button group` instance (70:2317) plus a hidden description box. Only 70:2317 is the real component.
+- **Figma models count as a fixed variant** (`Count=2` / `Count=3`, each with hardcoded `Button` children). Code uses a data-driven `buttons` array instead, so any length ≥ 2 works without adding new variants — consistent with the `Tabs` composite pattern.
+- **No unique tokens**: every visual property (icon color, button surface/border/text, radius, gap) already exists in the `IconButton`/`Button` token tables; `ButtonGroup` itself only needs `Scale/100` for the inter-item gap.
