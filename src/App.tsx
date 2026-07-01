@@ -865,9 +865,9 @@ export default function App() {
                     currentColor test — custom inside primary button (should be white)
                   </p>
                   <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <Button variant="primary" size="m" leadingIcon={<Icon name="icon_wallet" size="m" />}>Wallet</Button>
-                    <Button variant="primary" size="m" leadingIcon={<Icon name="icon_finance" size="m" />}>Finance</Button>
-                    <Button variant="primary" size="m" leadingIcon={<Icon name="icon_transfer" size="m" />}>Transfer</Button>
+                    <Button variant="primary" size="m" label="Wallet" leadingIcon={<Icon name="icon_wallet" size="m" />} />
+                    <Button variant="primary" size="m" label="Finance" leadingIcon={<Icon name="icon_finance" size="m" />} />
+                    <Button variant="primary" size="m" label="Transfer" leadingIcon={<Icon name="icon_transfer" size="m" />} />
                   </div>
                 </div>
 
