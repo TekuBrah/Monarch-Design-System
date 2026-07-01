@@ -1,0 +1,104 @@
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--brand-scale-100); /* 4px */
+  text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.link__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--brand-scale-400); /* 16px */
+  height: var(--brand-scale-400);
+  flex-shrink: 0;
+}
+
+/* === Default appearance === */
+.link--default:not(.link--visited) {
+  color: var(--mapped-text-primary-default);
+  text-decoration: none;
+}
+.link--default:not(.link--visited):hover,
+.link--default:not(.link--visited)[data-preview="hover"] {
+  color: var(--mapped-text-primary-default-hover);
+  text-decoration: underline;
+}
+.link--default:not(.link--visited):active,
+.link--default:not(.link--visited)[data-preview="pressed"] {
+  color: var(--mapped-text-primary-default-pressed);
+  text-decoration: underline;
+}
+
+.link--default.link--visited {
+  /* Figma reuses the same token for default+hover+visited — see docs known-inconsistency note */
+  color: var(--mapped-text-interactive-default);
+  text-decoration: underline;
+}
+.link--default.link--visited:hover,
+.link--default.link--visited[data-preview="hover"] {
+  color: var(--mapped-text-interactive-default);
+  text-decoration: underline;
+}
+.link--default.link--visited:active,
+.link--default.link--visited[data-preview="pressed"] {
+  color: var(--mapped-text-interactive-default-pressed);
+  text-decoration: underline;
+}
+
+/* === Subtle appearance === */
+.link--subtle:not(.link--visited) {
+  color: var(--mapped-text-subtle-default);
+  text-decoration: none;
+}
+.link--subtle:not(.link--visited):hover,
+.link--subtle:not(.link--visited)[data-preview="hover"] {
+  /* Figma: subtle hover keeps the same color, only underline changes */
+  color: var(--mapped-text-subtle-default);
+  text-decoration: underline;
+}
+.link--subtle:not(.link--visited):active,
+.link--subtle:not(.link--visited)[data-preview="pressed"] {
+  color: var(--mapped-text-subtle-subtle-pressed);
+  text-decoration: underline;
+}
+
+.link--subtle.link--visited {
+  color: var(--mapped-text-interactive-default);
+  text-decoration: underline;
+}
+.link--subtle.link--visited:hover,
+.link--subtle.link--visited[data-preview="hover"] {
+  color: var(--mapped-text-interactive-default);
+  text-decoration: underline;
+}
+.link--subtle.link--visited:active,
+.link--subtle.link--visited[data-preview="pressed"] {
+  color: var(--mapped-text-interactive-default-pressed);
+  text-decoration: underline;
+}
+
+/* === Inverse appearance === */
+/* Figma never demonstrates hasVisited=true for inverse — always on-color white regardless of visited */
+.link--inverse {
+  color: var(--mapped-text-primary-on-color);
+  text-decoration: none;
+}
+.link--inverse:hover,
+.link--inverse[data-preview="hover"] {
+  text-decoration: underline;
+}
+.link--inverse:active,
+.link--inverse[data-preview="pressed"] {
+  text-decoration: underline;
+}
+
+/* === Focus (keyboard) === */
+.link:focus-visible,
+.link[data-preview="focus"] {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+  outline-offset: var(--brand-scale-50);
+  border-radius: var(--brand-scale-25);
+}

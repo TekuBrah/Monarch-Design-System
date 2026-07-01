@@ -1117,3 +1117,63 @@ This is a **case-by-case UX call, not a CLAUDE.md mandate and not an automatic e
 - **Property value typos in the component set itself**: `iconLeft`/`iconRight` Figma variant values are inconsistently named `"True"` / `"False"` / `"Fals"` (typo) across different variant combinations — a source-side naming defect, not a code issue. Normalized to booleans in the React API.
 - **Both-icons horizontal padding is a literal `10px`** in the Figma-generated code, not a value on our `--brand-scale` ramp (nearest: `--brand-scale-200`=8px, `--brand-scale-300`=12px). No token matches. Recorded as a literal per design source rather than a derived `calc()` — a prior draft used `calc((--brand-scale-200 + --brand-scale-300) / 2)` to reverse-engineer 10px, which was rejected as dishonest curve-fitting (implies a token relationship that doesn't exist). Flag for a future Figma Variables fix to align this value to the scale.
 - **Selected-state background has no matching opacity/tint token**: Figma uses `rgba(4,110,255,0.1)` (10%-opacity primary blue), and no rgba/opacity token exists anywhere in the token source. Resolved with `color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent)` — derived from a real mapped token (dark-mode safe) rather than a hardcoded rgba(). **First use of `color-mix()` in this codebase** — accepted as the standard pattern for future missing-opacity-token cases. Flag for a future Figma Variables addition of a proper tint/overlay token.
+
+---
+
+## Link
+
+**Figma node:** 73:128 (`❖ Link`)
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 73:123 (Components documentation frame)
+
+A leaf hyperlink component — renders a real `<a>` tag. Built as a dependency for Breadcrumbs. No nested component instances (just the `open_in_new` icon via our existing `Icon` component, and a hidden non-visual Figma artifact excluded from the build — see inconsistencies below).
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `label` | `string` | `'Link'` | |
+| `href` | `string` | `'#'` | |
+| `appearance` | `'default' \| 'subtle' \| 'inverse'` | `'default'` | |
+| `size` | `'S' \| 'M'` | `'S'` | See size-inversion note below |
+| `hasVisited` | `boolean` | `false` | Only meaningful for `default`/`subtle`; `inverse` has no visited variants in source |
+| `iconBefore` / `iconAfter` | `boolean` | `true` / `true` | Not a Figma variant axis, but a prop on every documented instance |
+| `target` | `'_blank' \| '_self'` | `'_blank'` | `rel="noopener noreferrer"` auto-applied when `_blank` |
+| `onClick` | `(e) => void` | — | |
+| `previewState` | `'hover' \| 'pressed' \| 'focus'` | — | Showcase only |
+
+### Variant → token mapping (as implemented)
+
+| Appearance | State | Visited | Text token | Underline |
+|---|---|---|---|---|
+| default | default | false | `--mapped-text-primary-default` | no |
+| default | hover | false | `--mapped-text-primary-default-hover` | yes |
+| default | press | false | `--mapped-text-primary-default-pressed` | yes |
+| default | default | true | `--mapped-text-interactive-default` | yes |
+| default | hover | true | `--mapped-text-interactive-default` (same as default+visited) | yes |
+| default | press | true | `--mapped-text-interactive-default-pressed` | yes |
+| subtle | default | false | `--mapped-text-subtle-default` | no |
+| subtle | hover | false | `--mapped-text-subtle-default` (unchanged) | yes |
+| subtle | press | false | `--mapped-text-subtle-subtle-pressed` | yes |
+| subtle | default/hover | true | `--mapped-text-interactive-default` | yes |
+| subtle | press | true | `--mapped-text-interactive-default-pressed` | yes |
+| inverse | default | false only | `--mapped-text-primary-on-color` (white) | no |
+| inverse | hover/press | false only | `--mapped-text-primary-on-color` (unchanged) | yes |
+
+Icons inherit color via `currentColor` from the label — no separate icon-color token.
+
+### Geometry
+
+| Property | Token | Px |
+|---|---|---|
+| Icon↔label gap | `--brand-scale-100` | 4px |
+| Icon size (both S and M link sizes) | `Icon size="s"` → `--brand-scale-400` | 16px |
+| Focus outline width/offset | `--brand-scale-50` | 2px |
+| Typography, Size=S | `.type-body-sm` | 14px / 20px, regular |
+| Typography, Size=M | `.type-body-caption` | 12px / 16px, regular |
+
+### Known Figma inconsistencies
+
+- **`Size=M` renders smaller than `Size=S`** (12px vs 14px) — backwards from the usual S<M convention. Preserved literally in the `size: 'S' | 'M'` prop rather than silently relabeling; naming is confirmed from source, not a code defect.
+- **Hover+visited reuses the plain `--mapped-text-interactive-default` token** instead of the existing `--mapped-text-interactive-default-hover` — confirmed via the actual Figma instance (73:171), not a code shortcut. Replicated exactly rather than "fixed."
+- **`inverse` appearance never demonstrates `hasVisited=true`** in source — always renders `--mapped-text-primary-on-color` regardless of the `hasVisited` prop. If a caller passes `hasVisited` with `appearance="inverse"`, the prop is accepted but has no visual effect (matches source, not a bug).
+- **Hidden `URL (Hidden)` element excluded from the build**: every Figma instance contains a non-visual paragraph (`opacity-0`, `size-[0.01px]`) carrying Atlassian tokens (`color.link`, `color.link.pressed`, `color.link.visited`, `color.text.subtle`, `color.text.inverse`) that don't exist in our token source. Confirmed via screenshot and design-context inspection that it renders nothing visible — treated as a Figma-internal artifact, not a missing-token gap requiring a fallback.

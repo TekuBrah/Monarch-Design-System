@@ -31,6 +31,7 @@ import { Tab } from './components/Tab'
 import { Tabs } from './components/Tabs'
 import { ButtonGroup } from './components/ButtonGroup'
 import { FilterChip } from './components/FilterChips'
+import { Link } from './components/Link'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -1380,6 +1381,57 @@ export default function App() {
                       onClick={() => setFilterChipsSelected(s => ({ ...s, [id]: !s[id] }))}
                     />
                   ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Link ───────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
+            <h2 style={{ marginBottom: '0.25rem' }}>Link</h2>
+            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+              3 appearances × 3 states × visited — Size=M renders smaller than Size=S (Figma source, not a bug) — leaf dependency for Breadcrumbs
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Default appearance — forced states</div>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '0.5rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem' }}>
+                  <Link label="Default" />
+                  <Link label="Hover" previewState="hover" />
+                  <Link label="Pressed" previewState="pressed" />
+                  <Link label="Focus" previewState="focus" />
+                  <Link label="Visited" hasVisited />
+                  <Link label="Visited hover" hasVisited previewState="hover" />
+                  <Link label="Visited pressed" hasVisited previewState="pressed" />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Subtle appearance</div>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '0.5rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem' }}>
+                  <Link label="Default" appearance="subtle" />
+                  <Link label="Hover" appearance="subtle" previewState="hover" />
+                  <Link label="Pressed" appearance="subtle" previewState="pressed" />
+                  <Link label="Visited" appearance="subtle" hasVisited />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Inverse appearance (on colored surface)</div>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '1rem', background: 'var(--mapped-surface-primary-default)', borderRadius: '0.5rem' }}>
+                  <Link label="Default" appearance="inverse" />
+                  <Link label="Hover" appearance="inverse" previewState="hover" />
+                  <Link label="Pressed" appearance="inverse" previewState="pressed" />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Size comparison (S=14px, M=12px — Figma source naming)</div>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <Link label="Size S" size="S" />
+                  <Link label="Size M" size="M" />
+                  <Link label="No icons" iconBefore={false} iconAfter={false} />
                 </div>
               </div>
             </div>
