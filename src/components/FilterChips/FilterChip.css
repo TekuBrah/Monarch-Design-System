@@ -1,0 +1,99 @@
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: var(--brand-scale-300) var(--brand-scale-400); /* 12px 16px */
+  border: var(--brand-scale-25) solid var(--mapped-border-subtle-default);
+  border-radius: var(--brand-scale-200); /* 8px */
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.filter-chip__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--brand-scale-400); /* 16px */
+  height: var(--brand-scale-400);
+  flex-shrink: 0;
+}
+
+.filter-chip__label {
+  color: var(--mapped-text-default-default);
+}
+
+/* === Icon-driven padding/gap (Figma: icon hugs its adjacent edge at 12px, opposite edge stays 16px) === */
+.filter-chip[data-icon-left="true"]:not([data-icon-right="true"]) {
+  padding-left: var(--brand-scale-300); /* 12px */
+  padding-right: var(--brand-scale-400); /* 16px */
+  gap: var(--brand-scale-200); /* 8px */
+}
+.filter-chip[data-icon-right="true"]:not([data-icon-left="true"]) {
+  padding-left: var(--brand-scale-400);
+  padding-right: var(--brand-scale-300);
+  gap: var(--brand-scale-200);
+}
+.filter-chip[data-icon-left="true"][data-icon-right="true"] {
+  /* FAIL LOUD: Figma source specifies 10px here — not on our --brand-scale
+     ramp (nearest: --brand-scale-200=8px, --brand-scale-300=12px). No token
+     matches. Recorded as a literal per design source; needs a Figma
+     Variables fix to align to the scale, not a code-side derivation. */
+  padding-left: 10px;
+  padding-right: 10px;
+  gap: var(--brand-scale-200);
+}
+
+/* DELIBERATE UX ADDITION beyond Figma source (not a CLAUDE.md mandate, not
+   automatic from Tag precedent) — case-by-case call: a repeatedly-clicked
+   toggle control needs hover/press feedback. Unselected state only; no
+   selected+hover/press combo, matching Tab's precedent of respecting
+   Figma's omitted combos. See docs/component-tokens.md for full rationale. */
+.filter-chip:not(.filter-chip--selected):hover:not(:active) {
+  background: var(--mapped-surface-subtle-hover);
+}
+.filter-chip:not(.filter-chip--selected):hover:not(:active) .filter-chip__label {
+  color: var(--mapped-text-default-hover);
+}
+.filter-chip:not(.filter-chip--selected):active {
+  background: var(--mapped-surface-subtle-pressed);
+}
+.filter-chip:not(.filter-chip--selected):active .filter-chip__label {
+  color: var(--mapped-text-default-pressed);
+}
+
+/* === Selected === */
+.filter-chip--selected {
+  border-color: var(--mapped-border-primary-default);
+  /* No opacity/tint token exists in source — derived from the real mapped border token. See docs. */
+  background: color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent);
+}
+.filter-chip--selected .filter-chip__label {
+  color: var(--mapped-text-primary-default);
+}
+
+/* === Focus (keyboard) === */
+.filter-chip:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+  outline-offset: var(--brand-scale-50);
+}
+
+/* Preview overrides — showcase only, not for production use */
+.filter-chip[data-preview="hover"]:not(.filter-chip--selected) {
+  background: var(--mapped-surface-subtle-hover) !important;
+}
+.filter-chip[data-preview="hover"]:not(.filter-chip--selected) .filter-chip__label {
+  color: var(--mapped-text-default-hover) !important;
+}
+.filter-chip[data-preview="pressed"]:not(.filter-chip--selected) {
+  background: var(--mapped-surface-subtle-pressed) !important;
+}
+.filter-chip[data-preview="pressed"]:not(.filter-chip--selected) .filter-chip__label {
+  color: var(--mapped-text-default-pressed) !important;
+}
+.filter-chip[data-preview="focus"] {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default) !important;
+  outline-offset: var(--brand-scale-50) !important;
+}

@@ -30,6 +30,7 @@ import { Radio } from './components/Radio'
 import { Tab } from './components/Tab'
 import { Tabs } from './components/Tabs'
 import { ButtonGroup } from './components/ButtonGroup'
+import { FilterChip } from './components/FilterChips'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -433,6 +434,7 @@ export default function App() {
   const { dark, toggle } = useTheme()
   const [tab, setTab] = useState<'foundations' | 'components'>('components')
   const [tabsSelected, setTabsSelected] = useState('overview')
+  const [filterChipsSelected, setFilterChipsSelected] = useState<Record<string, boolean>>({ chip2: true })
 
   const tabBtn = (id: typeof tab, label: string) => (
     <button
@@ -1325,6 +1327,60 @@ export default function App() {
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Count = 3</div>
                 <ButtonGroup buttons={[{ label: 'Button' }, { label: 'Button' }, { label: 'Button' }]} />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Filter Chips ───────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
+            <h2 style={{ marginBottom: '0.25rem' }}>Filter Chips</h2>
+            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+              2 states × 4 icon combos — selected bg via color-mix() (no opacity token in source) — hover/press on unselected only (deliberate addition, see docs)
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Default — icon combos</div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0.5rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem' }}>
+                  <FilterChip label="Chip" />
+                  <FilterChip label="Chip" iconLeft={<Icon name="add" size="s" />} />
+                  <FilterChip label="Chip" iconRight={<Icon name="add" size="s" />} />
+                  <FilterChip label="Chip" iconLeft={<Icon name="add" size="s" />} iconRight={<Icon name="close" size="s" />} />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Selected — icon combos</div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0.5rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem' }}>
+                  <FilterChip label="Chip" isSelected />
+                  <FilterChip label="Chip" isSelected iconLeft={<Icon name="add" size="s" />} />
+                  <FilterChip label="Chip" isSelected iconRight={<Icon name="add" size="s" />} />
+                  <FilterChip label="Chip" isSelected iconLeft={<Icon name="add" size="s" />} iconRight={<Icon name="close" size="s" />} />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Forced states (unselected)</div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0.5rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem' }}>
+                  <FilterChip label="Default" />
+                  <FilterChip label="Hover" previewState="hover" />
+                  <FilterChip label="Pressed" previewState="pressed" />
+                  <FilterChip label="Focus" previewState="focus" />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Interactive example — click to toggle</div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  {['chip1', 'chip2', 'chip3'].map(id => (
+                    <FilterChip
+                      key={id}
+                      label={id}
+                      isSelected={!!filterChipsSelected[id]}
+                      onClick={() => setFilterChipsSelected(s => ({ ...s, [id]: !s[id] }))}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>

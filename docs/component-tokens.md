@@ -1057,3 +1057,63 @@ All surface/border/text/focus tokens are inherited unchanged from `IconButton` a
 - **Figma node 148:1570 is a Components documentation frame** containing a section header, a "Button groups" label chip, and the `Button group` instance (70:2317) plus a hidden description box. Only 70:2317 is the real component.
 - **Figma models count as a fixed variant** (`Count=2` / `Count=3`, each with hardcoded `Button` children). Code uses a data-driven `buttons` array instead, so any length ≥ 2 works without adding new variants — consistent with the `Tabs` composite pattern.
 - **No unique tokens**: every visual property (icon color, button surface/border/text, radius, gap) already exists in the `IconButton`/`Button` token tables; `ButtonGroup` itself only needs `Scale/100` for the inter-item gap.
+
+---
+
+## Filter Chips
+
+**Figma node:** 12:137 (`filter/chips/toggle`, labeled "Toggle chip")
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 148:2290 (Components documentation frame)
+
+A single-selection toggle chip — button-like pill that flips between an unselected outline state and a selected primary-tinted state. Component: `FilterChip` (singular), folder `src/components/FilterChips/`.
+
+**Out of scope, not built:** the same documentation frame (148:2290) also contains a second, unrelated component — `Field` (228:1296), labeled "Chip" — a removable tag with an "×" affordance. It is not nested inside `filter/chips/toggle`, does not match our existing `Chips` component (a status/appearance tag, different purpose), and was explicitly excluded from this build. Noted for future consideration.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `label` | `string` | `'Chip'` | |
+| `isSelected` | `boolean` | `false` | |
+| `iconLeft` | `ReactNode` | — | Swappable icon slot |
+| `iconRight` | `ReactNode` | — | Swappable icon slot |
+| `onClick` | `(e) => void` | — | |
+| `previewState` | `'hover' \| 'pressed' \| 'focus'` | — | Showcase only, forces a visual state |
+
+### Variant × state → token mapping
+
+| Figma variant | Border | Background | Label text |
+|---|---|---|---|
+| `default`, any icon combo | `--mapped-border-subtle-default` | transparent | `--mapped-text-default-default` |
+| `Selected`, any icon combo | `--mapped-border-primary-default` | `color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent)` | `--mapped-text-primary-default` |
+
+Icons are caller-supplied `ReactNode` slots (e.g. `<Icon name="..." />`), coloring via `currentColor` inheritance — no dedicated icon-color token needed.
+
+### Geometry
+
+| Property | Token | Px |
+|---|---|---|
+| Border width | `--brand-scale-25` | 1px |
+| Border radius | `--brand-scale-200` | 8px |
+| Vertical padding (all variants) | `--brand-scale-300` | 12px |
+| Horizontal padding, no icons | `--brand-scale-400` both sides | 16px / 16px |
+| Horizontal padding, one icon | `--brand-scale-300` (icon side) / `--brand-scale-400` (opposite side) | 12px / 16px |
+| Horizontal padding, both icons | literal `10px` both sides (see inconsistency note) | 10px / 10px |
+| Icon↔label gap (icon present) | `--brand-scale-200` | 8px |
+| Icon size | `--brand-scale-400` | 16px |
+| Focus outline width/offset | `--brand-scale-50` | 2px |
+
+### Deliberate UX addition: hover/press states
+
+Figma's source (12:137) defines only 2 states — `default` and `Selected` — with **no hover or press variant at all**, for either selection state. This differs from the Tab gap (where Figma defines hover/press but omits only the `hover+selected`/`press+selected` combo): here the omission is total.
+
+**Decision:** added hover/press feedback for the **unselected** state only (`--mapped-surface-subtle-hover`/`-pressed` background, `--mapped-text-default-hover`/`-pressed` text). No selected+hover/press combo was added, consistent with Tab's precedent of respecting Figma's omitted combos rather than inventing new ones.
+
+This is a **case-by-case UX call, not a CLAUDE.md mandate and not an automatic extension of the Tag precedent** — CLAUDE.md's "map interaction states to tokens" rule governs which token layer to use once a state is needed, it does not mandate inventing states absent from Figma. Future components with similarly sparse interaction-state source should be evaluated individually, not assumed to get the same treatment automatically.
+
+### Known Figma inconsistencies
+
+- **Figma node 148:2290 is a Components documentation frame** containing two unrelated components ("Toggle chip" / `filter/chips/toggle` and "Chip" / `Field`) plus section-header/label scaffolding. Only `filter/chips/toggle` (12:137) is in scope here.
+- **Property value typos in the component set itself**: `iconLeft`/`iconRight` Figma variant values are inconsistently named `"True"` / `"False"` / `"Fals"` (typo) across different variant combinations — a source-side naming defect, not a code issue. Normalized to booleans in the React API.
+- **Both-icons horizontal padding is a literal `10px`** in the Figma-generated code, not a value on our `--brand-scale` ramp (nearest: `--brand-scale-200`=8px, `--brand-scale-300`=12px). No token matches. Recorded as a literal per design source rather than a derived `calc()` — a prior draft used `calc((--brand-scale-200 + --brand-scale-300) / 2)` to reverse-engineer 10px, which was rejected as dishonest curve-fitting (implies a token relationship that doesn't exist). Flag for a future Figma Variables fix to align this value to the scale.
+- **Selected-state background has no matching opacity/tint token**: Figma uses `rgba(4,110,255,0.1)` (10%-opacity primary blue), and no rgba/opacity token exists anywhere in the token source. Resolved with `color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent)` — derived from a real mapped token (dark-mode safe) rather than a hardcoded rgba(). **First use of `color-mix()` in this codebase** — accepted as the standard pattern for future missing-opacity-token cases. Flag for a future Figma Variables addition of a proper tint/overlay token.
