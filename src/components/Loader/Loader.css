@@ -1,0 +1,24 @@
+/* FIRST CSS ANIMATION IN THIS CODEBASE.
+   Source (108:131, "Step=1/2/3") is a rasterized PNG background with a
+   duplicated SVG dot stamped on top 5x at the same position — not clean
+   vector data. Container size (32px) and color (surface/primary/default,
+   confirmed via get_variable_defs) are real source values. Stroke width
+   (3px) and rotation speed (0.8s) are visually estimated, not sourced —
+   no vector path or motion data exists to read them from. See
+   docs/component-tokens.md for the full inconsistency note. */
+
+.loader {
+  display: inline-block;
+  width: var(--brand-scale-800); /* 32px, matches source container exactly */
+  height: var(--brand-scale-800);
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: var(--mapped-surface-primary-default);
+  animation: loader-spin 0.8s linear infinite;
+}
+
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -33,6 +33,7 @@ import { ButtonGroup } from './components/ButtonGroup'
 import { FilterChip } from './components/FilterChips'
 import { Link } from './components/Link'
 import { Breadcrumbs } from './components/Breadcrumbs'
+import { Loader } from './components/Loader'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -1468,6 +1469,22 @@ export default function App() {
                   ]}
                 />
               </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Loader ─────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
+            <h2 style={{ marginBottom: '0.25rem' }}>Loader</h2>
+            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+              First CSS @keyframes animation in this codebase — 32px container + color confirmed from source; stroke width and rotation speed are estimates (see docs)
+            </p>
+            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+              <Loader />
+              <Loader ariaLabel="Loading transactions" />
             </div>
           </div>
         </>

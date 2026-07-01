@@ -1222,3 +1222,54 @@ The last breadcrumb in the Figma source (102:2959) renders with underline presen
 - **Only a single fixed 3-item example exists in source** — no variant axis for item count. Code is data-driven via the `items` array, consistent with the `Tabs`/`ButtonGroup` pattern of generalizing beyond Figma's fixed example count.
 - **Discovered Link's icon-slot API defect during this build**: `Link`'s `iconBefore`/`iconAfter` were originally hardcoded to `open_in_new` behind a boolean, but Breadcrumbs' nested `❖ Link` instances use different icons per position (`home`, `chevron_right`, none) — proof the slots needed to be swappable `ReactNode` content. Fixed retroactively in `Link` (see Link's own entry); not a Breadcrumbs-specific inconsistency, but recorded here since this build is what surfaced it.
 - **Terminal item's forced underline** (see `isCurrent` above) — Figma shows this as the resting state of that instance, not an explicit "current page" variant; there's no component description confirming design intent versus a frozen-hover artifact. Treated as intentional (current-page indicator) per the recommended fix, not verified against explicit Figma documentation.
+
+---
+
+## Loader
+
+**Figma node:** 108:131 (`.animation`, internally labeled "Progress bar")
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 107:2970 (Components documentation frame)
+
+A rotating spinner. No nested component instances.
+
+**First CSS `@keyframes` animation in this codebase** — flagged and confirmed with the user before building, same governance as `color-mix()` for Filter Chips.
+
+### Why this couldn't be read from source like other components
+
+Every other component in this batch had clean vector data or literal pixel/color values to read directly from Figma's generated code. Loader's source (`Step=1`/`Step=2`/`Step=3`, static snapshots of a Prototype-mode rotation) is a **rasterized PNG background** with an SVG dot **stamped on top 5 times at the identical position** — an apparent flattening artifact in the Figma file, not clean vector geometry. There is no path data to read a stroke-width or arc-angle from, and no motion data (duration/easing) exists in static frames at all.
+
+**What was confirmed from source:**
+- Container size: 32×32px (all three Step frames and the standalone instance agree)
+- Color: `surface/primary/default` = `#046eff`, confirmed via `get_variable_defs` — maps to `--mapped-surface-primary-default`
+
+**What was visually estimated, not sourced** (flagged to the user before building, approved as "build with reasonable estimates"):
+- Stroke width: `3px` — no vector data to measure exactly
+- Rotation speed: `0.8s linear infinite` — a conventional spinner speed, not derived from the static frames, which can't encode timing
+
+### Implementation
+
+```css
+.loader {
+  width: var(--brand-scale-800); /* 32px, matches source container exactly */
+  height: var(--brand-scale-800);
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: var(--mapped-surface-primary-default);
+  animation: loader-spin 0.8s linear infinite;
+}
+@keyframes loader-spin { to { transform: rotate(360deg); } }
+```
+
+Standard border-trick spinner: a transparent circle with one edge colored, rotated continuously — reproduces "a colored arc sweeping around a fixed ring" without needing the unrecoverable exact arc geometry from source.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `ariaLabel` | `string` | `'Loading'` | Sets `role="status"` + `aria-label` on the spinner element |
+
+### Known Figma inconsistencies
+
+- **Source uses a rasterized PNG + duplicated flattened SVG elements**, not clean vector paths — first component in this batch where exact geometry couldn't be extracted rather than merely being off the token ramp (contrast with Filter Chips' literal-10px case, where the *value* was knowable but token-less; here the *value itself* isn't reliably knowable from source).
+- **Stroke width (`3px`) and rotation speed (`0.8s linear`) are estimates**, not sourced values — recorded here explicitly so they aren't mistaken for confirmed design decisions in the future. If exact values become available (e.g. a cleaner Figma export or designer input), update this component and this note together.
+- **Container size and color ARE real, confirmed source values** (32px, `surface/primary/default`) — only the stroke/motion values are estimated.
