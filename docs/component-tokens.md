@@ -1125,7 +1125,9 @@ This is a **case-by-case UX call, not a CLAUDE.md mandate and not an automatic e
 **Figma node:** 73:128 (`❖ Link`)
 **Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 73:123 (Components documentation frame)
 
-A leaf hyperlink component — renders a real `<a>` tag. Built as a dependency for Breadcrumbs. No nested component instances (just the `open_in_new` icon via our existing `Icon` component, and a hidden non-visual Figma artifact excluded from the build — see inconsistencies below).
+A leaf hyperlink component — renders a real `<a>` tag. Built as a dependency for Breadcrumbs. No nested component instances (icons come through the `iconBefore`/`iconAfter` slots below, and a hidden non-visual Figma artifact is excluded from the build — see inconsistencies below).
+
+**Revised for Breadcrumbs (post-initial-build):** `iconBefore`/`iconAfter` were originally booleans hardcoding an `open_in_new` icon internally — this violated the composition rule that swappable content must be exposed as `ReactNode` slots, not hardcoded behind a flag. Discovered when Breadcrumbs turned out to reuse the same `❖ Link` part with different icons per instance (`home`, `chevron_right`, none). Fixed to `React.ReactNode`, defaulting to `open_in_new` (preserves original standalone-Link behavior); pass `null` to render no icon. Also added `isCurrent?: boolean` for Breadcrumbs' terminal item (see its own entry).
 
 ### Props
 
@@ -1136,7 +1138,8 @@ A leaf hyperlink component — renders a real `<a>` tag. Built as a dependency f
 | `appearance` | `'default' \| 'subtle' \| 'inverse'` | `'default'` | |
 | `size` | `'S' \| 'M'` | `'S'` | See size-inversion note below |
 | `hasVisited` | `boolean` | `false` | Only meaningful for `default`/`subtle`; `inverse` has no visited variants in source |
-| `iconBefore` / `iconAfter` | `boolean` | `true` / `true` | Not a Figma variant axis, but a prop on every documented instance |
+| `isCurrent` | `boolean` | `false` | Forces underline without a color/interaction change — sets `aria-current="page"`. Added for Breadcrumbs' terminal item. |
+| `iconBefore` / `iconAfter` | `React.ReactNode` | `<Icon name="open_in_new" size="s" />` for both | Pass `null` to render no icon |
 | `target` | `'_blank' \| '_self'` | `'_blank'` | `rel="noopener noreferrer"` auto-applied when `_blank` |
 | `onClick` | `(e) => void` | — | |
 | `previewState` | `'hover' \| 'pressed' \| 'focus'` | — | Showcase only |
@@ -1177,3 +1180,45 @@ Icons inherit color via `currentColor` from the label — no separate icon-color
 - **Hover+visited reuses the plain `--mapped-text-interactive-default` token** instead of the existing `--mapped-text-interactive-default-hover` — confirmed via the actual Figma instance (73:171), not a code shortcut. Replicated exactly rather than "fixed."
 - **`inverse` appearance never demonstrates `hasVisited=true`** in source — always renders `--mapped-text-primary-on-color` regardless of the `hasVisited` prop. If a caller passes `hasVisited` with `appearance="inverse"`, the prop is accepted but has no visual effect (matches source, not a bug).
 - **Hidden `URL (Hidden)` element excluded from the build**: every Figma instance contains a non-visual paragraph (`opacity-0`, `size-[0.01px]`) carrying Atlassian tokens (`color.link`, `color.link.pressed`, `color.link.visited`, `color.text.subtle`, `color.text.inverse`) that don't exist in our token source. Confirmed via screenshot and design-context inspection that it renders nothing visible — treated as a Figma-internal artifact, not a missing-token gap requiring a fallback.
+
+---
+
+## Breadcrumbs
+
+**Figma node:** 102:2959 (`Breadcrumbs`)
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 88:243 (Components documentation frame)
+
+A composite that renders a sequence of `Link` instances (`appearance="subtle"`) separated by `chevron_right` icons, with an optional leading icon (e.g. `home`) on any item. No variants in source — a single fixed 3-item example instance.
+
+### Nested components
+
+- **`Link`** (from `../Link`) — one per breadcrumb item, `appearance="subtle"` `size="S"`.
+- **`Icon`** (from `../Icon`) — `chevron_right` as the separator (passed into each non-last item's `iconAfter` slot), plus any caller-supplied leading icon (e.g. `home`) passed into `iconBefore`.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `items` | `BreadcrumbItem[]` | — | `{ label, href?, icon? }` — `icon` is a leading `ReactNode`, typically only used on the first item |
+| `ariaLabel` | `string` | `'Breadcrumb'` | `aria-label` on the wrapping `<nav>` |
+
+### Token mapping
+
+No tokens of its own — everything is delegated to `Link` (`appearance="subtle"` token table) and `Icon`. Layout:
+
+```css
+.breadcrumbs { display: flex; align-items: flex-start; gap: 0; }
+```
+
+`gap: 0` because the trailing chevron on each non-last item abuts the next item directly, per Figma (confirmed — no spacing between the separator and the next label).
+
+### Terminal item — `isCurrent`
+
+The last breadcrumb in the Figma source (102:2959) renders with underline present by default, visually identical to `Link`'s `subtle` **hover** state, despite not being hovered in the snapshot. This surfaced a real gap in `Link`'s original API (no way to force underline outside the showcase-only `previewState`), resolved by adding `Link`'s new `isCurrent` prop (see Link's own entry) rather than misusing `previewState` for production behavior. `Breadcrumbs` sets `isCurrent` on its last item automatically, which also sets `aria-current="page"`.
+
+### Known Figma inconsistencies
+
+- **Figma node 88:243 is a Components documentation frame** — the actual component is the single `Breadcrumbs` instance (102:2959), not the frame itself.
+- **Only a single fixed 3-item example exists in source** — no variant axis for item count. Code is data-driven via the `items` array, consistent with the `Tabs`/`ButtonGroup` pattern of generalizing beyond Figma's fixed example count.
+- **Discovered Link's icon-slot API defect during this build**: `Link`'s `iconBefore`/`iconAfter` were originally hardcoded to `open_in_new` behind a boolean, but Breadcrumbs' nested `❖ Link` instances use different icons per position (`home`, `chevron_right`, none) — proof the slots needed to be swappable `ReactNode` content. Fixed retroactively in `Link` (see Link's own entry); not a Breadcrumbs-specific inconsistency, but recorded here since this build is what surfaced it.
+- **Terminal item's forced underline** (see `isCurrent` above) — Figma shows this as the resting state of that instance, not an explicit "current page" variant; there's no component description confirming design intent versus a frozen-hover artifact. Treated as intentional (current-page indicator) per the recommended fix, not verified against explicit Figma documentation.

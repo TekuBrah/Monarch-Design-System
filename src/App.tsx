@@ -32,6 +32,7 @@ import { Tabs } from './components/Tabs'
 import { ButtonGroup } from './components/ButtonGroup'
 import { FilterChip } from './components/FilterChips'
 import { Link } from './components/Link'
+import { Breadcrumbs } from './components/Breadcrumbs'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -1431,8 +1432,41 @@ export default function App() {
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
                   <Link label="Size S" size="S" />
                   <Link label="Size M" size="M" />
-                  <Link label="No icons" iconBefore={false} iconAfter={false} />
+                  <Link label="No icons" iconBefore={null} iconAfter={null} />
                 </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Breadcrumbs ────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div style={{ padding: '1.5rem', background: 'var(--mapped-surface-page)', borderRadius: '0.75rem', border: '1px solid var(--mapped-border-subtle-default)' }}>
+            <h2 style={{ marginBottom: '0.25rem' }}>Breadcrumbs</h2>
+            <p style={{ marginBottom: '1.5rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+              Composes Link (subtle) + Icon (chevron_right separator) — data-driven via items array — last item gets isCurrent (underline + aria-current)
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>With leading home icon</div>
+                <Breadcrumbs
+                  items={[
+                    { label: 'Home', href: '#', icon: <Icon name="home" size="s" /> },
+                    { label: 'Settings', href: '#' },
+                    { label: 'Profile', href: '#' },
+                  ]}
+                />
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Two items, no leading icon</div>
+                <Breadcrumbs
+                  items={[
+                    { label: 'Dashboard', href: '#' },
+                    { label: 'Reports', href: '#' },
+                  ]}
+                />
               </div>
             </div>
           </div>

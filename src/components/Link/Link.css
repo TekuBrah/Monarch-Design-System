@@ -95,6 +95,12 @@
   text-decoration: underline;
 }
 
+/* === Current (e.g. Breadcrumbs' terminal item) — underline without a color/interaction change === */
+.link--default.link--current:not(.link--visited),
+.link--subtle.link--current:not(.link--visited) {
+  text-decoration: underline;
+}
+
 /* === Focus (keyboard) === */
 .link:focus-visible,
 .link[data-preview="focus"] {

@@ -5,14 +5,17 @@ import './Link.css'
 export type LinkAppearance = 'default' | 'subtle' | 'inverse'
 export type LinkSize = 'S' | 'M'
 
+const DEFAULT_ICON = <Icon name="open_in_new" size="s" />
+
 export interface LinkProps {
   label?: string
   href?: string
   appearance?: LinkAppearance
   size?: LinkSize
   hasVisited?: boolean
-  iconBefore?: boolean
-  iconAfter?: boolean
+  isCurrent?: boolean
+  iconBefore?: React.ReactNode
+  iconAfter?: React.ReactNode
   target?: '_blank' | '_self'
   onClick?: React.MouseEventHandler<HTMLAnchorElement>
   /** Showcase only — forces a visual state without interaction */
@@ -25,8 +28,9 @@ export function Link({
   appearance = 'default',
   size = 'S',
   hasVisited = false,
-  iconBefore = true,
-  iconAfter = true,
+  isCurrent = false,
+  iconBefore = DEFAULT_ICON,
+  iconAfter = DEFAULT_ICON,
   target = '_blank',
   onClick,
   previewState,
@@ -39,24 +43,18 @@ export function Link({
       target={target}
       rel={target === '_blank' ? 'noopener noreferrer' : undefined}
       onClick={onClick}
+      aria-current={isCurrent ? 'page' : undefined}
       data-preview={previewState}
       className={[
         'link',
         `link--${appearance}`,
         hasVisited && 'link--visited',
+        isCurrent && 'link--current',
       ].filter(Boolean).join(' ')}
     >
-      {iconBefore && (
-        <span className="link__icon">
-          <Icon name="open_in_new" size="s" />
-        </span>
-      )}
+      {iconBefore && <span className="link__icon">{iconBefore}</span>}
       <span className={typeClass}>{label}</span>
-      {iconAfter && (
-        <span className="link__icon">
-          <Icon name="open_in_new" size="s" />
-        </span>
-      )}
+      {iconAfter && <span className="link__icon">{iconAfter}</span>}
     </a>
   )
 }
