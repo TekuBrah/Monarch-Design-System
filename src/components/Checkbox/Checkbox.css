@@ -30,8 +30,8 @@
   flex-shrink: 0;
 }
 
-.checkbox--medium .checkbox__box-wrap { width: 24px; height: 24px; }
-.checkbox--large  .checkbox__box-wrap { width: 32px; height: 32px; }
+.checkbox--medium .checkbox__box-wrap { width: var(--brand-scale-600); height: var(--brand-scale-600); } /* 24px */
+.checkbox--large  .checkbox__box-wrap { width: var(--brand-scale-800); height: var(--brand-scale-800); } /* 32px */
 
 /* === Visual box (inset 25% inside wrapper) === */
 .checkbox__box {

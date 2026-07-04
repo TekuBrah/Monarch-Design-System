@@ -28,8 +28,8 @@
 .radio__icon-wrap {
   position: relative;
   flex-shrink: 0;
-  width: 24px;
-  height: 24px;
+  width: var(--brand-scale-600);  /* 24px */
+  height: var(--brand-scale-600);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -37,6 +37,10 @@
 
 /* === Radio circle (14×14px, centered in 24px wrap via p-[5px]) === */
 .radio__circle {
+  /* FAIL LOUD: Figma source specifies 14px — not on our --brand-scale ramp
+     (nearest: --brand-scale-300=12px, --brand-scale-400=16px). No token
+     matches. Recorded as a literal per design source; needs a Figma
+     Variables fix to align to the scale, not a code-side derivation. */
   width: 14px;
   height: 14px;
   border-radius: var(--brand-scale-1800); /* 512px → fully round */
@@ -56,6 +60,10 @@
 
 /* === Inner dot (visible when checked) === */
 .radio__dot {
+  /* FAIL LOUD: Figma source specifies 6px — not on our --brand-scale ramp
+     (nearest: --brand-scale-100=4px, --brand-scale-200=8px). No token
+     matches. Recorded as a literal per design source; needs a Figma
+     Variables fix to align to the scale, not a code-side derivation. */
   width: 6px;
   height: 6px;
   border-radius: 50%;
