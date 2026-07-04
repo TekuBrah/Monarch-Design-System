@@ -86,8 +86,89 @@ Build the first component (e.g. Button) on top of the token foundation:
   var(--brand-scale-*) for radius/borders, var(--shadow-*), and the .type-* classes.
 - Map interaction states to tokens: default/hover/pressed/subtle → the matching
   --mapped-surface-* / --mapped-text-* tokens (that's why they exist).
+  **`--alias-*` never dark-flips** (the `[data-theme="dark"]` block only redefines
+  `--mapped-*`) — an alias token in a hover/pressed/selected/focus rule is a bug,
+  found and fixed twice (Toggle/Checkbox/Radio, then Tag). After building or
+  editing any component, grep its CSS for `--alias-` — any hit in an interactive
+  state must be replaced with a mapped token or the color-mix pattern below.
+  This grep is a required verification step, not optional.
+- **Token-source gap protocol** — when Figma specifies a value with no
+  corresponding token (missing opacity/tint, or a px value off the
+  `--brand-scale` ramp), do not invent a fallback silently. Get explicit
+  approval before using either approved pattern:
+  (a) `color-mix(in srgb, var(<real mapped token>) N%, transparent)` for a
+      missing opacity/tint token — N must match Figma's actual percentage
+      (e.g. FilterChip's selected background, Tag's hover/press tint).
+  (b) a plain px literal with a FAIL-LOUD comment (the Figma value, the
+      nearest ramp steps, a note that this needs a Figma Variables fix) for
+      an off-ramp value — e.g. FilterChip's 10px, Radio's 14px/6px.
+  **Banned**: `calc()` curve-fits between unrelated scale tokens to hit a
+  target number (e.g. averaging two scale steps) — this fabricates a
+  relationship between tokens that doesn't exist in the source. Rejected
+  once already; use pattern (b) instead.
+- **Inferred interaction states** — if Figma's source doesn't define a
+  hover/pressed/focus state for a component (or a specific state×selection
+  combo), never add one silently. Flag it and ask, case-by-case — there is
+  no standing rule that "interactive components always get hover/press."
+  If approved, document it in docs/component-tokens.md as a deliberate
+  addition beyond source, not as an inferred/default behavior.
+- **API conventions** (established across Button/Tab/Link/FilterChip/Tag):
+  text content goes through a `label` prop wherever Figma models it as a
+  string prop — never `children` (a silent-failure risk: `Button` has no
+  `children` handling, so passing text as children renders nothing visibly
+  wrong but silently drops the text). `previewState` (showcase-only, forces
+  a visual state without interaction) uses the value `'pressed'`, not
+  `'press'`. `onChange` callbacks pass the new value, e.g.
+  `(checked: boolean) => void` — not a bare `() => void`. React list keys
+  are stable IDs, never array indices.
 - React + TypeScript. One component per folder: src/components/<Name>/<Name>.tsx + index.ts.
 - Build one component at a time. Show output for review before moving on.
+
+## Accessibility baseline
+Every interactive component (Toggle, Checkbox, Radio, Tab/Tabs, Link,
+Breadcrumbs, FilterChips, ButtonGroup, etc.) must have, before it's considered
+done:
+- Correct ARIA role and state attributes for what it semantically is
+  (`role="switch"`, `role="tablist"`/`role="tab"`, `role="group"`, etc.).
+- `isRequired`-style props wire the real `required` + `aria-required`
+  attributes on the underlying input, not just a visual asterisk.
+- Visible `:focus-visible` styling (never rely on browser default alone).
+- Keyboard interaction wherever the relevant WAI-ARIA pattern requires it
+  (e.g. tablist needs roving tabindex + ArrowLeft/ArrowRight).
+- No dangling `aria-controls`/`aria-describedby` pointing at elements that
+  don't exist (e.g. a tabpanel id that's never rendered) — either render the
+  real target or don't reference it.
+
+## Showcase section pattern
+Every component's showcase entry in `src/App.tsx` (Components tab) must match
+the existing wrapper exactly — this is the only pattern in use, do not invent
+variants of it:
+```jsx
+<div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+  <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+    ComponentName
+  </h1>
+  <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+    one-line description
+  </p>
+  {/* component demo */}
+</div>
+```
+Sections are separated by `<hr style={HR} />` (HR is defined once near the top
+of App.tsx as `{ border: 'none', borderTop: '2px solid rgba(128,128,128,0.2)', margin: '2rem 0 2.5rem' }`).
+No border, no border-radius on the wrapper, no per-section style variants —
+a batch of sections built with rounded-corner/bordered wrappers had to be
+retroactively conformed to this once already.
+
+## Verification discipline
+- Verify visual/behavioral changes with `getComputedStyle` (color,
+  background, outline, text-decoration, tabIndex, aria-* attributes, etc.)
+  in **both light and dark mode** — not the screenshot tool, which has been
+  unreliable within sessions (stale/collapsed renders, timeouts). Screenshots
+  are a nice-to-have once computed-style checks pass, not the primary check.
+- Before reporting on "what's built" or "what's left," check disk and git
+  (`ls src/components/`, `git log --oneline`) — never rely on running session
+  memory, which has drifted from actual repo state before.
 
 ## Component composition / nesting
 - When a Figma component contains an INSTANCE of another component we've already
@@ -95,9 +176,24 @@ Build the first component (e.g. Button) on top of the token foundation:
 - If a component nests another that does NOT exist in code yet, STOP and tell me
   which — do not inline a copy. We build the child first, then compose.
 - Flexible/swappable content (icons, arbitrary children) is exposed as slots/props
-  (ReactNode), not hardcoded inside the parent.
+  (ReactNode), not hardcoded inside the parent. A slot hardcoded to one default
+  icon behind a boolean is not swappable — this was built wrong once (Link) and
+  had to be fixed retroactively once a composite (Breadcrumbs) needed different
+  icons per instance.
 - When reading a component via MCP, first REPORT which nested component instances
   it contains, so we can confirm build order before building.
+
+## Checkpoint discipline
+One component at a time, checkpoints never batched together:
+1. Read the Figma source. Report every variant/state and every nested
+   component instance. **STOP** — wait for confirmation before writing code.
+2. Build. Report the exact variant→token mapping as implemented (including
+   any token-source gaps and how they were resolved). **STOP** — wait for
+   confirmation before touching docs or the showcase.
+3. Only after that confirmation: append the docs/component-tokens.md entry
+   and add the showcase section.
+This applies even mid-batch — "resume the batch" does not mean skip the
+per-component stops for the next one.
 
 ## Git workflow
 - You may stage and commit locally with clear messages.
