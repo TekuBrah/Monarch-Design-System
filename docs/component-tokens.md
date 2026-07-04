@@ -695,8 +695,8 @@ A filter/selection pill rendered as a `<button>`. Two appearances (default on wh
 | state | background | border | text/icon |
 |---|---|---|---|
 | default | `transparent` | `transparent` | `--mapped-text-subtle-default` |
-| hover | `--alias-primary-50` | `--mapped-border-primary-default-hover` | `--mapped-text-primary-default-hover` |
-| press | `--alias-primary-100` | `--mapped-border-primary-default-pressed` | `--mapped-text-primary-default-pressed` |
+| hover | `color-mix(--mapped-border-primary-default 10%, transparent)` | `--mapped-border-primary-default-hover` | `--mapped-text-primary-default-hover` |
+| press | `color-mix(--mapped-border-primary-default 20%, transparent)` | `--mapped-border-primary-default-pressed` | `--mapped-text-primary-default-pressed` |
 | selected | `--mapped-surface-primary-default` | `--mapped-surface-primary-default` | `--mapped-text-primary-on-color` |
 | disabled | `transparent` | `--mapped-border-disabled-default` | `--mapped-text-disabled-default` |
 | focus ring | — | `--mapped-border-primary-default` (2px / 2px offset) | — |
@@ -729,9 +729,8 @@ A filter/selection pill rendered as a `<button>`. Two appearances (default on wh
 
 ### Known Figma inconsistencies
 
-- **Hover/press backgrounds (`alias-primary-50/100`) at alias layer**: No mapped token for subtle hover/press tint backgrounds (`--mapped-surface-primary-default-subtle-hover` resolves to `alias-surface-50`, not `alias-primary-50`). Figma source explicitly uses `color.blue.50` and `color.blue.100`. Alias fallback is intentional and confirmed against Figma; these will not dark-flip.
-- **Overlay focus ring**: Uses hardcoded `white` for the focus outline — overlay context is always dark, so the token `--mapped-text-primary-on-color` (#ffffff) would resolve identically.
-- **FilterChips (148:2279)**: Blocked during build — Figma desktop had wrong file open. Not built; not in this batch.
+- **Hover/press tint backgrounds — no mapped subtle-primary-tint token exists**: `--mapped-surface-primary-default-subtle-hover` resolves to `alias-surface-50` (neutral gray), not a blue tint. Figma source uses `color.blue.50` (#e6f1ff ≈ 10% primary over white) for hover and `color.blue.100` (#cde2ff ≈ 20%) for press. **Superseding the earlier alias fallback**: now derived via `color-mix(in srgb, var(--mapped-border-primary-default) N%, transparent)` (10% hover / 20% press), matching the FilterChip precedent — this dark-flips correctly, whereas the previous `--alias-primary-50/100` were frozen across themes. Flag for a future Figma Variables addition of proper subtle-primary-tint tokens.
+- **Overlay focus ring**: Now uses `--mapped-text-primary-on-color` (was hardcoded `white`). Overlay context is always dark, so it resolves to #ffffff either way; the token form keeps Tag free of raw color literals.
 
 ---
 

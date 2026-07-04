@@ -40,8 +40,10 @@
 
 /* Hover */
 .tag--default:not(.tag--disabled):hover {
-  /* No mapped token — alias-primary-50 = --brand-blue-50 (#e6f1ff), confirmed in Figma */
-  background: var(--alias-primary-50);
+  /* No mapped subtle-primary-tint token exists. Derived from the mapped border
+     token so it dark-flips (matches FilterChip precedent). Figma hover tint
+     alias-primary-50 (#e6f1ff) ≈ 10% primary over white. */
+  background: color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent);
   border-color: var(--mapped-border-primary-default-hover);
 }
 .tag--default:not(.tag--disabled):hover .tag__label,
@@ -51,8 +53,9 @@
 
 /* Press / active */
 .tag--default:not(.tag--disabled):active {
-  /* alias-primary-100 = --brand-blue-100 (#cde2ff), confirmed in Figma */
-  background: var(--alias-primary-100);
+  /* Figma press tint alias-primary-100 (#cde2ff) ≈ 20% primary over white.
+     Derived from the mapped border token so it dark-flips. */
+  background: color-mix(in srgb, var(--mapped-border-primary-default) 20%, transparent);
   border-color: var(--mapped-border-primary-default-pressed);
 }
 .tag--default:not(.tag--disabled):active .tag__label,
@@ -109,7 +112,7 @@
 
 /* Focus ring */
 .tag--overlay:focus-visible {
-  outline: 2px solid white;
+  outline: 2px solid var(--mapped-text-primary-on-color);
   outline-offset: 2px;
 }
 
