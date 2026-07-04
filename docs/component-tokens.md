@@ -877,7 +877,7 @@ A single radio button. Intended to be used in groups via shared `name` attribute
 | `isInvalid` | `boolean` | `false` | Red border |
 | `isRequired` | `boolean` | `false` | Appends `*` in error color |
 | `isDisabled` | `boolean` | `false` | |
-| `onChange` | `() => void` | — | |
+| `onChange` | `(checked: boolean) => void` | — | Matches Toggle/Checkbox signature |
 | `name` | `string` | — | Groups radios for mutual exclusion |
 | `value` | `string` | — | Form value |
 | `id` | `string` | — | |

@@ -7,7 +7,7 @@ export interface RadioProps {
   isInvalid?: boolean
   isRequired?: boolean
   isDisabled?: boolean
-  onChange?: () => void
+  onChange?: (checked: boolean) => void
   name?: string
   value?: string
   id?: string
@@ -43,7 +43,7 @@ export function Radio({
         checked={isChecked}
         disabled={isDisabled}
         aria-invalid={isInvalid || undefined}
-        onChange={() => onChange?.()}
+        onChange={e => onChange?.(e.target.checked)}
       />
       <span className="radio__icon-wrap">
         <span className={`radio__circle${isChecked ? ' radio__circle--checked' : ''}${isInvalid ? ' radio__circle--invalid' : ''}`}>

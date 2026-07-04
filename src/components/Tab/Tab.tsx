@@ -5,9 +5,12 @@ export interface TabProps {
   label?: string
   isSelected?: boolean
   onClick?: React.MouseEventHandler<HTMLButtonElement>
-  previewState?: 'hover' | 'press' | 'focus'
+  previewState?: 'hover' | 'pressed' | 'focus'
+  /** Only set when a real tabpanel exists to control; omit otherwise. */
   ariaControls?: string
   id?: string
+  /** Roving tabindex — managed by the Tabs container. */
+  tabIndex?: number
 }
 
 export function Tab({
@@ -17,6 +20,7 @@ export function Tab({
   previewState,
   ariaControls,
   id,
+  tabIndex,
 }: TabProps) {
   return (
     <button
@@ -25,6 +29,7 @@ export function Tab({
       id={id}
       aria-selected={isSelected}
       aria-controls={ariaControls}
+      tabIndex={tabIndex}
       className={[
         'tab',
         isSelected && 'tab--selected',

@@ -1311,7 +1311,7 @@ export default function App() {
                   <Tab label="Default" />
                   <Tab label="Selected" isSelected />
                   <Tab label="Hover" previewState="hover" />
-                  <Tab label="Press" previewState="press" />
+                  <Tab label="Press" previewState="pressed" />
                   <Tab label="Focus" previewState="focus" />
                   <Tab label="Focus+Sel" isSelected previewState="focus" />
                 </div>

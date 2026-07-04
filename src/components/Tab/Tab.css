@@ -45,26 +45,26 @@
 }
 
 /* === Hover (unselected only) === */
-.tab:hover:not(.tab--selected):not(.tab--press):not(.tab--focus),
+.tab:hover:not(.tab--selected):not(.tab--pressed):not(.tab--focus),
 .tab--hover:not(.tab--selected) {
   background: var(--mapped-surface-primary-default-subtle-hover);
   box-shadow: var(--shadow-subtlest);
 }
 
-.tab:hover:not(.tab--selected):not(.tab--press):not(.tab--focus) .tab__label,
+.tab:hover:not(.tab--selected):not(.tab--pressed):not(.tab--focus) .tab__label,
 .tab--hover:not(.tab--selected) .tab__label {
   color: var(--mapped-text-subtle-hover);
 }
 
 /* === Press (unselected) === */
 .tab:active:not(.tab--selected),
-.tab--press:not(.tab--selected) {
+.tab--pressed:not(.tab--selected) {
   background: transparent;
   box-shadow: none;
 }
 
 .tab:active .tab__label,
-.tab--press .tab__label {
+.tab--pressed .tab__label {
   color: var(--mapped-text-subtle-subtle-pressed);
 }
 
