@@ -1343,11 +1343,11 @@ export default function App() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Count = 2</div>
-                <ButtonGroup buttons={[{ label: 'Button' }, { label: 'Button' }]} />
+                <ButtonGroup ariaLabel="Example actions (2)" buttons={[{ id: 'a', label: 'Button' }, { id: 'b', label: 'Button' }]} />
               </div>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Count = 3</div>
-                <ButtonGroup buttons={[{ label: 'Button' }, { label: 'Button' }, { label: 'Button' }]} />
+                <ButtonGroup ariaLabel="Example actions (3)" buttons={[{ id: 'a', label: 'Button' }, { id: 'b', label: 'Button' }, { id: 'c', label: 'Button' }]} />
               </div>
             </div>
           </div>

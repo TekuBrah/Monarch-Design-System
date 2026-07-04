@@ -42,6 +42,8 @@ export function Radio({
         className="radio__input"
         checked={isChecked}
         disabled={isDisabled}
+        required={isRequired}
+        aria-required={isRequired || undefined}
         aria-invalid={isInvalid || undefined}
         onChange={e => onChange?.(e.target.checked)}
       />

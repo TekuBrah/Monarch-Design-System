@@ -6,6 +6,8 @@ import './ButtonGroup.css'
 
 export interface ButtonGroupItem {
   label: string
+  /** Stable identity for React keys; falls back to label+index if omitted. */
+  id?: string
   onClick?: React.MouseEventHandler<HTMLButtonElement>
   disabled?: boolean
 }
@@ -14,11 +16,13 @@ export interface ButtonGroupProps {
   buttons: ButtonGroupItem[]
   onMoreClick?: React.MouseEventHandler<HTMLButtonElement>
   moreAriaLabel?: string
+  /** Accessible name for the group (role="group"). */
+  ariaLabel?: string
 }
 
-export function ButtonGroup({ buttons, onMoreClick, moreAriaLabel = 'More actions' }: ButtonGroupProps) {
+export function ButtonGroup({ buttons, onMoreClick, moreAriaLabel = 'More actions', ariaLabel = 'Button group' }: ButtonGroupProps) {
   return (
-    <div className="button-group">
+    <div className="button-group" role="group" aria-label={ariaLabel}>
       <IconButton
         variant="tertiary"
         size="m"
@@ -28,7 +32,7 @@ export function ButtonGroup({ buttons, onMoreClick, moreAriaLabel = 'More action
       />
       {buttons.map((b, i) => (
         <Button
-          key={i}
+          key={b.id ?? `${b.label}-${i}`}
           variant="primary"
           size="m"
           label={b.label}

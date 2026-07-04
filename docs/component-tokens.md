@@ -814,7 +814,7 @@ A form control with three selection states (unchecked/checked/indeterminate) and
 | `isChecked` | `boolean` | `false` | |
 | `isIndeterminate` | `boolean` | `false` | Sets `input.indeterminate`; renders dash icon; `aria-checked="mixed"` |
 | `isInvalid` | `boolean` | `false` | Red border + red fill when marked |
-| `isRequired` | `boolean` | `false` | Appends `*` in error color |
+| `isRequired` | `boolean` | `false` | Appends `*` in error color **and** sets `required` + `aria-required` on the input |
 | `isDisabled` | `boolean` | `false` | |
 | `onChange` | `(checked: boolean) => void` | — | |
 | `id` | `string` | — | Forwarded to `<input>` |
@@ -875,7 +875,7 @@ A single radio button. Intended to be used in groups via shared `name` attribute
 | `label` | `string` | `'Label'` | |
 | `isChecked` | `boolean` | `false` | Controlled |
 | `isInvalid` | `boolean` | `false` | Red border |
-| `isRequired` | `boolean` | `false` | Appends `*` in error color |
+| `isRequired` | `boolean` | `false` | Appends `*` in error color **and** sets `required` + `aria-required` on the input |
 | `isDisabled` | `boolean` | `false` | |
 | `onChange` | `(checked: boolean) => void` | — | Matches Toggle/Checkbox signature |
 | `name` | `string` | — | Groups radios for mutual exclusion |
@@ -1000,7 +1000,13 @@ A controlled wrapper that composes multiple `Tab` instances inside a `role="tabl
 
 ### Nested components
 
-- **`Tab`** (67:1987) — imported from `../Tab`. Each `TabItem` maps to one `<Tab>` with `isSelected`, `ariaControls`, and `onClick` wired.
+- **`Tab`** (67:1987) — imported from `../Tab`. Each `TabItem` maps to one `<Tab>` with `isSelected`, `tabIndex` (roving), and `onClick` wired.
+
+### Keyboard & ARIA
+
+- **Roving tabindex**: exactly one tab is in the tab order (`tabIndex=0`) — the selected tab, or the first tab if selection is absent/unmatched; all others are `tabIndex=-1`, per the WAI-ARIA tablist pattern.
+- **Arrow keys**: `ArrowRight`/`ArrowLeft` move selection (automatic activation) to the next/previous tab, wrapping at the ends, and move focus to that tab.
+- **`aria-controls` removed**: the earlier build wired `aria-controls="panel-<id>"` to tabpanels that don't exist (Tabs renders no panels). The dangling reference was removed rather than pointing at absent elements. `Tab` retains an optional `ariaControls` prop for callers who *do* render real panels.
 
 ### Token mapping
 
@@ -1030,11 +1036,14 @@ A composite that pairs a leading "more actions" trigger with a row of primary ac
 
 | Prop | Type | Default | Notes |
 |---|---|---|---|
-| `buttons` | `ButtonGroupItem[]` | — | Array of `{ label, onClick?, disabled? }` — one `Button` per item |
+| `buttons` | `ButtonGroupItem[]` | — | Array of `{ label, id?, onClick?, disabled? }` — one `Button` per item |
 | `onMoreClick` | `(e) => void` | — | Click handler for the leading `IconButton` trigger |
 | `moreAriaLabel` | `string` | `'More actions'` | `aria-label` on the leading `IconButton` |
+| `ariaLabel` | `string` | `'Button group'` | Accessible name for the wrapping `role="group"` |
 
-`ButtonGroupItem` type: `{ label: string; onClick?: MouseEventHandler; disabled?: boolean }`
+`ButtonGroupItem` type: `{ label: string; id?: string; onClick?: MouseEventHandler; disabled?: boolean }`
+
+The wrapper is a `role="group"` with `aria-label`. React keys use `item.id` when provided, falling back to `` `${label}-${index}` `` (labels alone aren't unique — the showcase intentionally repeats "Button"), so pass `id` for stable identity when items can reorder.
 
 ### Nested components
 

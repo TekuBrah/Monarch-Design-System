@@ -54,6 +54,8 @@ export function Checkbox({
         className="checkbox__input"
         checked={isChecked}
         disabled={isDisabled}
+        required={isRequired}
+        aria-required={isRequired || undefined}
         aria-invalid={isInvalid || undefined}
         aria-checked={isIndeterminate ? 'mixed' : isChecked}
         onChange={e => onChange?.(e.target.checked)}
