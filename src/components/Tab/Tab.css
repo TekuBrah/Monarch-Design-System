@@ -69,11 +69,14 @@
 }
 
 /* === Focus === */
+/* Figma update: the focus stroke sits 2px OUTSIDE the tab (gap between ring and
+   tab). Tab keeps its 8px corners (border-radius/md); with the 2px outline-offset
+   the ring renders at ~10px (border-radius/lg), concentric with the tab — so no
+   separate radius override is needed (and no off-ramp 10px literal). */
 .tab:focus-visible,
 .tab--focus {
-  outline: 2px solid var(--mapped-border-primary-default);
-  outline-offset: 0;
-  border-radius: var(--brand-scale-300); /* 10px = border-radius/lg from Figma */
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default); /* 2px */
+  outline-offset: var(--brand-scale-50); /* 2px gap — was 0 */
   background: var(--mapped-surface-primary-default-subtle);
   box-shadow: var(--shadow-subtlest);
 }
