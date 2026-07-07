@@ -1281,3 +1281,97 @@ Standard border-trick spinner: a transparent circle with one edge colored, rotat
 - **Source uses a rasterized PNG + duplicated flattened SVG elements**, not clean vector paths — first component in this batch where exact geometry couldn't be extracted rather than merely being off the token ramp (contrast with Filter Chips' literal-10px case, where the *value* was knowable but token-less; here the *value itself* isn't reliably knowable from source).
 - **Stroke width (`3px`) and rotation speed (`0.8s linear`) are estimates**, not sourced values — recorded here explicitly so they aren't mistaken for confirmed design decisions in the future. If exact values become available (e.g. a cleaner Figma export or designer input), update this component and this note together.
 - **Container size and color ARE real, confirmed source values** (32px, `surface/primary/default`) — only the stroke/motion values are estimated.
+
+---
+
+## Field
+
+**Figma node:** 39:1367 (`Field` component set)
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 149:2515 (Components documentation frame)
+
+A text input. Bordered box → leading icon · [optional floating label + input] ·
+trailing icon. Re-read per-variant via `get_design_context` (all values below
+are confirmed from source, not inferred — an earlier draft that inferred from
+screenshots got padding, the focus ring, invalid width, disabled text, and the
+Subtle appearance wrong).
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `appearance` | `'standard' \| 'subtle'` | `'standard'` | Subtle = transparent until focus |
+| `label` | `string` | — | Floating label (Figma `Label=True`); real `<label htmlFor>` |
+| `placeholder` | `string` | — | |
+| `value` / `defaultValue` | `string` | — | Controlled / uncontrolled |
+| `onChange` | `(value: string) => void` | — | Passes the new string |
+| `leadingIcon` / `trailingIcon` | `React.ReactNode` | — | Icon slots (`<Icon>`, 20px) |
+| `isCompact` | `boolean` | `false` | Square, icon-only field |
+| `isDisabled` | `boolean` | `false` | |
+| `isInvalid` | `boolean` | `false` | Sets `aria-invalid`; 2px error border |
+| `isRequired` | `boolean` | `false` | `required` + `aria-required`; visual `*` |
+| `ariaLabel` | `string` | — | Accessible name when no visible `label` |
+| `previewState` | `'hover' \| 'focus'` | — | Showcase only |
+
+### Variant axes
+
+`Appearance` (Standard/Subtle) × `Label` (T/F) × `Is compact` (T/F) ×
+`State` (Default/Hover/Focus/Typing/Filled) × `Is disabled` × `Is Invalid`.
+In code, State is interaction-driven — `:hover`, `:focus-within` (persists until
+blur), and placeholder-vs-value colour are native; the rest are props.
+
+### State → token mapping (Standard, confirmed)
+
+| State | Background | Border | Value/placeholder text |
+|---|---|---|---|
+| Default | `--mapped-surface-primary-default-subtle` | 1px `--mapped-border-subtlest-default` | placeholder `--mapped-text-subtle-default` |
+| Hover | `--mapped-surface-primary-default-subtle-hover` | 1px `--mapped-border-primary-default-subtle-hover` | `--mapped-text-subtle-default` |
+| Focus | `--mapped-surface-primary-default-subtle` | 2px `--mapped-border-primary-default` + glow ring | placeholder `--mapped-text-subtle-default` |
+| Typing | same + glow ring | 2px `--mapped-border-primary-default` | value `--mapped-text-default-default` |
+| Filled | `--mapped-surface-primary-default-subtle` | 1px `--mapped-border-subtlest-default` | value `--mapped-text-default-default` |
+| Invalid | `--mapped-surface-primary-default-subtle` | 2px `--mapped-border-error-default` | `--mapped-text-default-default` |
+| Disabled | `--mapped-surface-disabled-default` | 1px `--mapped-border-disabled-default` | `--mapped-text-disabled-on-color` (icons `--mapped-icon-disabled-on-color`) |
+
+**Subtle appearance:** transparent background and border at rest *and* on hover;
+only Focus adds the 2px blue border + glow ring. Invalid/disabled apply the same
+error/disabled tokens as Standard.
+
+**Focus glow ring** (`::after`): `inset -4px` (`--brand-scale-100`), `2px`
+(`--brand-scale-50` = Border Width/sm) solid `--mapped-surface-primary-default`,
+`border-radius --brand-scale-250` (10px = border-radius/lg), `opacity 0.25`. It
+persists via `:focus-within` until the input blurs — the "stays blue until you
+click away" behaviour.
+
+Icons colour via `--mapped-icon-subtle-default` (currentColor through `<Icon>`).
+
+### Geometry (confirmed)
+
+| Property | Token | Px |
+|---|---|---|
+| Horizontal padding | `--brand-scale-300` | 12px |
+| Vertical padding (no label / labeled) | `--brand-scale-250` / `--brand-scale-200` | 10px / 8px |
+| Radius | `--brand-scale-200` | 8px (border-radius/md) |
+| Border width (default / focus·invalid) | `--brand-scale-25` / `--brand-scale-50` | 1px / 2px |
+| Icon↔stack gap | `--brand-scale-200` | 8px |
+| Label→input gap | `--brand-scale-50` | 2px |
+| Icon size | via `<Icon size="m">` | 20px |
+| Compact | `--brand-scale-300` padding, square | 44×44 |
+| Demo width | — | 240px (caller-controlled in practice) |
+
+`box-sizing: border-box` keeps the box stable as the border grows 1→2px on focus.
+
+### Typography
+
+Label: `.type-body-caption` (12px). Input/placeholder: `.type-body-m` (16px).
+
+### Known Figma inconsistencies
+
+- **Caret** in the Focus/Typing variants uses Atlassian `color.text` (#172b4d),
+  a token with no equivalent in our system — irrelevant in code because a real
+  `<input>` renders its own caret (`caret-color: --mapped-text-default-default`).
+- **`border/default` (#e5e5e5)** appears in the set's aggregate `get_variable_defs`
+  but was not used by any variant actually read (Standard all states, Subtle
+  default/hover/focus, labeled, compact) — likely a leftover/unused token in the
+  Figma set. Not applied.
+- **`get_design_context` reliability**: the tool times out (~300s) when called on
+  the whole component set or with `forceCode`, but returns fine on individual
+  variant nodes — that per-variant approach is how this entry was sourced.

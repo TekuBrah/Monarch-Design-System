@@ -34,6 +34,7 @@ import { FilterChip } from './components/FilterChips'
 import { Link } from './components/Link'
 import { Breadcrumbs } from './components/Breadcrumbs'
 import { Loader } from './components/Loader'
+import { Field } from './components/Field'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -1511,6 +1512,47 @@ export default function App() {
             <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
               <Loader />
               <Loader ariaLabel="Loading transactions" />
+            </div>
+          </div>
+        </>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Field ──────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Field</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              Text input — Standard/Subtle × label × states × invalid/disabled/compact. Focus = 2px blue border + faint outer glow ring, persists until blur (:focus-within)
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '540px' }}>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  <Field placeholder="Placeholder" ariaLabel="Default" leadingIcon={<Icon name="add" size="m" />} trailingIcon={<Icon name="add" size="m" />} />
+                  <Field placeholder="Placeholder" ariaLabel="Hover" previewState="hover" leadingIcon={<Icon name="add" size="m" />} trailingIcon={<Icon name="add" size="m" />} />
+                  <Field placeholder="Placeholder" ariaLabel="Focus" previewState="focus" leadingIcon={<Icon name="add" size="m" />} trailingIcon={<Icon name="add" size="m" />} />
+                  <Field defaultValue="Filled value" ariaLabel="Filled" leadingIcon={<Icon name="add" size="m" />} trailingIcon={<Icon name="add" size="m" />} />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>With label · invalid · disabled</div>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  <Field label="Label" placeholder="Placeholder" leadingIcon={<Icon name="add" size="m" />} trailingIcon={<Icon name="add" size="m" />} />
+                  <Field label="Label" placeholder="Placeholder" isInvalid leadingIcon={<Icon name="add" size="m" />} trailingIcon={<Icon name="add" size="m" />} />
+                  <Field label="Label" placeholder="Placeholder" isDisabled leadingIcon={<Icon name="add" size="m" />} trailingIcon={<Icon name="add" size="m" />} />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Subtle · compact</div>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <Field appearance="subtle" placeholder="Placeholder" ariaLabel="Subtle" leadingIcon={<Icon name="add" size="m" />} trailingIcon={<Icon name="add" size="m" />} />
+                  <Field isCompact ariaLabel="Compact add" leadingIcon={<Icon name="add" size="m" />} />
+                  <Field isCompact previewState="focus" ariaLabel="Compact focus" leadingIcon={<Icon name="add" size="m" />} />
+                </div>
+              </div>
             </div>
           </div>
         </>

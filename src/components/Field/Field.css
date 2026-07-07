@@ -1,0 +1,134 @@
+/* Field — input/field component set (Figma 39:1367).
+   All values read per-variant from get_design_context (Standard/Subtle ×
+   Default/Hover/Focus/Typing/Filled/Invalid/Disabled). No inference. */
+
+.field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-200); /* 8px = Scale/200 */
+  box-sizing: border-box;
+  width: 240px; /* Figma demo width; typically caller-controlled */
+  padding: var(--brand-scale-250) var(--brand-scale-300); /* 10px 12px (no label) */
+  border: var(--brand-scale-25) solid var(--mapped-border-subtlest-default); /* 1px */
+  border-radius: var(--brand-scale-200); /* 8px = border-radius/md */
+  background: var(--mapped-surface-primary-default-subtle);
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+/* Label present → vertical padding tightens to 8px (Scale/200) */
+.field--labeled {
+  padding-top: var(--brand-scale-200);
+  padding-bottom: var(--brand-scale-200);
+}
+
+/* === Layout === */
+.field__main {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  gap: var(--brand-scale-200); /* 8px icon↔stack */
+}
+.field__stack {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--brand-scale-50); /* 2px label→input */
+}
+.field__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--mapped-icon-subtle-default);
+}
+
+/* === Label === */
+.field__label {
+  color: var(--mapped-text-subtle-default);
+  cursor: text;
+}
+.field__required {
+  color: var(--mapped-border-error-default); /* no dedicated Field required token; error, per Checkbox/Radio precedent */
+}
+
+/* === Input === */
+.field__input {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  padding: 0;
+  color: var(--mapped-text-default-default); /* typed/filled value */
+  caret-color: var(--mapped-text-default-default);
+  font-family: inherit;
+}
+.field__input::placeholder {
+  color: var(--mapped-text-subtle-default);
+  opacity: 1;
+}
+
+/* === Hover (Standard) — bg + faint border shift === */
+.field--standard:not(.field--disabled):not(.field--invalid):hover:not(:focus-within),
+.field--standard.field--hover:not(.field--disabled):not(.field--invalid) {
+  background: var(--mapped-surface-primary-default-subtle-hover); /* #f9f9f9 */
+  border-color: var(--mapped-border-primary-default-subtle-hover); /* #f2f2f2 */
+}
+
+/* === Subtle appearance — transparent at rest & hover === */
+.field--subtle {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* === Focus / Typing — 2px blue border + faint outer glow ring ===
+   Persists via :focus-within (until the input blurs). border-box keeps the
+   box size stable as the border grows 1→2px. */
+.field:not(.field--disabled):focus-within,
+.field.field--focus:not(.field--disabled) {
+  border-color: var(--mapped-border-primary-default);
+  border-width: var(--brand-scale-50); /* 2px = Border Width/sm */
+}
+.field:not(.field--disabled):focus-within::after,
+.field.field--focus:not(.field--disabled)::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--brand-scale-100)); /* -4px */
+  border: var(--brand-scale-50) solid var(--mapped-surface-primary-default); /* 2px */
+  border-radius: var(--brand-scale-250); /* 10px = border-radius/lg */
+  opacity: 0.25; /* Figma: outer ring element opacity 25% */
+  pointer-events: none;
+}
+
+/* === Invalid — 2px error border === */
+.field--invalid {
+  border-color: var(--mapped-border-error-default);
+  border-width: var(--brand-scale-50); /* 2px */
+}
+
+/* === Disabled === */
+.field--disabled {
+  background: var(--mapped-surface-disabled-default);
+  border-color: var(--mapped-border-disabled-default);
+  cursor: not-allowed;
+}
+.field--disabled .field__label,
+.field--disabled .field__input {
+  color: var(--mapped-text-disabled-on-color); /* #b6bfca */
+}
+.field--disabled .field__input::placeholder {
+  color: var(--mapped-text-disabled-on-color);
+}
+.field--disabled .field__icon {
+  color: var(--mapped-icon-disabled-on-color);
+}
+
+/* === Compact — square, icon-only === */
+.field--compact {
+  width: auto;
+  justify-content: center;
+  padding: var(--brand-scale-300); /* 12px → 44×44 with a 20px icon */
+}
