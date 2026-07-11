@@ -1,0 +1,159 @@
+/* Time Picker (Figma 54:10462) — a single-line time input, no label slot
+   (confirmed absent from all 14 variants, same as DatePicker). Single
+   trailing icon (remove_circle) that fades in/out via opacity depending on
+   value + focus state — simpler than DatePicker's calendar/cancel icon
+   swap. The dropdown is confirmed as an app-provided slot (Figma: "Example
+   Slot for Select <Menu>"), a simple scrollable time-option list. */
+
+.timepicker {
+  position: relative;
+  display: inline-block;
+  width: 240px; /* Figma demo width; caller-controllable */
+}
+
+.timepicker__control {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-200); /* 8px */
+  width: 100%;
+  padding: var(--brand-scale-200) var(--brand-scale-300); /* 8px 12px */
+  border: var(--brand-scale-25) solid var(--mapped-border-subtlest-default); /* 1px */
+  border-radius: var(--brand-scale-200); /* 8px = border-radius/md */
+  background: var(--mapped-surface-primary-default-subtle);
+  cursor: text;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.timepicker__stack {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.timepicker__input {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  padding: 0;
+  color: var(--mapped-text-default-default); /* typed/filled value */
+  caret-color: var(--mapped-text-default-default);
+  font-family: inherit;
+}
+.timepicker__input::placeholder {
+  color: var(--mapped-text-subtle-default);
+  opacity: 1;
+}
+
+.timepicker__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: opacity 0.12s ease;
+}
+.timepicker__clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--mapped-icon-subtle-default);
+}
+.timepicker__clear:disabled {
+  cursor: default;
+}
+
+/* === Hover (Standard) === */
+.timepicker--standard:not(.timepicker--disabled):not(.timepicker--invalid):hover:not(:focus-within) .timepicker__control,
+.timepicker--standard.timepicker--hover:not(.timepicker--disabled):not(.timepicker--invalid) .timepicker__control {
+  background: var(--mapped-surface-primary-default-subtle-hover);
+  border-color: var(--mapped-border-primary-default-subtle-hover);
+}
+
+/* === Subtle appearance — transparent border at rest; CONFIRMED divergence
+   from DatePicker/Field/TextArea: Subtle-Hover here DOES gain a background
+   tint (no border added), it isn't fully inert like its siblings. === */
+.timepicker--subtle .timepicker__control {
+  background: transparent;
+  border-color: transparent;
+}
+.timepicker--subtle:not(.timepicker--disabled):not(.timepicker--invalid):hover:not(:focus-within) .timepicker__control,
+.timepicker--subtle.timepicker--hover:not(.timepicker--disabled):not(.timepicker--invalid) .timepicker__control {
+  background: var(--mapped-surface-primary-default-subtle-hover);
+}
+
+/* === Focus / Hydrate — 2px blue border + faint outer glow ring ===
+   Persists via :focus-within; Hydrate is not a separate class — it's just
+   Focus with a real value (icon logic handles the value-vs-empty visual
+   difference via JS, not CSS). */
+.timepicker:not(.timepicker--disabled) .timepicker__control:focus-within,
+.timepicker.timepicker--focus:not(.timepicker--disabled) .timepicker__control {
+  border-color: var(--mapped-border-primary-default);
+  border-width: var(--brand-scale-50); /* 2px = Border Width/sm */
+}
+.timepicker:not(.timepicker--disabled) .timepicker__control:focus-within::after,
+.timepicker.timepicker--focus:not(.timepicker--disabled) .timepicker__control::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--brand-scale-100)); /* -4px */
+  border: var(--brand-scale-50) solid var(--mapped-surface-primary-default); /* 2px */
+  border-radius: var(--brand-scale-250); /* 10px = border-radius/lg */
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* === Invalid === */
+.timepicker--invalid .timepicker__control {
+  border-color: var(--mapped-border-error-default);
+  border-width: var(--brand-scale-50); /* 2px */
+}
+
+/* === Disabled — CONFIRMED Figma has an anomalous background token
+   (`--border/on-color`, resolving to white) that breaks with every sibling
+   in this family (Field/Select/DatePicker all use surface/disabled/default
+   here). Treated as a Figma authoring slip and normalized to match the
+   established pattern, per explicit approval. Subtle drops the border
+   entirely, same divergence as the rest of the family. === */
+.timepicker--disabled.timepicker--standard .timepicker__control {
+  background: var(--mapped-surface-disabled-default);
+  border-color: var(--mapped-border-disabled-default);
+}
+.timepicker--disabled.timepicker--subtle .timepicker__control {
+  background: transparent;
+  border-color: transparent;
+}
+.timepicker--disabled .timepicker__control {
+  cursor: not-allowed;
+}
+.timepicker--disabled.timepicker--standard .timepicker__input {
+  color: var(--mapped-text-disabled-on-color);
+}
+.timepicker--disabled.timepicker--standard .timepicker__input::placeholder {
+  color: var(--mapped-text-disabled-on-color);
+}
+.timepicker--disabled.timepicker--standard .timepicker__clear {
+  color: var(--mapped-icon-disabled-on-color);
+}
+.timepicker--disabled.timepicker--subtle .timepicker__input {
+  color: var(--mapped-text-disabled-default);
+}
+.timepicker--disabled.timepicker--subtle .timepicker__input::placeholder {
+  color: var(--mapped-text-disabled-default);
+}
+.timepicker--disabled.timepicker--subtle .timepicker__clear {
+  color: var(--mapped-icon-disabled-default);
+}
+
+/* === Times dropdown — positioned below; the slot brings its own
+   container/shadow/list === */
+.timepicker__menu {
+  position: absolute;
+  top: calc(100% + var(--brand-scale-100)); /* 4px below the box */
+  left: 0;
+  z-index: 10;
+}

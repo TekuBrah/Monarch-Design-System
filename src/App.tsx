@@ -35,6 +35,15 @@ import { Link } from './components/Link'
 import { Breadcrumbs } from './components/Breadcrumbs'
 import { Loader } from './components/Loader'
 import { Field } from './components/Field'
+import { Select } from './components/Select'
+import { SelectTransfer } from './components/SelectTransfer'
+import type { SelectTransferAppearance } from './components/SelectTransfer'
+import { SelectWalletAccount } from './components/SelectWalletAccount'
+import { TextArea } from './components/TextArea'
+import { DatePicker } from './components/DatePicker'
+import { TimePicker } from './components/TimePicker'
+import { MenuItem } from './components/MenuItem'
+import { Menu } from './components/Menu'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -427,6 +436,406 @@ function BlanketDemo() {
         </span>
       </div>
     </div>
+  )
+}
+
+// ── Select interactive demo (owns query / open / selection state) ─────────────
+
+const SELECT_OPTIONS = ['Eurorack', 'Ethereum', 'Bitcoin', 'Solana', 'Polygon']
+
+function SelectDemo() {
+  const [query, setQuery] = useState('')
+  const [open, setOpen] = useState(false)
+  const [selected, setSelected] = useState<string | null>(null)
+  const filtered = SELECT_OPTIONS.filter(o => o.toLowerCase().includes(query.toLowerCase()))
+  return (
+    <Select
+      label="Token"
+      placeholder="Search…"
+      ariaLabel="Token"
+      value={open ? query : selected ?? ''}
+      onSearchChange={setQuery}
+      isOpen={open}
+      onOpenChange={setOpen}
+      isSelected={!!selected && !open}
+      menuSlot={
+        <div style={{ background: 'var(--mapped-surface-elevation-default)', borderRadius: 'var(--brand-scale-200)', boxShadow: 'var(--shadow-medium)', overflow: 'hidden', padding: 'var(--brand-scale-100) 0' }}>
+          {filtered.length === 0 ? (
+            <div style={{ padding: '0.5rem 0.75rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem' }}>No matches</div>
+          ) : (
+            filtered.map(o => (
+              <div
+                key={o}
+                role="option"
+                aria-selected={selected === o}
+                onMouseDown={e => { e.preventDefault(); setSelected(o); setQuery(''); setOpen(false) }}
+                style={{ padding: '0.5rem 0.75rem', cursor: 'pointer', color: 'var(--mapped-text-default-default)', fontSize: '0.9rem' }}
+              >
+                {o}
+              </div>
+            ))
+          )}
+        </div>
+      }
+    />
+  )
+}
+
+// ── Select/Transfer interactive demo (search + currency picker, one per appearance) ──
+
+const TRANSFER_RECIPIENTS = ['Ali Rahman', 'Bella Tan', 'Chandra Kumar', 'Dewi Putri', 'Ethan Wong']
+const TRANSFER_CURRENCIES = [
+  { code: 'MYR', color: '#fff0e6' },
+  { code: 'ETH', color: '#e6ecff' },
+  { code: 'BTC', color: '#fff3d6' },
+  { code: 'USD', color: '#e6ffe9' },
+]
+const TRANSFER_MENU_STYLE: React.CSSProperties = { background: 'var(--mapped-surface-elevation-default)', borderRadius: 'var(--brand-scale-200)', boxShadow: 'var(--shadow-medium)', overflow: 'hidden', padding: 'var(--brand-scale-100) 0' }
+const TRANSFER_OPTION_STYLE: React.CSSProperties = { padding: '0.5rem 0.75rem', cursor: 'pointer', color: 'var(--mapped-text-default-default)', fontSize: '0.9rem' }
+
+function SelectTransferDemo({ appearance }: { appearance: SelectTransferAppearance }) {
+  const [query, setQuery] = useState('')
+  const [amountOpen, setAmountOpen] = useState(false)
+  const [recipient, setRecipient] = useState<string | null>(null)
+  const [currencyIndex, setCurrencyIndex] = useState(0)
+  const [currencyOpen, setCurrencyOpen] = useState(false)
+
+  // Option A: the component always renders the menu when isOpen — "only show a
+  // dropdown if there's a search result" is app-level state, done here by
+  // folding the result count into the isOpen value we pass down, not by
+  // adding a prop to the component.
+  const filtered = TRANSFER_RECIPIENTS.filter(o => o.toLowerCase().includes(query.toLowerCase()))
+  const showAmountMenu = amountOpen && filtered.length > 0
+
+  const currency = TRANSFER_CURRENCIES[currencyIndex]
+  const flag = (
+    <ElementWrapper size="m">
+      <span style={{ width: '100%', height: '100%', borderRadius: '50%', background: currency.color, border: '1px solid var(--mapped-border-subtlest-default)', display: 'block' }} />
+    </ElementWrapper>
+  )
+
+  return (
+    <SelectTransfer
+      appearance={appearance}
+      label={appearance === 'attention' ? 'Send' : 'Recipient'}
+      placeholder="Search…"
+      ariaLabel="Recipient"
+      value={amountOpen ? query : recipient ?? ''}
+      onAmountChange={setQuery}
+      isOpen={showAmountMenu}
+      onOpenChange={setAmountOpen}
+      isSelected={!!recipient && !amountOpen}
+      currencyLabel={currency.code}
+      currencyFlag={flag}
+      isCurrencyOpen={currencyOpen}
+      onCurrencyClick={() => setCurrencyOpen(o => !o)}
+      menuSlot={
+        filtered.length > 0 ? (
+          <div style={TRANSFER_MENU_STYLE}>
+            {filtered.map(name => (
+              <div
+                key={name}
+                role="option"
+                aria-selected={recipient === name}
+                onMouseDown={e => { e.preventDefault(); setRecipient(name); setQuery(''); setAmountOpen(false) }}
+                style={TRANSFER_OPTION_STYLE}
+              >
+                {name}
+              </div>
+            ))}
+          </div>
+        ) : null
+      }
+      currencyMenuSlot={
+        <div style={TRANSFER_MENU_STYLE}>
+          {TRANSFER_CURRENCIES.map((c, i) => (
+            <div
+              key={c.code}
+              role="option"
+              aria-selected={currencyIndex === i}
+              onMouseDown={e => { e.preventDefault(); setCurrencyIndex(i); setCurrencyOpen(false) }}
+              style={TRANSFER_OPTION_STYLE}
+            >
+              {c.code}
+            </div>
+          ))}
+        </div>
+      }
+    />
+  )
+}
+
+// ── Select / Wallet Account interactive demo (button trigger + Field-composed menu) ──
+
+const WALLET_ACCOUNTS = [
+  { crypto: 'Bitcoin', wallet: 'Main Wallet', amount: '$12,450.00', amtCrypto: '0.42 BTC', color: '#fff3d6' },
+  { crypto: 'Ethereum', wallet: 'Savings', amount: '$3,200.00', amtCrypto: '1.85 ETH', color: '#e6ecff' },
+  { crypto: 'USDC', wallet: 'Trading', amount: '$8,000.00', amtCrypto: '8,000.00 USDC', color: '#e6ffe9' },
+]
+
+function WalletLogo({ color }: { color: string }) {
+  return (
+    <ElementWrapper size="xxl">
+      <span style={{ width: '100%', height: '100%', borderRadius: '50%', background: color, border: '1px solid var(--mapped-border-subtlest-default)', display: 'block' }} />
+    </ElementWrapper>
+  )
+}
+
+function SelectWalletAccountDemo() {
+  const [open, setOpen] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [query, setQuery] = useState('')
+  const selected = WALLET_ACCOUNTS[selectedIndex]
+  const filtered = WALLET_ACCOUNTS.filter(
+    a => a.crypto.toLowerCase().includes(query.toLowerCase()) || a.wallet.toLowerCase().includes(query.toLowerCase())
+  )
+
+  return (
+    <SelectWalletAccount
+      labelCrypto={selected.crypto}
+      labelWallet={selected.wallet}
+      labelAmount={selected.amount}
+      labelAmtCrypto={selected.amtCrypto}
+      state="selected"
+      isOpen={open}
+      onOpenChange={setOpen}
+      ariaLabel="Choose account"
+      menuSlot={
+        <div style={{ background: 'var(--mapped-surface-elevation-default)', borderRadius: 'var(--brand-scale-200)', boxShadow: 'var(--shadow-medium)', overflow: 'hidden', padding: 'var(--brand-scale-200)', display: 'flex', flexDirection: 'column', gap: 'var(--brand-scale-100)' }}>
+          <Field
+            placeholder="Search accounts…"
+            ariaLabel="Search accounts"
+            value={query}
+            onChange={setQuery}
+            leadingIcon={<Icon name="search" size="m" />}
+          />
+          {filtered.map(a => {
+            const idx = WALLET_ACCOUNTS.indexOf(a)
+            return (
+              <div
+                key={a.crypto}
+                role="option"
+                aria-selected={idx === selectedIndex}
+                onMouseDown={e => { e.preventDefault(); setSelectedIndex(idx); setQuery(''); setOpen(false) }}
+                style={{ display: 'flex', alignItems: 'center', gap: 'var(--brand-scale-200)', padding: '0.5rem 0.75rem', cursor: 'pointer', borderRadius: 'var(--brand-scale-100)' }}
+              >
+                <WalletLogo color={a.color} />
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span className="type-body-m-semibold" style={{ color: 'var(--mapped-text-default-default)' }}>{a.crypto}</span>
+                  <span className="type-body-caption" style={{ color: 'var(--mapped-text-subtle-default)' }}>{a.wallet}</span>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      }
+    />
+  )
+}
+
+// ── Date Picker interactive demo (calendarSlot = app-composed calendar) ──
+
+function DatePickerCalendar({
+  monthDate,
+  selectedDate,
+  onNavigate,
+  onSelectDay,
+}: {
+  monthDate: Date
+  selectedDate: Date | null
+  onNavigate: (delta: number) => void
+  onSelectDay: (d: Date) => void
+}) {
+  const year = monthDate.getFullYear()
+  const month = monthDate.getMonth()
+  const startWeekday = new Date(year, month, 1).getDay()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const cells: (Date | null)[] = []
+  for (let i = 0; i < startWeekday; i++) cells.push(null)
+  for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d))
+  while (cells.length % 7 !== 0) cells.push(null)
+  const monthLabel = monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+
+  return (
+    <div style={{ background: 'var(--mapped-surface-elevation-default)', borderRadius: 'var(--brand-scale-200)', boxShadow: 'var(--shadow-medium)', padding: 'var(--brand-scale-300) 0', width: '240px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 var(--brand-scale-200) var(--brand-scale-200)' }}>
+        <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => onNavigate(-1)} aria-label="Previous month" style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', color: 'var(--mapped-icon-subtle-default)' }}>
+          <Icon name="chevron_left" size="m" />
+        </button>
+        <span className="type-body-sm-semibold" style={{ color: 'var(--mapped-text-default-default)' }}>{monthLabel}</span>
+        <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => onNavigate(1)} aria-label="Next month" style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', color: 'var(--mapped-icon-subtle-default)' }}>
+          <Icon name="chevron_right" size="m" />
+        </button>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '0 var(--brand-scale-200)' }}>
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(w => (
+          <div key={w} className="type-body-caption-semibold" style={{ textAlign: 'center', color: 'var(--mapped-text-subtle-default)', padding: '0.3rem 0' }}>{w}</div>
+        ))}
+        {cells.map((d, i) => {
+          const isSelected = !!(d && selectedDate && d.toDateString() === selectedDate.toDateString())
+          return (
+            <div
+              key={i}
+              role={d ? 'button' : undefined}
+              onMouseDown={d ? e => e.preventDefault() : undefined}
+              onClick={d ? () => onSelectDay(d) : undefined}
+              className="type-body-sm"
+              style={{
+                textAlign: 'center',
+                padding: '0.4rem 0',
+                cursor: d ? 'pointer' : 'default',
+                color: isSelected ? 'var(--mapped-text-primary-on-color)' : 'var(--mapped-text-default-default)',
+                background: isSelected ? 'var(--mapped-surface-primary-default)' : 'transparent',
+                borderRadius: 'var(--brand-scale-100)',
+              }}
+            >
+              {d ? d.getDate() : ''}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function DatePickerDemo() {
+  const [open, setOpen] = useState(false)
+  const [visibleMonth, setVisibleMonth] = useState(new Date(2022, 11, 1))
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [text, setText] = useState('')
+
+  const formatDate = (d: Date) => `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`
+
+  return (
+    <DatePicker
+      ariaLabel="Interactive date picker"
+      value={text}
+      onChange={setText}
+      isOpen={open}
+      onOpenChange={setOpen}
+      onClear={() => { setText(''); setSelectedDate(null) }}
+      calendarSlot={
+        <DatePickerCalendar
+          monthDate={visibleMonth}
+          selectedDate={selectedDate}
+          onNavigate={delta => setVisibleMonth(m => new Date(m.getFullYear(), m.getMonth() + delta, 1))}
+          onSelectDay={d => {
+            setSelectedDate(d)
+            setText(formatDate(d))
+            setOpen(false)
+          }}
+        />
+      }
+    />
+  )
+}
+
+// ── Time Picker interactive demo (timesSlot = app-composed option list) ──
+
+const TIME_OPTIONS = (() => {
+  const times: string[] = []
+  for (let h = 9; h <= 12; h++) {
+    for (const m of [0, 30]) {
+      if (h === 12 && m === 30) break
+      const hour12 = h > 12 ? h - 12 : h
+      const ampm = h < 12 ? 'AM' : 'PM'
+      times.push(`${hour12}:${String(m).padStart(2, '0')} ${ampm}`)
+    }
+  }
+  return times
+})()
+
+function TimePickerDemo() {
+  const [open, setOpen] = useState(false)
+  const [text, setText] = useState('')
+
+  return (
+    <TimePicker
+      ariaLabel="Interactive time picker"
+      value={text}
+      onChange={setText}
+      isOpen={open}
+      onOpenChange={setOpen}
+      onClear={() => setText('')}
+      timesSlot={
+        <div style={{ background: 'var(--mapped-surface-elevation-default)', borderRadius: 'var(--brand-scale-200)', boxShadow: 'var(--shadow-medium)', overflow: 'hidden', padding: 'var(--brand-scale-100) 0', maxHeight: '200px', overflowY: 'auto' }}>
+          {TIME_OPTIONS.map(t => (
+            <div
+              key={t}
+              role="option"
+              aria-selected={text === t}
+              onMouseDown={e => { e.preventDefault(); setText(t); setOpen(false) }}
+              style={{ padding: '0.5rem 0.75rem', cursor: 'pointer', color: 'var(--mapped-text-default-default)', fontSize: '0.9rem' }}
+            >
+              {t}
+            </div>
+          ))}
+        </div>
+      }
+    />
+  )
+}
+
+// ── Menu Item interactive demo (default-type option list with real selection) ──
+
+const MENU_ITEM_OPTIONS = ['Alpha', 'Bravo', 'Charlie', 'Delta']
+
+function MenuItemDemo() {
+  const [selected, setSelected] = useState('Bravo')
+
+  return (
+    <div
+      role="listbox"
+      style={{
+        background: 'var(--mapped-surface-elevation-default)',
+        borderRadius: 'var(--brand-scale-200)',
+        boxShadow: 'var(--shadow-medium)',
+        overflow: 'hidden',
+        padding: 'var(--brand-scale-100) 0',
+        maxWidth: '320px',
+      }}
+    >
+      {MENU_ITEM_OPTIONS.map(opt => (
+        <MenuItem
+          key={opt}
+          label={opt}
+          isSelected={selected === opt}
+          onSelect={() => setSelected(opt)}
+          iconSlot={<IconObject color="blue" size="small"><Icon name="person" size="s" /></IconObject>}
+        />
+      ))}
+    </div>
+  )
+}
+
+// ── Menu interactive demo (real search filtering + real selection) ──
+
+function MenuDemo() {
+  const [query, setQuery] = useState('')
+  const [selected, setSelected] = useState('Bravo')
+  const filtered = MENU_ITEM_OPTIONS.filter(opt => opt.toLowerCase().includes(query.toLowerCase()))
+
+  return (
+    <Menu
+      searchValue={query}
+      onSearchChange={setQuery}
+      slotContent={
+        <div role="listbox" style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
+          {filtered.length === 0 ? (
+            <div style={{ padding: '0.75rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem' }}>No results</div>
+          ) : (
+            filtered.map(opt => (
+              <MenuItem
+                key={opt}
+                label={opt}
+                isSelected={selected === opt}
+                onSelect={() => setSelected(opt)}
+              />
+            ))
+          )}
+        </div>
+      }
+    />
   )
 }
 
@@ -1556,6 +1965,397 @@ export default function App() {
             </div>
           </div>
         </>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Select ─────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Select</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              Searchable combobox trigger — Standard/Subtle × Default/Hover/Focus/Typing/Filled/Selected/Invalid/Disabled. Chevron built-in; the dropdown menu is an app-provided slot.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '760px' }}>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  <Select label="Label" placeholder="Placeholder" ariaLabel="Default" />
+                  <Select label="Label" placeholder="Placeholder" ariaLabel="Hover" previewState="hover" />
+                  <Select label="Label" placeholder="Placeholder" ariaLabel="Focus" previewState="focus" />
+                  <Select label="Label" value="Selected value" ariaLabel="Filled" />
+                  <Select label="Label" value="Selected value" isSelected ariaLabel="Selected" />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Invalid · disabled · subtle</div>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  <Select label="Label" placeholder="Placeholder" isInvalid ariaLabel="Invalid" />
+                  <Select label="Label" placeholder="Placeholder" isDisabled ariaLabel="Disabled" />
+                  <Select appearance="subtle" label="Label" placeholder="Placeholder" ariaLabel="Subtle" />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Interactive — click to open, type to filter (menu = example slot)</div>
+                <SelectDemo />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Select / Transfer ──────────────────────────────────────── */}
+      {tab === 'components' && (() => {
+        const flag = (
+          <ElementWrapper size="m">
+            <span style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'var(--mapped-surface-primary-default-subtle-hover)', border: '1px solid var(--mapped-border-subtlest-default)', display: 'block' }} />
+          </ElementWrapper>
+        )
+        return (
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Select / Transfer</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              Amount input + currency picker (flag = ElementWrapper slot). Standard/Subtle bordered box + Attention underline style. Dual dropdowns are app slots.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '760px' }}>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  <SelectTransfer label="Amount" placeholder="0.00" currencyLabel="MYR" currencyFlag={flag} ariaLabel="Default" />
+                  <SelectTransfer label="Amount" placeholder="0.00" currencyLabel="MYR" currencyFlag={flag} previewState="focus" ariaLabel="Focus" />
+                  <SelectTransfer label="Amount" value="1,250.00" currencyLabel="MYR" currencyFlag={flag} ariaLabel="Filled" />
+                  <SelectTransfer label="Amount" placeholder="0.00" currencyLabel="MYR" currencyFlag={flag} isInvalid ariaLabel="Invalid" />
+                  <SelectTransfer label="Amount" placeholder="0.00" currencyLabel="MYR" currencyFlag={flag} isDisabled ariaLabel="Disabled" />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Subtle</div>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  <SelectTransfer appearance="subtle" label="Amount" placeholder="0.00" currencyLabel="MYR" currencyFlag={flag} ariaLabel="Subtle" />
+                  <SelectTransfer appearance="subtle" label="Amount" value="1,250.00" currencyLabel="MYR" currencyFlag={flag} previewState="focus" ariaLabel="Subtle focus" />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Attention — underline style (h5 amount + divider)</div>
+                <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+                  <SelectTransfer appearance="attention" label="Send" value="1,250" currencyLabel="MYR" currencyFlag={flag} ariaLabel="Attention" />
+                  <SelectTransfer appearance="attention" label="Send" placeholder="0" currencyLabel="ETH" currencyFlag={flag} ariaLabel="Attention empty" />
+                  <SelectTransfer appearance="attention" label="Send" value="1,250" currencyLabel="MYR" currencyFlag={flag} previewState="hover" ariaLabel="Attention hover" />
+                  <SelectTransfer appearance="attention" label="Send" value="1,250" currencyLabel="MYR" currencyFlag={flag} previewState="focus" ariaLabel="Attention focus (border unchanged)" />
+                  <SelectTransfer appearance="attention" label="Send" placeholder="0" currencyLabel="MYR" currencyFlag={flag} isInvalid ariaLabel="Attention invalid (shape changes to full box)" />
+                  <SelectTransfer appearance="attention" label="Send" value="1,250" currencyLabel="MYR" currencyFlag={flag} isDisabled ariaLabel="Attention disabled" />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                  Interactive — one per appearance. Type to search (dropdown only appears if there's a match — Option A: decided by the app via isOpen, not a component prop); click the chevron to change currency.
+                </div>
+                <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                  <SelectTransferDemo appearance="standard" />
+                  <SelectTransferDemo appearance="subtle" />
+                  <SelectTransferDemo appearance="attention" />
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
+
+      <hr style={HR} />
+
+      {/* ── Select / Wallet Account ────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Select / Wallet Account</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Button trigger for a wallet/account picker — the trigger itself never shows a logo (confirmed absent from all 14 variants); logos only appear per-row in the dropdown. Unlike Select/Select Transfer, the trigger never becomes an editable input — the dropdown's search field is an app-composed slot.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '760px' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <SelectWalletAccount labelCrypto="Crypto" labelWallet="Wallet" labelAmount="$0,000.00" labelAmtCrypto="0.00 ETH" ariaLabel="Default" />
+                <SelectWalletAccount labelCrypto="Crypto" labelWallet="Wallet" labelAmount="$0,000.00" labelAmtCrypto="0.00 ETH" previewState="hover" ariaLabel="Hover" />
+                <SelectWalletAccount labelCrypto="Crypto" labelWallet="Wallet" labelAmount="$0,000.00" labelAmtCrypto="0.00 ETH" state="filled" ariaLabel="Filled" />
+                <SelectWalletAccount labelCrypto="Crypto" labelWallet="Wallet" labelAmount="$0,000.00" labelAmtCrypto="0.00 ETH" state="selected" ariaLabel="Selected" />
+                <SelectWalletAccount labelCrypto="Crypto" labelWallet="Wallet" labelAmount="$0,000.00" labelAmtCrypto="0.00 ETH" isOpen ariaLabel="Typing (open)" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Invalid · disabled</div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <SelectWalletAccount labelCrypto="Crypto" labelWallet="Wallet" labelAmount="$0,000.00" labelAmtCrypto="0.00 ETH" isInvalid ariaLabel="Invalid" />
+                <SelectWalletAccount labelCrypto="Crypto" labelWallet="Wallet" labelAmount="$0,000.00" labelAmtCrypto="0.00 ETH" isDisabled ariaLabel="Disabled" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Subtle — states (transparent at rest; disabled drops the border entirely)</div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <SelectWalletAccount appearance="subtle" labelCrypto="Crypto" labelWallet="Wallet" labelAmount="$0,000.00" labelAmtCrypto="0.00 ETH" ariaLabel="Subtle default" />
+                <SelectWalletAccount appearance="subtle" labelCrypto="Crypto" labelWallet="Wallet" labelAmount="$0,000.00" labelAmtCrypto="0.00 ETH" state="selected" ariaLabel="Subtle selected" />
+                <SelectWalletAccount appearance="subtle" labelCrypto="Crypto" labelWallet="Wallet" labelAmount="$0,000.00" labelAmtCrypto="0.00 ETH" isInvalid ariaLabel="Subtle invalid" />
+                <SelectWalletAccount appearance="subtle" labelCrypto="Crypto" labelWallet="Wallet" labelAmount="$0,000.00" labelAmtCrypto="0.00 ETH" isDisabled ariaLabel="Subtle disabled" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                Interactive — click to open; menu composes a real Field for search plus the option list (menu = example slot)
+              </div>
+              <SelectWalletAccountDemo />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Text area ──────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Text area</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Multi-line sibling of Field — same box tokens/states, no icon slots, real &lt;textarea&gt;.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <TextArea label="Label" placeholder="Text" ariaLabel="Default" />
+                <TextArea label="Label" placeholder="Text" ariaLabel="Hover" previewState="hover" />
+                <TextArea label="Label" placeholder="Text" ariaLabel="Focus" previewState="focus" />
+                <TextArea label="Label" defaultValue="Typed value that can wrap across multiple lines" ariaLabel="Filled" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Invalid · disabled · subtle</div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <TextArea label="Label" placeholder="Text" isInvalid ariaLabel="Invalid" />
+                <TextArea label="Label" placeholder="Text" isDisabled ariaLabel="Disabled" />
+                <TextArea appearance="subtle" label="Label" placeholder="Text" ariaLabel="Subtle" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Subtle — focus · invalid · disabled (disabled drops the border entirely)</div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <TextArea appearance="subtle" label="Label" placeholder="Text" ariaLabel="Subtle focus" previewState="focus" />
+                <TextArea appearance="subtle" label="Label" placeholder="Text" isInvalid ariaLabel="Subtle invalid" />
+                <TextArea appearance="subtle" label="Label" placeholder="Text" isDisabled ariaLabel="Subtle disabled" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Interactive — type directly (real textarea, native focus/typing behavior)</div>
+              <TextArea label="Message" placeholder="Type something…" ariaLabel="Interactive" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Date Picker ────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Date Picker</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            No label slot. Trailing icon swaps calendar_month ↔ cancel (clear) — has a value AND unfocused only. The calendar is an app-provided slot.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <DatePicker ariaLabel="Default" />
+                <DatePicker ariaLabel="Hover" previewState="hover" />
+                <DatePicker ariaLabel="Focus" previewState="focus" />
+                <DatePicker defaultValue="12/25/2022" ariaLabel="Filled" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Invalid · disabled · subtle</div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <DatePicker isInvalid ariaLabel="Invalid" />
+                <DatePicker isDisabled ariaLabel="Disabled" />
+                <DatePicker defaultValue="12/25/2022" isDisabled ariaLabel="Disabled filled" />
+                <DatePicker appearance="subtle" ariaLabel="Subtle" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Subtle — focus · invalid · disabled (disabled drops the border entirely)</div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <DatePicker appearance="subtle" ariaLabel="Subtle focus" previewState="focus" />
+                <DatePicker appearance="subtle" isInvalid ariaLabel="Subtle invalid" />
+                <DatePicker appearance="subtle" isDisabled ariaLabel="Subtle disabled" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                Interactive — click to open; calendarSlot composes a real month grid with prev/next navigation
+              </div>
+              <DatePickerDemo />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Time Picker ────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Time Picker</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            No label slot. Single clear icon fades in only when filled AND unfocused (Hydrate keeps it hidden). Time list is an app-provided slot.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <TimePicker ariaLabel="Default" />
+                <TimePicker ariaLabel="Hover" previewState="hover" />
+                <TimePicker ariaLabel="Focus" previewState="focus" />
+                <TimePicker defaultValue="1:00 PM" ariaLabel="Filled" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Invalid · disabled · subtle</div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <TimePicker isInvalid ariaLabel="Invalid" />
+                <TimePicker isDisabled ariaLabel="Disabled" />
+                <TimePicker defaultValue="1:00 PM" isDisabled ariaLabel="Disabled filled" />
+                <TimePicker appearance="subtle" ariaLabel="Subtle" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Subtle — hover (gains a background tint) · focus · invalid · disabled</div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <TimePicker appearance="subtle" ariaLabel="Subtle hover" previewState="hover" />
+                <TimePicker appearance="subtle" ariaLabel="Subtle focus" previewState="focus" />
+                <TimePicker appearance="subtle" isInvalid ariaLabel="Subtle invalid" />
+                <TimePicker appearance="subtle" isDisabled ariaLabel="Subtle disabled" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                Interactive — click to open; timesSlot composes a real scrollable option list
+              </div>
+              <TimePickerDemo />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Menu Item ──────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Menu Item</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Shared row atom for Select-family dropdowns — composes into optionsSlot/timesSlot content. Menu chrome itself remains an app-provided slot.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>type="default" — states</div>
+              <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '412px', border: '1px solid var(--mapped-border-subtlest-default)', borderRadius: 'var(--brand-scale-200)', overflow: 'hidden' }}>
+                <MenuItem label="Default" iconSlot={<IconObject color="orange" size="small"><Icon name="person" size="s" /></IconObject>} />
+                <MenuItem label="Hover" previewState="hover" iconSlot={<IconObject color="orange" size="small"><Icon name="person" size="s" /></IconObject>} />
+                <MenuItem label="Press" previewState="pressed" iconSlot={<IconObject color="orange" size="small"><Icon name="person" size="s" /></IconObject>} />
+                <MenuItem label="Selected" isSelected iconSlot={<IconObject color="orange" size="small"><Icon name="person" size="s" /></IconObject>} />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>type="crypto" — states</div>
+              <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '412px', border: '1px solid var(--mapped-border-subtlest-default)', borderRadius: 'var(--brand-scale-200)', overflow: 'hidden' }}>
+                <MenuItem type="crypto" iconSlot={<IconObject color="teal" size="xl"><Icon name="icon_crypto" size="m" /></IconObject>} />
+                <MenuItem type="crypto" previewState="hover" iconSlot={<IconObject color="teal" size="xl"><Icon name="icon_crypto" size="m" /></IconObject>} />
+                <MenuItem type="crypto" previewState="pressed" iconSlot={<IconObject color="teal" size="xl"><Icon name="icon_crypto" size="m" /></IconObject>} />
+                <MenuItem type="crypto" isSelected iconSlot={<IconObject color="teal" size="xl"><Icon name="icon_crypto" size="m" /></IconObject>} />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>type="account" — states</div>
+              <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '412px', border: '1px solid var(--mapped-border-subtlest-default)', borderRadius: 'var(--brand-scale-200)', overflow: 'hidden' }}>
+                <MenuItem type="account" label="Margaret" avatarInitials="MG" />
+                <MenuItem type="account" label="Margaret" avatarInitials="MG" previewState="hover" />
+                <MenuItem type="account" label="Margaret" avatarInitials="MG" previewState="pressed" />
+                <MenuItem type="account" label="Margaret" avatarInitials="MG" isSelected />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>type="checkbox" — states (incl. selected + press)</div>
+              <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '412px', border: '1px solid var(--mapped-border-subtlest-default)', borderRadius: 'var(--brand-scale-200)', overflow: 'hidden' }}>
+                <MenuItem type="checkbox" label="Label" />
+                <MenuItem type="checkbox" label="Label" previewState="hover" />
+                <MenuItem type="checkbox" label="Label" previewState="pressed" />
+                <MenuItem type="checkbox" label="Label" isSelected />
+                <MenuItem type="checkbox" label="Label" isSelected previewState="pressed" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>type="radio" — states (incl. selected + press)</div>
+              <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '412px', border: '1px solid var(--mapped-border-subtlest-default)', borderRadius: 'var(--brand-scale-200)', overflow: 'hidden' }}>
+                <MenuItem type="radio" label="Label" />
+                <MenuItem type="radio" label="Label" previewState="hover" />
+                <MenuItem type="radio" label="Label" previewState="pressed" />
+                <MenuItem type="radio" label="Label" isSelected />
+                <MenuItem type="radio" label="Label" isSelected previewState="pressed" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                Interactive — real click/keyboard selection (role="listbox" of type="default" rows)
+              </div>
+              <MenuItemDemo />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Menu ───────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Menu</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Floating dropdown chrome that wraps MenuItem rows. searchBar can be hidden for a plain option-list menu; slotContent is an app-provided option list.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>With search bar (default)</div>
+              <Menu
+                slotContent={
+                  <div role="listbox" style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
+                    {MENU_ITEM_OPTIONS.map((opt, i) => (
+                      <MenuItem key={opt} label={opt} isSelected={i === 1} />
+                    ))}
+                  </div>
+                }
+              />
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>searchBar=false — plain option-list dropdown (e.g. a nested currency picker with no search)</div>
+              <Menu
+                searchBar={false}
+                slotContent={
+                  <div role="listbox" style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
+                    {MENU_ITEM_OPTIONS.map((opt, i) => (
+                      <MenuItem key={opt} label={opt} isSelected={i === 2} />
+                    ))}
+                  </div>
+                }
+              />
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                Interactive — real search filtering + real click selection
+              </div>
+              <MenuDemo />
+            </div>
+          </div>
+        </div>
       )}
 
     </div>

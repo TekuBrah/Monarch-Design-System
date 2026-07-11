@@ -1,0 +1,277 @@
+/* Select / Transfer (Figma 189:2229) — amount input + currency picker.
+   Standard/Subtle = bordered box (same tokens as Select). Attention = underline
+   style (bottom border only, centered, h5 amount + divider). Dual dropdowns
+   (amount + currency) are app-provided slots. */
+
+.stf {
+  position: relative;
+  display: inline-block;
+  width: 320px; /* Figma demo width; caller-controllable */
+}
+
+/* === Box (Standard / Subtle) === */
+.stf__control {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--brand-scale-200); /* 8px */
+  width: 100%;
+  padding: var(--brand-scale-200) var(--brand-scale-300); /* 8px 12px */
+  border: var(--brand-scale-25) solid var(--mapped-border-subtlest-default); /* 1px */
+  border-radius: var(--brand-scale-200); /* 8px */
+  background: var(--mapped-surface-primary-default-subtle);
+  cursor: text;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.stf__main {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  gap: var(--brand-scale-200);
+}
+.stf__stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--brand-scale-50); /* 2px */
+  min-width: 0;
+  align-items: flex-start;
+}
+.stf__label {
+  color: var(--mapped-text-subtle-default);
+  cursor: text;
+}
+.stf__amount {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  padding: 0;
+  color: var(--mapped-text-default-default);
+  caret-color: var(--mapped-text-default-default);
+  font-family: inherit;
+}
+.stf__amount::placeholder {
+  color: var(--mapped-text-subtle-default);
+  opacity: 1;
+}
+
+/* === Currency picker === */
+.stf__currency {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-200); /* 8px between [flag+code] and chevron */
+  flex-shrink: 0;
+}
+.stf__ccy-group {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-100); /* 4px flag→code */
+}
+.stf__flag {
+  display: inline-flex;
+  align-items: center;
+}
+.stf__ccy {
+  color: var(--mapped-text-subtle-default);
+  white-space: nowrap;
+}
+.stf__chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--mapped-icon-subtle-default);
+}
+
+/* === Attention appearance — underline style ===
+   CONFIRMED per-variant from Figma (149:2229): the underline border stays
+   var(--mapped-border-primary-default) UNCHANGED across Default/Focus/Typing/
+   Filled/Selected/Currency-Focus/Currency-Typing — there is no focus color
+   change and NO glow ring for this appearance (unlike Standard/Subtle). Only
+   Hover (full text+border repaint) and Invalid (shape change to a full box)
+   deviate — see below. */
+.stf--attention .stf__control {
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-bottom: var(--brand-scale-50) solid var(--mapped-border-primary-default); /* 2px */
+  border-radius: var(--brand-scale-200) var(--brand-scale-200) 0 0; /* top corners only */
+}
+.stf--attention .stf__stack {
+  align-items: center;
+}
+.stf__amount-row {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-200); /* 8px */
+}
+.stf--attention .stf__amount {
+  width: auto;
+  text-align: center;
+}
+.stf__divider {
+  align-self: stretch;
+  width: var(--brand-scale-50); /* 2px */
+  margin: 0 var(--brand-scale-50); /* 2px */
+  background: var(--mapped-text-default-default);
+  flex-shrink: 0;
+}
+
+/* === Hover (Standard) === */
+.stf--standard:not(.stf--disabled):not(.stf--invalid):not(.stf--selected) .stf__control:hover:not(:focus-within),
+.stf--standard.stf--hover:not(.stf--disabled):not(.stf--invalid):not(.stf--selected) .stf__control {
+  background: var(--mapped-surface-primary-default-subtle-hover);
+  border-color: var(--mapped-border-primary-default-subtle-hover);
+}
+
+/* === Hover (Attention) — CONFIRMED: border-bottom recolors to -hover AND
+   every text node (label, amount/placeholder, divider, currency label)
+   repaints to text/subtle/hover — a wholesale recolor, not just the border. */
+.stf--attention:not(.stf--disabled):not(.stf--invalid):hover .stf__control,
+.stf--attention.stf--hover:not(.stf--disabled):not(.stf--invalid) .stf__control {
+  border-bottom-color: var(--mapped-border-primary-default-hover);
+}
+.stf--attention:not(.stf--disabled):not(.stf--invalid):hover .stf__label,
+.stf--attention:not(.stf--disabled):not(.stf--invalid):hover .stf__amount,
+.stf--attention:not(.stf--disabled):not(.stf--invalid):hover .stf__ccy,
+.stf--attention.stf--hover:not(.stf--disabled):not(.stf--invalid) .stf__label,
+.stf--attention.stf--hover:not(.stf--disabled):not(.stf--invalid) .stf__amount,
+.stf--attention.stf--hover:not(.stf--disabled):not(.stf--invalid) .stf__ccy {
+  color: var(--mapped-text-subtle-hover);
+}
+.stf--attention:not(.stf--disabled):not(.stf--invalid):hover .stf__amount::placeholder,
+.stf--attention.stf--hover:not(.stf--disabled):not(.stf--invalid) .stf__amount::placeholder {
+  color: var(--mapped-text-subtle-hover);
+}
+.stf--attention:not(.stf--disabled):not(.stf--invalid):hover .stf__divider,
+.stf--attention.stf--hover:not(.stf--disabled):not(.stf--invalid) .stf__divider {
+  background: var(--mapped-text-subtle-hover);
+}
+
+/* === Subtle — transparent at rest & hover === */
+.stf--subtle .stf__control {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* === Focus / Selected — 2px blue + glow ring — Standard/Subtle ONLY.
+   CONFIRMED: Attention does not get this treatment (border stays unchanged,
+   no ring) — see the Attention block's opening comment. */
+.stf--standard:not(.stf--disabled) .stf__control:focus-within,
+.stf--subtle:not(.stf--disabled) .stf__control:focus-within,
+.stf--selected.stf--standard:not(.stf--disabled) .stf__control,
+.stf--selected.stf--subtle:not(.stf--disabled) .stf__control,
+.stf--focus.stf--standard:not(.stf--disabled) .stf__control,
+.stf--focus.stf--subtle:not(.stf--disabled) .stf__control {
+  border-color: var(--mapped-border-primary-default);
+  border-width: var(--brand-scale-50); /* 2px */
+}
+.stf--standard:not(.stf--disabled) .stf__control:focus-within::after,
+.stf--subtle:not(.stf--disabled) .stf__control:focus-within::after,
+.stf--selected.stf--standard:not(.stf--disabled) .stf__control::after,
+.stf--selected.stf--subtle:not(.stf--disabled) .stf__control::after,
+.stf--focus.stf--standard:not(.stf--disabled) .stf__control::after,
+.stf--focus.stf--subtle:not(.stf--disabled) .stf__control::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--brand-scale-100)); /* -4px */
+  border: var(--brand-scale-50) solid var(--mapped-surface-primary-default); /* 2px */
+  border-radius: var(--brand-scale-250); /* 10px */
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* === Currency-focus (Attention) — CONFIRMED: only the currency label/code
+   recolors to text/subtle/hover; the amount side and the border are
+   untouched. `.stf__currency:focus-within` covers a real click on the
+   chevron; `stf--currency-open` (set from isCurrencyOpen) covers
+   programmatic/controlled opens. === */
+.stf--attention .stf__currency:focus-within .stf__ccy,
+.stf--attention.stf--currency-open .stf__ccy {
+  color: var(--mapped-text-subtle-hover);
+}
+.stf--attention .stf__currency:focus-within .stf__chevron,
+.stf--attention.stf--currency-open .stf__chevron {
+  color: var(--mapped-icon-subtle-hover);
+}
+
+/* === Invalid (Standard/Subtle) — recolor only === */
+.stf--invalid.stf--standard .stf__control,
+.stf--invalid.stf--subtle .stf__control {
+  border-color: var(--mapped-border-error-default);
+  border-width: var(--brand-scale-50); /* 2px */
+}
+
+/* === Invalid (Attention) — CONFIRMED SHAPE CHANGE: switches from the
+   underline style to a full box — 2px error border on all 4 sides, full 8px
+   corner radius (not top-only). This was not guessable from the other
+   states; read directly from Figma (189:9666). === */
+.stf--attention.stf--invalid .stf__control {
+  border: var(--brand-scale-50) solid var(--mapped-border-error-default); /* 2px, all sides */
+  border-radius: var(--brand-scale-200); /* 8px, all corners */
+}
+
+/* === Disabled === */
+.stf--disabled.stf--standard .stf__control,
+.stf--disabled.stf--subtle .stf__control {
+  background: var(--mapped-surface-disabled-default);
+  border-color: var(--mapped-border-disabled-default);
+}
+.stf--disabled.stf--attention .stf__control {
+  border-bottom-color: var(--mapped-border-disabled-default);
+}
+.stf--disabled .stf__control {
+  cursor: not-allowed;
+}
+/* Standard/Subtle disabled text — matches Select's confirmed disabled choice
+   for the shared box (not individually re-confirmed for this component). */
+.stf--disabled.stf--standard .stf__label,
+.stf--disabled.stf--standard .stf__amount,
+.stf--disabled.stf--standard .stf__ccy,
+.stf--disabled.stf--subtle .stf__label,
+.stf--disabled.stf--subtle .stf__amount,
+.stf--disabled.stf--subtle .stf__ccy {
+  color: var(--mapped-text-disabled-default);
+}
+.stf--disabled.stf--standard .stf__amount::placeholder,
+.stf--disabled.stf--subtle .stf__amount::placeholder {
+  color: var(--mapped-text-disabled-default);
+}
+/* Attention disabled text — CONFIRMED: on-color variant, not -default (differs
+   from Standard/Subtle above; read directly from Figma, 189:9684). */
+.stf--disabled.stf--attention .stf__label,
+.stf--disabled.stf--attention .stf__amount,
+.stf--disabled.stf--attention .stf__ccy {
+  color: var(--mapped-text-disabled-on-color);
+}
+.stf--disabled.stf--attention .stf__amount::placeholder {
+  color: var(--mapped-text-disabled-on-color);
+}
+.stf--disabled.stf--attention .stf__divider {
+  background: var(--mapped-text-disabled-on-color);
+}
+.stf--disabled.stf--attention .stf__flag {
+  opacity: 0.5; /* CONFIRMED — flag element gets opacity-50 when disabled */
+}
+.stf--disabled .stf__chevron {
+  color: var(--mapped-icon-disabled-default);
+  cursor: not-allowed;
+}
+
+/* === Menus — positioned; slot brings its own container/shadow/items === */
+.stf__menu {
+  position: absolute;
+  top: calc(100% + var(--brand-scale-100));
+  left: 0;
+  right: 0;
+  z-index: 10;
+}

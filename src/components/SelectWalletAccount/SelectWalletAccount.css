@@ -1,0 +1,191 @@
+/* Select / Wallet Account (Figma 189:5871) — a button-style trigger displaying a
+   chosen wallet/account (name/wallet, amount/amtCrypto). Unlike Select /
+   SelectTransfer, the trigger is never an editable text input: "Typing" only
+   upgrades the border to 2px and opens a menu — the trigger's own text stays
+   unchanged. The dropdown (search field + option list) is an app-provided slot,
+   matching Figma's own annotation; no glow ring on this trigger (confirmed
+   absent from every Typing/Selected read — unlike Select/SelectTransfer).
+
+   The trigger never shows a logo, confirmed across all 14 variants via
+   screenshot — logos appear only in the dropdown's option rows (not yet
+   built; deferred with Menu/Option). */
+
+.swa {
+  position: relative;
+  display: inline-block;
+  width: 320px; /* Figma demo width; caller-controllable */
+}
+
+.swa__control {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--brand-scale-200); /* 8px */
+  width: 100%;
+  padding: var(--brand-scale-200) var(--brand-scale-300); /* 8px 12px */
+  border: var(--brand-scale-25) solid var(--mapped-border-subtlest-default); /* 1px */
+  border-radius: var(--brand-scale-200); /* 8px */
+  background: var(--mapped-surface-primary-default-subtle);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.swa__main {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  gap: var(--brand-scale-200);
+}
+.swa__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--brand-scale-100); /* 4px */
+  min-width: 0;
+}
+.swa__name,
+.swa__wallet {
+  color: var(--mapped-text-subtle-default);
+  white-space: nowrap;
+}
+
+.swa__side {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-200); /* 8px */
+  flex-shrink: 0;
+}
+.swa__amounts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--brand-scale-50); /* 2px */
+}
+.swa__amount,
+.swa__amtcrypto {
+  color: var(--mapped-text-subtle-default);
+  white-space: nowrap;
+}
+.swa__chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--mapped-icon-subtle-default);
+}
+
+/* === Subtle appearance — transparent at rest === */
+.swa--subtle .swa__control {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* === Filled / Selected / Invalid — two-tone text: name+amount go to
+   text/default/default, wallet+amtCrypto stay text/subtle/default === */
+.swa--filled .swa__name,
+.swa--filled .swa__amount,
+.swa--selected .swa__name,
+.swa--selected .swa__amount,
+.swa--invalid .swa__name,
+.swa--invalid .swa__amount {
+  color: var(--mapped-text-default-default);
+}
+
+/* === Selected / Typing (open) — 2px primary border only, no glow ring
+   (confirmed absent from source, unlike Select/SelectTransfer) === */
+.swa--selected .swa__control,
+.swa--open .swa__control {
+  border-color: var(--mapped-border-primary-default);
+  border-width: var(--brand-scale-50); /* 2px */
+}
+
+/* === Invalid === */
+.swa--invalid .swa__control {
+  border-color: var(--mapped-border-error-default);
+  border-width: var(--brand-scale-50); /* 2px */
+}
+
+/* === Hover (Standard) — confirmed wholesale recolor: all four text lines
+   (and the chevron) go uniformly to -hover tokens, overriding any two-tone. === */
+.swa--standard:not(.swa--disabled):not(.swa--invalid):not(.swa--open):hover .swa__control,
+.swa--standard.swa--hover:not(.swa--disabled):not(.swa--invalid):not(.swa--open) .swa__control {
+  background: var(--mapped-surface-primary-default-subtle-hover);
+  border-color: var(--mapped-border-primary-default-subtle-hover);
+}
+.swa--standard:not(.swa--disabled):not(.swa--invalid):not(.swa--open):hover .swa__name,
+.swa--standard:not(.swa--disabled):not(.swa--invalid):not(.swa--open):hover .swa__wallet,
+.swa--standard:not(.swa--disabled):not(.swa--invalid):not(.swa--open):hover .swa__amount,
+.swa--standard:not(.swa--disabled):not(.swa--invalid):not(.swa--open):hover .swa__amtcrypto,
+.swa--standard.swa--hover:not(.swa--disabled):not(.swa--invalid):not(.swa--open) .swa__name,
+.swa--standard.swa--hover:not(.swa--disabled):not(.swa--invalid):not(.swa--open) .swa__wallet,
+.swa--standard.swa--hover:not(.swa--disabled):not(.swa--invalid):not(.swa--open) .swa__amount,
+.swa--standard.swa--hover:not(.swa--disabled):not(.swa--invalid):not(.swa--open) .swa__amtcrypto {
+  color: var(--mapped-text-subtle-hover);
+}
+.swa--standard:not(.swa--disabled):not(.swa--invalid):not(.swa--open):hover .swa__chevron,
+.swa--standard.swa--hover:not(.swa--disabled):not(.swa--invalid):not(.swa--open) .swa__chevron {
+  color: var(--mapped-icon-subtle-hover);
+}
+
+/* === Subtle — no bg/border change at rest or hover, text-only recolor === */
+.swa--subtle:not(.swa--disabled):not(.swa--invalid):not(.swa--open):hover .swa__name,
+.swa--subtle:not(.swa--disabled):not(.swa--invalid):not(.swa--open):hover .swa__wallet,
+.swa--subtle:not(.swa--disabled):not(.swa--invalid):not(.swa--open):hover .swa__amount,
+.swa--subtle:not(.swa--disabled):not(.swa--invalid):not(.swa--open):hover .swa__amtcrypto,
+.swa--subtle.swa--hover:not(.swa--disabled):not(.swa--invalid):not(.swa--open) .swa__name,
+.swa--subtle.swa--hover:not(.swa--disabled):not(.swa--invalid):not(.swa--open) .swa__wallet,
+.swa--subtle.swa--hover:not(.swa--disabled):not(.swa--invalid):not(.swa--open) .swa__amount,
+.swa--subtle.swa--hover:not(.swa--disabled):not(.swa--invalid):not(.swa--open) .swa__amtcrypto {
+  color: var(--mapped-text-subtle-hover);
+}
+.swa--subtle:not(.swa--disabled):not(.swa--invalid):not(.swa--open):hover .swa__chevron,
+.swa--subtle.swa--hover:not(.swa--disabled):not(.swa--invalid):not(.swa--open) .swa__chevron {
+  color: var(--mapped-icon-subtle-hover);
+}
+
+/* === Disabled — Standard uses -on-color tokens (sits on a colored disabled
+   surface); Subtle uses -default tokens (stays transparent, confirmed
+   divergence from Standard). === */
+.swa--disabled.swa--standard .swa__control {
+  background: var(--mapped-surface-disabled-default);
+  border-color: var(--mapped-border-disabled-default);
+}
+.swa--disabled.swa--subtle .swa__control {
+  background: transparent;
+  border-color: transparent;
+}
+.swa--disabled .swa__control {
+  cursor: not-allowed;
+}
+.swa--disabled.swa--standard .swa__name,
+.swa--disabled.swa--standard .swa__wallet,
+.swa--disabled.swa--standard .swa__amount,
+.swa--disabled.swa--standard .swa__amtcrypto {
+  color: var(--mapped-text-disabled-on-color);
+}
+.swa--disabled.swa--subtle .swa__name,
+.swa--disabled.swa--subtle .swa__wallet,
+.swa--disabled.swa--subtle .swa__amount,
+.swa--disabled.swa--subtle .swa__amtcrypto {
+  color: var(--mapped-text-disabled-default);
+}
+.swa--disabled.swa--standard .swa__chevron {
+  color: var(--mapped-icon-disabled-on-color);
+}
+.swa--disabled.swa--subtle .swa__chevron {
+  color: var(--mapped-icon-disabled-default);
+}
+
+/* === Menu — positioned below; the slot brings its own container/shadow/items === */
+.swa__menu {
+  position: absolute;
+  top: calc(100% + var(--brand-scale-100)); /* 4px below the box */
+  left: 0;
+  right: 0;
+  z-index: 10;
+}

@@ -62,10 +62,17 @@ export function Field({
     .join(' ')
 
   // Compact: square, icon-only. No text input or label per Figma source.
+  // role="img" + aria-label on the outer box gives it a real accessible name —
+  // the icon itself stays aria-hidden so it isn't announced twice.
   if (isCompact) {
     return (
-      <div className={className} data-preview={previewState}>
-        <span className="field__icon" aria-hidden={ariaLabel ? undefined : true}>
+      <div
+        className={className}
+        data-preview={previewState}
+        role={ariaLabel ? 'img' : undefined}
+        aria-label={ariaLabel}
+      >
+        <span className="field__icon" aria-hidden="true">
           {leadingIcon}
         </span>
       </div>

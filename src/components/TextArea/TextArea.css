@@ -1,0 +1,119 @@
+/* Text area (Figma 53:2473) — a multi-line sibling of Field. Same box tokens
+   and state behavior as Field (border/bg/text states, focus glow ring, Subtle
+   transparent-until-focus) confirmed per-variant; no icon slots (Figma has
+   none) and a fixed 160px demo height instead of Field's single-line box.
+   Screenshot-verified: text is always top-aligned in every variant — the
+   raw code-gen's per-state justify-content differences don't correspond to
+   any visible layout change, so no centering logic is implemented. */
+
+.textarea {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--brand-scale-50); /* 2px */
+  box-sizing: border-box;
+  width: 400px; /* Figma demo width; caller-controllable */
+  height: 160px; /* Figma demo height; caller-controllable */
+  min-height: 56px;
+  padding: var(--brand-scale-200) var(--brand-scale-300); /* 8px 12px */
+  border: var(--brand-scale-25) solid var(--mapped-border-subtlest-default); /* 1px */
+  border-radius: var(--brand-scale-200); /* 8px = border-radius/md */
+  background: var(--mapped-surface-primary-default-subtle);
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.textarea__label {
+  flex-shrink: 0;
+  color: var(--mapped-text-subtle-default);
+  cursor: text;
+}
+
+.textarea__input {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  padding: 0;
+  resize: none;
+  color: var(--mapped-text-default-default); /* typed/filled value */
+  caret-color: var(--mapped-text-default-default);
+  font-family: inherit;
+}
+.textarea__input::placeholder {
+  color: var(--mapped-text-subtle-default);
+  opacity: 1;
+}
+
+/* === Hover (Standard) === */
+.textarea--standard:not(.textarea--disabled):not(.textarea--invalid):hover:not(:focus-within),
+.textarea--standard.textarea--hover:not(.textarea--disabled):not(.textarea--invalid) {
+  background: var(--mapped-surface-primary-default-subtle-hover);
+  border-color: var(--mapped-border-primary-default-subtle-hover);
+}
+
+/* === Subtle appearance — transparent at rest & hover === */
+.textarea--subtle {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* === Focus / Typing — 2px blue border + faint outer glow ring ===
+   Persists via :focus-within until blur; Focus-vs-Typing text color is
+   native placeholder-vs-value coloring, no separate class needed. */
+.textarea:not(.textarea--disabled):focus-within,
+.textarea.textarea--focus:not(.textarea--disabled) {
+  border-color: var(--mapped-border-primary-default);
+  border-width: var(--brand-scale-50); /* 2px = Border Width/sm */
+}
+.textarea:not(.textarea--disabled):focus-within::after,
+.textarea.textarea--focus:not(.textarea--disabled)::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--brand-scale-100)); /* -4px */
+  border: var(--brand-scale-50) solid var(--mapped-surface-primary-default); /* 2px */
+  border-radius: var(--brand-scale-250); /* 10px = border-radius/lg */
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* === Invalid — 2px error border === */
+.textarea--invalid {
+  border-color: var(--mapped-border-error-default);
+  border-width: var(--brand-scale-50); /* 2px */
+}
+
+/* === Disabled — Standard uses -on-color tokens (sits on a colored disabled
+   surface); Subtle drops the border entirely and uses -default tokens
+   (confirmed divergence — same pattern as SelectWalletAccount's
+   Subtle-Disabled). === */
+.textarea--disabled.textarea--standard {
+  background: var(--mapped-surface-disabled-default);
+  border-color: var(--mapped-border-disabled-default);
+}
+.textarea--disabled.textarea--subtle {
+  background: transparent;
+  border-color: transparent;
+}
+.textarea--disabled {
+  cursor: not-allowed;
+}
+.textarea--disabled.textarea--standard .textarea__label,
+.textarea--disabled.textarea--standard .textarea__input {
+  color: var(--mapped-text-disabled-on-color);
+}
+.textarea--disabled.textarea--standard .textarea__input::placeholder {
+  color: var(--mapped-text-disabled-on-color);
+}
+.textarea--disabled.textarea--subtle .textarea__label,
+.textarea--disabled.textarea--subtle .textarea__input {
+  color: var(--mapped-text-disabled-default);
+}
+.textarea--disabled.textarea--subtle .textarea__input::placeholder {
+  color: var(--mapped-text-disabled-default);
+}
+.textarea--disabled .textarea__input {
+  cursor: not-allowed;
+}

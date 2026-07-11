@@ -31,6 +31,7 @@ import WarningIcon from '@material-design-icons/svg/round/warning.svg?react'
 import ErrorIcon from '@material-design-icons/svg/round/error.svg?react'
 import CheckCircleIcon from '@material-design-icons/svg/round/check_circle.svg?react'
 import CancelIcon from '@material-design-icons/svg/round/cancel.svg?react'
+import RemoveCircleIcon from '@material-design-icons/svg/round/remove_circle.svg?react'
 import HelpOutlineIcon from '@material-design-icons/svg/round/help_outline.svg?react'
 import VisibilityIcon from '@material-design-icons/svg/round/visibility.svg?react'
 import VisibilityOffIcon from '@material-design-icons/svg/round/visibility_off.svg?react'
@@ -46,6 +47,7 @@ import HomeIcon from '@material-design-icons/svg/round/home.svg?react'
 import MenuIcon from '@material-design-icons/svg/round/menu.svg?react'
 import DashboardIcon from '@material-design-icons/svg/round/dashboard.svg?react'
 import CalendarTodayIcon from '@material-design-icons/svg/round/calendar_today.svg?react'
+import CalendarMonthIcon from '@material-design-icons/svg/round/calendar_month.svg?react'
 import ScheduleIcon from '@material-design-icons/svg/round/schedule.svg?react'
 import AttachFileIcon from '@material-design-icons/svg/round/attach_file.svg?react'
 import LinkIcon from '@material-design-icons/svg/round/link.svg?react'
@@ -137,6 +139,7 @@ export const ICONS = {
   check_circle:           CheckCircleIcon,
   done:                   DoneIcon,
   cancel:                 CancelIcon,
+  remove_circle:          RemoveCircleIcon,
   help_outline:           HelpOutlineIcon,
   visibility:             VisibilityIcon,
   visibility_off:         VisibilityOffIcon,
@@ -151,6 +154,7 @@ export const ICONS = {
   // App & Content
   dashboard:              DashboardIcon,
   calendar_today:         CalendarTodayIcon,
+  calendar_month:         CalendarMonthIcon,
   schedule:               ScheduleIcon,
   link:                   LinkIcon,
   // Ratings

@@ -1,0 +1,148 @@
+/* Date Picker (Figma 54:1550) — a single-line date input, no label slot
+   (confirmed absent from all 14 variants). Trailing icon swaps between
+   calendar_month (browse) and cancel/clear (has a committed value, not
+   focused) — confirmed per-variant, not a guessable rule (Hydrate keeps
+   calendar_month even though it has a value, since it's still focused).
+   The calendar dropdown is an app-provided slot (calendarSlot), matching the
+   Select family's pattern — Figma's own calendar grid isn't a reusable
+   component yet. */
+
+.datepicker {
+  position: relative;
+  display: inline-block;
+  width: 240px; /* Figma demo width; caller-controllable */
+}
+
+.datepicker__control {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-200); /* 8px */
+  width: 100%;
+  padding: var(--brand-scale-200) var(--brand-scale-300); /* 8px 12px */
+  border: var(--brand-scale-25) solid var(--mapped-border-subtlest-default); /* 1px */
+  border-radius: var(--brand-scale-200); /* 8px = border-radius/md */
+  background: var(--mapped-surface-primary-default-subtle);
+  cursor: text;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.datepicker__stack {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.datepicker__input {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  padding: 0;
+  color: var(--mapped-text-default-default); /* typed/filled value */
+  caret-color: var(--mapped-text-default-default);
+  font-family: inherit;
+}
+.datepicker__input::placeholder {
+  color: var(--mapped-text-subtle-default);
+  opacity: 1;
+}
+
+.datepicker__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--mapped-icon-subtle-default);
+}
+.datepicker__icon--clear {
+  cursor: pointer;
+}
+
+/* === Hover (Standard) === */
+.datepicker--standard:not(.datepicker--disabled):not(.datepicker--invalid):hover:not(:focus-within) .datepicker__control,
+.datepicker--standard.datepicker--hover:not(.datepicker--disabled):not(.datepicker--invalid) .datepicker__control {
+  background: var(--mapped-surface-primary-default-subtle-hover);
+  border-color: var(--mapped-border-primary-default-subtle-hover);
+}
+
+/* === Subtle appearance — transparent at rest & hover === */
+.datepicker--subtle .datepicker__control {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* === Focus / Hydrate — 2px blue border + faint outer glow ring ===
+   Persists via :focus-within; Hydrate is not a separate class — it's just
+   Focus with a real value, using the same native input coloring as every
+   other family member. */
+.datepicker:not(.datepicker--disabled) .datepicker__control:focus-within,
+.datepicker.datepicker--focus:not(.datepicker--disabled) .datepicker__control {
+  border-color: var(--mapped-border-primary-default);
+  border-width: var(--brand-scale-50); /* 2px = Border Width/sm */
+}
+.datepicker:not(.datepicker--disabled) .datepicker__control:focus-within::after,
+.datepicker.datepicker--focus:not(.datepicker--disabled) .datepicker__control::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--brand-scale-100)); /* -4px */
+  border: var(--brand-scale-50) solid var(--mapped-surface-primary-default); /* 2px */
+  border-radius: var(--brand-scale-250); /* 10px = border-radius/lg */
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* === Invalid === */
+.datepicker--invalid .datepicker__control {
+  border-color: var(--mapped-border-error-default);
+  border-width: var(--brand-scale-50); /* 2px */
+}
+
+/* === Disabled — Standard uses -on-color tokens; Subtle drops the border
+   entirely and uses -default tokens (confirmed divergence, same pattern as
+   SelectWalletAccount / TextArea's Subtle-Disabled). === */
+.datepicker--disabled.datepicker--standard .datepicker__control {
+  background: var(--mapped-surface-disabled-default);
+  border-color: var(--mapped-border-disabled-default);
+}
+.datepicker--disabled.datepicker--subtle .datepicker__control {
+  background: transparent;
+  border-color: transparent;
+}
+.datepicker--disabled .datepicker__control {
+  cursor: not-allowed;
+}
+.datepicker--disabled.datepicker--standard .datepicker__input {
+  color: var(--mapped-text-disabled-on-color);
+}
+.datepicker--disabled.datepicker--standard .datepicker__input::placeholder {
+  color: var(--mapped-text-disabled-on-color);
+}
+.datepicker--disabled.datepicker--standard .datepicker__icon {
+  color: var(--mapped-icon-disabled-on-color);
+}
+.datepicker--disabled.datepicker--subtle .datepicker__input {
+  color: var(--mapped-text-disabled-default);
+}
+.datepicker--disabled.datepicker--subtle .datepicker__input::placeholder {
+  color: var(--mapped-text-disabled-default);
+}
+.datepicker--disabled.datepicker--subtle .datepicker__icon {
+  color: var(--mapped-icon-disabled-default);
+}
+.datepicker--disabled .datepicker__icon {
+  cursor: not-allowed;
+}
+
+/* === Calendar dropdown — positioned below; the slot brings its own
+   container/shadow/grid === */
+.datepicker__menu {
+  position: absolute;
+  top: calc(100% + var(--brand-scale-100)); /* 4px below the box */
+  left: 0;
+  z-index: 10;
+}

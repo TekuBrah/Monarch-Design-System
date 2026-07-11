@@ -1,0 +1,30 @@
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--brand-scale-200); /* 8px */
+  box-sizing: border-box;
+  width: 426px; /* Figma demo width; caller-controlled in practice, same convention as Field's 240px default */
+  padding: var(--brand-scale-300) 0; /* 12px top/bottom, sides handled by children */
+  border-radius: var(--brand-scale-200); /* 8px = border-radius/md */
+  background: var(--mapped-surface-elevation-default);
+  overflow: clip;
+  /* FAIL LOUD: Figma specifies a two-layer elevation shadow (Atlassian-style
+     navy-tinted alpha, 0px 0px 1px rgba(9,30,66,.31) + 0px 8px 12px
+     rgba(9,30,66,.15)) with no matching --shadow-* token — existing tokens
+     (--shadow-medium/subtle/subtlest) are flat black-alpha, single-layer.
+     Recorded as a literal per design source; flagged, not self-approved as
+     a color-mix derivation. Needs a Figma Variables / token-layer fix if
+     other floating-panel components need the same recipe. */
+  box-shadow: 0px 0px 1px rgba(9, 30, 66, 0.31), 0px 8px 12px rgba(9, 30, 66, 0.15);
+}
+
+.menu__search {
+  width: 100%;
+  padding: 0 var(--brand-scale-200); /* 8px */
+  box-sizing: border-box;
+}
+
+.menu__search .field {
+  width: 100%;
+}

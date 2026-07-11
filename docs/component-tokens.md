@@ -1309,6 +1309,9 @@ Subtle appearance wrong).
 | `isDisabled` | `boolean` | `false` | |
 | `isInvalid` | `boolean` | `false` | Sets `aria-invalid`; 2px error border |
 | `isRequired` | `boolean` | `false` | `required` + `aria-required`; visual `*` |
+| `id` | `string` | — | Forwarded to `<input>`; auto-generated via `useId()` if omitted |
+| `name` | `string` | — | Forwarded to `<input>` |
+| `type` | `string` | `'text'` | Forwarded to `<input type>` |
 | `ariaLabel` | `string` | — | Accessible name when no visible `label` |
 | `previewState` | `'hover' \| 'focus'` | — | Showcase only |
 
@@ -1375,3 +1378,850 @@ Label: `.type-body-caption` (12px). Input/placeholder: `.type-body-m` (16px).
 - **`get_design_context` reliability**: the tool times out (~300s) when called on
   the whole component set or with `forceCode`, but returns fine on individual
   variant nodes — that per-variant approach is how this entry was sourced.
+
+---
+
+## Select
+
+**Figma node:** 42:949 (`Select` component set)
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 149:4539 (Components documentation frame)
+
+The base of the input/select family — a **searchable combobox** trigger. Same
+box as `Field` plus a built-in trailing chevron (`icon_chevron_expand_more`).
+Rendered as `<div>` wrapping a real `<input role="combobox">`; the dropdown
+`<Menu>` is an **app-provided slot** (Figma marks its own menu as a replaceable
+example). First of three sets read from this frame; `Select / Transfer` and
+`Select / Wallet Account` extend it via slots (built separately).
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `appearance` | `'standard' \| 'subtle'` | `'standard'` | Subtle = transparent until focus |
+| `label` | `string` | — | Floating caption; real `<label htmlFor>` |
+| `placeholder` | `string` | — | |
+| `value` | `string` | — | Search query while typing, or the chosen value's label |
+| `onSearchChange` | `(value: string) => void` | — | Fires as the user types; app filters its menu |
+| `searchable` | `boolean` | `true` | `false` → read-only input (plain select) |
+| `isOpen` / `onOpenChange` | `boolean` / `(o) => void` | — | Controlled open state (uncontrolled if omitted) |
+| `menuSlot` | `React.ReactNode` | — | Dropdown content, rendered below when open |
+| `leadingSlot` | `React.ReactNode` | — | Leading decoration (wrap in `ElementWrapper`) |
+| `isSelected` | `boolean` | `false` | Figma `Selected` — persistent blue border + ring |
+| `isDisabled` / `isInvalid` | `boolean` | `false` | |
+| `id` | `string` | — | Forwarded to `<input>`; auto-generated via `useId()` if omitted |
+| `name` | `string` | — | Forwarded to `<input>` |
+| `ariaLabel` | `string` | — | Accessible name when no visible `label` |
+| `previewState` | `'hover' \| 'focus'` | — | Showcase only |
+
+### State → token mapping
+
+| State | Background | Border | Text |
+|---|---|---|---|
+| Default | `--mapped-surface-primary-default-subtle` | 1px `--mapped-border-subtlest-default` | placeholder `--mapped-text-subtle-default` |
+| Hover | `--mapped-surface-primary-default-subtle-hover` | 1px `--mapped-border-primary-default-subtle-hover` | subtle |
+| Focus / Typing | `--mapped-surface-primary-default-subtle` | 2px `--mapped-border-primary-default` + glow ring | value `--mapped-text-default-default` (typing), caret native |
+| Filled | `--mapped-surface-primary-default-subtle` | 1px `--mapped-border-subtlest-default` | value `--mapped-text-default-default` |
+| Selected | `--mapped-surface-primary-default-subtle` | 2px `--mapped-border-primary-default` + glow ring | value `--mapped-text-default-default` |
+| Invalid | `--mapped-surface-primary-default-subtle` | 2px `--mapped-border-error-default` | value default |
+| Disabled | `--mapped-surface-disabled-default` | 1px `--mapped-border-disabled-default` | `--mapped-text-disabled-default` (chevron `--mapped-icon-disabled-default`) |
+
+Placeholder-vs-value colour is native (`input` colour = `--mapped-text-default-default`,
+`::placeholder` = `--mapped-text-subtle-default`). Chevron: `--mapped-icon-subtle-default`.
+
+**Focus/Selected glow ring** (`::after`): `inset -4px` (`--brand-scale-100`), 2px
+(`--brand-scale-50`) solid `--mapped-surface-primary-default`, `border-radius
+--brand-scale-250` (10px), `opacity 0.25` — identical to Field.
+
+### Geometry (confirmed)
+
+| Property | Token | Px |
+|---|---|---|
+| Padding | `--brand-scale-200` / `--brand-scale-300` | 8px / 12px |
+| Radius | `--brand-scale-200` | 8px |
+| Border (default / focus·invalid) | `--brand-scale-25` / `--brand-scale-50` | 1px / 2px |
+| Gap (row / label→input) | `--brand-scale-200` / `--brand-scale-50` | 8px / 2px |
+| Chevron | `<Icon size="m">` | 20px |
+| Demo width | — | 320px (caller-controllable) |
+
+Typography: label `.type-body-caption` (12px), value/input `.type-body-m` (16px).
+
+### Accessibility
+
+Real `<input role="combobox">` with `aria-expanded` and `aria-controls` set
+**only while the menu is open** (no dangling reference). `aria-autocomplete="list"`
+is conditional on `searchable` (default `true`) — when `searchable={false}`
+(read-only, plain-select mode) it's omitted, not set to `"list"`.
+Chevron is a `tabIndex={-1}` toggle button with an `aria-label`. Keyboard menu
+navigation belongs to the app-provided menu.
+
+### Known Figma inconsistencies / decisions
+
+- **Disabled uses `text/icon-disabled-default` (#cfd5dc), not the `on-color`
+  variant** — differs from Field's disabled choice; confirmed per-variant from
+  source, so Select is not a blind copy of Field.
+- **`Typing` state = searchable/open** — real editable input + caret + an open
+  menu. The menu is an app slot (Figma: *"we suggest creating your own slot
+  component"*); Select owns only the query/open state and exposes `menuSlot`.
+  Select does not own option data or filtering.
+- **`get_design_context` reliability**: times out on the whole set / parallel
+  calls; reliable one variant at a time — how this was sourced.
+
+---
+
+## Select / Transfer
+
+**Figma node:** 189:2229 (`Select / Transfer`)
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 149:4539 (Components documentation frame)
+
+Amount input + currency picker, used for currency/crypto transfers. Extends
+`Select`'s combobox model: two independent slot-driven dropdowns (amount
+menu, currency menu), both app-provided per Figma's own annotation.
+
+> **Provenance note**: initially built with several appearance/state
+> combinations extrapolated rather than individually read (disclosed at the
+> time). This entry reflects a full confirmation pass — every state listed
+> below with "CONFIRMED" was read directly from its own Figma variant node,
+> not inferred. Three of those confirmations **overturned** the original
+> extrapolation (Hover, Invalid, and the disabled text token) — see "Known
+> Figma inconsistencies" for what changed and why it wasn't guessable.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `appearance` | `'standard' \| 'subtle' \| 'attention'` | `'standard'` | Attention = underline style |
+| `label` | `string` | — | Caption label above the amount |
+| `placeholder` / `value` | `string` | — | Amount field |
+| `onAmountChange` | `(value: string) => void` | — | |
+| `currencyLabel` | `string` | — | Currency code, e.g. `"MYR"` |
+| `currencyFlag` | `React.ReactNode` | — | Wrap in `<ElementWrapper size="m">` (20px) — the Malaysian flag asset isn't in the codebase yet, so the showcase uses a placeholder |
+| `onCurrencyClick` | `() => void` | — | Opens the currency picker |
+| `currencyMenuSlot` / `menuSlot` | `React.ReactNode` | — | App-provided dropdowns (currency / amount) |
+| `isCurrencyOpen` / `isOpen` + `onOpenChange` | `boolean` | — | Controlled open state for each menu |
+| `isSelected` / `isDisabled` / `isInvalid` | `boolean` | `false` | |
+| `id` | `string` | — | Forwarded to the amount `<input>`; auto-generated via `useId()` if omitted |
+| `ariaLabel` | `string` | — | |
+| `previewState` | `'hover' \| 'focus'` | — | Showcase only |
+
+### State → token mapping — Standard / Subtle
+
+Same box tokens as `Select` (shared box: default/hover/focus/invalid/disabled
+all match). `justify-content: space-between` (amount left, currency picker
+right). Amount typography: `.type-body-lg` (20px, regular). See `Select`'s
+entry for the full box token table; not repeated here.
+
+### State → token mapping — Attention (all CONFIRMED, read per-variant)
+
+| State | Border | Text (label/amount/currency) | Shape |
+|---|---|---|---|
+| Default | bottom-only 2px `--mapped-border-primary-default` | `--mapped-text-subtle-default` (label/currency), placeholder subtle / value `--mapped-text-default-default` | underline, top-rounded (`8px/8px/0/0`) |
+| Hover | bottom-only 2px `--mapped-border-primary-default-hover` | **all text** → `--mapped-text-subtle-hover` (label, amount, divider, currency) | underline (unchanged shape) |
+| Focus | **unchanged from Default** — no color/width/ring change | unchanged from Default | underline (unchanged) |
+| Typing | same as Focus + value/caret shown | value → `--mapped-text-default-default` (same convention as Default's filled value) | underline (unchanged) |
+| Filled | same as Default, value present | value → `--mapped-text-default-default` | underline (unchanged) |
+| Selected | identical to Filled | identical to Filled | underline (unchanged) |
+| Currency Focus | unchanged from Default | **only** the currency label/code → `--mapped-text-subtle-hover`; amount side untouched | underline (unchanged) |
+| Currency Typing | same as Currency Focus (typing happens in the nested menu's own search field, not this control) | same as Currency Focus | underline (unchanged) |
+| **Invalid** | **full box** — 2px `--mapped-border-error-default` on **all 4 sides** | unchanged from Default | **shape changes** to a full 8px-radius box (not underline) |
+| Disabled | bottom-only 2px `--mapped-border-disabled-default` | **all text** → `--mapped-text-disabled-on-color` (not `-default`); flag `opacity: 0.5` | underline (unchanged) |
+
+Divider: `--mapped-text-default-default` at rest, `--mapped-text-subtle-hover`
+on hover, `--mapped-text-disabled-on-color` when disabled. Chevron mirrors the
+currency label's color logic (`--mapped-icon-subtle-hover` on currency-focus).
+
+### Geometry (confirmed)
+
+Same box padding/radius/gaps as `Select`. Attention-specific: amount uses
+`.type-header-h5` (24px), label uses `.type-body-caption-semibold`, and the
+divider is 2px (`--brand-scale-50`) wide with `--brand-scale-50` margin on
+each side.
+
+### Accessibility
+
+Amount input: `role="combobox"`, `aria-expanded`, `aria-controls` (only when
+open), `aria-autocomplete="list"`. Currency chevron: `aria-haspopup="listbox"`,
+`aria-expanded={isCurrencyOpen}`, `aria-controls` (only when open). Both
+dropdowns are app slots — keyboard navigation within them is the app's
+responsibility.
+
+### Known Figma inconsistencies
+
+- **Hover is a full text+border repaint, not just a border-color change** —
+  confirmed via 189:9675; every text node (label, amount, divider, currency)
+  moves to `text/subtle/hover`. This was NOT the original implementation
+  (which had no Attention-specific hover rule at all) and would not have
+  been guessable from Default alone.
+- **Invalid changes shape entirely** — confirmed via 189:9666: switches from
+  the underline style to a full bordered box (2px error, all 4 sides, full
+  8px radius), unlike every other Attention state which keeps the underline
+  unchanged. The original implementation only recolored the bottom border —
+  wrong. This is the most surprising finding in this component; there was no
+  way to predict it from adjacent states.
+- **Focus/Selected/Filled/Typing/Currency-Focus/Currency-Typing all leave the
+  border completely unchanged** (`#046eff`, same as Default) — confirmed
+  across 189:9693, 189:9746, 189:9657, 189:9707. Attention never gets the
+  glow ring that Standard/Subtle get on focus. This makes sense in hindsight
+  (Attention's Default already looks "active"/emphasized) but was flagged
+  and verified rather than assumed.
+- **Attention's disabled text token differs from Standard/Subtle's** —
+  `text/disabled/on-color` (#b6bfca) vs `text/disabled/default`. Standard/
+  Subtle's disabled token for *this* component was not individually
+  re-confirmed (it reuses `Select`'s confirmed choice for the shared box) —
+  flagged as a lower-confidence assumption than the Attention finding, which
+  was read directly.
+- **`get_design_context` reliability**: whole-set and parallel calls time
+  out at ~300s; single-variant sequential calls succeed reliably. All ten
+  Attention state variants plus the Standard/Subtle base were read this way.
+
+## Select / Wallet Account
+
+**Figma node:** 189:5871 (`Select / Wallet Account`)
+
+A button-style trigger displaying a chosen wallet/account (name/wallet on the
+left, amount/amtCrypto on the right, chevron — no logo). All 14 variants (2
+appearances × 7 states) were read individually from Figma — no extrapolation.
+
+> **Architectural note**: unlike `Select`/`Select / Transfer`, the trigger is
+> never an editable text input. In the "Typing" state the trigger's own
+> content stays completely unchanged from Default (still all
+> `text/subtle/default`) — only the border upgrades to 2px primary and a menu
+> opens below. The actual search UI lives entirely inside the app-provided
+> `menuSlot`; Figma's own example menu composes a real `Field` instance (with
+> a search icon) above a scrollable option list, confirming `Field` composes
+> correctly as a nested child here. The root element is a real `<button>`,
+> not an `<input>`.
+
+> **Corrected finding — the trigger never shows a logo.** The raw
+> `get_design_context` dump exposed an `iconLeft` boolean toggle on the
+> trigger, which an earlier pass of this build mistakenly treated as a real,
+> usable variant and exposed as a `logoSlot` prop (first nested inside the
+> box, then moved beside it after initial pushback). A direct screenshot of
+> all 14 variants (`get_screenshot` on 189:5871) shows `iconLeft` is `false`
+> in every actual named variant — no real trigger instance in the file ever
+> shows a logo. The `iconLeft` toggle exists in the generated code only
+> because this component's prop shape is shared with the dropdown's `<item>`
+> row, where the logo genuinely is always shown. `logoSlot` has been removed
+> from this component entirely; the logo belongs to the (not yet built)
+> Menu/Option item rows.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `appearance` | `'standard' \| 'subtle'` | `'standard'` | |
+| `state` | `'default' \| 'filled' \| 'selected'` | `'default'` | Ignored while `isOpen` is true (Typing takes over) |
+| `labelCrypto` / `labelWallet` | `string` | — | Left column: name (semibold) / wallet (regular) |
+| `labelAmount` / `labelAmtCrypto` | `string` | — | Right column: both semibold |
+| `showChevron` | `boolean` | `true` | Chevron is always the same literal icon — not a slot |
+| `menuSlot` | `React.ReactNode` | — | App-provided dropdown; Figma's example composes `Field` + option list |
+| `isOpen` / `onOpenChange` | `boolean` / fn | — | Controlled open state — drives Typing visuals |
+| `isDisabled` / `isInvalid` | `boolean` | `false` | |
+| `id` | `string` | — | Forwarded to the trigger `<button>`; auto-generated via `useId()` if omitted |
+| `ariaLabel` | `string` | — | Falls back to `"{labelCrypto} — {labelWallet}"` |
+| `previewState` | `'hover'` | — | Showcase only |
+
+### State → token mapping (all 14 variants confirmed individually)
+
+| Appearance | State | Background | Border | Name/Amount text | Wallet/AmtCrypto text |
+|---|---|---|---|---|---|
+| Standard | Default | `--mapped-surface-primary-default-subtle` | 1px `--mapped-border-subtlest-default` | `--mapped-text-subtle-default` | `--mapped-text-subtle-default` |
+| Standard | Filled | unchanged | unchanged | `--mapped-text-default-default` | `--mapped-text-subtle-default` |
+| Standard | Invalid | unchanged | 2px `--mapped-border-error-default` | `--mapped-text-default-default` | `--mapped-text-subtle-default` |
+| Standard | Hover | `--mapped-surface-primary-default-subtle-hover` | 1px `--mapped-border-primary-default-subtle-hover` | `--mapped-text-subtle-hover` | `--mapped-text-subtle-hover` |
+| Standard | Disabled | `--mapped-surface-disabled-default` | 1px `--mapped-border-disabled-default` | `--mapped-text-disabled-on-color` | `--mapped-text-disabled-on-color` |
+| Standard | Typing (open) | unchanged | 2px `--mapped-border-primary-default` | unchanged | unchanged |
+| Standard | Selected | unchanged | 2px `--mapped-border-primary-default` | `--mapped-text-default-default` | `--mapped-text-subtle-default` |
+| Subtle | Default | transparent | none | `--mapped-text-subtle-default` | `--mapped-text-subtle-default` |
+| Subtle | Filled | transparent | none | `--mapped-text-default-default` | `--mapped-text-subtle-default` |
+| Subtle | Invalid | transparent | 2px `--mapped-border-error-default` | `--mapped-text-default-default` | `--mapped-text-subtle-default` |
+| Subtle | Hover | transparent (unchanged) | none (unchanged) | `--mapped-text-subtle-hover` | `--mapped-text-subtle-hover` |
+| Subtle | Disabled | transparent | **none** | `--mapped-text-disabled-default` | `--mapped-text-disabled-default` |
+| Subtle | Typing (open) | transparent | 2px `--mapped-border-primary-default` | unchanged | unchanged |
+| Subtle | Selected | transparent | 2px `--mapped-border-primary-default` | `--mapped-text-default-default` | `--mapped-text-subtle-default` |
+
+No glow ring on Typing/Selected — confirmed absent from every relevant Figma
+read (unlike `Select`/`Select / Transfer`'s shared `::after` ring).
+
+Chevron color was not given an explicit token in any of the 14 raw Figma
+reads (exported as a flat image asset). By your approval, it tracks the
+adjacent text tone per state: `--mapped-icon-subtle-default` (Default),
+`--mapped-icon-subtle-hover` (Hover), `--mapped-icon-disabled-on-color`
+(Standard Disabled), `--mapped-icon-disabled-default` (Subtle Disabled) — an
+inferred choice, not directly confirmed, flagged here for visibility.
+
+### Geometry (confirmed)
+
+320px demo width (caller-controllable), `--brand-scale-200` (8px) gap,
+`--brand-scale-200 --brand-scale-300` (8px/12px) padding, `--brand-scale-200`
+(8px) radius — same box geometry as `Select`. Name/Amount: `.type-body-m-semibold`
+(16px). Wallet: `.type-body-sm` (14px, regular — the only regular-weight line,
+a confirmed asymmetry against amtCrypto). AmtCrypto: `.type-body-sm-semibold`
+(14px). Chevron: 20px via `Icon size="m"`.
+
+### Accessibility
+
+Root is a real `<button>` (not `role="combobox"` on an `<input>`, since there's
+no editable text in the trigger): `aria-haspopup="listbox"`, `aria-expanded`,
+`aria-controls` (only when open), `aria-invalid`, `aria-label` (explicit prop
+or a composed fallback from `labelCrypto`/`labelWallet`). `disabled` attribute
+handles both the visual and interactive disabled state natively.
+
+### Known Figma inconsistencies
+
+- **Trigger never becomes an editable input** — "Typing" only upgrades the
+  border and opens a menu; the crypto/wallet/amount text is pixel-identical
+  to Default. This is a structural difference from `Select`/`Select /
+  Transfer` (both of which turn their trigger into a live text input on
+  Typing) and drove the `<button>`-not-`<input>` root element choice.
+- **Subtle-Disabled diverges from Standard-Disabled** — drops the border
+  entirely (Standard keeps a 1px disabled border) and uses
+  `text/disabled/default` instead of `-on-color`, since Subtle never has a
+  colored surface for "on-color" to sit against. Confirmed via 189:6216,
+  not assumed from Standard's pattern.
+- **No glow ring on this trigger's Typing/Selected states** — every other
+  Select-family component gets a `::after` glow ring on focus-equivalent
+  states; this component's 14 reads showed none. The ring seen in Figma's
+  Typing-state screenshot belongs to the *nested* `Field` component inside
+  the menu, not this component's own box.
+- **Chevron color is inferred, not confirmed** — see mapping table above.
+- **No trigger variant ever shows a logo** — see the corrected finding above.
+  The raw code-gen exposes an `iconLeft` toggle (shared with the dropdown's
+  `<item>` row prop shape), but every real named variant in the file has it
+  `false`; confirmed by screenshotting the full 14-variant set, not just the
+  code dump. `logoSlot` was removed from the component after being added
+  twice on a wrong premise (once inside the box, once beside it).
+
+## Text area
+
+**Figma node:** 53:2473 (`Text area` component set)
+**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 149:7117 (Components documentation frame)
+
+A multi-line sibling of `Field` — same box tokens and state behavior, no icon
+slots, real `<textarea>` instead of `<input>`. All 14 variants (2 appearances
+× 7 states) read individually from Figma — no extrapolation.
+
+> **Screenshot correction**: the raw `get_design_context` dump toggles
+> `justify-content: center` on/off per state (centered for Default/Hover/Focus,
+> top-aligned for Filled/Invalid/Disabled/Typing), which read like a real
+> layout difference. A screenshot of the full 14-variant set (and of Default
+> alone) shows text is **always top-aligned** — the class difference has no
+> visible effect (the inner stack's height is intrinsic to one line, so
+> centering it is a no-op). No centering logic was implemented; this is a
+> case of the raw code-gen output not matching the actual rendered design.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `appearance` | `'standard' \| 'subtle'` | `'standard'` | Subtle = transparent until focus |
+| `label` | `string` | — | Floating label (Figma `Label=True`); real `<label htmlFor>` |
+| `placeholder` | `string` | — | |
+| `value` / `defaultValue` | `string` | — | Controlled / uncontrolled |
+| `onChange` | `(value: string) => void` | — | Passes the new string |
+| `isDisabled` | `boolean` | `false` | |
+| `isInvalid` | `boolean` | `false` | Sets `aria-invalid`; 2px error border |
+| `id` | `string` | — | Forwarded to `<textarea>`; auto-generated via `useId()` if omitted |
+| `name` | `string` | — | Forwarded to `<textarea>` |
+| `ariaLabel` | `string` | — | Accessible name when no visible `label` |
+| `previewState` | `'hover' \| 'focus'` | — | Showcase only |
+
+No `isRequired` — Figma's source has no required indicator for this
+component (unlike `Field`), so none was added.
+
+### State → token mapping (Standard, confirmed)
+
+| State | Background | Border | Value/placeholder text |
+|---|---|---|---|
+| Default | `--mapped-surface-primary-default-subtle` | 1px `--mapped-border-subtlest-default` | placeholder `--mapped-text-subtle-default` |
+| Hover | `--mapped-surface-primary-default-subtle-hover` | 1px `--mapped-border-primary-default-subtle-hover` | `--mapped-text-subtle-default` |
+| Focus | `--mapped-surface-primary-default-subtle` | 2px `--mapped-border-primary-default` + glow ring | placeholder `--mapped-text-subtle-default` |
+| Typing | same + glow ring | 2px `--mapped-border-primary-default` | value `--mapped-text-default-default` |
+| Filled | `--mapped-surface-primary-default-subtle` | 1px `--mapped-border-subtlest-default` | value `--mapped-text-default-default` |
+| Invalid | `--mapped-surface-primary-default-subtle` | 2px `--mapped-border-error-default` | `--mapped-text-default-default` |
+| Disabled | `--mapped-surface-disabled-default` | 1px `--mapped-border-disabled-default` | `--mapped-text-disabled-on-color` |
+
+**Subtle appearance:** transparent background and border at rest *and* on
+hover — identical to `Field`'s Subtle behavior. Focus/Typing still gain the
+2px border + glow ring; Invalid still gains the 2px error border (bg stays
+transparent). **Subtle-Disabled diverges from Standard-Disabled**: no border
+at all (fully transparent) and `--mapped-text-disabled-default` instead of
+`-on-color` — the same divergence already confirmed on
+`SelectWalletAccount`'s Subtle-Disabled, recurring here.
+
+**Focus/Typing glow ring** (`::after`): identical to Field/Select — `inset
+-4px` (`--brand-scale-100`), 2px (`--brand-scale-50`) solid
+`--mapped-surface-primary-default`, `border-radius --brand-scale-250` (10px),
+`opacity 0.25`. Focus vs Typing is native placeholder-vs-value coloring, not
+a separate CSS state.
+
+### Geometry (confirmed)
+
+| Property | Token | Px |
+|---|---|---|
+| Padding | `--brand-scale-200` / `--brand-scale-300` | 8px / 12px |
+| Radius | `--brand-scale-200` | 8px (border-radius/md) |
+| Border width (default / focus·invalid) | `--brand-scale-25` / `--brand-scale-50` | 1px / 2px |
+| Label→textarea gap | `--brand-scale-50` | 2px |
+| Demo width / height | — | 400px / 160px (caller-controllable); `min-height: 56px` floor |
+
+`box-sizing: border-box` keeps the box stable as the border grows 1→2px.
+`resize: none` — Figma's box shows no resize handle, so none was added.
+
+### Typography
+
+Label: `.type-body-caption` (12px). Value/placeholder: `.type-body-m` (16px).
+
+### Known Figma inconsistencies
+
+- **`justify-content` toggle has no visible effect** — see the screenshot
+  correction above. Not implemented.
+- **No `isRequired`** — absent from this component's Figma source, unlike
+  `Field`.
+- **No icon slots** — Figma's Text area has no leading/trailing icon, unlike
+  `Field`.
+- **`get_design_context` reliability**: whole-set/parallel calls time out at
+  ~300s; single-variant sequential calls succeed reliably — all 14 variants
+  were read this way.
+
+## Date Picker
+
+**Figma node:** 54:1550 (`Date Picker` component set)
+
+A single-line date input, no label slot (confirmed absent from all 14
+variants — unlike `Field`/`Select`). Same box tokens as `Select`. The trailing
+icon swaps between `calendar_month` (browse) and `cancel` (clear) depending on
+state; the calendar dropdown is an app-provided slot, matching the Select
+family's pattern.
+
+> **Architecture decision**: Figma's Focus state renders a complete
+> interactive calendar (month header with prev/next navigation, weekday row,
+> full day grid) — not a placeholder example like Select's menu. By your
+> direction, this was built as a slot (`calendarSlot`), consistent with the
+> rest of the family, rather than implementing a full calendar widget inside
+> this component. A real `Calendar`/date-grid component is deferred, same as
+> `Menu`/`Option` was for `Select`.
+
+> **Icon-swap logic (non-obvious, confirmed per-variant)**: the trailing icon
+> is `cancel` (clear button) *only* in **Filled** and **Invalid**. Every other
+> state — including **Hydrate**, which has a real value — shows
+> `calendar_month`. A value being present does not by itself trigger the
+> clear icon; being focused overrides it back to the calendar icon. Rule
+> implemented in code: `showClearIcon = (hasValue && !isFocused) || isInvalid`.
+
+> **"Hydrate" state**: a new state name not seen elsewhere in this family.
+> Visually: 2px primary border + glow ring (like Focus), a real value in
+> `text/default/default`, no caret rendered, calendar closed. Implemented
+> as *not* a separate CSS state — it's just `:focus-within` (same mechanism
+> as Focus) combined with native input value coloring, identical to how
+> `Field`/`Select` handle their own Typing state. No dedicated `--hydrate`
+> class exists in the CSS.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `appearance` | `'standard' \| 'subtle'` | `'standard'` | |
+| `placeholder` | `string` | `'mm/dd/yyyy'` | |
+| `value` / `defaultValue` | `string` | — | Controlled / uncontrolled |
+| `onChange` | `(value: string) => void` | — | Passes the new string |
+| `onClear` | `() => void` | — | Wired to the clear icon; falls back to clearing internal state if uncontrolled |
+| `calendarSlot` | `React.ReactNode` | — | App-provided calendar, rendered below when open |
+| `isOpen` / `onOpenChange` | `boolean` / fn | — | Controlled open state |
+| `isDisabled` / `isInvalid` | `boolean` | `false` | |
+| `id` | `string` | — | Forwarded to `<input>`; auto-generated via `useId()` if omitted |
+| `name` | `string` | — | Forwarded to `<input>` |
+| `ariaLabel` | `string` | — | This component has no visible label |
+| `previewState` | `'hover' \| 'focus'` | — | Showcase only |
+
+No `isRequired`, no `iconLeft` slot — neither exists in Figma's source. The
+left icon toggle (`iconLeft`) is `false` in every one of the 14 variants,
+mirroring the dormant `iconLeft` finding on `SelectWalletAccount`.
+
+### State → token mapping (Standard, confirmed)
+
+| State | Background | Border | Text | Icon |
+|---|---|---|---|---|
+| Default | `--mapped-surface-primary-default-subtle` | 1px `--mapped-border-subtlest-default` | placeholder `--mapped-text-subtle-default` | `calendar_month` |
+| Hover | `--mapped-surface-primary-default-subtle-hover` | 1px `--mapped-border-primary-default-subtle-hover` | unchanged | `calendar_month` |
+| Focus | `--mapped-surface-primary-default-subtle` | 2px `--mapped-border-primary-default` + glow ring | placeholder unchanged | `calendar_month` |
+| Hydrate | unchanged | 2px `--mapped-border-primary-default` + glow ring | value `--mapped-text-default-default`, no caret | `calendar_month` |
+| Filled | unchanged | 1px `--mapped-border-subtlest-default` | value `--mapped-text-default-default` | `cancel` |
+| Invalid | unchanged | 2px `--mapped-border-error-default` | value `--mapped-text-default-default` | `cancel` |
+| Disabled | `--mapped-surface-disabled-default` | 1px `--mapped-border-disabled-default` | `--mapped-text-disabled-on-color` | `calendar_month`, `--mapped-icon-disabled-on-color` |
+
+**Subtle appearance:** transparent background and border at rest *and* on
+hover — identical to `Field`/`Select`. Focus/Invalid still gain the border
+treatment; **Subtle-Disabled diverges from Standard-Disabled** — no border at
+all, `--mapped-text-disabled-default`/`--mapped-icon-disabled-default`
+instead of `-on-color` — the same divergence already confirmed on
+`SelectWalletAccount` and `TextArea`.
+
+Icon color tracks the adjacent text tone per state (established convention
+from `SelectWalletAccount`'s chevron).
+
+### Geometry (confirmed)
+
+| Property | Token | Px |
+|---|---|---|
+| Padding | `--brand-scale-200` / `--brand-scale-300` | 8px / 12px |
+| Radius | `--brand-scale-200` | 8px |
+| Border (default / focus·invalid) | `--brand-scale-25` / `--brand-scale-50` | 1px / 2px |
+| Gap | `--brand-scale-200` | 8px |
+| Icon | `<Icon size="m">` | 20px |
+| Demo width | — | 240px (caller-controllable) — this component is shorter than `Field`/`Select`'s 320px demo |
+
+Typography: value/placeholder `.type-body-m` (16px). No label typography (no label slot).
+
+### Accessibility
+
+Real `<input>`. `aria-haspopup="dialog"` (not `aria-autocomplete="list"` like
+`Select` — the popup here is a calendar grid, not an autocomplete list, so
+the ARIA popup type was adapted rather than copied). `aria-expanded`,
+`aria-controls` (only when the calendar is open), `aria-invalid`. Clear icon
+is a real `<button>` with `aria-label="Clear date"`, `tabIndex={-1}`.
+
+### Known Figma inconsistencies
+
+- **Focus renders a full built calendar in Figma, built as a slot in code**
+  — see the architecture decision above. Deliberate scope decision, not a
+  fidelity gap.
+- **Icon-swap rule is non-obvious** — see above; confirmed per-variant, not
+  guessable from adjacent states (Hydrate does *not* show the clear icon
+  despite having a value).
+- **`calendar_month` icon added this session** — didn't exist in the Icon
+  set; added from the already-installed `@material-design-icons/svg`
+  package (same source as every existing icon), no new dependency.
+- **No `Invalid` + `Focus`/`Hydrate` combination was read** — Invalid was
+  only confirmed on top of Default. The clear-icon rule
+  (`isInvalid` always shows `cancel`) is the safest interpretation
+  consistent with every confirmed data point, not a directly-read
+  combination.
+- **`get_design_context` reliability**: whole-set/parallel calls time out;
+  single-variant sequential calls succeed — all 14 variants read this way.
+  Two reads (Focus, Subtle-Focus) returned large payloads due to the nested
+  calendar grid and required paging through the persisted tool output.
+
+## Time Picker
+
+**Figma node:** 54:10462 (`Time Picker` component set)
+
+A single-line time input, sibling of `DatePicker` — same box tokens, no
+label slot. All 14 variants (2 appearances × 7 states, including the same
+`Hydrate` state name) read individually — **not** assumed from `DatePicker`,
+and several confirmed rules genuinely diverge from it.
+
+> **Confirmed divergences from `DatePicker`** (read independently, not
+> copied): (1) single `remove_circle` icon that fades via opacity, not a
+> two-icon swap like calendar_month/cancel; (2) the icon-visibility rule is
+> simpler — `hasValue && !isFocused`, no `isInvalid` override needed;
+> (3) **Hydrate hides the icon** here, the opposite of `DatePicker` where
+> Hydrate showed the calendar icon; (4) **Subtle-Hover gains a background
+> tint** (no border), unlike `DatePicker`/`Field`/`TextArea`'s fully inert
+> Subtle-Hover.
+
+> **Corrected token — Disabled background.** Figma's Standard-Disabled
+> background uses `--border/on-color` (resolves to white), not
+> `--surface/disabled/default` (#f9f9f9) — every sibling in this family
+> (`Field`, `Select`, `DatePicker`) uses the latter for Disabled. A
+> border-family token applied to a background property, breaking an
+> otherwise-universal pattern, was flagged as a likely Figma authoring slip.
+> By explicit approval, normalized to `--mapped-surface-disabled-default` to
+> match the established pattern. Border itself was normal
+> (`--border/disabled/default`) and is used as-is.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `appearance` | `'standard' \| 'subtle'` | `'standard'` | |
+| `placeholder` | `string` | `'1:00 PM'` | |
+| `value` / `defaultValue` | `string` | — | Controlled / uncontrolled |
+| `onChange` | `(value: string) => void` | — | Passes the new string |
+| `onClear` | `() => void` | — | Wired to the clear icon; falls back to clearing internal state if uncontrolled |
+| `timesSlot` | `React.ReactNode` | — | App-provided time-option list, rendered below when open |
+| `isOpen` / `onOpenChange` | `boolean` / fn | — | Controlled open state |
+| `isDisabled` / `isInvalid` | `boolean` | `false` | |
+| `id` | `string` | — | Forwarded to `<input>`; auto-generated via `useId()` if omitted |
+| `name` | `string` | — | Forwarded to `<input>` |
+| `ariaLabel` | `string` | — | This component has no visible label |
+| `previewState` | `'hover' \| 'focus'` | — | Showcase only |
+
+No `isRequired`, no `iconLeft` slot — neither exists in Figma's source
+(`iconLeft` is `false` in every one of the 14 variants).
+
+### State → token mapping (Standard, confirmed)
+
+| State | Background | Border | Text | Clear icon |
+|---|---|---|---|---|
+| Default | `--mapped-surface-primary-default-subtle` | 1px `--mapped-border-subtlest-default` | placeholder `--mapped-text-subtle-default` | hidden |
+| Hover | `--mapped-surface-primary-default-subtle-hover` | 1px `--mapped-border-primary-default-subtle-hover` | unchanged | hidden |
+| Focus | `--mapped-surface-primary-default-subtle` | 2px `--mapped-border-primary-default` + glow ring | placeholder unchanged | hidden |
+| Hydrate | unchanged | 2px `--mapped-border-primary-default` + glow ring | value `--mapped-text-default-default`, no caret | **hidden** |
+| Filled | unchanged | 1px `--mapped-border-subtlest-default` | value `--mapped-text-default-default` | visible |
+| Invalid | unchanged | 2px `--mapped-border-error-default` | value `--mapped-text-default-default` | visible |
+| Disabled | `--mapped-surface-disabled-default` (corrected, see above) | 1px `--mapped-border-disabled-default` | `--mapped-text-disabled-on-color` | hidden |
+
+**Subtle appearance:** transparent border at rest; **Subtle-Hover gains a
+background tint** (`surface-primary-default-subtle-hover`, no border) — a
+confirmed divergence from `DatePicker`. Focus/Invalid still gain the border
+treatment; Subtle-Disabled drops the border entirely and uses
+`--mapped-text-disabled-default`/`--mapped-icon-disabled-default` instead of
+`-on-color`, same divergence already confirmed across this family.
+
+Clear icon color tracks the adjacent text tone per state (established
+convention).
+
+### Geometry (confirmed)
+
+| Property | Token | Px |
+|---|---|---|
+| Padding | `--brand-scale-200` / `--brand-scale-300` | 8px / 12px |
+| Radius | `--brand-scale-200` | 8px |
+| Border (default / focus·invalid) | `--brand-scale-25` / `--brand-scale-50` | 1px / 2px |
+| Gap | `--brand-scale-200` | 8px |
+| Icon | `<Icon size="m">` | 20px |
+| Demo width | — | 240px (caller-controllable) |
+
+Typography: value/placeholder `.type-body-m` (16px). No label typography.
+
+### Accessibility
+
+Real `<input>`. `aria-haspopup="listbox"` (the popup here is a plain option
+list, unlike `DatePicker`'s `dialog`-type calendar). `aria-expanded`,
+`aria-controls` (only when the list is open), `aria-invalid`. Clear icon is
+a real `<button>` with `aria-label="Clear time"`, `tabIndex={-1}`, and is
+both `disabled` and `aria-hidden` when not showing (so it's never focusable
+or clickable while invisible).
+
+### Known Figma inconsistencies
+
+- **Disabled background token corrected** — see above; flagged and approved,
+  not silently changed.
+- **Icon-visibility and Subtle-Hover rules diverge from `DatePicker`** — see
+  the divergences note above. Confirmed independently, not inherited.
+- **`remove_circle` icon added this session** — didn't exist in the Icon
+  set; added from the already-installed `@material-design-icons/svg`
+  package, no new dependency.
+- **Menu confirmed as an app-provided slot** via Figma's own annotation
+  ("🎰 Example Slot for Select `<Menu>`..."), same as `Select` — unlike
+  `DatePicker`'s calendar, which had no such annotation and required an
+  explicit architecture decision.
+- **`get_design_context` reliability**: whole-set/parallel calls time out;
+  single-variant sequential calls succeed — all 14 variants read this way.
+
+## Menu Item
+
+**Figma node:** 43:1222 (`<item>` component set, inside the "Parts" annotation
+frame at 149:8609) — the shared row atom every Select-family dropdown
+(`Select`, `SelectTransfer`, `SelectWalletAccount`, `TimePicker`'s
+`timesSlot`) composes its `optionsSlot`/`timesSlot` content from. The wider
+`Menu` dropdown chrome that wraps these rows is now built too — see `## Menu`
+below.
+
+22 variants read individually across 3 axes (not fully crossed):
+
+| `type` | `state` × `isSelected` combos |
+|---|---|
+| `default` | default/false, hover/false, press/false, default/true |
+| `crypto` | default/false, hover/false, press/false, default/true |
+| `account` | default/false, hover/false, press/false, default/true |
+| `checkbox` | default/false, hover/false, press/false, default/true, **press/true** |
+| `radio` | default/false, hover/false, press/false, default/true, **press/true** |
+
+Only `checkbox`/`radio` have a press+selected combo in Figma's source.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `type` | `'default' \| 'crypto' \| 'account' \| 'checkbox' \| 'radio'` | `'default'` | |
+| `label` | `string` | `'Label'` | default/checkbox/radio row text; account's primary name |
+| `isSelected` | `boolean` | `false` | |
+| `onSelect` | `() => void` | — | Fires on click, Enter, or Space |
+| `iconSlot` | `React.ReactNode` | — | Leading badge for `default`/`crypto` — app-provided, not a fixed component (Figma names these `<element>`, a generic swappable slot; the raster demo images inside — a flag photo, a crypto coin logo — are placeholder content, not real component instances) |
+| `showIcon` | `boolean` | `true` | Maps to Figma's `icon` toggle |
+| `avatarSrc` / `avatarName` / `avatarInitials` | `string` | — | `type="account"` — forwarded to `Avatar` (`size="m"`, 32px, matches Figma exactly) |
+| `trailingLabel` | `string` | `'Label'` | `type="account"` — text beside the trailing selection dot |
+| `labelCrypto` / `labelWallet` / `labelAmount` / `labelAmountCrypto` | `string` | `'Crypto'` / `'Wallet'` / `'$0,000.00'` / `'0.00 ETH'` | `type="crypto"` |
+| `id` | `string` | — | Forwarded to the row |
+| `previewState` | `'hover' \| 'pressed'` | — | Showcase only |
+
+No `isDisabled` — Figma's source defines no disabled state for `<item>`, so
+none was added (per the inferred-states rule).
+
+### Nested components (reused, not reimplemented)
+
+- **`Avatar`** (`size="m"`) — `account` type's leading photo
+- **`Radio`** — the `radio` type itself, and again for `account`'s trailing
+  selection dot (Figma instances the same `<RadioIcon>` part in both places)
+- **`Checkbox`** — the `checkbox` type's leading control
+
+All three are wrapped with the `inert` HTML attribute (+ `aria-hidden`) when
+nested — the row (`role="option"`) owns click/keyboard/selection semantics
+alone, so the nested control never becomes a second focusable/interactive
+target. Neither `Checkbox` nor `Radio` needed any code changes to reuse this
+way.
+
+> **Disclosed trade-off:** because the nested `Checkbox`/`Radio` are `inert`,
+> they never receive a real `:active`, so their own internal glyph can't show
+> Figma's darker pressed-blue fill in the one checkbox/radio press+selected
+> variant — only the row's background gets the correct pressed tint (10% →
+> 20% color-mix). Fixing this fully would require adding a forced-visual
+> "pressed" prop to `Checkbox`/`Radio` themselves; not done here since it
+> wasn't asked for. Flagged, not silent.
+
+### State → token mapping (confirmed)
+
+| State | Background | Label text |
+|---|---|---|
+| Default | `--mapped-surface-primary-default-subtle` | `--mapped-text-default-default` |
+| Hover | `--mapped-surface-primary-default-subtle-hover` | `--mapped-text-default-default` |
+| Press | `--mapped-surface-primary-default-subtle-pressed` | `--mapped-text-default-default` |
+| Selected | `color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent)` | `--mapped-text-primary-default` |
+| Selected + press (checkbox/radio only) | `color-mix(in srgb, var(--mapped-border-primary-default) 20%, transparent)` | `--mapped-text-primary-default` |
+
+Same derivation already used by `Tag`/`FilterChip`'s selected state — chosen
+over a raw literal or a new mapped token so it dark-flips automatically. The
+math lines up exactly: 20% of `--mapped-border-primary-default` (#046eff)
+over transparent = `rgb(205,226,255)` = `#cde2ff`, the literal `Blue/100`
+value Figma used for the press+selected combo; 10% ≈ `#e6f0ff` vs Figma's
+`#e6f1ff` (1-unit rounding, imperceptible).
+
+### Geometry (confirmed)
+
+| Property | Token | Px |
+|---|---|---|
+| Padding (default/crypto/account) | `--brand-scale-300` all sides | 12px |
+| Padding (checkbox/radio) | `--brand-scale-400` left, `--brand-scale-300` right/top/bottom | 16px / 12px |
+| Gap (default/crypto/account) | `--brand-scale-200` | 8px |
+| Gap (checkbox/radio) | `--spacing-none` | 0 |
+| Radius | `--brand-scale-50` | 2px |
+| Leading icon (`default`) | — | 20px (`--brand-scale-500`) |
+| Leading icon (`crypto`) | — | 40px (`--brand-scale-1000`) |
+| Leading avatar (`account`) | `Avatar size="m"` | 32px |
+
+Typography: `default`/`checkbox`/`radio` label `.type-body-sm` (14px);
+`crypto`/`account` primary text `.type-body-m-semibold` (16px); `crypto`'s
+secondary lines `.type-body-caption` (12px).
+
+### Accessibility
+
+Row is `role="option"`, `aria-selected={isSelected}`, `tabIndex={0}`. Click,
+Enter, and Space all fire `onSelect`. Nested `Checkbox`/`Radio` are `inert` +
+`aria-hidden` (see trade-off note above) so their native `<input>` never
+becomes a duplicate tab stop or announces redundant checked state — the
+row's own `aria-selected` is the single source of truth for assistive tech.
+
+### Known Figma inconsistencies
+
+- **Selected-state background bypasses the token layers.** Figma's own
+  variable set contains a correctly-named `surface/primary/default-subtle-selected`
+  variable (`#f2f2f2`) that matches our `--mapped-surface-primary-default-subtle-selected`
+  token exactly by name — but the `<item>` fill isn't bound to it. It's bound
+  directly to a raw `Blue/50`/`Blue/100` swatch instead. Resolved via the
+  color-mix derivation above, by explicit approval — not a silent fix.
+- **"default" type dimmed its label text on hover/press in Figma**
+  (`text/subtle/default` instead of `text/default/default`) — but `crypto`'s
+  hover state (read independently) leaves text untouched, and `Checkbox`'s
+  own press state *darkens* text, the opposite direction. Confirmed as a
+  Figma binding slip isolated to the `default` type and normalized so all
+  types keep constant text color across default/hover/press, by explicit
+  approval.
+- **Minor token-family mixing, not corrected (values matched, so no
+  functional change):** `crypto`'s selected-state text color is bound to
+  `--icon/primary/default` rather than a text-family token; `radio`'s
+  press+selected trailing label is bound to `--icon/primary/default-pressed`.
+  Both resolve to the same hex as their text-family equivalents
+  (`--text/primary/default` / `--text/primary/default-pressed`), so mapped to
+  `--mapped-text-primary-default` uniformly rather than reproducing the
+  inconsistency.
+- **`get_design_context` reliability**: whole-set calls on `43:1222` returned
+  a collapsed 2-variant merge rather than the requested single variant (a
+  new failure mode, distinct from the previously-documented timeout-on-parallel-calls
+  quirk); every variant was still confirmed via individual sequential reads
+  regardless of what the merge returned.
+
+## Menu
+
+**Figma node:** 48:1701 (`<Menu>`, inside the "Components" annotation frame
+at 149:2535) — the floating dropdown chrome that wraps `MenuItem` rows for
+every Select-family component. A single Figma component, not a variant set
+(no separate open/closed or hover states in source — it's only ever rendered
+while the dropdown is open).
+
+Two parts: an optional search bar (a real `Field` instance) and a content
+area that receives app-provided `slotContent`. Figma's own fallback demo
+inside the content area (`Slot content / Options / Select (Scrollable)`) is
+explicitly annotated *"🎰 Example Slot for Select `<Menu>` — you are welcome
+to use this component but we suggest creating your own slot component"* —
+same app-provided-slot pattern as `Select`/`SelectTransfer`/`TimePicker`/
+`DatePicker`. No default option list is baked into `Menu` itself, matching
+every other slot prop in this codebase.
+
+Some Select-family components don't have search inside their own menu at
+all, and some have two independent dropdowns within one select (a main
+list plus, e.g., a secondary currency picker that needs its own search) —
+`searchBar` and `slotContent` cover both: hide the search bar for a plain
+option-list menu, or use two separate `Menu` instances (each with its own
+`slotContent`) for the two-dropdown case.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `searchBar` | `boolean` | `true` | Hide to use `Menu` as a plain option-list dropdown with no search field — e.g. a secondary currency picker nested inside another select, or any select that has no in-menu search |
+| `searchPlaceholder` | `string` | `'Placeholder'` | Figma default value |
+| `searchValue` / `onSearchChange` | `string` / `(value: string) => void` | — | Controlled search input |
+| `searchAriaLabel` | `string` | `'Search'` | Forwarded to `Field`'s `ariaLabel` (no visible label on this field) |
+| `slotContent` | `React.ReactNode` | — | App-provided option list — typically a stack of `MenuItem` rows, each composited with others of the same `type` |
+| `id` | `string` | — | |
+
+### Nested components (reused, not reimplemented)
+
+- **`Field`** — the search bar, used exactly as built: leading icon slot,
+  placeholder, real `:focus-within` (2px border + 25%-opacity glow ring),
+  real hover/typing states. Figma's export happens to show it in its focused
+  look, but nothing in the source implies the field should be permanently
+  frozen in that appearance — `Menu` lets `Field`'s own interaction states
+  drive it rather than hardcoding a fake-focused look.
+- **`Icon`** (`name="search"`) — the field's leading glyph. Hardcoded inside
+  `Menu`, not exposed as a swappable prop, since this field's purpose (a
+  search bar) is fixed by the component itself, unlike `MenuItem`'s generic
+  `<element>` slots.
+
+`MenuItem` and the raw scrollbar seen in Figma's fallback demo are not part
+of `Menu` itself — they only appear inside the *example* content, which
+isn't built in here (same scope call as `MenuItem`'s build: Scrollbar stays
+deferred).
+
+### Token mapping (confirmed)
+
+| Element | Token |
+|---|---|
+| Card background | `--mapped-surface-elevation-default` (dark-flips) |
+| Card radius | `--brand-scale-200` (8px) |
+| Card padding | `--brand-scale-300` (12px) top/bottom, 0 sides |
+| Card gap | `--brand-scale-200` (8px) |
+| Search bar wrapper padding | `--brand-scale-200` (8px) horizontal |
+| Search field | `Field` (unmodified) |
+
+### Known Figma inconsistencies
+
+- **Card shadow has no matching token.** Figma specifies a two-layer
+  elevation shadow with navy-tinted alpha colors —
+  `0px 0px 1px rgba(9,30,66,.31), 0px 8px 12px rgba(9,30,66,.15)` — but the
+  three existing `--shadow-*` tokens (`medium`/`subtle`/`subtlest`) are all
+  flat black-alpha, single-layer, and none match. Doesn't fit either
+  pre-approved gap pattern cleanly (color-mix doesn't apply to a shadow
+  recipe; it's not an off-ramp spacing value). By explicit approval,
+  recorded as a literal with a FAIL-LOUD comment rather than approximated
+  with an existing token or silently given a new one. Revisit if another
+  floating-panel component (tooltip, popover) needs the same recipe — that
+  would be the trigger to formalize a `--shadow-elevation` token.
+- **Inset ring shadow omitted.** Figma's export also includes a 1px inset
+  shadow (`shadow/overlay/third`) at `rgba(188,214,240,0)` — fully
+  transparent in the only captured state, so it has no visible effect.
+  Omitted rather than encoding a shadow that does nothing; revisit if a
+  future variant activates it.
+- **`get_design_context` read cleanly** on this node (single component, no
+  variant-set merge quirk like `MenuItem`'s).

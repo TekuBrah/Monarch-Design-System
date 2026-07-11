@@ -1,0 +1,152 @@
+.menu-item {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  gap: var(--brand-scale-200); /* 8px */
+  padding: var(--brand-scale-300); /* 12px all sides */
+  border-radius: var(--brand-scale-50); /* 2px = border-radius/xs */
+  background: var(--mapped-surface-primary-default-subtle);
+  cursor: pointer;
+  outline: none;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+/* === Checkbox/radio types hug the leading control (Figma: gap 0, pl 16, pr 12) === */
+.menu-item--checkbox,
+.menu-item--radio {
+  gap: var(--spacing-none);
+  padding: var(--brand-scale-300) var(--brand-scale-300) var(--brand-scale-300) var(--brand-scale-400);
+}
+
+/* === Hover / press (all types, unselected) === */
+.menu-item:hover {
+  background: var(--mapped-surface-primary-default-subtle-hover);
+}
+.menu-item:active {
+  background: var(--mapped-surface-primary-default-subtle-pressed);
+}
+
+/* === Focus ring (keyboard) === */
+.menu-item:focus-visible {
+  outline: 2px solid var(--mapped-border-primary-default);
+  outline-offset: -2px;
+}
+
+/* === Selected ===
+   Figma binds this to a raw Blue/50 (#e6f1ff) / Blue/100 (#cde2ff) swatch, not a
+   mapped token — no --mapped-surface-* resolves to this blue tint (the
+   correctly-named `surface/primary/default-subtle-selected` variable in the
+   Figma file is an unrelated gray, #f2f2f2, not what's actually applied here).
+   Derived from the mapped border token so it dark-flips, matching the
+   Tag/FilterChip precedent (10%/20% ≈ exactly #e6f1ff/#cde2ff at these values). */
+.menu-item--selected {
+  background: color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent);
+}
+.menu-item--selected .menu-item__label,
+.menu-item--selected .menu-item__crypto-name,
+.menu-item--selected .menu-item__trailing-label {
+  color: var(--mapped-text-primary-default);
+}
+
+/* Selected + press (checkbox/radio only — Figma's only selected+press combo) */
+.menu-item--checkbox.menu-item--selected:active,
+.menu-item--radio.menu-item--selected:active {
+  background: color-mix(in srgb, var(--mapped-border-primary-default) 20%, transparent);
+}
+
+/* === Preview overrides — showcase only, not for production use === */
+.menu-item[data-preview="hover"]:not(.menu-item--selected) {
+  background: var(--mapped-surface-primary-default-subtle-hover) !important;
+}
+.menu-item[data-preview="pressed"]:not(.menu-item--selected) {
+  background: var(--mapped-surface-primary-default-subtle-pressed) !important;
+}
+.menu-item--checkbox[data-preview="pressed"].menu-item--selected,
+.menu-item--radio[data-preview="pressed"].menu-item--selected {
+  background: color-mix(in srgb, var(--mapped-border-primary-default) 20%, transparent) !important;
+}
+
+/* === Label (type="default") === */
+.menu-item__label {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--mapped-text-default-default);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* === Leading icon/avatar slot === */
+.menu-item__icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.menu-item__icon--default {
+  width: var(--brand-scale-500); /* 20px */
+  height: var(--brand-scale-500);
+}
+.menu-item__icon--crypto {
+  width: var(--brand-scale-1000); /* 40px */
+  height: var(--brand-scale-1000);
+}
+
+/* === type="crypto" content === */
+.menu-item__crypto-primary {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--brand-scale-100); /* 4px */
+  align-items: flex-start;
+}
+.menu-item__crypto-trailing {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+}
+.menu-item__crypto-name {
+  color: var(--mapped-text-default-default);
+}
+.menu-item__crypto-sub {
+  color: var(--mapped-text-subtle-default);
+}
+.menu-item--selected .menu-item__crypto-sub {
+  color: var(--mapped-text-primary-default);
+}
+
+/* === type="account" content === */
+.menu-item__label--account {
+  flex: 1 0 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.menu-item__trailing {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--brand-scale-100); /* 4px */
+}
+.menu-item__trailing-label {
+  color: var(--mapped-text-default-default);
+}
+
+/* === Nested Checkbox/Radio (types "checkbox" / "radio", and Account's trailing dot) ===
+   inert + aria-hidden: the row (role="option") owns selection semantics —
+   these render the checked/unchecked glyph only, never take focus or clicks. */
+.menu-item__control {
+  flex: 1 0 0;
+  min-width: 0;
+  pointer-events: none;
+}
+.menu-item__control .checkbox,
+.menu-item__control .radio {
+  cursor: inherit;
+}
