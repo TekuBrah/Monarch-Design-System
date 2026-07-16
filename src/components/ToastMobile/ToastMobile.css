@@ -1,0 +1,62 @@
+.toast-mobile {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-400); /* 16px between text block and action */
+  box-sizing: border-box;
+  width: 312px; /* Figma demo width; caller-controllable via className/style */
+  max-width: 100%;
+  padding: var(--brand-scale-200); /* 8px */
+  border-radius: var(--brand-scale-200); /* 8px */
+  color: var(--mapped-text-primary-on-color);
+}
+
+.toast-mobile__main {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--brand-scale-100); /* 4px */
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.toast-mobile__icon {
+  display: flex;
+  flex-shrink: 0;
+  /* Figma binds icons to icon/primary/on-color (dark-flips to black — accepted). */
+  color: var(--mapped-icon-primary-on-color);
+}
+
+.toast-mobile__stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--brand-scale-100); /* 4px */
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.toast-mobile__title,
+.toast-mobile__desc {
+  margin: 0;
+  color: var(--mapped-text-primary-on-color);
+}
+
+.toast-mobile__actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.toast-mobile__close {
+  display: flex;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--mapped-icon-primary-on-color);
+  border-radius: var(--brand-scale-100);
+}
+
+.toast-mobile__close:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-text-primary-on-color);
+  outline-offset: var(--brand-scale-50);
+}

@@ -4,7 +4,7 @@
   align-items: center;
   gap: var(--brand-scale-200); /* 8px */
   box-sizing: border-box;
-  width: 426px; /* Figma demo width; caller-controlled in practice, same convention as Field's 240px default */
+  width: var(--menu-width, 426px); /* Figma demo width; caller overrides via --menu-width custom prop, same convention as Field's 240px default */
   padding: var(--brand-scale-300) 0; /* 12px top/bottom, sides handled by children */
   border-radius: var(--brand-scale-200); /* 8px = border-radius/md */
   background: var(--mapped-surface-elevation-default);

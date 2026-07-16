@@ -1,0 +1,55 @@
+.progress-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--brand-scale-100); /* 4px */
+  width: 100%;
+}
+
+.progress-bar__labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.progress-bar__pct {
+  color: var(--mapped-text-success-default);
+}
+
+.progress-bar__readout {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.progress-bar__current {
+  color: var(--mapped-text-default-default);
+}
+
+.progress-bar__slash {
+  color: var(--mapped-icon-default-default);
+}
+
+.progress-bar__total {
+  color: var(--mapped-text-subtle-default);
+}
+
+.progress-bar__track {
+  position: relative;
+  width: 100%;
+  height: var(--brand-scale-200); /* 8px */
+  background: var(--mapped-surface-subtle-default);
+  border-radius: var(--brand-scale-1800); /* 512px = border-radius/round → fully rounded pill */
+  overflow: clip;
+}
+
+.progress-bar__fill {
+  height: 100%;
+  /* Figma binds the fill to Green/400 (#60c680, no mapped token); by approval this
+     uses the semantic success surface (Green/500) so it dark-flips — visibly a touch
+     darker than the raw Figma swatch, and equal to the % label colour. */
+  background: var(--mapped-surface-success-default);
+  border-radius: var(--brand-scale-200); /* 8px = border-radius/md */
+}

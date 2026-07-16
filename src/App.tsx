@@ -44,6 +44,14 @@ import { DatePicker } from './components/DatePicker'
 import { TimePicker } from './components/TimePicker'
 import { MenuItem } from './components/MenuItem'
 import { Menu } from './components/Menu'
+import { Modal } from './components/Modal'
+import { ProgressBar } from './components/ProgressBar'
+import { ProgressRing } from './components/ProgressRing'
+import { Slider } from './components/Slider'
+import { RangeSlider } from './components/RangeSlider'
+import { Toast } from './components/Toast'
+import type { ToastAppearance } from './components/Toast'
+import { ToastMobile } from './components/ToastMobile'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -459,23 +467,24 @@ function SelectDemo() {
       onOpenChange={setOpen}
       isSelected={!!selected && !open}
       menuSlot={
-        <div style={{ background: 'var(--mapped-surface-elevation-default)', borderRadius: 'var(--brand-scale-200)', boxShadow: 'var(--shadow-medium)', overflow: 'hidden', padding: 'var(--brand-scale-100) 0' }}>
-          {filtered.length === 0 ? (
-            <div style={{ padding: '0.5rem 0.75rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem' }}>No matches</div>
-          ) : (
-            filtered.map(o => (
-              <div
-                key={o}
-                role="option"
-                aria-selected={selected === o}
-                onMouseDown={e => { e.preventDefault(); setSelected(o); setQuery(''); setOpen(false) }}
-                style={{ padding: '0.5rem 0.75rem', cursor: 'pointer', color: 'var(--mapped-text-default-default)', fontSize: '0.9rem' }}
-              >
-                {o}
-              </div>
-            ))
-          )}
-        </div>
+        <Menu
+          searchBar={false}
+          slotContent={
+            filtered.length === 0 ? (
+              <div style={{ padding: '0.5rem 0.75rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem' }}>No matches</div>
+            ) : (
+              filtered.map(o => (
+                <MenuItem
+                  key={o}
+                  type="default"
+                  label={o}
+                  isSelected={selected === o}
+                  onSelect={() => { setSelected(o); setQuery(''); setOpen(false) }}
+                />
+              ))
+            )
+          }
+        />
       }
     />
   )
@@ -490,8 +499,6 @@ const TRANSFER_CURRENCIES = [
   { code: 'BTC', color: '#fff3d6' },
   { code: 'USD', color: '#e6ffe9' },
 ]
-const TRANSFER_MENU_STYLE: React.CSSProperties = { background: 'var(--mapped-surface-elevation-default)', borderRadius: 'var(--brand-scale-200)', boxShadow: 'var(--shadow-medium)', overflow: 'hidden', padding: 'var(--brand-scale-100) 0' }
-const TRANSFER_OPTION_STYLE: React.CSSProperties = { padding: '0.5rem 0.75rem', cursor: 'pointer', color: 'var(--mapped-text-default-default)', fontSize: '0.9rem' }
 
 function SelectTransferDemo({ appearance }: { appearance: SelectTransferAppearance }) {
   const [query, setQuery] = useState('')
@@ -531,35 +538,38 @@ function SelectTransferDemo({ appearance }: { appearance: SelectTransferAppearan
       onCurrencyClick={() => setCurrencyOpen(o => !o)}
       menuSlot={
         filtered.length > 0 ? (
-          <div style={TRANSFER_MENU_STYLE}>
-            {filtered.map(name => (
-              <div
+          <Menu
+            searchBar={false}
+            slotContent={filtered.map(name => (
+              <MenuItem
                 key={name}
-                role="option"
-                aria-selected={recipient === name}
-                onMouseDown={e => { e.preventDefault(); setRecipient(name); setQuery(''); setAmountOpen(false) }}
-                style={TRANSFER_OPTION_STYLE}
-              >
-                {name}
-              </div>
+                type="default"
+                label={name}
+                isSelected={recipient === name}
+                onSelect={() => { setRecipient(name); setQuery(''); setAmountOpen(false) }}
+              />
             ))}
-          </div>
+          />
         ) : null
       }
       currencyMenuSlot={
-        <div style={TRANSFER_MENU_STYLE}>
-          {TRANSFER_CURRENCIES.map((c, i) => (
-            <div
+        <Menu
+          searchBar={false}
+          slotContent={TRANSFER_CURRENCIES.map((c, i) => (
+            <MenuItem
               key={c.code}
-              role="option"
-              aria-selected={currencyIndex === i}
-              onMouseDown={e => { e.preventDefault(); setCurrencyIndex(i); setCurrencyOpen(false) }}
-              style={TRANSFER_OPTION_STYLE}
-            >
-              {c.code}
-            </div>
+              type="default"
+              label={c.code}
+              iconSlot={
+                <ElementWrapper size="m">
+                  <span style={{ width: '100%', height: '100%', borderRadius: '50%', background: c.color, border: '1px solid var(--mapped-border-subtlest-default)', display: 'block' }} />
+                </ElementWrapper>
+              }
+              isSelected={currencyIndex === i}
+              onSelect={() => { setCurrencyIndex(i); setCurrencyOpen(false) }}
+            />
           ))}
-        </div>
+        />
       }
     />
   )
@@ -601,33 +611,28 @@ function SelectWalletAccountDemo() {
       onOpenChange={setOpen}
       ariaLabel="Choose account"
       menuSlot={
-        <div style={{ background: 'var(--mapped-surface-elevation-default)', borderRadius: 'var(--brand-scale-200)', boxShadow: 'var(--shadow-medium)', overflow: 'hidden', padding: 'var(--brand-scale-200)', display: 'flex', flexDirection: 'column', gap: 'var(--brand-scale-100)' }}>
-          <Field
-            placeholder="Search accounts…"
-            ariaLabel="Search accounts"
-            value={query}
-            onChange={setQuery}
-            leadingIcon={<Icon name="search" size="m" />}
-          />
-          {filtered.map(a => {
+        <Menu
+          searchPlaceholder="Search accounts…"
+          searchAriaLabel="Search accounts"
+          searchValue={query}
+          onSearchChange={setQuery}
+          slotContent={filtered.map(a => {
             const idx = WALLET_ACCOUNTS.indexOf(a)
             return (
-              <div
+              <MenuItem
                 key={a.crypto}
-                role="option"
-                aria-selected={idx === selectedIndex}
-                onMouseDown={e => { e.preventDefault(); setSelectedIndex(idx); setQuery(''); setOpen(false) }}
-                style={{ display: 'flex', alignItems: 'center', gap: 'var(--brand-scale-200)', padding: '0.5rem 0.75rem', cursor: 'pointer', borderRadius: 'var(--brand-scale-100)' }}
-              >
-                <WalletLogo color={a.color} />
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span className="type-body-m-semibold" style={{ color: 'var(--mapped-text-default-default)' }}>{a.crypto}</span>
-                  <span className="type-body-caption" style={{ color: 'var(--mapped-text-subtle-default)' }}>{a.wallet}</span>
-                </div>
-              </div>
+                type="crypto"
+                iconSlot={<WalletLogo color={a.color} />}
+                labelCrypto={a.crypto}
+                labelWallet={a.wallet}
+                labelAmount={a.amount}
+                labelAmountCrypto={a.amtCrypto}
+                isSelected={idx === selectedIndex}
+                onSelect={() => { setSelectedIndex(idx); setQuery(''); setOpen(false) }}
+              />
             )
           })}
-        </div>
+        />
       }
     />
   )
@@ -657,7 +662,7 @@ function DatePickerCalendar({
   const monthLabel = monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
   return (
-    <div style={{ background: 'var(--mapped-surface-elevation-default)', borderRadius: 'var(--brand-scale-200)', boxShadow: 'var(--shadow-medium)', padding: 'var(--brand-scale-300) 0', width: '240px' }}>
+    <>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 var(--brand-scale-200) var(--brand-scale-200)' }}>
         <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => onNavigate(-1)} aria-label="Previous month" style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', color: 'var(--mapped-icon-subtle-default)' }}>
           <Icon name="chevron_left" size="m" />
@@ -694,7 +699,7 @@ function DatePickerCalendar({
           )
         })}
       </div>
-    </div>
+    </>
   )
 }
 
@@ -715,16 +720,23 @@ function DatePickerDemo() {
       onOpenChange={setOpen}
       onClear={() => { setText(''); setSelectedDate(null) }}
       calendarSlot={
-        <DatePickerCalendar
-          monthDate={visibleMonth}
-          selectedDate={selectedDate}
-          onNavigate={delta => setVisibleMonth(m => new Date(m.getFullYear(), m.getMonth() + delta, 1))}
-          onSelectDay={d => {
-            setSelectedDate(d)
-            setText(formatDate(d))
-            setOpen(false)
-          }}
-        />
+        <div style={{ '--menu-width': '240px' } as React.CSSProperties}>
+          <Menu
+            searchBar={false}
+            slotContent={
+              <DatePickerCalendar
+                monthDate={visibleMonth}
+                selectedDate={selectedDate}
+                onNavigate={delta => setVisibleMonth(m => new Date(m.getFullYear(), m.getMonth() + delta, 1))}
+                onSelectDay={d => {
+                  setSelectedDate(d)
+                  setText(formatDate(d))
+                  setOpen(false)
+                }}
+              />
+            }
+          />
+        </div>
       }
     />
   )
@@ -758,19 +770,18 @@ function TimePickerDemo() {
       onOpenChange={setOpen}
       onClear={() => setText('')}
       timesSlot={
-        <div style={{ background: 'var(--mapped-surface-elevation-default)', borderRadius: 'var(--brand-scale-200)', boxShadow: 'var(--shadow-medium)', overflow: 'hidden', padding: 'var(--brand-scale-100) 0', maxHeight: '200px', overflowY: 'auto' }}>
-          {TIME_OPTIONS.map(t => (
-            <div
+        <Menu
+          searchBar={false}
+          slotContent={TIME_OPTIONS.map(t => (
+            <MenuItem
               key={t}
-              role="option"
-              aria-selected={text === t}
-              onMouseDown={e => { e.preventDefault(); setText(t); setOpen(false) }}
-              style={{ padding: '0.5rem 0.75rem', cursor: 'pointer', color: 'var(--mapped-text-default-default)', fontSize: '0.9rem' }}
-            >
-              {t}
-            </div>
+              type="default"
+              label={t}
+              isSelected={text === t}
+              onSelect={() => { setText(t); setOpen(false) }}
+            />
           ))}
-        </div>
+        />
       }
     />
   )
@@ -836,6 +847,148 @@ function MenuDemo() {
         </div>
       }
     />
+  )
+}
+
+// ── Progress Bar interactive demos (controllers drive the value) ──
+
+const CTRL_LABEL: React.CSSProperties = { fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)', display: 'flex', alignItems: 'center', gap: '0.5rem' }
+const NUM_INPUT: React.CSSProperties = { width: '4rem', padding: '0.25rem 0.4rem', borderRadius: '6px', border: '1px solid var(--mapped-border-subtlest-default)', background: 'var(--mapped-surface-primary-default-subtle)', color: 'var(--mapped-text-default-default)', font: 'inherit', fontSize: '0.8rem' }
+
+// Percentage-only progress bar (no current/total readout)
+function ProgressBarPercentDemo() {
+  const [pct, setPct] = useState(45)
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '360px' }}>
+      <label style={CTRL_LABEL}>
+        progress
+        <input type="range" min={0} max={100} value={pct} onChange={e => setPct(Number(e.target.value))} style={{ flex: 1 }} />
+        <span style={{ width: '2.5rem', textAlign: 'right' }}>{pct}%</span>
+      </label>
+      <ProgressBar size="s" value={pct} ariaLabel={`Progress ${pct}%`} />
+      <ProgressBar size="m" value={pct} ariaLabel={`Progress ${pct}%`} />
+    </div>
+  )
+}
+
+// Stepper progress bar (shows the current/total "1/4" readout)
+function ProgressBarStepperDemo() {
+  const [current, setCurrent] = useState(1)
+  const [total, setTotal] = useState(4)
+  const safeTotal = Math.max(1, total)
+  const value = (Math.max(0, Math.min(current, safeTotal)) / safeTotal) * 100
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '360px' }}>
+      <div style={{ display: 'flex', gap: '1.5rem' }}>
+        <label style={CTRL_LABEL}>step
+          <input type="number" min={0} max={safeTotal} value={current} onChange={e => setCurrent(Number(e.target.value))} style={NUM_INPUT} />
+        </label>
+        <label style={CTRL_LABEL}>of
+          <input type="number" min={1} value={total} onChange={e => setTotal(Number(e.target.value))} style={NUM_INPUT} />
+        </label>
+      </div>
+      <ProgressBar size="s" value={value} current={String(Math.min(current, safeTotal))} total={String(safeTotal)} ariaLabel={`Step ${current} of ${safeTotal}`} />
+      <ProgressBar size="m" value={value} current={String(Math.min(current, safeTotal))} total={String(safeTotal)} ariaLabel={`Step ${current} of ${safeTotal}`} />
+    </div>
+  )
+}
+
+// ── Progress Ring interactive demo (max / used amount → left-to-spend gauge) ──
+
+function ProgressRingDemo() {
+  const [max, setMax] = useState(100)
+  const [used, setUsed] = useState(55)
+  const safeMax = Math.max(0, max)
+  const safeUsed = Math.max(0, Math.min(used, safeMax))
+  const left = safeMax - safeUsed
+  // The gauge fills toward the red end as spending grows (a "danger" gauge,
+  // matching the reference app screen — Monthly Budget at 82% spent shows a
+  // LARGE colored arc, Entertainment at 65% spent shows a smaller one) — the
+  // arc is driven by % SPENT, not % left. The caption/pill still read % left
+  // (the friendlier, positive framing), decoupled via `percentageLabel`.
+  const spentPct = safeMax > 0 ? (safeUsed / safeMax) * 100 : 0
+  const leftPct = safeMax > 0 ? (left / safeMax) * 100 : 0
+  const fmt = (v: number) => `RM ${v.toFixed(2)}`
+  const shared = { value: spentPct, percentageLabel: `${Math.round(leftPct)}%`, amount: fmt(left), total: fmt(safeMax) }
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', gap: '1.5rem' }}>
+        <label style={CTRL_LABEL}>max (budget)
+          <input type="number" min={0} value={max} onChange={e => setMax(Number(e.target.value))} style={NUM_INPUT} />
+        </label>
+        <label style={CTRL_LABEL}>used (spent)
+          <input type="number" min={0} value={used} onChange={e => setUsed(Number(e.target.value))} style={NUM_INPUT} />
+        </label>
+      </div>
+      <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+        <ProgressRing size="medium" {...shared} />
+        <ProgressRing size="large" {...shared} />
+      </div>
+    </div>
+  )
+}
+
+// ── Modal interactive demo (open/close toggle; footer composes real Buttons) ──
+
+function ModalDemo() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button variant="primary" size="m" label="Open modal" onClick={() => setOpen(true)} />
+      <Modal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        title="Confirm transfer"
+        footer={
+          <>
+            <Button variant="primary" size="l" label="Confirm" onClick={() => setOpen(false)} />
+            <Button variant="secondary" size="l" label="Cancel" onClick={() => setOpen(false)} />
+          </>
+        }
+      >
+        <p className="type-body-m" style={{ margin: 0, color: 'var(--mapped-text-default-default)' }}>
+          The middle region is a flexible content slot — anything a feature needs goes here. Sending
+          <strong> 0.42 BTC</strong> to Main Wallet.
+        </p>
+        <p className="type-body-sm" style={{ margin: 0, color: 'var(--mapped-text-subtle-default)' }}>
+          This action can't be undone.
+        </p>
+      </Modal>
+    </>
+  )
+}
+
+// ── Slider interactive demo (single thumb) ──
+
+function SliderDemo() {
+  const [value, setValue] = useState(40)
+  return (
+    <div style={{ maxWidth: '246px' }}>
+      <Slider value={value} onChange={setValue} ariaLabel="Single value" ariaValueText={`${value}`} />
+      <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--mapped-text-subtle-default)' }}>value: {value}</div>
+    </div>
+  )
+}
+
+// ── Range slider interactive demo (dual thumb + synced Field inputs) ──
+
+function RangeSliderDemo() {
+  const [range, setRange] = useState<{ min: number; max: number }>({ min: 20, max: 70 })
+  const fmt = (v: number) => `RM ${v}`
+  return (
+    <div style={{ maxWidth: '246px' }}>
+      <RangeSlider
+        minValue={range.min}
+        maxValue={range.max}
+        onChange={(min, max) => setRange({ min, max })}
+        formatValue={fmt}
+        ariaLabelMin="Minimum amount"
+        ariaLabelMax="Maximum amount"
+      />
+      <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--mapped-text-subtle-default)' }}>
+        range: {fmt(range.min)} – {fmt(range.max)}
+      </div>
+    </div>
   )
 }
 
@@ -2353,6 +2506,161 @@ export default function App() {
                 Interactive — real search filtering + real click selection
               </div>
               <MenuDemo />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Modal ──────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Modal</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Generic dialog container over a Blanket scrim: title + close, a flexible content slot, and a footer that composes real Buttons. Portaled to body; dialog a11y (aria-modal, focus trap, Escape).
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                Interactive — opens a real overlay; ✕ / Escape / scrim click all close
+              </div>
+              <ModalDemo />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Progress Bar ───────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Progress Bar</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Horizontal track, fill = success surface. Two versions: percentage-only, and a stepper with the current/total readout. Sizes S (caption) / M (body). Drag the controls to drive it.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '400px' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Percentage only — sizes S &amp; M</div>
+              <ProgressBarPercentDemo />
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Stepper (current / total) — sizes S &amp; M</div>
+              <ProgressBarStepperDemo />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Progress Ring ──────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Progress Ring</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            270° gauge with a conic blue→purple→red fill over a gray track; centre caption + amount + Badge (dark) pill. Sizes medium (h5) / large (h4). Enter a budget and amount spent to drive the "left to spend" gauge.
+          </p>
+          <ProgressRingDemo />
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Slider ─────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Slider</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Single-thumb value slider — track + fill + white/blue thumb (0.25 halo on focus/drag). Drag, click, or arrow keys / Home / End.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '400px' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Interactive</div>
+              <SliderDemo />
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>disabled</div>
+              <div style={{ maxWidth: '246px' }}>
+                <Slider value={60} disabled ariaLabel="Disabled slider" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Range Slider ───────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Range Slider</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Two-thumb min/max range with a tooltip on the active thumb and two synced Field inputs (drag ↔ type). Thumbs can't cross.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '400px' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Interactive — drag a thumb (tooltip appears) or type in a field</div>
+              <RangeSliderDemo />
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>showInputs=false — bare range track</div>
+              <div style={{ maxWidth: '246px' }}>
+                <RangeSlider minValue={30} maxValue={80} onChange={() => {}} showInputs={false} formatValue={v => `${v}%`} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Toast (desktop + mobile) ───────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Toast</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            System message in 6 appearances (ai = gradient), auto icon per appearance, description + actions slots, role=status/alert live region. Two layouts: desktop (Link actions + dismiss) and mobile (compact, inverse-tertiary Button).
+          </p>
+          <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Toast — desktop</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '624px', maxWidth: '100%' }}>
+                {(['information', 'success', 'warning', 'error', 'discovery', 'ai'] as ToastAppearance[]).map(a => (
+                  <Toast
+                    key={a}
+                    appearance={a}
+                    title="Title"
+                    role={a === 'error' || a === 'warning' ? 'alert' : 'status'}
+                    onDismiss={() => {}}
+                    actions={
+                      <>
+                        <Link appearance="inverse" size="S" label="Action" href="#" />
+                        <Link appearance="inverse" size="S" label="Action" href="#" />
+                      </>
+                    }
+                  >
+                    Short and brief
+                  </Toast>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>ToastMobile — compact</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '312px', maxWidth: '100%' }}>
+                {(['information', 'success', 'warning', 'error', 'discovery', 'ai'] as ToastAppearance[]).map(a => (
+                  <ToastMobile
+                    key={a}
+                    appearance={a}
+                    title="Title"
+                    role={a === 'error' || a === 'warning' ? 'alert' : 'status'}
+                    actions={<Button appearance="inverse" variant="tertiary" size="m" label="Button" onClick={() => {}} />}
+                  >
+                    Short and brief
+                  </ToastMobile>
+                ))}
+              </div>
             </div>
           </div>
         </div>

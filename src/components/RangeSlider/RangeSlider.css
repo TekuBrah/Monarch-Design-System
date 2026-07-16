@@ -1,0 +1,140 @@
+.range-slider {
+  display: flex;
+  flex-direction: column;
+  gap: var(--brand-scale-200); /* 8px */
+  width: 100%;
+}
+
+.range-slider__track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: var(--brand-scale-500); /* 20px — room for the thumbs */
+  cursor: pointer;
+  touch-action: none;
+}
+
+/* the visible track bar sits centred inside the 20px hit area */
+.range-slider__track::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: var(--brand-scale-200); /* 8px — Figma 6px (no token); rounded up to the 8px step by approval */
+  background: var(--mapped-surface-subtle-default);
+  border-radius: var(--brand-scale-1800);
+}
+
+.range-slider__fill {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: var(--brand-scale-200); /* 8px */
+  background: var(--mapped-surface-primary-default);
+  border-radius: var(--brand-scale-1800);
+}
+
+.range-slider__thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--brand-scale-500); /* 20px */
+  height: var(--brand-scale-500);
+  border-radius: 50%;
+  /* Knob surface: elevation (white → #262626 dark) rather than Figma's
+     surface/primary/default-subtle, which dark-flips to black and hides the
+     ring in dark mode. Approved deviation for dark-mode visibility. */
+  background: var(--mapped-surface-elevation-default);
+  cursor: grab;
+  outline: none;
+}
+
+.range-slider__thumb::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--brand-scale-300); /* 12px */
+  height: var(--brand-scale-300);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--mapped-surface-primary-default);
+}
+
+/* focus/press halo — 28px blue at 0.25 (established Field/Select glow-ring alpha) */
+.range-slider__halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--brand-scale-700); /* 28px */
+  height: var(--brand-scale-700);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--mapped-surface-primary-default);
+  opacity: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.range-slider__thumb:focus-visible .range-slider__halo,
+.range-slider__thumb[data-active] .range-slider__halo {
+  opacity: 0.25;
+}
+
+.range-slider__thumb:active {
+  cursor: grabbing;
+}
+
+/* tooltip above the active thumb */
+.range-slider__tooltip {
+  position: absolute;
+  bottom: calc(100% + var(--brand-scale-300)); /* 12px gap above the thumb */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--brand-scale-100) var(--brand-scale-200); /* 4px 8px */
+  background: var(--mapped-surface-primary-default);
+  color: var(--mapped-text-on-color-heading);
+  border-radius: var(--brand-scale-200); /* 8px */
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* downward pointer */
+.range-slider__tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  /* decorative pointer (recreates Figma's rect image) — sized from scale tokens */
+  border-left: var(--brand-scale-100) solid transparent;
+  border-right: var(--brand-scale-100) solid transparent;
+  border-top: var(--brand-scale-100) solid var(--mapped-surface-primary-default);
+}
+
+.range-slider__inputs {
+  display: flex;
+  gap: var(--brand-scale-200);
+  width: 100%;
+}
+
+.range-slider__input {
+  flex: 1;
+}
+
+.range-slider__input .field {
+  width: 100%;
+}
+
+.range-slider--disabled .range-slider__track,
+.range-slider--disabled .range-slider__thumb {
+  cursor: not-allowed;
+}
+
+.range-slider--disabled .range-slider__fill,
+.range-slider--disabled .range-slider__thumb::before {
+  background: var(--mapped-surface-disabled-default);
+}

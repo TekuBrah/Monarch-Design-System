@@ -1393,6 +1393,12 @@ Rendered as `<div>` wrapping a real `<input role="combobox">`; the dropdown
 example). First of three sets read from this frame; `Select / Transfer` and
 `Select / Wallet Account` extend it via slots (built separately).
 
+**Showcase composition**: `menuSlot` is populated with a real `<Menu
+searchBar={false}>` wrapping `<MenuItem type="default">` rows (one per
+option). `searchBar` is `false` because filtering already happens through
+this component's own input — a second search field inside the menu would
+duplicate it.
+
 ### Props
 
 | Prop | Type | Default | Notes |
@@ -1476,6 +1482,13 @@ navigation belongs to the app-provided menu.
 Amount input + currency picker, used for currency/crypto transfers. Extends
 `Select`'s combobox model: two independent slot-driven dropdowns (amount
 menu, currency menu), both app-provided per Figma's own annotation.
+
+**Showcase composition**: both `menuSlot` (recipient search) and
+`currencyMenuSlot` are populated with a real `<Menu searchBar={false}>`
+wrapping `<MenuItem type="default">` rows — `searchBar` is `false` on both
+for the same reason as `Select` (the amount input is its own search field)
+and because the currency list is short and fixed (no search needed). The
+currency rows additionally pass a flag swatch via `iconSlot`.
 
 > **Provenance note**: initially built with several appearance/state
 > combinations extrapolated rather than individually read (disclosed at the
@@ -1591,6 +1604,14 @@ appearances × 7 states) were read individually from Figma — no extrapolation.
 > correctly as a nested child here. The root element is a real `<button>`,
 > not an `<input>`.
 
+> **Showcase composition**: `menuSlot` is populated with a real `<Menu
+> searchBar={true}>` (matching Figma's own search+list example) wrapping
+> `<MenuItem type="crypto">` rows — `crypto` type's four fields
+> (`labelCrypto`/`labelWallet`/`labelAmount`/`labelAmountCrypto`) are an exact
+> match to this trigger's own row shape and to the wallet-account data used
+> here. `type="account"` (single `trailingLabel` + radio dot) does not fit
+> this data and was not used.
+
 > **Corrected finding — the trigger never shows a logo.** The raw
 > `get_design_context` dump exposed an `iconLeft` boolean toggle on the
 > trigger, which an earlier pass of this build mistakenly treated as a real,
@@ -1689,7 +1710,9 @@ handles both the visual and interactive disabled state natively.
   `<item>` row prop shape), but every real named variant in the file has it
   `false`; confirmed by screenshotting the full 14-variant set, not just the
   code dump. `logoSlot` was removed from the component after being added
-  twice on a wrong premise (once inside the box, once beside it).
+  twice on a wrong premise (once inside the box, once beside it). The "logo
+  belongs to the Menu/Option item rows" prediction has since been confirmed —
+  see the crypto-type `MenuItem` composition noted above.
 
 ## Text area
 
@@ -1798,8 +1821,17 @@ family's pattern.
 > full day grid) — not a placeholder example like Select's menu. By your
 > direction, this was built as a slot (`calendarSlot`), consistent with the
 > rest of the family, rather than implementing a full calendar widget inside
-> this component. A real `Calendar`/date-grid component is deferred, same as
-> `Menu`/`Option` was for `Select`.
+> this component. A real `Calendar`/date-grid component is still deferred
+> (unlike `Menu`/`MenuItem`, which are now built).
+
+> **Showcase composition**: `calendarSlot` wraps the custom day-grid content
+> in a real `<Menu searchBar={false}>` for chrome only (elevation surface +
+> shadow), not for its option-list behavior — a calendar grid isn't a list of
+> `MenuItem` rows, so no `MenuItem`s are used here. `Menu`'s default width
+> (426px, sized for option lists) doesn't fit a 240px calendar, so the
+> wrapping element sets a `--menu-width: 240px` custom property, which
+> `Menu.css` reads via `width: var(--menu-width, 426px)` — the intended
+> caller-override mechanism already documented in that file.
 
 > **Icon-swap logic (non-obvious, confirmed per-variant)**: the trailing icon
 > is `cancel` (clear button) *only* in **Filled** and **Invalid**. Every other
@@ -1909,6 +1941,11 @@ A single-line time input, sibling of `DatePicker` — same box tokens, no
 label slot. All 14 variants (2 appearances × 7 states, including the same
 `Hydrate` state name) read individually — **not** assumed from `DatePicker`,
 and several confirmed rules genuinely diverge from it.
+
+**Showcase composition**: `timesSlot` is populated with a real `<Menu
+searchBar={false}>` wrapping `<MenuItem type="default">` rows (one per time
+option) — no search bar, since the option list here is static (unlike
+`Select`, this trigger's own input doesn't filter the list).
 
 > **Confirmed divergences from `DatePicker`** (read independently, not
 > copied): (1) single `remove_circle` icon that fades via opacity, not a
@@ -2225,3 +2262,540 @@ deferred).
   future variant activates it.
 - **`get_design_context` read cleanly** on this node (single component, no
   variant-set merge quirk like `MenuItem`'s).
+
+## Modal
+
+**Figma node:** 207:3898 (`Modal`)
+
+A generic dialog container over a `Blanket` scrim — **not a variant set**, a
+single composition. Three stacked full-width regions inside a centered card:
+a **header** (title + close), a **flexible content slot** (`children` — the
+Modal is a generic container for whatever a feature needs), and a **footer**
+slot the app fills with real `Button`s. Rendered via `createPortal` to
+`document.body` (the correct overlay pattern, and required because `Blanket`
+is `position: fixed`).
+
+Figma names the card layer "Bottom Sheet", but it is vertically **centered**
+(`translateY(-50%)`), i.e. a centered modal — the layer name is a Figma
+artifact, not a bottom-sheet behavior.
+
+### Nested components (all reused as real instances — none re-implemented)
+
+| Instance | Role | Notes |
+|---|---|---|
+| `Blanket` | Scrim | `onClick` → `onClose` when `closeOnScrimClick` (default true) |
+| `IconButton` (tertiary, size `s`) + `Icon name="close"` size `l` | Close ✕ | Tertiary text token is `--mapped-text-default-default`, an exact match to Figma's `icon/default/default` |
+| `Button` ×N | Footer actions | App-composed via the `footer` slot; showcase uses primary "Confirm" + secondary "Cancel" |
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `isOpen` | `boolean` | — | Controlled open state |
+| `onClose` | `() => void` | — | Fired by ✕, Escape, or scrim click |
+| `title` | `string` | — | Header title (Figma `{Header}` text prop); wired to `aria-labelledby` |
+| `children` | `React.ReactNode` | — | Flexible content slot (the generic-container middle region) |
+| `footer` | `React.ReactNode` | — | Full-width vertical button stack; app composes real `Button`s |
+| `closeOnScrimClick` | `boolean` | `true` | Scrim click calls `onClose` |
+| `ariaLabel` | `string` | — | Accessible name when there's no visible `title` |
+| `id` | `string` | — | Forwarded to the dialog element; auto-generated via `useId()` if omitted |
+| `className` | `string` | — | Added to the overlay root (e.g. to override card `max-width`) |
+
+No `previewState` — a Modal has no forced visual sub-states to preview; its
+"state" is open/closed, driven by `isOpen`.
+
+### State → token mapping
+
+| Element | Property | Token | Px |
+|---|---|---|---|
+| Card | background | `--mapped-surface-elevation-default` | — |
+| Card | radius | `--brand-scale-200` | 8 |
+| Header | padding (T/sides/B) | `--brand-scale-600` / `--brand-scale-400` / `--brand-scale-400` | 24 / 16 / 16 |
+| Title | color | `--mapped-text-default-default` | — |
+| Title | type | `.type-body-m-semibold` | 16/24 |
+| Content | side padding | `--brand-scale-400` | 16 |
+| Content | gap | `--brand-scale-400` | 16 |
+| Footer | padding (T/sides/B) | `--brand-scale-400` / `--brand-scale-400` / `--brand-scale-600` | 16 / 16 / 24 |
+| Footer | gap | `--brand-scale-400` | 16 |
+| Close ✕ | — | `IconButton` (tertiary) owns its tokens | — |
+| Scrim | — | `Blanket` (`--mapped-blanket-default-default`) owns its token | — |
+
+The title is **centered** via a 3-column grid (`1fr auto 1fr`) — the empty
+left cell mirrors the close control on the right, matching Figma's own
+spacer-based centering.
+
+### Geometry (confirmed)
+
+| Property | Token | Px |
+|---|---|---|
+| Card max-width | — | 375 (Figma frame width; caller-controllable via `className`/style) |
+| Overlay padding | `--brand-scale-400` | 16 (keeps the card off the viewport edge on small screens) |
+| Card radius | `--brand-scale-200` | 8 |
+
+Card is `overflow: clip`, `box-sizing: border-box`, `width: 100%` capped at
+`max-width`. **No drop shadow** — Figma's Modal card has none; the `Blanket`
+scrim provides the depth (unlike `Menu`, which does carry a shadow).
+
+### Accessibility
+
+`role="dialog"` + `aria-modal="true"`. `aria-labelledby` points at the title
+when present, else `aria-label` is used. Escape closes; focus moves into the
+dialog on open and is **restored to the previously-focused element** on close;
+Tab is **trapped** within the dialog (Shift+Tab wraps at the first focusable,
+Tab wraps at the last). Close button carries `aria-label="Close"`.
+
+### Known Figma inconsistencies / decisions
+
+- **Card background bound to a raw primitive, normalized.** Figma binds the
+  card fill to `Neutral01` (#ffffff, a brand primitive) rather than a semantic
+  surface token — a raw primitive would not dark-flip, leaving the card white
+  in dark mode. By explicit approval, normalized to
+  `--mapped-surface-elevation-default` (the same token `Menu` uses; dark-flips
+  to #262626). Same class of finding as `TimePicker`'s disabled-background
+  normalization.
+- **Close control upgraded from a bare icon to `IconButton`.** Figma's close
+  is a bare 24px `close` icon flush at the 16px header padding edge. By
+  explicit choice it's built with our `IconButton` (tertiary, size `s`) to
+  gain hover/pressed/focus affordances. Consequence: the size-`s` IconButton
+  adds `--brand-scale-100` (4px) of padding, so the ✕ sits ~4px further from
+  the card edge than Figma's flush icon. Cosmetic, disclosed.
+- **Footer forces full-width children** (`.modal__footer > * { width: 100% }`)
+  to match Figma's stacked full-width button layout. An app wanting inline/
+  right-aligned actions would wrap them; the default matches the source.
+- **Interaction behaviors are the WAI-ARIA dialog baseline, not inferred
+  visual states.** Figma defines no hover/pressed/focus states for the Modal
+  itself; Escape-to-close, focus trap, focus restore, and scrim-click-close
+  are accessibility-pattern requirements, not decorative additions.
+- **`get_design_context` timed out repeatedly** on this node (~300s each) —
+  the heaviest read this session, because the card embeds two full nested
+  `Button` variant-set instances. The server was confirmed healthy on sibling
+  nodes throughout; the full read eventually succeeded on a warm retry and
+  supplied exact geometry. Screenshots + `get_variable_defs` covered the gap
+  in between.
+
+## Progress Bar
+
+**Figma node:** 260:506 (`Progress bar indicator`) · atom `107:2882` (`❖ Progress bar`)
+
+A horizontal track with a label row above it: a `%` on the left and a
+`current / total` readout on the right. Two sizes (**S** caption / **M** body).
+The Figma "indicator" fixes the fill to the success/green look — the raw
+`<ProgressBar>` atom's three appearances (default `#44546f` / inverse white /
+success green) are **not** exposed here (see inconsistencies).
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `value` | `number` | — | 0–100; drives fill width and the default `%` label |
+| `size` | `'s' \| 'm'` | `'s'` | S = 12px caption labels; M = 16px body labels |
+| `showLabels` | `boolean` | `true` | `false` → bare track+fill (covers the raw-atom use) |
+| `percentageLabel` | `string` | `` `${round(value)}%` `` | Overrides the left label |
+| `current` / `total` | `string` | — | Right-side readout; hidden if both omitted |
+| `id` / `className` | `string` | — | |
+| `ariaLabel` | `string` | — | Accessible name for the bar |
+
+### State → token mapping
+
+| Element | Token | Px |
+|---|---|---|
+| Track | `--mapped-surface-subtle-default`, radius `--brand-scale-1800` | round (512) |
+| Fill | `--mapped-surface-success-default`, radius `--brand-scale-200` | 8 |
+| Track height | `--brand-scale-200` | 8 |
+| Label→bar gap | `--brand-scale-100` | 4 |
+| `%` label | `--mapped-text-success-default` | — |
+| Readout current / slash / total | `--mapped-text-default-default` / `--mapped-icon-default-default` / `--mapped-text-subtle-default` | — |
+| Type (S / M) | `.type-body-caption` / `.type-body-m` (+ `.type-body-m-medium` for `%`) | 12 / 16 |
+
+### Accessibility
+
+Track carries `role="progressbar"` with `aria-valuenow` (rounded `value`),
+`aria-valuemin=0`, `aria-valuemax=100`, and `aria-label` (the visible labels
+aren't wired as the name).
+
+### Known Figma inconsistencies / decisions
+
+- **Fill token normalized to dark-flip.** Figma binds the fill to `Green/400`
+  (#60c680), which has **no matching mapped token** (`--mapped-surface-success-default`
+  is Green/500 #38b860). By explicit approval, uses the semantic success surface
+  so it dark-flips — visibly a touch darker than the raw swatch, and equal to
+  the `%` label colour.
+- **Appearance variants deferred.** The raw `<ProgressBar>` atom has
+  default/inverse/success appearances; the **default** appearance is `#44546f`
+  (`color/background/neutral/bold/default`), which has **no token at all** in
+  our system. The indicator only needs success/green, so appearance is not
+  exposed — the multi-appearance primitive is deferred until that navy token
+  exists.
+- **Redundant inner track layer ignored.** Figma's atom nests a second
+  `h-6px` "container" over the `h-8px` track in the same `surface/subtle`
+  colour — no visible effect, so it's collapsed to a single track.
+
+## Progress Ring
+
+**Figma node:** 235:5711 (`Progress ring indicator`)
+
+A ~270° gauge (90° gap centred at the bottom, 8px stroke) with a gray track
+and a **conic gradient fill** (Figma's exact 6-stop recipe — see below), plus
+centre content: a caption row (`{%} • {caption}`), a large amount, and a
+**custom pill** (not the shared `Badge`). Two sizes (**medium** / **large**).
+
+> **Fill semantics — `value` is "% spent", not "% left".** Confirmed against
+> a real app screen (Finance → Budget tab): a budget at 82% spent (18% left)
+> shows a **large** colored arc reaching well into the red end; a budget at
+> 65% spent (35% left) shows a **visibly smaller** one. The arc is a "danger"
+> gauge that fills *toward red as spending grows* — the opposite of what an
+> earlier build of the showcase demo did (it drove the arc off `left%`,
+> producing a *small* arc for an *almost-exhausted* budget — backwards). The
+> caption/pill still read the friendlier **left** amount/percentage via
+> `percentageLabel` — callers must pass `value={spentPercent}` and
+> `percentageLabel={leftPercent + '%'}` separately; the component does not
+> infer one from the other. Verified against the reference screen's exact
+> numbers: `RM 350 of RM 1,000` (65% spent) → 65.0% arc fill, "35%" caption.
+
+### Nested components
+
+None — the centre pill was previously built by reusing `Badge` (dark), but
+Figma's spec has different vertical padding, and both words in the row share
+one weight (a shape `Badge`'s API doesn't model) — see "Known Figma
+inconsistencies" below. It's now bespoke markup local to this component.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `value` | `number` | — | 0–100; drives **only the arc fill** (+ the default `%` caption if `percentageLabel` is omitted) |
+| `size` | `'medium' \| 'large'` | `'medium'` | medium 162×140 (h5 amount) / large 220×190 (h4) |
+| `percentageLabel` | `string` | `` `${round(value)}%` `` | Caption number — pass this explicitly whenever it should read differently from `value` (see below) |
+| `caption` | `string` | `'Left to Spend'` | Caption text after the bullet |
+| `amount` | `string` | `'RM 0.00'` | Big centre amount |
+| `total` | `string` | `'RM 0.00'` | Pill total (rendered `of {total}` in the custom pill) |
+| `id` / `className` | `string` | — | |
+| `ariaLabel` | `string` | — | Defaults to `` `${%} ${caption}` `` |
+
+### State → token mapping
+
+| Element | Token |
+|---|---|
+| Track arc | `--mapped-surface-default-default`, 8px stroke (per-size, see below), round caps |
+| Gradient fill | conic `--brand-blue-500 → --brand-purple-500 → --brand-red-500` — see "Geometry / arc technique" |
+| Caption | `--mapped-text-default-default`; **medium** `.type-body-caption` / **large** `.type-body-m` (the `%`/`•` use the matching `-semibold`) |
+| Amount | `--mapped-text-default-default`; medium `.type-header-h5` / large `.type-header-h4` |
+| Pill text | **medium** `.type-body-caption-semibold` (12px semibold) / **large** `.type-body-m` (16px regular) |
+| Pill box | `--brand-slate-600` bg + `--mapped-text-on-color-heading` |
+| Caption gap / content gap | `--brand-scale-50` (2) / `--brand-scale-100` (4) |
+| Pill padding / gap / radius | `--brand-scale-100` (4) vertical / `--brand-scale-200` (8) horizontal / `--brand-scale-100` (4) gap / `--brand-scale-200` (8) radius |
+
+**Per-size type scale (confirmed from Figma 235:5710 / 235:5712).** Everything
+in the centre steps up from `medium` to `large`: caption `caption`→`body`,
+amount `h5`→`h4`, and the pill both grows (`caption`→`body`) **and** changes
+weight (semibold→regular). (`.type-header-h4` is 28px on mobile / 32px at
+≥768px per the responsive type layer — Figma's 32px is the desktop value.)
+
+**Centre content position.** The content block is centred on the **arc's circle
+centre** (`0.5 × svg width`, passed inline as `--ring-center-y`), not the
+container's geometric centre — the SVG is a `w×w` square top-aligned in a
+shorter `w×h` box, so centring on the box would sit the content ~11px (medium) /
+~15px (large) too high in the open gauge.
+
+### Geometry / arc technique
+
+Inline SVG, `viewBox 0 0 100 100`, `r=45`. Stroke width is computed **per size**
+(`800 / renderWidth` viewBox units → a constant 8px rendered) — *not*
+`vector-effect: non-scaling-stroke`, which renders inconsistently inside a
+`<mask>` (see the bug note below). The gauge is drawn with **explicit
+arc-path commands** (`M … A r r 0 largeArc 1 …`), not dashed circles: angles φ
+are measured clockwise from 12 o'clock; the arc runs from **φ=225° (7:30,
+bottom-left)** clockwise **270°** to **φ=135° (4:30, bottom-right)**, leaving a
+90° gap centred at the bottom. Track path spans the full 270°; the fill path
+spans `270° · value/100` from the same start. The fill `<foreignObject>` is
+**omitted at `value === 0`** so the round line-cap doesn't render a stray dot.
+
+> **Two bugs fixed here (both were wrong in earlier builds):**
+> 1. The arc rendered as **two disconnected segments** (blue on the left, red
+>    on the right, gray in the middle) with the gap at the wrong clock
+>    position. Cause: `vector-effect: non-scaling-stroke` on the mask's stroked
+>    circle behaves inconsistently in the mask pass, and `<circle>` +
+>    `stroke-dasharray` has ambiguous draw direction/rotation. Fixed by
+>    switching to explicit `<path>` arc commands (exact start/end angles, no
+>    dash wrapping) and per-size stroke widths (no non-scaling-stroke).
+> 2. Earlier still, the dasharray was `L C` (period `L + C` doesn't divide the
+>    circle → the dash wrapped and repeated). Moot now that paths are used.
+
+**Gradient recipe.** A CSS `conic-gradient` painted into the masked
+`<foreignObject>`, all stops on real brand tokens:
+`from -15deg, purple 5°, red 65°, red 135°, blue 225°, blue 315°, purple 355°`.
+Colours are placed by φ so that, along the visible arc, **blue** sits at the
+start (bottom-left → left), **purple** crowns the top, and **red** forms a wide
+plateau down the end side (right → bottom-right) — matching Figma's
+distribution (blue concentrated near the start, wide red plateau). The
+`from -15deg` origin is an **empirical rotation compensation**: the conic, as
+rendered inside the masked foreignObject, sits ~15° clockwise of its nominal
+stop angles (measured, not guessed). Verified by rasterising the *exact*
+masked config and colour-sampling clock positions: 7:30/9:00/10:30 = blue,
+12:00 = purple, 1:30/3:00/4:30 = red, 6:00 = empty (gap) — a single continuous
+arc. Restructuring the stops around φ also **removed the `#8c5b99` literal** the
+previous build needed for the gradient's cyclic seam — every stop is now a
+brand token.
+
+### Accessibility
+
+Root carries `role="progressbar"` with `aria-valuenow`/`min`/`max` and an
+`aria-label` (defaults to `"{%} {caption}"`). The SVG is `aria-hidden`.
+
+### Known Figma inconsistencies / decisions
+
+- **Gradient uses brand primitives directly.** `Red/500`, `Purple/500` and
+  `Blue/500` have no semantic/mapped gradient token. By explicit approval,
+  referenced as `--brand-*` in a `conic-gradient` — a fixed data-viz gauge
+  (like chart/logo colours), so it **does not dark-flip** (intentional). Every
+  stop is now a real brand token (the earlier build's `#8c5b99` seam literal is
+  gone — see the gradient-recipe note above).
+- **Fill is % SPENT, not % left.** Confirmed against a real app screen — the
+  arc fills toward the red end as spending grows (an 82%-spent budget shows a
+  *large* colored arc, a 65%-spent one a smaller one). Callers pass
+  `value={spentPercent}` and `percentageLabel={leftPercent + '%'}` separately;
+  the caption/pill read the friendlier *left* amount while the arc reads spend.
+- **Pill is now bespoke, not a `Badge` reuse.** Figma's spec has explicit
+  vertical padding (`--brand-scale-100` top/bottom) where `Badge`'s API only
+  supports `paddingBlock: 0`, and both words in the row ("of" and the amount)
+  share one `.type-body-caption-semibold` weight — `Badge`'s `label` prop
+  models a single string, not this two-part shape. Built as local markup in
+  `ProgressRing.tsx`/`.css` instead. In **dark mode** the pill still shows
+  **black text** on the slate background (`--mapped-text-on-color-heading`
+  flips to black) — the same cross-cutting token-layer issue as `Badge` dark
+  and `Toast` icons (see the session handoff), not specific to this pill.
+- **Arc exported as flat SVG images in Figma.** The source arcs are baked
+  images (`imgBase`/`imgBar`); recreated as live inline SVG so `value` and
+  theme are dynamic rather than a static asset.
+- **Two components from one frame.** `Progress bar indicator` and `Progress
+  ring indicator` are separate Figma component sets under one doc frame; built
+  as two components (`ProgressBar`, `ProgressRing`).
+
+## Slider
+
+**Figma node:** 280:5056 (`Slider`) · atoms `Slider handle` (234:5243) 
+
+A single-thumb value slider: a rounded track, a fill from the start to the
+value, and a thumb (white ring + blue core) that gains a 0.25 halo on
+focus/drag. Sibling of `RangeSlider` (shares the thumb/track look).
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `value` | `number` | — | Current value |
+| `min` / `max` / `step` | `number` | `0` / `100` / `1` | Scale + increment |
+| `onChange` | `(value: number) => void` | — | Fires on drag, track-click, and keyboard |
+| `disabled` | `boolean` | `false` | |
+| `id` / `className` | `string` | — | |
+| `ariaLabel` | `string` | — | Accessible name |
+| `ariaValueText` | `string` | — | Human-readable value for AT |
+
+### State → token mapping
+
+| Element | Token | Px |
+|---|---|---|
+| Track | `--mapped-surface-subtle-default`, radius `--brand-scale-1800` | height 8 |
+| Fill | `--mapped-surface-primary-default` | — |
+| Thumb ring | `--mapped-surface-elevation-default` | 20 |
+| Thumb core | `--mapped-surface-primary-default` | 12 |
+| Halo (focus/drag) | `--mapped-surface-primary-default` @ `opacity: 0.25` | 28 |
+| Disabled fill / core | `--mapped-surface-disabled-default` | — |
+
+### Accessibility
+
+Thumb is `role="slider"`, `tabIndex={0}`, with `aria-valuenow`/`min`/`max`,
+`aria-valuetext`, and `aria-label`. Keyboard: ←/↓ decrement, →/↑ increment,
+Home/End jump to bounds. Pointer drag on the thumb or click on the track.
+`:focus-visible` shows the halo.
+
+### Known Figma inconsistencies / decisions
+
+- **Track height rounded 6px → 8px** (`--brand-scale-200`). Figma's 6px has no
+  token (ramp jumps 4→8); by approval, rounded up to the 8px step (also matches
+  `ProgressBar`).
+- **Thumb reproduced from exported ellipse SVGs.** Figma bakes the thumb as
+  layered `<circle>` images — white r10 (ring), blue r6 (core), blue r14 @0.25
+  (halo). Rebuilt as live CSS so it tracks `value` and theme.
+- **Thumb ring uses `--mapped-surface-elevation-default`, not Figma's token.**
+  Figma binds the ring to `surface/primary/default-subtle` (white), which in
+  our system dark-flips to **black** and hides the ring in dark mode. By
+  approval, switched to `--mapped-surface-elevation-default` (white → #262626)
+  so the knob stays visible as a raised surface in both themes — a deliberate
+  deviation from the source token for dark-mode UX.
+
+## Range Slider
+
+**Figma node:** 234:5319 (`Range slider`)
+
+A two-thumb min/max range: rounded track, a fill **between** the thumbs, a
+tooltip on the active thumb, and two `Field` inputs below that are two-way
+synced with the thumbs. Thumbs cannot cross.
+
+### Nested components
+
+| Instance | Role |
+|---|---|
+| `Field` ×2 | Min / max entry — reused; two-way synced (drag ↔ type) |
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `minValue` / `maxValue` | `number` | — | Current lower / upper values |
+| `min` / `max` / `step` | `number` | `0` / `100` / `1` | Scale + increment |
+| `onChange` | `(minValue, maxValue) => void` | — | Fires on any thumb/field change |
+| `formatValue` | `(value) => string` | `String` | Formats tooltip + Field text (e.g. `` v => `RM ${v}` ``) |
+| `showTooltip` | `boolean` | `true` | Tooltip on the active thumb |
+| `showInputs` | `boolean` | `true` | The Field row |
+| `disabled` | `boolean` | `false` | |
+| `id` / `className` | `string` | — | |
+| `ariaLabelMin` / `ariaLabelMax` | `string` | `'Minimum'` / `'Maximum'` | Per-thumb names |
+
+### State → token mapping
+
+Track / fill / thumb / halo tokens are identical to `Slider`. Extras:
+
+| Element | Token |
+|---|---|
+| Tooltip bg / pointer | `--mapped-surface-primary-default` |
+| Tooltip text | `--mapped-text-on-color-heading` + `.type-body-sm-semibold` |
+| Tooltip radius | `--brand-scale-200` (8) |
+| Inputs | `Field` (unmodified); width via `.range-slider__input .field { width: 100% }` |
+
+### Accessibility
+
+Each thumb is `role="slider"` with `aria-valuenow`/`valuetext`/`label` and
+**constrained** `aria-valuemin`/`max` (the min thumb's max is the current max
+value and vice-versa, communicating the no-cross rule). Keyboard as `Slider`;
+track-click moves the nearest thumb. Tooltip is `role="status"`.
+
+### Known Figma inconsistencies / decisions
+
+- **Same track-height (6→8px) and thumb-ring dark-flip notes as `Slider`.**
+- **Tooltip pointer** recreated as a CSS triangle (Figma bakes it as a rect
+  image); sized from `--brand-scale-100`.
+- **Field inputs are real two-way controls** (per decision): typing parses the
+  numeric part (`RM 50` → 50), clamps against the other thumb, and moves the
+  thumb; dragging updates the field. Verified live (type `RM 90` on the min
+  field with max at 70 → clamps to 70).
+- **Two components, not one** (per decision): `Slider` (single) and
+  `RangeSlider` (dual + inputs) are separate, matching Figma's two symbols.
+
+## Toast
+
+**Figma node:** 110:4032 (`❖ System message`, desktop) — Figma also calls it
+Snackbar / System message; named `Toast` here per request.
+
+A full-width coloured banner alerting the user, in **6 appearances**
+(information / success / warning / error / discovery / ai). Desktop layout:
+leading icon · [title + description-slot + action row] · dismiss ✕. The
+description and actions are app-provided slots (Figma marks the paragraph
+"replace with your own slot component"). `ToastMobile` is the compact sibling.
+
+### Nested components
+
+| Instance | Role |
+|---|---|
+| `Icon` | Leading (auto per appearance) + close ✕ |
+| `Link` (`appearance="inverse"`) | Action row — app-composed via the `actions` slot |
+
+### Props (shared with `ToastMobile`)
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `appearance` | 6 values | `'information'` | Drives background + auto icon |
+| `title` | `string` | — | `.type-body-m-semibold` |
+| `children` | `React.ReactNode` | — | Description slot (`.type-body-sm`) |
+| `actions` | `React.ReactNode` | — | Action row (app composes inverse `Link`s) |
+| `onDismiss` | `() => void` | — | Shows the close ✕; fires on click |
+| `icon` | `React.ReactNode` | — | Overrides the auto leading icon |
+| `showIcon` | `boolean` | `true` | |
+| `role` | `'status' \| 'alert'` | `'status'` | Sets `aria-live` polite / assertive |
+| `id` / `className` | `string` | — | |
+
+### Appearance → background token
+
+| Appearance | Background |
+|---|---|
+| information | `--mapped-surface-primary-default` |
+| success | `--mapped-surface-success-default` |
+| warning | `--mapped-surface-warning-default` |
+| error | `--mapped-surface-error-default` |
+| discovery | `--mapped-surface-interactive-default` |
+| **ai** | `linear-gradient(90deg, --brand-blue-500, --brand-violet-500)` |
+
+Auto icons: `info` / `check_circle` / `warning` / `error` / `help_outline` /
+`icon_aiinsights`. The filled-circle glyphs in white produce the "badge" look
+with no separate component.
+
+### Foreground / geometry
+
+| Element | Token |
+|---|---|
+| Title / description | `--mapped-text-primary-on-color` (white, both themes) |
+| Icons (leading + close) | `--mapped-icon-primary-on-color` |
+| Radius | `--brand-scale-200` (8) |
+| Padding / row gap | `--brand-scale-400` (16) |
+| Body gap / actions gap | `--brand-scale-200` (8) / `--brand-scale-300` (12) |
+| Icon size | `l` (24px) |
+
+Container `color` is set to the on-color **text** token so the title/description
+inherit white; icon spans override with the on-color **icon** token.
+
+### Accessibility
+
+`role="status"` (polite) by default, `role="alert"` (assertive) for
+error/warning severities. Close is a real `<button aria-label="Dismiss">` with
+a `:focus-visible` outline in the on-color text colour.
+
+### Known Figma inconsistencies / decisions
+
+- **`ai` gradient uses brand primitives** (`--brand-blue-500 → --brand-violet-500`),
+  no mapped gradient token — the same approved treatment as `ProgressRing`;
+  fixed, does not dark-flip.
+- **Icons go black in dark mode.** `--mapped-icon-primary-on-color` (Figma's
+  `icon/primary/on-color`) resolves to **black** in dark, while the paired
+  **text** on-color token stays white — so in dark mode the title is white but
+  the icons are black on the coloured banner. Kept as bound **by decision**
+  (faithful to Figma); flagged as a likely dark-mode token bug in the source.
+- **Two components** (per decision): `Toast` (desktop) + `ToastMobile`
+  (compact), matching Figma's two symbols, rather than one component with a
+  `layout` prop.
+- **Actions/description are slots**, not built-in instances — Figma bakes in
+  `Link`/`Button` instances, but the paragraph is explicitly a replaceable
+  slot, so both are exposed as app-composed `ReactNode`s (reusing the real
+  `Link`/`Button` components).
+
+## Toast Mobile
+
+**Figma node:** 110:4631 (`❖ System message`, mobile)
+
+The compact sibling of `Toast`: same 6 appearances and the same
+appearance/background/icon maps (imported from `Toast`), in a single-row
+layout. Leading icon · [title + description-slot] · trailing action · optional
+close.
+
+### Nested components
+
+| Instance | Role |
+|---|---|
+| `Icon` | Leading (auto per appearance, 20px) + close ✕ |
+| `Button` (`appearance="inverse"` `variant="tertiary"`) | Trailing action — app-composed via `actions` |
+
+### Props
+
+Identical to `Toast` (`ToastMobileProps`). The `actions` slot takes an
+inverse-tertiary `Button` rather than `Link`s.
+
+### Differences from `Toast`
+
+| | `Toast` | `ToastMobile` |
+|---|---|---|
+| Padding | `--brand-scale-400` (16) | `--brand-scale-200` (8) |
+| Icon size | `l` (24) | `m` (20) |
+| Layout | icon · column(title/desc/actions) · close | row: [icon · title/desc] · action · close |
+| Main gap | `--brand-scale-400` | `--brand-scale-100` (icon↔text 4) / `--brand-scale-400` (text↔action) |
+
+Foreground tokens, appearance backgrounds, auto icons, a11y (`role`/`aria-live`,
+dismiss button), and the dark-mode icon caveat are all identical to `Toast`.
