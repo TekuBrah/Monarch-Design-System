@@ -1,0 +1,63 @@
+.bottom-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  padding-top: var(--brand-scale-250);
+  /* Figma's gradient overlay (page-color fade behind the pill) omitted for
+     this showcase — no background here, page bg shows through. */
+}
+
+.bottom-nav__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-400);
+  padding: 0 var(--brand-scale-400);
+  background: var(--mapped-surface-page);
+  border-radius: var(--brand-scale-800);
+  box-shadow: var(--shadow-medium);
+}
+
+.bottom-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Figma: 62px tap target, off the brand-scale ramp (56/64) — rounded to
+     nearest step per approval. */
+  width: var(--brand-scale-1300);
+  height: var(--brand-scale-1300);
+  padding: var(--brand-scale-200);
+  background: none;
+  border: none;
+  border-radius: var(--brand-scale-400);
+  cursor: pointer;
+  color: var(--mapped-icon-subtle-default);
+}
+
+.bottom-nav__item:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+  outline-offset: var(--brand-scale-50);
+}
+
+.bottom-nav__item--selected {
+  color: var(--mapped-icon-primary-default);
+}
+
+.bottom-nav__label {
+  color: var(--mapped-text-subtle-default);
+}
+
+.bottom-nav__item--selected .bottom-nav__label {
+  color: var(--mapped-text-primary-default);
+}
+
+.bottom-nav__home-indicator {
+  /* Figma: fixed decorative pull-bar dimensions, not scale-derived. */
+  width: 134px;
+  height: 5px;
+  margin: var(--brand-scale-250) 0;
+  border-radius: var(--brand-scale-1800);
+  background: var(--mapped-border-subtlest-default);
+}

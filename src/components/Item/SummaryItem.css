@@ -1,0 +1,21 @@
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-200); /* 8px */
+}
+
+.summary-item__text {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-item__amount {
+  /* Figma specifies the raw, unmapped "Accent02" (#2d3436) variable — no
+     equivalent anywhere in brand/alias/mapped. Mapped to the nearest real
+     token, same resolution already approved on HeaderDefault's title. */
+  color: var(--mapped-text-default-default);
+}
+
+.summary-item__type {
+  color: var(--mapped-text-subtle-default);
+}

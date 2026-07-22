@@ -1,0 +1,172 @@
+.side-nav {
+  position: relative; /* anchor for the expand/collapse trigger */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+  /* Figma: 255px full-width container — fixed component dimension, not a
+     scale/radius token (same precedent as Toast's fixed width). */
+  width: 255px;
+  padding: var(--brand-scale-800) var(--brand-scale-400);
+  background: var(--mapped-surface-page);
+  box-shadow: var(--shadow-subtle);
+  box-sizing: border-box;
+}
+
+/* Expand/collapse trigger — not part of the Figma source; added for
+   usability per explicit direction. Half-overlaps the panel's border edge
+   so it stays reachable in both expanded and compact states. */
+.side-nav__toggle {
+  position: absolute;
+  top: var(--brand-scale-1100); /* 48px — level with the brand row */
+  right: calc(var(--brand-scale-800) / -2); /* half-overlap: -16px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--brand-scale-800);
+  height: var(--brand-scale-800);
+  padding: 0;
+  border: var(--brand-scale-25) solid var(--mapped-border-subtlest-default);
+  border-radius: var(--brand-scale-1800);
+  background: var(--mapped-surface-page);
+  box-shadow: var(--shadow-subtlest);
+  color: var(--mapped-icon-subtle-default);
+  cursor: pointer;
+}
+
+.side-nav__toggle:hover {
+  background: var(--mapped-surface-subtle-hover);
+  border-color: var(--mapped-border-primary-default-subtle-hover);
+}
+
+.side-nav__toggle:active {
+  background: var(--mapped-surface-subtle-pressed);
+}
+
+.side-nav__toggle:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+  outline-offset: var(--brand-scale-50);
+}
+
+.side-nav--compact {
+  align-items: center;
+  width: 76px; /* Figma: 76px compact-width container */
+}
+
+.side-nav__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: inherit;
+  gap: var(--brand-scale-400);
+  width: 100%;
+  padding: var(--brand-scale-400) 0;
+}
+
+.side-nav__logo-row {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-100);
+}
+
+/* Field defaults to a fixed 240px demo width — stretch it to the panel's
+   content width so it sits flush with the same edges as everything else.
+   Excludes --compact, which sizes itself to a square icon-only box. */
+.side-nav__brand .field:not(.field--compact) {
+  width: 100%;
+}
+
+.side-nav__wordmark {
+  color: var(--mapped-icon-primary-default);
+  white-space: nowrap;
+}
+
+.side-nav__items {
+  display: flex;
+  flex-direction: column;
+  align-items: inherit;
+  gap: var(--brand-scale-200);
+  width: 100%;
+}
+
+.side-nav__footer {
+  display: flex;
+  flex-direction: column;
+  align-items: inherit;
+  gap: var(--brand-scale-400);
+  width: 100%;
+  margin-top: auto;
+}
+
+.side-nav__section-header {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  padding-top: var(--brand-scale-400);
+  /* Figma: 6px bottom padding (space.075), off the brand-scale ramp (4/8) —
+     needs a Figma Variables fix; using the literal value until then. */
+  padding-bottom: 6px;
+  border-top: 1px solid var(--mapped-border-subtlest-default);
+}
+
+.side-nav__section-title {
+  color: var(--mapped-text-subtle-default);
+}
+
+.side-nav__tab {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-400);
+  width: 100%;
+  padding: var(--brand-scale-200) 0;
+  background: none;
+  border: none;
+  border-radius: var(--brand-scale-100);
+  cursor: pointer;
+  color: var(--mapped-icon-subtlest-subtlest);
+}
+
+.side-nav__tab--compact {
+  width: auto;
+  justify-content: center;
+}
+
+.side-nav__tab:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+  outline-offset: var(--brand-scale-50);
+}
+
+.side-nav__tab--selected {
+  color: var(--mapped-icon-primary-default);
+}
+
+.side-nav__tab-label {
+  color: var(--mapped-text-subtlest-subtlest);
+  white-space: nowrap;
+}
+
+.side-nav__tab--selected .side-nav__tab-label {
+  color: var(--mapped-text-primary-default);
+}
+
+.side-nav__profile {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-200);
+  width: 100%;
+  min-width: 0;
+}
+
+.side-nav__profile-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--brand-scale-200);
+  min-width: 0;
+  color: var(--mapped-text-default-default);
+}
+
+.side-nav__profile-text p {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

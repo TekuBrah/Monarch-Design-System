@@ -1352,7 +1352,7 @@
         }
       },
       "on-color": {
-        "value": "{Foundations.black}",
+        "value": "{Foundations.white}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1362,7 +1362,7 @@
         }
       },
       "on-color-hover": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1372,7 +1372,7 @@
         }
       },
       "on-color-pressed": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.200}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1501,6 +1501,38 @@
       },
       "Label - pressed": {
         "value": "#0d0f11cc",
+        "type": "color",
+        "$extensions": {
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.hiddenFromPublishing": false
+        }
+      }
+    },
+    "Alpha": {
+      "default": {
+        "value": "#00000000",
+        "type": "color",
+        "$extensions": {
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.hiddenFromPublishing": false
+        }
+      },
+      "hover": {
+        "value": "{Alpha light mode.100}",
+        "type": "color",
+        "$extensions": {
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.hiddenFromPublishing": false
+        }
+      },
+      "pressed": {
+        "value": "{Alpha light mode.200}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1868,7 +1900,7 @@
         }
       },
       "on-color": {
-        "value": "{Foundations.black}",
+        "value": "{Foundations.white}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1878,7 +1910,7 @@
         }
       },
       "on-color-hover": {
-        "value": "{Foundations.black}",
+        "value": "{Surface.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1888,7 +1920,7 @@
         }
       },
       "on-color-pressed": {
-        "value": "{Foundations.black}",
+        "value": "{Surface.200}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [

@@ -9,7 +9,9 @@ export interface ToastMobileProps {
   title?: string
   /** Description — app-provided slot (Figma marks the paragraph as replaceable). */
   children?: React.ReactNode
-  /** Trailing action — app composes an inverse-tertiary `Button`. */
+  /** Trailing action — app composes a tertiary `Button`. The slot is a
+   *  [data-theme="dark"] context so the button renders its on-color (white)
+   *  treatment on the toast's saturated colored surface. */
   actions?: React.ReactNode
   /** When provided, shows the close ✕ and fires on click. */
   onDismiss?: () => void
@@ -53,7 +55,7 @@ export function ToastMobile({
         </div>
       </div>
 
-      {actions && <div className="toast-mobile__actions">{actions}</div>}
+      {actions && <div className="toast-mobile__actions" data-theme="dark">{actions}</div>}
 
       {onDismiss && (
         <button type="button" className="toast-mobile__close" aria-label="Dismiss" onClick={onDismiss}>

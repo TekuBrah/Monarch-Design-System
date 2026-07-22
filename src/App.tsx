@@ -4,7 +4,7 @@ import { brand, alias, mapped, spacing, gradients, shadows } from './tokens'
 import { Badge } from './components/Badge'
 import type { BadgeAppearance } from './components/Badge'
 import { Button } from './components/Button'
-import type { ButtonVariant, ButtonAppearance as BtnAppearance } from './components/Button'
+import type { ButtonVariant } from './components/Button'
 import { ElementWrapper } from './components/ElementWrapper'
 import type { ElementWrapperSize } from './components/ElementWrapper'
 import { IconButton } from './components/IconButton'
@@ -52,6 +52,20 @@ import { RangeSlider } from './components/RangeSlider'
 import { Toast } from './components/Toast'
 import type { ToastAppearance } from './components/Toast'
 import { ToastMobile } from './components/ToastMobile'
+import { BottomNavigation, SideNavigation } from './components/Navigation'
+import type { BottomNavItem, SideNavItem } from './components/Navigation'
+import { HeaderBg, HeaderDefault } from './components/Header'
+import { StatusBar } from './components/StatusBar'
+import { ListItem, SummaryItem, ChartLegendItem } from './components/Item'
+import {
+  CardSmartInsights,
+  CardAction,
+  CardBalance,
+  CardDataDisplay,
+  CardMonthlyBudget,
+  CardGoals,
+  CardFeaturesAndEducation,
+} from './components/Card'
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -723,6 +737,7 @@ function DatePickerDemo() {
         <div style={{ '--menu-width': '240px' } as React.CSSProperties}>
           <Menu
             searchBar={false}
+            isOptionList={false}
             slotContent={
               <DatePickerCalendar
                 monthDate={visibleMonth}
@@ -831,7 +846,7 @@ function MenuDemo() {
       searchValue={query}
       onSearchChange={setQuery}
       slotContent={
-        <div role="listbox" style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
           {filtered.length === 0 ? (
             <div style={{ padding: '0.75rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem' }}>No results</div>
           ) : (
@@ -1001,6 +1016,10 @@ export default function App() {
   const [tab, setTab] = useState<'foundations' | 'components'>('components')
   const [tabsSelected, setTabsSelected] = useState('overview')
   const [filterChipsSelected, setFilterChipsSelected] = useState<Record<string, boolean>>({ chip2: true })
+  const [bottomNavSelected, setBottomNavSelected] = useState('home')
+  const [sideNavSelected, setSideNavSelected] = useState('home')
+  const [sideNavCompact, setSideNavCompact] = useState(false)
+  const [lastItemClicked, setLastItemClicked] = useState<string | null>(null)
 
   const tabBtn = (id: typeof tab, label: string) => (
     <button
@@ -1229,14 +1248,14 @@ export default function App() {
               Icon Button
             </h1>
             <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              3 variants × 2 appearances × 3 sizes — same token matrix as Button — states forced for preview
+              3 variants × 3 sizes — same token matrix as Button — light + dark — states forced for preview
             </p>
 
             {/* Default appearance — table per size */}
             {(['s', 'm', 'l'] as IconButtonSize[]).map(size => (
               <div key={size} style={{ marginBottom: '2rem' }}>
                 <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-                  Size {size.toUpperCase()} — appearance: default
+                  Size {size.toUpperCase()} — light mode
                 </p>
                 <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
                   <thead>
@@ -1276,14 +1295,47 @@ export default function App() {
               </div>
             ))}
 
-            {/* Inverse appearance */}
+            {/* Dark mode — the SAME component with no appearance prop; [data-theme="dark"]
+                re-maps the --btn-* tokens to the on-color / alpha-wash treatment. */}
             <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-              Appearance: inverse (shown on colored surface)
+              Dark mode — same component under [data-theme="dark"]
             </p>
-            <div style={{ background: 'var(--mapped-surface-primary-default)', padding: '1.5rem', borderRadius: 'var(--brand-scale-200)', display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center' }}>
-              {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
-                <IconButton key={variant} variant={variant} appearance="inverse" size="m" icon={<Icon name="add" size="l" />} ariaLabel={variant} />
-              ))}
+            <div data-theme="dark" style={{ display: 'inline-block', background: 'var(--mapped-surface-page)', padding: '1.5rem', borderRadius: 'var(--brand-scale-200)' }}>
+              <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
+                <thead>
+                  <tr>
+                    <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>state</th>
+                    {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(v => (
+                      <th key={v} style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{v}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {([
+                    [undefined,   'default'],
+                    ['hover',     'hover'],
+                    ['pressed',   'pressed'],
+                    ['focus',     'focus'],
+                  ] as const).map(([ps, label]) => (
+                    <tr key={label}>
+                      <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>{label}</td>
+                      {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
+                        <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
+                          <IconButton variant={variant} size="m" icon={<Icon name="add" size="l" />} ariaLabel={variant} previewState={ps} />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                  <tr>
+                    <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>disabled</td>
+                    {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
+                      <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
+                        <IconButton variant={variant} size="m" icon={<Icon name="add" size="l" />} ariaLabel={variant} disabled />
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
@@ -1295,14 +1347,14 @@ export default function App() {
               Button
             </h1>
             <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              3 variants × 2 appearances × 3 sizes — tokens only — states forced for preview
+              3 variants × 3 sizes — tokens only — light + dark — states forced for preview
             </p>
 
             {/* Default appearance — one table per size */}
             {(['s', 'm', 'l'] as const).map(size => (
               <div key={size} style={{ marginBottom: '2rem' }}>
                 <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-                  Size {size.toUpperCase()} — appearance: default
+                  Size {size.toUpperCase()} — light mode
                 </p>
                 <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
                   <thead>
@@ -1350,17 +1402,55 @@ export default function App() {
               </div>
             ))}
 
-            {/* Inverse appearance — dark bg required */}
+            {/* Dark mode — same component, no appearance prop; [data-theme="dark"]
+                re-maps the --btn-* tokens (Figma's "Inverse" = dark mode). */}
             <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-              Appearance: inverse (shown on colored surface)
+              Dark mode — same component under [data-theme="dark"]
             </p>
-            <div style={{ background: 'var(--mapped-surface-primary-default)', padding: '1.5rem', borderRadius: 'var(--brand-scale-200)', display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center' }}>
-              {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
-                <Button key={variant} variant={variant} appearance="inverse" size="m" label={variant}
-                  leadingIcon={<Icon name="add" size="m" />}
-                  trailingIcon={<Icon name="chevron_right" size="m" />}
-                />
-              ))}
+            <div data-theme="dark" style={{ display: 'inline-block', background: 'var(--mapped-surface-page)', padding: '1.5rem', borderRadius: 'var(--brand-scale-200)' }}>
+              <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
+                <thead>
+                  <tr>
+                    <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>state</th>
+                    {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(v => (
+                      <th key={v} style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{v}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {([
+                    [undefined,   'default'],
+                    ['hover',     'hover'],
+                    ['pressed',   'pressed'],
+                    ['focus',     'focus'],
+                  ] as const).map(([ps, label]) => (
+                    <tr key={label}>
+                      <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>{label}</td>
+                      {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
+                        <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
+                          <Button variant={variant} size="m" label="Button"
+                            leadingIcon={<Icon name="add" size="m" />}
+                            trailingIcon={<Icon name="chevron_right" size="m" />}
+                            previewState={ps}
+                          />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                  <tr>
+                    <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>disabled</td>
+                    {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
+                      <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
+                        <Button variant={variant} size="m" label="Button"
+                          leadingIcon={<Icon name="add" size="m" />}
+                          trailingIcon={<Icon name="chevron_right" size="m" />}
+                          disabled
+                        />
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
@@ -2480,7 +2570,7 @@ export default function App() {
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>With search bar (default)</div>
               <Menu
                 slotContent={
-                  <div role="listbox" style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
                     {MENU_ITEM_OPTIONS.map((opt, i) => (
                       <MenuItem key={opt} label={opt} isSelected={i === 1} />
                     ))}
@@ -2493,7 +2583,7 @@ export default function App() {
               <Menu
                 searchBar={false}
                 slotContent={
-                  <div role="listbox" style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
                     {MENU_ITEM_OPTIONS.map((opt, i) => (
                       <MenuItem key={opt} label={opt} isSelected={i === 2} />
                     ))}
@@ -2655,11 +2745,301 @@ export default function App() {
                     appearance={a}
                     title="Title"
                     role={a === 'error' || a === 'warning' ? 'alert' : 'status'}
-                    actions={<Button appearance="inverse" variant="tertiary" size="m" label="Button" onClick={() => {}} />}
+                    actions={<Button variant="tertiary" size="m" label="Button" onClick={() => {}} />}
                   >
                     Short and brief
                   </ToastMobile>
                 ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Navigation ─────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Navigation</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            BottomNavigation (mobile tab bar) and SideNavigation (desktop sidebar, default + compact)
+          </p>
+          <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>BottomNavigation</div>
+              <div style={{ width: '375px', maxWidth: '100%' }}>
+                <BottomNavigation
+                  items={[
+                    { id: 'home', icon: 'icon_home', label: 'Home', isSelected: bottomNavSelected === 'home' },
+                    { id: 'transfer', icon: 'icon_transfer', label: 'Transfer', isSelected: bottomNavSelected === 'transfer' },
+                    { id: 'finance', icon: 'icon_finance', label: 'Finance', isSelected: bottomNavSelected === 'finance' },
+                    { id: 'more', icon: 'icon_more', label: 'More', isSelected: bottomNavSelected === 'more' },
+                  ]}
+                  onSelect={setBottomNavSelected}
+                />
+              </div>
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>SideNavigation</div>
+                <label style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)', display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer' }}>
+                  <input type="checkbox" checked={sideNavCompact} onChange={e => setSideNavCompact(e.target.checked)} />
+                  isCompact
+                </label>
+              </div>
+              <div style={{ height: '600px' }}>
+                <SideNavigation
+                  isCompact={sideNavCompact}
+                  items={([
+                    { id: 'home', icon: 'icon_home', label: 'Home' },
+                    { id: 'transfer', icon: 'icon_transfer', label: 'Transfer' },
+                    { id: 'finance', icon: 'icon_finance', label: 'Finance' },
+                    { id: 'more', icon: 'icon_more', label: 'More' },
+                  ] as SideNavItem[]).map(item => ({ ...item, isSelected: sideNavSelected === item.id }))}
+                  utilityItems={[
+                    { id: 'settings', icon: 'settings', label: 'Settings', isSelected: sideNavSelected === 'settings' },
+                    { id: 'help', icon: 'help_outline', label: 'Help Center', isSelected: sideNavSelected === 'help' },
+                  ]}
+                  onSelect={setSideNavSelected}
+                  onToggleCompact={() => setSideNavCompact(v => !v)}
+                  profileName="Hi, Margaret👋"
+                  profileEmail="Marge@gmail.com"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── StatusBar ──────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>StatusBar</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Fake OS-chrome status bar — Light/Dark modes are fixed per surface, not tied to the app theme
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '375px' }}>
+            <div style={{ background: '#ffffff', border: '1px solid var(--mapped-border-subtlest-default, #ccc)' }}>
+              <StatusBar mode="Light" />
+            </div>
+            <div style={{ background: '#262626' }}>
+              <StatusBar mode="Dark" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Header ─────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Header</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            HeaderBg (mobile screen header, swappable background slot) and HeaderDefault (function-flow header, 6 variants)
+          </p>
+          <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>HeaderBg — default</div>
+              <div style={{ width: '375px', maxWidth: '100%' }}>
+                <HeaderBg
+                  variant="default"
+                  background={<div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, #1a1f6e 0%, #2a4dbd 40%, #4f7fe0 70%, #cfa64a 100%)' }} />}
+                />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>HeaderBg — noSearchBar</div>
+              <div style={{ width: '375px', maxWidth: '100%' }}>
+                <HeaderBg
+                  variant="noSearchBar"
+                  background={<div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, #1a1f6e 0%, #2a4dbd 40%, #4f7fe0 70%, #cfa64a 100%)' }} />}
+                />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>HeaderBg — compact</div>
+              <div style={{ width: '375px', maxWidth: '100%' }}>
+                <HeaderBg
+                  variant="compact"
+                  title="Finance"
+                  background={<div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, #1a1f6e 0%, #2a4dbd 40%, #4f7fe0 70%, #cfa64a 100%)' }} />}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginTop: '2.5rem' }}>
+            <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>HeaderDefault — 6 variants</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: '500px', border: '1px solid var(--mapped-border-subtlest-default, #ccc)', borderRadius: '0.5rem', overflow: 'hidden' }}>
+              <HeaderDefault title="Title" subtitle="Subtitle" hasSubtitle actionLabel="Action" />
+              <HeaderDefault title="Title" subtitle="Subtitle" hasSubtitle />
+              <HeaderDefault subtitle="Subtitle" hasSubtitle isProgressStepper currentStep={1} totalSteps={7} />
+              <HeaderDefault title="Title" hasSubtitle={false} />
+              <HeaderDefault hasSubtitle={false} isProgressStepper currentStep={3} totalSteps={7} />
+              <HeaderDefault title="Title" hasSubtitle={false} actionLabel="Action" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Item ───────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Item</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            ListItem (default / profile / crypto), SummaryItem, and ChartLegendItem (legend / contribution)
+          </p>
+          <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>ListItem</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '320px' }}>
+                <ListItem
+                  type="default"
+                  leading={<Avatar size="l" name="Aeon Bank" />}
+                  title="Aeon Bank"
+                  titleInfo="Transfer"
+                  amount="$120.00"
+                  amountInfo="Today"
+                  onClick={() => setLastItemClicked('default')}
+                />
+                <ListItem
+                  type="profile"
+                  leading={<Avatar size="l" src="https://i.pravatar.cc/80?img=5" name="Rachel Um" />}
+                  title="Rachel Um"
+                  titleInfo="rachel@gmail.com"
+                  onClick={() => setLastItemClicked('profile')}
+                />
+                <ListItem
+                  type="crypto"
+                  leading={<Logo name="bitcoin" size="s" />}
+                  title="Bitcoin"
+                  titleInfo="BTC"
+                  amount="$0.00"
+                  amountInfo="0%"
+                  miniChart={
+                    <svg width="80" height="40" viewBox="0 0 80 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M0 30 L15 22 L30 26 L45 12 L60 18 L80 4 L80 40 L0 40 Z"
+                        fill="var(--mapped-icon-success-default)"
+                        opacity="0.15"
+                      />
+                      <path
+                        d="M0 30 L15 22 L30 26 L45 12 L60 18 L80 4"
+                        stroke="var(--mapped-icon-success-default)"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  }
+                  onClick={() => setLastItemClicked('crypto')}
+                />
+              </div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.75rem' }}>
+                Last clicked: <strong>{lastItemClicked ?? '—'}</strong>
+              </div>
+
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', margin: '1.5rem 0 0.75rem' }}>SummaryItem</div>
+              <SummaryItem amount="RM 0,00" type="Income" />
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>ChartLegendItem</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '320px' }}>
+                <ChartLegendItem variant="legend" title="Groceries" subtitle="32%" amount="RM320.00" />
+                <ChartLegendItem variant="contribution" title="Transfer" subtitle="Subtitle" amount="0" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <hr style={HR} />
+
+      {/* ── Card ───────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Card</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            7 card types — SmartInsights, Action, Balance, DataDisplay, MonthlyBudget (default / addNew), Goals, FeaturesAndEducation
+          </p>
+          <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>CardSmartInsights</div>
+              <CardSmartInsights
+                icon={<Icon name="icon_grocery" size="l" />}
+                title="Save 30%"
+                titleColor="var(--brand-cyan-500)"
+                description="Grocery promotions available nearby"
+                linkLabel="View"
+              />
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>CardAction</div>
+              <CardAction
+                icon={<Icon name="send" size="l" />}
+                title="Send"
+                description="Transfer money or crypto to others quickly and securely."
+                onClick={() => {}}
+              />
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>CardBalance</div>
+              <CardBalance
+                icon={<Icon name="question_mark" size="m" />}
+                type="Wallet"
+                name="Main Account"
+                amount="RM 1,204.50"
+              />
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>CardDataDisplay</div>
+              <CardDataDisplay info="Category" content="Groceries" content2="12 transactions" />
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>CardMonthlyBudget</div>
+              <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                <CardMonthlyBudget
+                  period="1 Jul - 31 Jul"
+                  percentage={62}
+                  amountLeft="RM 620.00"
+                  totalAmount="RM 1,000.00"
+                  availableAmount="RM 620.00"
+                  spentAmount="RM 380.00"
+                />
+                <CardMonthlyBudget state="addNew" />
+              </div>
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>CardGoals</div>
+              <CardGoals
+                image={<div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, #2a4dbd 0%, #60c680 100%)' }} />}
+                title="New Laptop"
+                percentage={40}
+                current="RM400"
+                total="RM1000"
+              />
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>CardFeaturesAndEducation</div>
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <CardFeaturesAndEducation variant="blue" icon={<Icon name="icon_transfer" size="l" />} title="Transfer" />
+                <CardFeaturesAndEducation variant="orange" icon={<Icon name="icon_bills" size="l" />} title="Bills" />
+                <CardFeaturesAndEducation variant="green" icon={<Icon name="icon_budget" size="l" />} title="Budget" />
+                <CardFeaturesAndEducation variant="purple" icon={<Icon name="icon_aiinsights" size="l" />} title="Insights" />
+                <CardFeaturesAndEducation variant="outline" icon={<Icon name="icon_transfer" size="l" />} title="Transfer" />
               </div>
             </div>
           </div>

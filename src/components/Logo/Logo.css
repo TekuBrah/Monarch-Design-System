@@ -1,0 +1,29 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Height-only sizing — logos keep their natural aspect ratio; width is auto
+   so each logo renders at its native proportions. */
+.logo--xs {
+  /* 14px — off the brand-scale ramp (12/16), but derived directly from the
+     Monarch mark's fixed 24:14 SVG aspect ratio to reproduce a 24px-wide
+     mark in compact contexts (e.g. SideNavigation's brand row) — not a guess. */
+  height: 14px;
+}
+.logo--s {
+  height: var(--brand-scale-800); /* 32px */
+}
+.logo--m {
+  height: var(--brand-scale-1000); /* 40px */
+}
+.logo--l {
+  height: var(--brand-scale-1200); /* 56px */
+}
+
+.logo > svg {
+  height: 100%;
+  width: auto;
+  display: block;
+}

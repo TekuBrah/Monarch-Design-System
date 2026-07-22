@@ -1,3 +1,43 @@
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.avatar--s {
+  width: var(--brand-scale-600); /* 24px */
+  height: var(--brand-scale-600);
+}
+.avatar--m {
+  width: var(--brand-scale-800); /* 32px */
+  height: var(--brand-scale-800);
+}
+.avatar--l {
+  width: var(--brand-scale-1000); /* 40px */
+  height: var(--brand-scale-1000);
+}
+
 .avatar--photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
   pointer-events: none;
+}
+
+.avatar--initials {
+  background: var(--mapped-surface-primary-default-subtle);
+  border: var(--brand-scale-25) solid var(--mapped-border-subtlest-default);
+}
+
+.avatar__label {
+  color: var(--mapped-text-subtle-default);
+  line-height: 1;
+}
+
+.avatar--placeholder {
+  background: var(--mapped-surface-default-default);
 }

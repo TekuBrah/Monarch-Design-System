@@ -10,9 +10,15 @@ export interface MenuItemProps {
   type?: MenuItemType
   label?: string
   isSelected?: boolean
-  onSelect?: () => void
+  /** Passes this row's `id` (if provided) — matches the `(id) => void` convention
+   *  used by Navigation's onSelect. `id` is optional here (MenuItem rows don't
+   *  always carry a caller-assigned identifier the way nav items do), so
+   *  handlers that only need "a row was activated" can still ignore the arg. */
+  onSelect?: (id?: string) => void
   id?: string
   className?: string
+  /** Roving-tabindex target within a listbox — managed by `Menu` when nested there. */
+  tabIndex?: number
 
   /** Leading badge for type="default" / "crypto" — app-provided, not a fixed component. */
   iconSlot?: React.ReactNode
@@ -42,6 +48,7 @@ export function MenuItem({
   onSelect,
   id,
   className,
+  tabIndex = 0,
   iconSlot,
   showIcon = true,
   avatarSrc,
@@ -57,7 +64,7 @@ export function MenuItem({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
-      onSelect?.()
+      onSelect?.(id)
     }
   }
 
@@ -66,10 +73,10 @@ export function MenuItem({
       id={id}
       role="option"
       aria-selected={isSelected}
-      tabIndex={0}
+      tabIndex={tabIndex}
       data-type={type}
       data-preview={previewState}
-      onClick={() => onSelect?.()}
+      onClick={() => onSelect?.(id)}
       onKeyDown={handleKeyDown}
       className={[
         'menu-item',

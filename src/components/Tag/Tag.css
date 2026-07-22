@@ -3,7 +3,7 @@
   align-items: center;
   gap: var(--brand-scale-100); /* 4px */
   border-radius: var(--brand-scale-100); /* 4px = border-radius/sm */
-  border: 1px solid transparent;
+  border: var(--brand-scale-25) solid transparent; /* 1px */
   background: transparent;
   cursor: pointer;
   font-family: inherit;
@@ -65,8 +65,8 @@
 
 /* Focus (keyboard) */
 .tag--default:focus-visible {
-  outline: 2px solid var(--mapped-border-primary-default);
-  outline-offset: 2px;
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default); /* 2px */
+  outline-offset: var(--brand-scale-50); /* 2px */
 }
 
 /* Selected state (Figma "focus" visual — blue fill) */
@@ -112,11 +112,13 @@
 
 /* Focus ring */
 .tag--overlay:focus-visible {
-  outline: 2px solid var(--mapped-text-primary-on-color);
-  outline-offset: 2px;
+  outline: var(--brand-scale-50) solid var(--mapped-text-primary-on-color); /* 2px */
+  outline-offset: var(--brand-scale-50); /* 2px */
 }
 
-/* Disabled */
+/* Disabled — Figma specifies a flat 50% opacity dim with no matching token
+   (same undocumented-literal category as the codebase's existing 0.25
+   glow-ring gap; no duration/opacity token layer exists yet). */
 .tag--overlay.tag--disabled {
   cursor: not-allowed;
   opacity: 0.5;

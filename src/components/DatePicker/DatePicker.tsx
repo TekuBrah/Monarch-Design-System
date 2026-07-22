@@ -116,6 +116,16 @@ export function DatePicker({
             }}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
+            onKeyDown={e => {
+              if (isDisabled) return
+              if (!open && (e.key === 'ArrowDown' || e.key === 'Enter')) {
+                e.preventDefault()
+                setOpen(true)
+              } else if (open && e.key === 'Escape') {
+                e.preventDefault()
+                setOpen(false)
+              }
+            }}
           />
         </span>
         {showClearIcon ? (
@@ -139,7 +149,7 @@ export function DatePicker({
         )}
       </div>
       {showCalendar && (
-        <div id={menuId} className="datepicker__menu">
+        <div id={menuId} className="datepicker__menu" role="dialog" aria-label="Choose date">
           {calendarSlot}
         </div>
       )}

@@ -298,6 +298,30 @@
   --alias-neutral-800: var(--brand-slate-800);
   --alias-neutral-900: var(--brand-slate-900);
   --alias-neutral-950: var(--brand-slate-950);
+
+  /* Alpha light mode */
+  --alias-alpha-light-mode-50: #f9f9f90d;
+  --alias-alpha-light-mode-100: #f9f9f91a;
+  --alias-alpha-light-mode-200: #f9f9f933;
+  --alias-alpha-light-mode-300: #f9f9f94d;
+  --alias-alpha-light-mode-400: #f9f9f966;
+  --alias-alpha-light-mode-500: #f9f9f980;
+  --alias-alpha-light-mode-600: #f9f9f999;
+  --alias-alpha-light-mode-700: #f9f9f9b3;
+  --alias-alpha-light-mode-800: #f9f9f9cc;
+  --alias-alpha-light-mode-900: #f9f9f9e6;
+
+  /* Alpha dark mode */
+  --alias-alpha-dark-mode-50: #1313130d;
+  --alias-alpha-dark-mode-100: #1313131a;
+  --alias-alpha-dark-mode-200: #13131333;
+  --alias-alpha-dark-mode-300: #1313134d;
+  --alias-alpha-dark-mode-400: #13131366;
+  --alias-alpha-dark-mode-500: #13131380;
+  --alias-alpha-dark-mode-600: #13131399;
+  --alias-alpha-dark-mode-700: #131313b3;
+  --alias-alpha-dark-mode-800: #131313cc;
+  --alias-alpha-dark-mode-900: #131313e6;
 }
 
 /* === Mapped Light === */
@@ -446,6 +470,9 @@
   --mapped-surface-overlay-default: #0d0f1199;
   --mapped-surface-overlay-hover: #0d0f11b3;
   --mapped-surface-overlay-label-pressed: #0d0f11cc;
+  --mapped-surface-alpha-default: #00000000;
+  --mapped-surface-alpha-hover: var(--alias-alpha-dark-mode-100);
+  --mapped-surface-alpha-pressed: var(--alias-alpha-dark-mode-200);
   --mapped-border-primary-default: var(--alias-primary-500);
   --mapped-border-primary-default-hover: var(--alias-primary-600);
   --mapped-border-primary-default-subtle: var(--alias-foundations-white);
@@ -622,9 +649,9 @@
   --mapped-surface-interactive-default: var(--alias-interactive-600);
   --mapped-surface-interactive-default-hover: var(--alias-interactive-500);
   --mapped-surface-interactive-default-pressed: var(--alias-interactive-700);
-  --mapped-surface-interactive-on-color: var(--alias-foundations-black);
-  --mapped-surface-interactive-on-color-hover: var(--alias-foundations-black);
-  --mapped-surface-interactive-on-color-pressed: var(--alias-foundations-black);
+  --mapped-surface-interactive-on-color: var(--alias-foundations-white);
+  --mapped-surface-interactive-on-color-hover: var(--alias-neutral-100);
+  --mapped-surface-interactive-on-color-pressed: var(--alias-neutral-200);
   --mapped-surface-default-default: var(--alias-surface-500);
   --mapped-surface-default-hover: var(--alias-surface-400);
   --mapped-surface-default-pressed: var(--alias-surface-600);
@@ -637,6 +664,9 @@
   --mapped-surface-overlay-default: #0d0f1199;
   --mapped-surface-overlay-hover: #0d0f11b3;
   --mapped-surface-overlay-label-pressed: #0d0f11cc;
+  --mapped-surface-alpha-default: #00000000;
+  --mapped-surface-alpha-hover: var(--alias-alpha-light-mode-100);
+  --mapped-surface-alpha-pressed: var(--alias-alpha-light-mode-200);
   --mapped-border-primary-default: var(--alias-primary-600);
   --mapped-border-primary-default-hover: var(--alias-primary-500);
   --mapped-border-primary-default-subtle: var(--alias-foundations-black);
@@ -671,9 +701,9 @@
   --mapped-border-interactive-default: var(--alias-interactive-600);
   --mapped-border-interactive-default-hover: var(--alias-interactive-500);
   --mapped-border-interactive-default-pressed: var(--alias-interactive-700);
-  --mapped-border-interactive-on-color: var(--alias-foundations-black);
-  --mapped-border-interactive-on-color-hover: var(--alias-foundations-black);
-  --mapped-border-interactive-on-color-pressed: var(--alias-foundations-black);
+  --mapped-border-interactive-on-color: var(--alias-foundations-white);
+  --mapped-border-interactive-on-color-hover: var(--alias-surface-100);
+  --mapped-border-interactive-on-color-pressed: var(--alias-surface-200);
   --mapped-border-subtlest-default: var(--alias-surface-500);
   --mapped-border-subtlest-hover: var(--alias-surface-400);
   --mapped-border-subtlest-pressed: var(--alias-surface-200);
@@ -751,17 +781,4 @@
     --responsive-font-copy-body-sm-paragraph-spacing: 20px;
     --responsive-font-copy-body-sm-line-height: 20px;
   }
-}
-
-/* === Gradients === */
-:root {
-  --gradient-subtle: linear-gradient(0deg, #ffffff 0%, #ffffff00 100%);
-  --gradient-default: linear-gradient(0deg, #ffffff 10%, #ffffff80 100%);
-}
-
-/* === Shadows === */
-:root {
-  --shadow-medium: 0px 0px 24px 0px #00000040;
-  --shadow-subtle: 0px 2px 8px 0px #00000026;
-  --shadow-subtlest: 0px 0px 10px 0px #00000008;
 }

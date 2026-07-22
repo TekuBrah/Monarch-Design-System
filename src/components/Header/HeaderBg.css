@@ -1,0 +1,116 @@
+.header-bg {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+  /* Content sits on an arbitrary user-supplied photo, not an app surface, so
+     it must stay a constant white regardless of the app's own light/dark
+     theme — --alias-foundations-white (static, non-flipping) is correct
+     here; --mapped-*-on-color would flip to black in dark mode and vanish
+     against the photo. */
+  color: var(--alias-foundations-white);
+}
+
+.header-bg__background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.header-bg__background > * {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.header-bg__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* Fixed-black legibility scrim over an arbitrary user-supplied photo — not
+     a design token candidate (it isn't a brand/surface color, it's a
+     content-legibility overlay whose value is defined by contrast math, not
+     the palette). Figma's own literal, reproduced as-is. */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
+  opacity: 0.8;
+}
+
+.header-bg__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--brand-scale-200);
+  /* No top/horizontal padding here — StatusBar carries its own (8px/16px),
+     and each row below carries its own horizontal padding, matching Figma's
+     per-row model. Bottom padding IS real, though: Figma's fixed frame
+     height (173/112px) leaves breathing room below the last row that isn't
+     expressed as an explicit padding class in its own codegen — confirmed by
+     back-solving the frame height minus StatusBar/row heights across all 3
+     variants, which cleanly resolves to 10px (--brand-scale-250) in two of
+     three, with the third (Default, w/ search field) consistent within
+     rounding. */
+  padding-bottom: var(--brand-scale-250);
+}
+
+.header-bg__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--brand-scale-250);
+  padding: 0 var(--brand-scale-400);
+}
+
+.header-bg__greeting-group {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-200);
+  min-width: 0;
+}
+
+.header-bg__greeting,
+.header-bg__title {
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.header-bg__notify {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+.header-bg__notify:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+  outline-offset: var(--brand-scale-50);
+  border-radius: var(--brand-scale-100);
+}
+
+.header-bg__notify-dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.header-bg__search {
+  width: 100%;
+  padding: 0 var(--brand-scale-400);
+  box-sizing: border-box;
+}
+
+/* Field defaults to a fixed 240px demo width — stretch to fill. */
+.header-bg__search .field:not(.field--compact) {
+  width: 100%;
+}

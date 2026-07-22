@@ -186,6 +186,12 @@ writeFileSync(resolve(root, 'src/tokens/index.ts'), [
   `export type { Spacing, ResponsiveFont } from './responsive'`,
   `export { typography } from './typography'`,
   `export type { Typography } from './typography'`,
+  // Hand-authored token modules (not part of the 5-layer pipeline) — re-exported
+  // here so a full rebuild doesn't drop them from the barrel.
+  `export { gradients } from './gradients'`,
+  `export type { Gradients } from './gradients'`,
+  `export { shadows } from './shadows'`,
+  `export type { Shadows } from './shadows'`,
   '',
 ].join('\n'))
 console.log('✓ src/tokens/index.ts')

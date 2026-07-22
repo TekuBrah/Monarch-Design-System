@@ -4,7 +4,7 @@ import type { ElementWrapperSize } from '../ElementWrapper'
 import { ICONS } from './icons'
 
 export type IconName = keyof typeof ICONS
-export type IconSize = 's' | 'm' | 'l'
+export type IconSize = 'xs' | 's' | 'm' | 'l'
 
 export interface IconProps {
   name: IconName
@@ -12,6 +12,7 @@ export interface IconProps {
 }
 
 const SIZE_MAP: Record<IconSize, ElementWrapperSize> = {
+  xs: 'xs', // 12px  --brand-scale-300 — e.g. ListItem's crypto trend triangle
   s: 's',  // 16px  --brand-scale-400
   m: 'm',  // 20px  --brand-scale-500
   l: 'l',  // 24px  --brand-scale-600

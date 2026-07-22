@@ -12,12 +12,6 @@ export interface AvatarProps {
   alt?: string
 }
 
-const SIZE_TOKEN: Record<AvatarSize, string> = {
-  s: 'var(--brand-scale-600)',   // 24px
-  m: 'var(--brand-scale-800)',   // 32px
-  l: 'var(--brand-scale-1000)', // 40px
-}
-
 const TYPE_CLASS: Record<AvatarSize, string> = {
   s: 'type-body-caption-semibold',
   m: 'type-body-sm-semibold',
@@ -31,26 +25,12 @@ function deriveInitials(name: string): string {
 }
 
 export function Avatar({ size = 'm', src, name, initials, alt }: AvatarProps) {
-  const dim = SIZE_TOKEN[size]
-  const base: React.CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-    width: dim,
-    height: dim,
-    borderRadius: '50%',
-    overflow: 'hidden',
-  }
+  const sizeClass = `avatar--${size}`
 
   if (src) {
     return (
-      <div className="avatar avatar--photo" style={base}>
-        <img
-          src={src}
-          alt={alt ?? name ?? ''}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-        />
+      <div className={`avatar avatar--photo ${sizeClass}`}>
+        <img src={src} alt={alt ?? name ?? ''} />
       </div>
     )
   }
@@ -59,32 +39,14 @@ export function Avatar({ size = 'm', src, name, initials, alt }: AvatarProps) {
 
   if (label) {
     return (
-      <div
-        className="avatar avatar--initials"
-        style={{
-          ...base,
-          background: 'var(--mapped-surface-primary-default-subtle)',
-          border: 'var(--brand-scale-25) solid var(--mapped-border-subtlest-default)',
-        }}
-      >
-        <span
-          className={TYPE_CLASS[size]}
-          style={{ color: 'var(--mapped-text-subtle-default)', lineHeight: 1 }}
-        >
-          {label}
-        </span>
+      <div className={`avatar avatar--initials ${sizeClass}`}>
+        <span className={`avatar__label ${TYPE_CLASS[size]}`}>{label}</span>
       </div>
     )
   }
 
   return (
-    <div
-      className="avatar avatar--placeholder"
-      style={{
-        ...base,
-        background: 'var(--mapped-surface-default-default)',
-      }}
-    >
+    <div className={`avatar avatar--placeholder ${sizeClass}`}>
       <Icon name="person" size={size} />
     </div>
   )

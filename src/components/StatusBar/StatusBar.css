@@ -1,0 +1,34 @@
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--brand-scale-200) var(--brand-scale-400);
+}
+
+.status-bar__time {
+  color: inherit;
+  white-space: nowrap;
+}
+
+.status-bar__icons {
+  display: flex;
+  align-items: center;
+  /* Figma specifies 5px, off the brand-scale ramp (4/8) — rounded to
+     --brand-scale-100 (4px, the nearer step) per approval. */
+  gap: var(--brand-scale-100);
+  color: inherit;
+  flex-shrink: 0;
+}
+
+/* Fixed OS-chrome colors per mode — deliberately static, not app-theme-aware,
+   same reasoning as HeaderBg's on-photo text (this fakes iOS/Android status
+   bar styling, which is chosen per background, not per app theme). */
+.status-bar--light {
+  color: var(--alias-neutral-800);
+}
+
+.status-bar--dark {
+  color: var(--alias-foundations-white);
+}

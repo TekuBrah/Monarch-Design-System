@@ -1,0 +1,50 @@
+.card-balance {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--brand-scale-200); /* 8px */
+  /* Figma component dimensions — fixed width with a min/max range, not
+     scale/radius tokens (same precedent as Toast's fixed width). */
+  width: 161px;
+  min-width: 128px;
+  max-width: 172px;
+  box-sizing: border-box;
+  /* Figma specifies 10px, off the brand-scale ramp (8/12) — rounded to the
+     nearer step per approval. */
+  padding: var(--brand-scale-200);
+  background: var(--mapped-surface-elevation-default);
+  border-radius: var(--brand-scale-200); /* 8px */
+  box-shadow: var(--shadow-subtlest);
+}
+
+.card-balance__header {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-250); /* 10px */
+  width: 100%;
+}
+
+.card-balance__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+}
+
+.card-balance__type {
+  color: var(--mapped-text-subtle-default);
+  width: 100%;
+}
+
+.card-balance__name {
+  color: var(--mapped-text-primary-default);
+  width: 100%;
+}
+
+.card-balance__amount {
+  color: var(--mapped-text-default-default);
+  white-space: nowrap;
+}

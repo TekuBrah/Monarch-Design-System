@@ -1,0 +1,77 @@
+.card-features {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--brand-scale-100); /* 4px */
+  width: 109px;
+  min-width: 90px;
+  max-width: 109px;
+  box-sizing: border-box;
+  padding: var(--brand-scale-200); /* 8px */
+  border-radius: var(--brand-scale-200); /* 8px */
+  border: none;
+  cursor: default;
+  font-family: inherit;
+  text-align: center;
+  overflow: hidden;
+}
+
+button.card-features {
+  cursor: pointer;
+}
+
+button.card-features:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+  outline-offset: var(--brand-scale-50);
+}
+
+.card-features__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--brand-scale-1000); /* 40px */
+  height: var(--brand-scale-1000);
+  padding: var(--brand-scale-100) 0;
+}
+
+.card-features--blue {
+  background: var(--brand-blue-400);
+}
+.card-features--orange {
+  background: var(--brand-orange-400);
+}
+.card-features--green {
+  background: var(--brand-green-400);
+}
+.card-features--purple {
+  background: var(--brand-purple-400);
+}
+
+.card-features--blue .card-features__icon,
+.card-features--orange .card-features__icon,
+.card-features--green .card-features__icon,
+.card-features--purple .card-features__icon {
+  color: var(--mapped-text-primary-on-color);
+}
+
+.card-features--blue .card-features__title,
+.card-features--orange .card-features__title,
+.card-features--green .card-features__title,
+.card-features--purple .card-features__title {
+  color: var(--mapped-text-on-color-heading);
+}
+
+.card-features--outline {
+  height: 120px; /* Figma: taller than the fill variants, which size to content */
+  background: none;
+  border: var(--brand-scale-25) solid var(--mapped-border-default);
+}
+
+.card-features--outline .card-features__icon {
+  color: var(--mapped-icon-default-default);
+}
+
+.card-features--outline .card-features__title {
+  color: var(--mapped-text-default-default);
+}

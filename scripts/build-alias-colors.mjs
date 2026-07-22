@@ -4,6 +4,11 @@ import { fileURLToPath } from 'url'
 
 const root = resolve(fileURLToPath(import.meta.url), '../..')
 
+// ── Slugify: lowercase, collapse non-alphanumeric runs to '-', trim edges ─────
+function slugify(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+}
+
 const aliasSrc = JSON.parse(readFileSync(resolve(root, 'design-tokens/Alias/Alias.json'), 'utf8'))
 const brandSrc = JSON.parse(readFileSync(resolve(root, 'design-tokens/Brand/Value.json'), 'utf8'))
 
@@ -44,6 +49,9 @@ function resolveRef(ref) {
 const ALLOWED = new Set([
   'Primary', 'Error', 'Success', 'Warning', 'Information',
   'Surface', 'Interactive', 'Neutral', 'Foundations',
+  // Raw alpha-tint primitives (hex-with-alpha, not {Group.Step} refs) — used
+  // by Mapped's surface.Alpha.hover/pressed for dark/light wash overlays.
+  'Alpha light mode', 'Alpha dark mode',
 ])
 
 const groups = [] // [{ name, steps: [[step, brandVarName], ...] }]
@@ -56,8 +64,9 @@ for (const [name, group] of Object.entries(aliasSrc)) {
   for (const [step, token] of Object.entries(group)) {
     if (!token || typeof token !== 'object') continue
     if (token.type !== 'color') continue
-    if (typeof token.value !== 'string' || !token.value.startsWith('{')) continue
-    steps.push([step, resolveRef(token.value)])
+    if (typeof token.value !== 'string') continue
+    if (token.value.startsWith('{')) steps.push([step, resolveRef(token.value)])
+    else if (token.value.startsWith('#')) steps.push([step, token.value])
   }
   if (steps.length > 0) groups.push({ name, steps })
 }
@@ -65,7 +74,7 @@ for (const [name, group] of Object.entries(aliasSrc)) {
 // ── src/tokens/alias.ts ───────────────────────────────────────────────────────
 const tsLines = ['export const alias = {']
 for (const { name, steps } of groups) {
-  tsLines.push(`  ${name}: {`)
+  tsLines.push(`  '${name}': {`)
   for (const [step, brandVar] of steps) {
     const key = /^\d+$/.test(step) ? step : `'${step}'`
     tsLines.push(`    ${key}: '${brandVar}',`)
@@ -98,8 +107,9 @@ const aliasLines = [`\n${SENTINEL}`, ':root {']
 for (const { name, steps } of groups) {
   aliasLines.push(`  /* ${name} */`)
   for (const [step, brandVar] of steps) {
-    const aliasVar = `--alias-${name.toLowerCase()}-${step}`
-    aliasLines.push(`  ${aliasVar}: var(${brandVar});`)
+    const aliasVar = `--alias-${slugify(name)}-${step}`
+    const cssValue = brandVar.startsWith('--') ? `var(${brandVar})` : brandVar
+    aliasLines.push(`  ${aliasVar}: ${cssValue};`)
   }
   aliasLines.push('')
 }

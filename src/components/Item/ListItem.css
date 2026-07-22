@@ -1,0 +1,117 @@
+.list-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: default;
+  font-family: inherit;
+  text-align: left;
+}
+
+button.list-item {
+  cursor: pointer;
+}
+
+button.list-item:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+  outline-offset: var(--brand-scale-50);
+  border-radius: var(--brand-scale-100);
+}
+
+.list-item--profile {
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--brand-scale-400); /* 16px */
+}
+
+.list-item__leading-group {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-300); /* 12px */
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.list-item--crypto .list-item__leading-group {
+  flex: 0 0 auto;
+}
+
+.list-item__leading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--brand-scale-1000); /* 40px */
+  height: var(--brand-scale-1000);
+  border-radius: var(--brand-scale-1800); /* full circle */
+  overflow: hidden;
+}
+
+.list-item__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--brand-scale-100); /* 4px */
+  min-width: 0;
+}
+
+.list-item--default .list-item__text {
+  padding-right: var(--brand-scale-200); /* 8px — reserves space before the amount */
+}
+
+.list-item__title {
+  color: var(--mapped-text-default-default);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-item__subtitle {
+  color: var(--mapped-text-subtle-default);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-item__chart {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.list-item__trailing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--brand-scale-100); /* 4px */
+  flex-shrink: 0;
+}
+
+.list-item__amount-row {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-100); /* 4px */
+  color: var(--mapped-icon-default-default);
+}
+
+.list-item__amount {
+  color: var(--mapped-text-default-default);
+  white-space: nowrap;
+}
+
+.list-item__amount-info {
+  color: var(--mapped-text-subtle-default);
+  white-space: nowrap;
+}
+
+.list-item__trend {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-100); /* 4px */
+  color: var(--mapped-icon-success-default);
+}

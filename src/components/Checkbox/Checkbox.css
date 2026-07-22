@@ -38,7 +38,7 @@
   position: absolute;
   inset: 25%; /* medium: 6px → 12×12px box; large: 8px → 16×16px box */
   border-radius: var(--brand-scale-50); /* 2px */
-  border: 1px solid var(--mapped-border-default-default);
+  border: var(--brand-scale-25) solid var(--mapped-border-default-default); /* 1px */
   background: var(--mapped-surface-page);
   display: flex;
   align-items: center;
@@ -96,8 +96,8 @@
 
 /* === Focus ring (via :focus-visible on hidden input + adjacent sibling) === */
 .checkbox__input:focus-visible + .checkbox__box-wrap {
-  outline: 2px solid var(--mapped-border-primary-default);
-  outline-offset: 2px;
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default); /* 2px */
+  outline-offset: var(--brand-scale-50); /* 2px */
   border-radius: var(--brand-scale-100);
 }
 

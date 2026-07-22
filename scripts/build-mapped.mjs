@@ -42,7 +42,7 @@ function resolveValue(value, knownAliasVars, ctx) {
     process.exit(1)
   }
   const [, group, step] = m
-  const aliasVar = `--alias-${group.toLowerCase()}-${step}`
+  const aliasVar = `--alias-${slugify(group)}-${step}`
   if (!knownAliasVars.has(aliasVar)) {
     console.error(`ERROR [${ctx}]: ${value} → ${aliasVar} — not found in alias layer`)
     process.exit(1)

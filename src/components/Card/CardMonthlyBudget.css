@@ -1,0 +1,106 @@
+.card-monthly-budget {
+  display: flex;
+  flex-direction: column;
+  gap: var(--brand-scale-400); /* 16px */
+  width: 343px;
+  box-sizing: border-box;
+  border-radius: var(--brand-scale-200); /* 8px */
+  background: var(--mapped-surface-elevation-default);
+  box-shadow: var(--shadow-subtlest);
+  /* Figma: asymmetric padding — 16px top/sides, 20px bottom. */
+  padding: var(--brand-scale-400) var(--brand-scale-400) var(--brand-scale-500);
+}
+
+.card-monthly-budget--add-new {
+  align-items: center;
+  background: none;
+  border: var(--brand-scale-25) dashed var(--mapped-border-subtle-default);
+  padding: var(--brand-scale-400);
+}
+
+.card-monthly-budget__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.card-monthly-budget__header-text {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-100); /* 4px */
+  color: var(--mapped-text-subtle-default);
+}
+
+.card-monthly-budget__header-title {
+  color: var(--mapped-text-default-default);
+}
+
+.card-monthly-budget__header-dot {
+  font-weight: 600;
+}
+
+.card-monthly-budget__details {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--mapped-text-primary-default);
+  font-family: inherit;
+}
+
+.card-monthly-budget__details:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+  outline-offset: var(--brand-scale-50);
+  border-radius: var(--brand-scale-100);
+}
+
+.card-monthly-budget__body {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-600); /* 24px */
+  width: 100%;
+}
+
+.card-monthly-budget__summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--brand-scale-400); /* 16px */
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.card-monthly-budget__add-new {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--brand-scale-400); /* 16px */
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.card-monthly-budget__add-new:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+  outline-offset: var(--brand-scale-50);
+  border-radius: var(--brand-scale-100);
+}
+
+.card-monthly-budget__add-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--brand-scale-100);
+  padding: var(--brand-scale-100); /* 4px */
+  border-radius: var(--brand-scale-200); /* 8px */
+  background: var(--mapped-icon-subtle-default);
+  color: var(--mapped-text-primary-on-color);
+}
+
+.card-monthly-budget__add-label {
+  color: var(--mapped-text-subtle-default);
+}

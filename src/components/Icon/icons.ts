@@ -16,6 +16,7 @@ import TuneIcon from '@material-design-icons/svg/round/tune.svg?react'
 import DownloadIcon from '@material-design-icons/svg/round/download.svg?react'
 import UploadIcon from '@material-design-icons/svg/round/upload.svg?react'
 import ShareIcon from '@material-design-icons/svg/round/share.svg?react'
+import SendIcon from '@material-design-icons/svg/round/send.svg?react'
 import ArrowBackIcon from '@material-design-icons/svg/round/arrow_back.svg?react'
 import ArrowForwardIcon from '@material-design-icons/svg/round/arrow_forward.svg?react'
 import ArrowUpwardIcon from '@material-design-icons/svg/round/arrow_upward.svg?react'
@@ -59,6 +60,10 @@ import RadioButtonUncheckedIcon from '@material-design-icons/svg/round/radio_but
 import RadioButtonCheckedIcon from '@material-design-icons/svg/round/radio_button_checked.svg?react'
 import CheckBoxIcon from '@material-design-icons/svg/round/check_box.svg?react'
 import CheckBoxOutlineBlankIcon from '@material-design-icons/svg/round/check_box_outline_blank.svg?react'
+import SignalCellularAltIcon from '@material-design-icons/svg/round/signal_cellular_alt.svg?react'
+import WifiIcon from '@material-design-icons/svg/round/wifi.svg?react'
+import ReceiptLongIcon from '@material-design-icons/svg/round/receipt_long.svg?react'
+import QuestionMarkIcon from '@material-design-icons/svg/round/question_mark.svg?react'
 
 // Custom icons (Assets/icons-custom/) — normalized to currentColor via scripts/normalize-custom-icons.mjs
 import CIconAiinsights from '../../../Assets/icons-custom/icon_aiinsights.svg?react'
@@ -108,6 +113,7 @@ export const ICONS = {
   content_copy:           ContentCopyIcon,
   refresh:                RefreshIcon,
   share:                  ShareIcon,
+  send:                   SendIcon,
   download:               DownloadIcon,
   upload:                 UploadIcon,
   open_in_new:            OpenInNewIcon,
@@ -167,6 +173,11 @@ export const ICONS = {
   radio_button_checked:   RadioButtonCheckedIcon,
   check_box:              CheckBoxIcon,
   check_box_outline_blank: CheckBoxOutlineBlankIcon,
+  // Status bar / system
+  signal_cellular_alt:    SignalCellularAltIcon,
+  wifi:                   WifiIcon,
+  receipt_long:           ReceiptLongIcon,
+  question_mark:          QuestionMarkIcon,
   // Custom — Finance & Accounts
   icon_finance:           CIconFinance,
   icon_bank:              CIconBank,

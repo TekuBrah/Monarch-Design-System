@@ -60,14 +60,21 @@ A visual indicator for numeric values (tallies, counts, scores).
 **Figma frame:** `148:986`  
 **Figma nodes read:** `12:86` (M/Primary/Default), `113:591` (S/Primary/Default), `140:6652` (Icon Button M/Primary/Default)
 
-An action trigger. Three visual variants, two appearance modes, three sizes.
+An action trigger. Three visual variants, three sizes.
+
+**Dark mode is not a separate `appearance`.** Figma's "Inverse" appearance *is*
+the dark-mode look — so the component carries no `appearance` prop. It defines
+its `--btn-*` vars from the light (default) token families, and re-maps them
+under `[data-theme="dark"]` to the on-color / alpha-wash treatment. A plain
+`<Button variant="secondary" />` renders correctly in both modes; to show the
+"inverse" look, place it inside a `[data-theme="dark"]` context (e.g. the
+showcase's dark panel, or `ToastMobile`'s action slot on its colored surface).
 
 ### Props
 
 | Prop | Type | Default | Notes |
 |---|---|---|---|
 | `variant` | `ButtonVariant` | `'primary'` | Figma prop: `Type`. Renamed to avoid HTML `type` collision |
-| `appearance` | `ButtonAppearance` | `'default'` | `'inverse'` = for use on colored/dark backgrounds |
 | `size` | `ButtonSize` | `'m'` | `'s'` \| `'m'` \| `'l'` |
 | `label` | `string` | `'Button'` | Visible text label |
 | `leadingIcon` | `ReactNode` | — | Optional icon before label |
@@ -93,7 +100,7 @@ An action trigger. Three visual variants, two appearance modes, three sizes.
 
 All sizes use `.type-body-sm-semibold` — Poppins 600 / 14px / 20px lh. Confirmed from Figma for S and M; L inferred to match (size differences are achieved via padding only).
 
-### Appearance: default — surface tokens per variant × state
+### Light mode (`:root`) — surface tokens per variant × state
 
 | variant | state | background | border | text |
 |---|---|---|---|---|
@@ -101,46 +108,87 @@ All sizes use `.type-body-sm-semibold` — Poppins 600 / 14px / 20px lh. Confirm
 | `primary` | hover | `--mapped-surface-primary-default-hover` | `--mapped-border-primary-default-hover` | `--mapped-text-primary-on-color-hover` |
 | `primary` | pressed | `--mapped-surface-primary-default-pressed` | `--mapped-border-primary-default-pressed` | `--mapped-text-primary-on-color-pressed` |
 | `primary` | disabled | `--mapped-surface-disabled-default` | `--mapped-border-disabled-default` | `--mapped-text-disabled-on-color` |
-| `secondary` | default | `--mapped-surface-primary-default-subtle` | `--mapped-border-primary-default` | `--mapped-text-primary-default` |
-| `secondary` | hover | `--mapped-surface-primary-default-subtle-hover` | `--mapped-border-primary-default-hover` | `--mapped-text-primary-default-hover` |
-| `secondary` | pressed | `--mapped-surface-primary-default-subtle-pressed` | `--mapped-border-primary-default-pressed` | `--mapped-text-primary-default-pressed` |
-| `secondary` | disabled | `--mapped-surface-disabled-default` | `--mapped-border-disabled-default` | `--mapped-text-disabled-default` |
-| `tertiary` | default | `transparent` | `transparent` | `--mapped-text-default-default` |
-| `tertiary` | hover | `--mapped-surface-subtle-hover` | `transparent` | `--mapped-text-default-hover` |
-| `tertiary` | pressed | `--mapped-surface-subtle-pressed` | `transparent` | `--mapped-text-default-pressed` |
+| `secondary` | default | `transparent` | `--mapped-border-primary-default` | `--mapped-text-primary-default` |
+| `secondary` | hover | `--brand-blue-50` | `--mapped-border-primary-default-hover` | `--mapped-text-primary-default-hover` |
+| `secondary` | pressed | `--brand-blue-100` | `--mapped-border-primary-default-pressed` | `--mapped-text-primary-default-pressed` |
+| `secondary` | disabled | `transparent` | `--mapped-border-disabled-default` | `--mapped-text-disabled-default` |
+| `tertiary` | default | `transparent` | `transparent` | `--mapped-text-primary-default` |
+| `tertiary` | hover | `--brand-blue-50` | `transparent` | `--mapped-text-primary-default-hover` |
+| `tertiary` | pressed | `--brand-blue-100` | `transparent` | `--mapped-text-primary-default-pressed` |
 | `tertiary` | disabled | `transparent` | `transparent` | `--mapped-text-disabled-default` |
 
-Focus ring (all default variants): `--mapped-border-primary-default` at 2px / 2px offset.
+Focus ring (all variants, light): `--mapped-border-primary-default` at 2px / 2px offset.
 
-### Appearance: inverse — tokens per variant × state
+Tertiary is a **blue** ghost button (`--mapped-text-primary-default`), matching
+Figma — not the neutral/gray it was before.
 
-Inverse buttons are for placement on colored or dark backgrounds.
+**Secondary/tertiary hover/press fill uses the brand blue ramp directly**
+(`--brand-blue-50` / `--brand-blue-100`), *not* the shared
+`--mapped-surface-primary-default-subtle-hover/-pressed` token. That shared
+token is deliberately kept on the neutral `{Surface.50}` / `{Surface.200}` gray
+(so it doesn't tint inputs, selects, and the ~10 other consumers), while the
+buttons want the blue tint — so the buttons reference the blue directly. This
+is a user-directed, buttons-only exception to the "consume mapped tokens" rule;
+it's safe because dark mode overrides these to the alpha wash, so the
+non-flipping brand value never reaches dark mode. **Secondary `disabled` has no
+fill** (`transparent`) — it's an outlined button; only the disabled border + text show.
+
+### Dark mode (`[data-theme="dark"]`) — token overrides per variant × state
+
+Overrides only the vars that differ from light; everything else inherits the
+light variant rule (e.g. secondary/tertiary keep transparent base fill).
 
 | variant | state | background | border | text |
 |---|---|---|---|---|
-| `primary` | default | `--mapped-surface-interactive-on-color` | (same as bg) | `--mapped-text-primary-default` |
+| `primary` | default | `--mapped-surface-interactive-on-color` (white) | (same as bg) | `--mapped-text-primary-default` |
 | `primary` | hover | `--mapped-surface-interactive-on-color-hover` | (same as bg) | `--mapped-text-primary-default-hover` |
 | `primary` | pressed | `--mapped-surface-interactive-on-color-pressed` | (same as bg) | `--mapped-text-primary-default-pressed` |
-| `primary` | disabled | `--mapped-surface-disabled-default` | `--mapped-border-disabled-default` | `--mapped-text-disabled-default` |
-| `secondary` | default | `transparent` | `--mapped-border-interactive-on-color` | `--mapped-text-on-color-label` |
-| `secondary` | hover | `--mapped-surface-interactive-on-color-hover` | `--mapped-border-interactive-on-color-hover` | `--mapped-text-on-color-label-hover` |
-| `secondary` | pressed | `--mapped-surface-interactive-on-color-pressed` | `--mapped-border-interactive-on-color-pressed` | `--mapped-text-on-color-label-pressed` |
-| `secondary` | disabled | `--mapped-surface-disabled-default` | `--mapped-border-disabled-default` | `--mapped-text-disabled-on-color` |
-| `tertiary` | default | `transparent` | `transparent` | `--mapped-text-on-color-label` |
-| `tertiary` | hover | `--mapped-surface-interactive-on-color-hover` | `transparent` | `--mapped-text-on-color-label-hover` |
-| `tertiary` | pressed | `--mapped-surface-interactive-on-color-pressed` | `transparent` | `--mapped-text-on-color-label-pressed` |
-| `tertiary` | disabled | `transparent` | `transparent` | `--mapped-text-disabled-on-color` |
+| `secondary` | default | `transparent` | `--mapped-border-interactive-on-color` (white) | `--mapped-text-primary-on-color` |
+| `secondary` | hover | `--mapped-surface-alpha-hover` (white wash) | `--mapped-border-interactive-on-color-hover` | `--mapped-text-primary-on-color-hover` |
+| `secondary` | pressed | `--mapped-surface-alpha-pressed` | `--mapped-border-interactive-on-color-pressed` | `--mapped-text-primary-on-color-pressed` |
+| `tertiary` | default | `transparent` | `transparent` | `--mapped-text-primary-on-color` |
+| `tertiary` | hover | `--mapped-surface-alpha-hover` | `transparent` | `--mapped-text-primary-on-color-hover` |
+| `tertiary` | pressed | `--mapped-surface-alpha-pressed` | `transparent` | `--mapped-text-primary-on-color-pressed` |
 
-Focus ring (all inverse variants): `--mapped-border-interactive-on-color` at 2px / 2px offset.
+Focus ring (dark): `--mapped-surface-interactive-on-color` (white) for all variants.
+Disabled inherits the light variant's disabled tokens (they dark-flip on their own),
+except `secondary`, which overrides disabled text to `--mapped-text-disabled-on-color`.
+The alpha wash tokens are `--mapped-surface-alpha-hover` = `Alpha */100` and
+`-pressed` = `Alpha */200` (light-based in dark, dark-based in light).
 
 ### Known Figma gaps / inferences
 
 - **Border width**: Figma references `--border-width/xs` (1px) — no equivalent token in our system. `--brand-scale-25` (1px) used as the closest token.
-- **No dedicated focus-ring token**: Figma doesn't define a focus-specific border token. `--mapped-border-primary-default` (default appearance) and `--mapped-border-interactive-on-color` (inverse appearance) used for the focus outline.
+- **No dedicated focus-ring token**: Figma doesn't define a focus-specific border token. `--mapped-border-primary-default` (light) and `--mapped-surface-interactive-on-color` (dark, white ring) are used for the focus outline.
 - **S text-only horizontal padding**: Figma confirmed S+both-icons has `p-4px` all sides. S text-only was not separately confirmed; same 4px used throughout S.
 - **L size not confirmed**: Geometry (py=12px, px=16px) inferred from the S→M progression. Verify with Figma L-size sublayer if exact spacing matters.
-- **Inverse token assignments**: No Figma call was made on an Inverse variant. Tokens were inferred from the `interactive-on-color` and `on-color-label` families in our mapped layer. Verify with Figma when finalising Inverse behaviour.
-- **Secondary default bg**: `--mapped-surface-primary-default-subtle` is used as the "ghost fill" for Secondary buttons. This token exists and resolves to a very light blue in the mapped layer.
+- **Dark-mode primary fill routed through `interactive-on-color`, not `surface-primary-default`.**
+  Figma sources the dark primary's white fill from `surface/primary/default`
+  (which is white in its Dark mode). We do **not** flip that shared token —
+  it's consumed by 35 components, and flipping it white would repaint primary
+  surfaces system-wide in dark mode. Instead the button's dark fill/border
+  route through the `interactive-on-color` family, which **only** Button /
+  IconButton consume (verified). Same rendered pixels (white → `#e7eaed` →
+  `#cfd5dc`), zero blast radius. Approved deliberate deviation from Figma's
+  literal binding.
+- **RESOLVED (token layer) — the `on-color`/`interactive-on-color` dark bug that broke the old `inverse` appearance.**
+  `design-tokens/Mapped/Dark.json` bound `surface.Interactive.on-color*` and
+  `border.Interactive.on-color*` to `Foundations.black`, making the old inverse
+  buttons render black-on-blue. Fixed those six bindings to
+  `{Foundations.white}` / `{Neutral.100}` / `{Neutral.200}` (surface) and
+  `{Foundations.white}` / `{Surface.100}` / `{Surface.200}` (border), matching
+  Figma's Inverse-variant dark values. Zero blast radius (buttons-only family).
+  Note: the broader `text.on-color.heading/body` dark bindings are still
+  `Foundations.black` — not consumed by buttons, left for a separate pass.
+- **Light secondary/tertiary hover/press = blue, but via the brand ramp, not the shared token.**
+  The shared `surface/primary/default-subtle-hover/-pressed` stays neutral gray
+  (`{Surface.50}`/`{Surface.200}`) so it doesn't tint the ~12 other consumers
+  (inputs, selects, etc.). The buttons instead reference `--brand-blue-50` /
+  `--brand-blue-100` directly for their light hover/press fill (user-directed,
+  buttons-only). See the light-mode table note above.
+- **Secondary disabled has no fill.** Figma's secondary disabled binds only
+  `border/disabled/default` + `text/Disabled/*` — no surface. `--btn-bg-disabled`
+  is `transparent` for secondary (was incorrectly `--mapped-surface-disabled-default`).
 
 ---
 
@@ -193,14 +241,13 @@ None. `children` is a free slot — no sub-component dependency required before 
 **Figma node:** 140:6651 (component set), 140:6652 (M/Primary/Default instance)  
 **Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 148:986 (Buttons frame)
 
-An icon-only action trigger. Shares the full token matrix with Button — same `variant × appearance × state` mapping. Differs only in geometry (square padding, no label) and contains a single icon slot wrapped in `ElementWrapper size="l"`.
+An icon-only action trigger. Shares the full variant classes with Button — same `variant × state` mapping, and the same `[data-theme="dark"]` re-mapping (no `appearance` prop). Differs only in geometry (square padding, no label) and contains a single icon slot wrapped in `ElementWrapper size="l"`.
 
 ### Props
 
 | Prop | Type | Default | Notes |
 |---|---|---|---|
 | `variant` | `ButtonVariant` | `'primary'` | `'primary'` \| `'secondary'` \| `'tertiary'` |
-| `appearance` | `ButtonAppearance` | `'default'` | `'default'` \| `'inverse'` |
 | `size` | `IconButtonSize` | `'m'` | `'s'` \| `'m'` \| `'l'` |
 | `icon` | `ReactNode` | — | The icon content; wrapped in `ElementWrapper size="l"` (24px) |
 | `ariaLabel` | `string` | — | Accessible name — required in production for icon-only buttons |
@@ -223,19 +270,21 @@ An icon-only action trigger. Shares the full token matrix with Button — same `
 
 ### Surface / border / text tokens — identical to Button
 
-See the Button section above for the full token table. The Icon Button uses the same `TOKENS` record (`variant × appearance → { bg, bgHover, bgPressed, bgDisabled, border, borderHover, borderPressed, borderDisabled, text, textHover, textPressed, textDisabled, focusRing }`).
+See the Button section above for the full light + dark token tables. Icon Button
+applies the same `.btn--{variant}` classes (defined in `Button.css`), so it
+inherits the exact same `--btn-*` definitions and `[data-theme="dark"]` overrides.
 
 ### Shared styling system
 
 Both Button and Icon Button:
 - Use the `.btn` CSS class for base styles + all interaction state rules (`:hover`, `:active`, `:disabled`, `:focus-visible`)
-- Pass tokens via inline CSS custom properties (`--btn-bg`, `--btn-border`, `--btn-text`, etc.)
+- Define `--btn-*` vars via `.btn--{variant}` classes in `Button.css` (light), re-mapped under `[data-theme="dark"] .btn--{variant}` — no inline style objects
 - Add a size modifier class for padding: `.btn--{s/m/l}` (Button, h/v split) vs `.btn--icon-{s/m/l}` (Icon Button, square)
 
 ### Known Figma gaps / inferences
 
-- **Inverse token assignments**: Inferred from the `interactive-on-color` and `on-color-label` token families — same inference as Button. No direct Figma read on Inverse Icon Button states.
 - **L size not confirmed from Figma**: The L icon button size (12px padding) is observed in the XML but not verified in a Figma Dev Mode inspection.
+- **Dark mode**: shares Button's exact variant classes, so the resolved dark bug fix and the `interactive-on-color` routing (see Button's entry) apply identically — no Icon-Button-specific token work.
 
 ---
 
@@ -251,23 +300,24 @@ A sized, colour-inheriting wrapper around a single Material Round SVG. Renders `
 | Prop | Type | Default | Notes |
 |---|---|---|---|
 | `name` | `IconName` | — | Required. Key of the bundled icon registry |
-| `size` | `IconSize` | `'m'` | `'s'` \| `'m'` \| `'l'` |
+| `size` | `IconSize` | `'m'` | `'xs'` \| `'s'` \| `'m'` \| `'l'` |
 
 ### Size → token mapping
 
 | size | px | ElementWrapper size | `--brand-scale-*` token |
 |---|---|---|---|
+| `xs` | 12px | `xs` | `--brand-scale-300` |
 | `s` | 16px | `s` | `--brand-scale-400` |
 | `m` | 20px | `m` | `--brand-scale-500` |
 | `l` | 24px | `l` | `--brand-scale-600` |
 
 ### Bundled set
 
-**96 icons total** — 59 Material Round + 37 Custom. All keys are in `IconName` (derived from `keyof typeof ICONS`).
+**101 icons total** — 66 Material Round + 35 Custom. All keys are in `IconName` (derived from `keyof typeof ICONS`). (Icons are added on-demand as components need them, not front-loaded — this list grows across sessions; verify against `icons.ts` directly rather than trusting a stale count here if it's been a while.)
 
-**Material Round (59):** `add`, `remove`, `close`, `check`, `edit`, `delete`, `content_copy`, `search`, `filter_list`, `sort`, `refresh`, `more_vert`, `more_horiz`, `settings`, `tune`, `download`, `upload`, `share`, `arrow_back`, `arrow_forward`, `arrow_upward`, `arrow_downward`, `chevron_left`, `chevron_right`, `expand_more`, `expand_less`, `unfold_more`, `open_in_new`, `info`, `warning`, `error`, `check_circle`, `cancel`, `help_outline`, `visibility`, `visibility_off`, `done`, `person`, `account_circle`, `group`, `logout`, `login`, `notifications`, `mail`, `home`, `menu`, `dashboard`, `calendar_today`, `schedule`, `attach_file`, `link`, `star`, `star_border`, `favorite`, `favorite_border`, `radio_button_unchecked`, `radio_button_checked`, `check_box`, `check_box_outline_blank`
+**Material Round (66):** `add`, `remove`, `close`, `check`, `edit`, `delete`, `content_copy`, `refresh`, `share`, `send`, `download`, `upload`, `open_in_new`, `attach_file`, `home`, `menu`, `arrow_back`, `arrow_forward`, `arrow_upward`, `arrow_downward`, `chevron_left`, `chevron_right`, `expand_more`, `expand_less`, `unfold_more`, `search`, `filter_list`, `sort`, `settings`, `tune`, `more_vert`, `more_horiz`, `info`, `warning`, `error`, `check_circle`, `done`, `cancel`, `remove_circle`, `help_outline`, `visibility`, `visibility_off`, `person`, `account_circle`, `group`, `login`, `logout`, `notifications`, `mail`, `dashboard`, `calendar_today`, `calendar_month`, `schedule`, `link`, `star`, `star_border`, `favorite`, `favorite_border`, `radio_button_unchecked`, `radio_button_checked`, `check_box`, `check_box_outline_blank`, `signal_cellular_alt`, `wifi`, `receipt_long`, `question_mark`
 
-**Custom (37):** `icon_finance`, `icon_bank`, `icon_wallet`, `icon_stocks`, `icon_crypto`, `icon_gold`, `icon_battery_horizontal`, `icon_transfer`, `icon_receive`, `icon_spend`, `icon_buy_and_sell_crypto`, `icon_crypto_transfers`, `icon_grocery`, `icon_grocery_1`, `icon_food`, `icon_car`, `icon_healthcare`, `icon_healthcare_1`, `icon_shopping`, `icon_bills`, `icon_budget`, `icon_duration`, `icon_aiinsights`, `icon_aimage`, `icon_track_spending`, `icon_spending_alert`, `icon_scheduled_payments`, `icon_automatic_savings`, `icon_home`, `icon_more`, `icon_filter01`, `icon_chevron_expand_less`, `icon_chevron_expand_more`, `icon_triangle_up`, `icon_triangle_down`, `icon_pdf`, `icon_monarchacademy`
+**Custom (35):** `icon_finance`, `icon_bank`, `icon_wallet`, `icon_stocks`, `icon_crypto`, `icon_gold`, `icon_battery_horizontal`, `icon_transfer`, `icon_receive`, `icon_buy_and_sell_crypto`, `icon_crypto_transfers`, `icon_grocery`, `icon_grocery_1`, `icon_food`, `icon_car`, `icon_healthcare`, `icon_healthcare_1`, `icon_shopping`, `icon_bills`, `icon_budget`, `icon_duration`, `icon_aiinsights`, `icon_aimage`, `icon_track_spending`, `icon_spending_alert`, `icon_scheduled_payments`, `icon_automatic_savings`, `icon_home`, `icon_more`, `icon_chevron_expand_less`, `icon_chevron_expand_more`, `icon_triangle_up`, `icon_triangle_down`, `icon_pdf`, `icon_monarchacademy`
 
 Add new icons by importing in `src/components/Icon/icons.ts` and adding an entry to the `ICONS` const.
 
@@ -389,14 +439,15 @@ Logos are auto-registered via `import.meta.glob` in `src/components/Logo/logos.t
 | Prop | Type | Default | Notes |
 |---|---|---|---|
 | `name` | `LogoName` | — | Required. Normalized filename (lowercase, non-alphanumeric → `_`) |
-| `size` | `LogoSize` | `'m'` | `'s'` \| `'m'` \| `'l'` — controls height only |
+| `size` | `LogoSize` | `'m'` | `'xs'` \| `'s'` \| `'m'` \| `'l'` — controls height only |
 
 ### Size → token mapping
 
 Height is constrained via token; width is `auto` to preserve each logo's natural aspect ratio.
 
-| size | height | `--brand-scale-*` token |
+| size | height | token |
 |---|---|---|
+| `xs` | 14px | `14px` literal — off the `--brand-scale` ramp (12/16), but derived directly from the Monarch mark's fixed 24:14 SVG aspect ratio to reproduce a 24px-wide mark (compact contexts, e.g. `SideNavigation`'s brand row) — not a guess |
 | `s` | 32px | `--brand-scale-800` |
 | `m` | 40px | `--brand-scale-1000` |
 | `l` | 56px | `--brand-scale-1200` |
@@ -617,14 +668,14 @@ A binary on/off control rendered as a sliding pill track. Uses a hidden native `
 | **Regular** track height | `--brand-scale-400` | 16px |
 | **Regular** dot size | `--brand-scale-300` | 12px |
 | **Regular** dot checked left | `calc(--brand-scale-800 - --brand-scale-300 - --brand-scale-50)` | 18px |
-| **Large** track width | `calc(--brand-scale-1100 - --brand-scale-50)` | 46px (no 46px token — pure scale math) |
+| **Large** track width | `46px` (literal) | 46px — off the ramp (1000=40px/1100=48px); see note below |
 | **Large** track height | `--brand-scale-600` | 24px |
 | **Large** dot size | `--brand-scale-500` | 20px |
 | **Large** dot checked left | `--brand-scale-600` | 24px |
 
 ### Known Figma inconsistencies
 
-- **Large track width = 46px**: No `--brand-scale-*` token resolves to 46px. Used `calc(var(--brand-scale-1100) - var(--brand-scale-50))` = 48−2 = 46px.
+- **Large track width = 46px**: no `--brand-scale-*` token resolves to 46px (nearest ramp steps: 1000=40px, 1100=48px). Previously implemented as `calc(var(--brand-scale-1100) - var(--brand-scale-50))` (48−2=46) — an **audit-flagged HIGH finding**, since this is exactly CLAUDE.md's banned pattern (a calc() curve-fit between unrelated scale tokens fabricating a relationship that doesn't exist in the source). Fixed: now a plain `46px` literal with a FAIL-LOUD comment in `Toggle.css`, pending a Figma Variables fix.
 - **Figma dot is an image asset**: The Figma file shows the dot as a raster image asset. Replaced with pure CSS (`border-radius: 50%`, `--shadow-subtle`).
 - **No `checked-hover` mapped surface token prior to investigation**: Initial build used `--alias-primary-600` directly. Corrected to `--mapped-surface-primary-default-hover` after confirming the mapped token exists and resolves to `alias-primary-500` in dark mode (vs 600 in light mode) — dark-mode behaviour was wrong before the fix.
 
@@ -794,7 +845,6 @@ Container sets `color: var(--mapped-text-primary-on-color)` (resolves to `#fffff
 
 - **No mapped token for brand-400 backgrounds**: The 12 solid colors use brand-layer tokens directly. No `--mapped-surface-[color]-default` equivalents exist in the mapped layer for these specific colors/levels.
 - **AI gradient**: Extracted from Figma as `linear-gradient(132.61deg, blue-400 → blue-500 → violet-500)`. Uses brand tokens, not alias or mapped.
-- **`color: white` remaining hardcode**: The container still uses `color: white` to drive icon `currentColor` inheritance. Step 2 fixes were scoped to Toggle/Checkbox/Radio only. This should be replaced with `var(--mapped-text-primary-on-color)` (confirmed #ffffff in both modes) in a follow-up pass.
 
 ---
 
@@ -938,7 +988,7 @@ A single interactive tab unit. Intended to be composed inside a `Tabs` container
 | `label` | `string` | `'Tab'` | Visible text |
 | `isSelected` | `boolean` | `false` | Controlled by parent Tabs |
 | `onClick` | `MouseEventHandler` | — | |
-| `previewState` | `'hover' \| 'press' \| 'focus'` | — | Showcase-only: forces a visual state |
+| `previewState` | `'hover' \| 'pressed' \| 'focus'` | — | Showcase-only: forces a visual state |
 | `ariaControls` | `string` | — | ID of the controlled tab panel |
 | `id` | `string` | — | Forwarded to `<button>` |
 
@@ -953,7 +1003,9 @@ A single interactive tab unit. Intended to be composed inside a `Tabs` container
 | focus | false | `--mapped-surface-primary-default-subtle` | `--mapped-text-subtle-subtle-pressed` | — | focus ring |
 | focus | true | `--mapped-surface-primary-default-subtle` | `--mapped-text-default-default` | `--mapped-border-primary-default` | focus ring |
 
-Focus ring: `--mapped-border-primary-default`, 2px outline, 0 offset, `border-radius: --brand-scale-300` (10px = Figma `border-radius/lg`)
+Focus ring: `--mapped-border-primary-default`, 2px outline, 2px offset (per a later
+Figma update — was 0 offset originally; the ring now renders at ~10px via the
+tab's own 8px corners + the 2px offset, concentric, no separate radius override needed)
 
 ### Geometry tokens
 
@@ -1825,13 +1877,24 @@ family's pattern.
 > (unlike `Menu`/`MenuItem`, which are now built).
 
 > **Showcase composition**: `calendarSlot` wraps the custom day-grid content
-> in a real `<Menu searchBar={false}>` for chrome only (elevation surface +
-> shadow), not for its option-list behavior — a calendar grid isn't a list of
-> `MenuItem` rows, so no `MenuItem`s are used here. `Menu`'s default width
-> (426px, sized for option lists) doesn't fit a 240px calendar, so the
-> wrapping element sets a `--menu-width: 240px` custom property, which
-> `Menu.css` reads via `width: var(--menu-width, 426px)` — the intended
-> caller-override mechanism already documented in that file.
+> in a real `<Menu searchBar={false} isOptionList={false}>` for chrome only
+> (elevation surface + shadow), not for its option-list behavior — a calendar
+> grid isn't a list of `MenuItem` rows, so no `MenuItem`s are used here.
+> `isOptionList={false}` matters as of `Menu`'s listbox/keyboard-nav fix — it
+> defaults to `true`, which would otherwise wrap the calendar grid in
+> `role="listbox"` semantics it doesn't have. `Menu`'s default width (426px,
+> sized for option lists) doesn't fit a 240px calendar, so the wrapping
+> element sets a `--menu-width: 240px` custom property, which `Menu.css`
+> reads via `width: var(--menu-width, 426px)` — the intended caller-override
+> mechanism already documented in that file.
+
+> **Keyboard-accessible popup (audit-flagged MEDIUM finding, fixed)**: the
+> calendar previously had no keyboard trigger — only a mouse click on
+> `.datepicker__control` could open it, despite the input claiming
+> `aria-haspopup="dialog"`. Fixed: `ArrowDown`/`Enter` on the input opens the
+> calendar, `Escape` closes it while open. The popup container also gained
+> `role="dialog"` (it previously had none, despite being the target the input's
+> `aria-haspopup="dialog"` referred to via `aria-controls`).
 
 > **Icon-swap logic (non-obvious, confirmed per-variant)**: the trailing icon
 > is `cancel` (clear button) *only* in **Filled** and **Invalid**. Every other
@@ -2074,13 +2137,14 @@ Only `checkbox`/`radio` have a press+selected combo in Figma's source.
 | `type` | `'default' \| 'crypto' \| 'account' \| 'checkbox' \| 'radio'` | `'default'` | |
 | `label` | `string` | `'Label'` | default/checkbox/radio row text; account's primary name |
 | `isSelected` | `boolean` | `false` | |
-| `onSelect` | `() => void` | — | Fires on click, Enter, or Space |
+| `onSelect` | `(id?: string) => void` | — | Fires on click, Enter, or Space, passing the row's `id` (if provided) — matches the `(id) => void` convention used elsewhere (`Navigation`'s `onSelect`); `id` is optional since MenuItem rows don't always carry a caller-assigned identifier |
 | `iconSlot` | `React.ReactNode` | — | Leading badge for `default`/`crypto` — app-provided, not a fixed component (Figma names these `<element>`, a generic swappable slot; the raster demo images inside — a flag photo, a crypto coin logo — are placeholder content, not real component instances) |
 | `showIcon` | `boolean` | `true` | Maps to Figma's `icon` toggle |
 | `avatarSrc` / `avatarName` / `avatarInitials` | `string` | — | `type="account"` — forwarded to `Avatar` (`size="m"`, 32px, matches Figma exactly) |
 | `trailingLabel` | `string` | `'Label'` | `type="account"` — text beside the trailing selection dot |
 | `labelCrypto` / `labelWallet` / `labelAmount` / `labelAmountCrypto` | `string` | `'Crypto'` / `'Wallet'` / `'$0,000.00'` / `'0.00 ETH'` | `type="crypto"` |
 | `id` | `string` | — | Forwarded to the row |
+| `tabIndex` | `number` | `0` | Roving-tabindex target — managed by `Menu` when `MenuItem` rows are nested inside one (only the active row gets `0`, the rest `-1`); defaults to `0` so `MenuItem` stays independently tabbable when used standalone, outside `Menu` |
 | `previewState` | `'hover' \| 'pressed'` | — | Showcase only |
 
 No `isDisabled` — Figma's source defines no disabled state for `<item>`, so
@@ -2211,7 +2275,24 @@ option-list menu, or use two separate `Menu` instances (each with its own
 | `searchValue` / `onSearchChange` | `string` / `(value: string) => void` | — | Controlled search input |
 | `searchAriaLabel` | `string` | `'Search'` | Forwarded to `Field`'s `ariaLabel` (no visible label on this field) |
 | `slotContent` | `React.ReactNode` | — | App-provided option list — typically a stack of `MenuItem` rows, each composited with others of the same `type` |
+| `isOptionList` | `boolean` | `true` | Adds `role="listbox"` + arrow-key/roving-tabindex navigation across any `[role="option"]` descendants of `slotContent`. Set `false` when wrapping non-option content — e.g. `DatePicker`'s calendar grid, which also composes via `Menu` for its floating-panel chrome |
 | `id` | `string` | — | |
+
+### Keyboard navigation (added — audit-flagged HIGH finding)
+
+`Menu` previously rendered `slotContent` with no listbox semantics and no
+keyboard support at all — a real WAI-ARIA listbox gap for what's functionally
+a selectable option list in every real consumer (`Select`, `SelectTransfer`,
+`SelectWalletAccount`, `TimePicker`). Fixed: when `isOptionList` (default),
+`slotContent` renders inside a `role="listbox"` container that implements
+real roving-tabindex — `ArrowDown`/`ArrowUp` move focus between
+`[role="option"]` descendants (wrapping at either end), `Home`/`End` jump to
+first/last, and exactly one option carries `tabIndex={0}` at a time (the
+selected option initially, if any, else the first). Implemented via direct
+DOM querying/attribute writes (not `React.cloneElement`) because real
+consumers structure `slotContent` inconsistently — some pass an array of
+`MenuItem` elements directly, others wrap them in their own layout `<div>` —
+and the DOM-level approach works regardless of that nesting.
 
 ### Nested components (reused, not reimplemented)
 
@@ -2235,6 +2316,7 @@ deferred).
 
 | Element | Token |
 |---|---|
+| Card width | `var(--menu-width, 426px)` — Figma demo width; callers override via the `--menu-width` custom property (same convention as `Field`'s 240px default), e.g. `DatePicker`'s calendar wraps `Menu` at a narrower `240px` |
 | Card background | `--mapped-surface-elevation-default` (dark-flips) |
 | Card radius | `--brand-scale-200` (8px) |
 | Card padding | `--brand-scale-300` (12px) top/bottom, 0 sides |
@@ -2799,3 +2881,463 @@ inverse-tertiary `Button` rather than `Link`s.
 
 Foreground tokens, appearance backgrounds, auto icons, a11y (`role`/`aria-live`,
 dismiss button), and the dark-mode icon caveat are all identical to `Toast`.
+
+---
+
+## Navigation
+
+**Figma frame:** `80:184` (Components) — `Bottom navigation / mobile / section` (`80:3356`), `Side navigation / desktop` (`84:2568`)
+**Parts reference frame:** `80:2879` — `nav/button/mobile`, `Navbar/mobile`, `Navbar/home indicator`,
+`navigation/sidebar/tab`, `nav/<section header>`, profile row. These are not standalone Monarch
+components (per source instruction) — built as internal markup inside `Navigation/`, not as
+separate `src/components/` entries.
+
+Two components: `BottomNavigation` (mobile tab bar) and `SideNavigation` (desktop sidebar).
+
+### Nested components
+
+| Instance | Role |
+|---|---|
+| `Icon` | All nav item icons (home/transfer/finance/more/settings/help/search), 24px (`l`) or 20px (`m`, search); `chevron_left`/`chevron_right` (`s`, 16px) on the expand/collapse trigger |
+| `Logo` | Brand mark in `SideNavigation`, new `xs` size added to support this compact use |
+| `Field` | Search box in `SideNavigation` (`isCompact` collapses to icon-only), stretched to `width: 100%` via a scoped override (Field's own default is a fixed 240px demo width) |
+| `Divider` | Horizontal rule above the profile row in `SideNavigation` |
+| `Avatar` | Profile photo in `SideNavigation` (`size="l"`) |
+
+### Expand/collapse trigger — deliberate addition beyond source
+
+Figma's `Sidebar` component has no toggle affordance — `isCompact` is purely a
+parent-controlled variant. Per explicit direction, a trigger button was added:
+a 32px circular `IconButton`-style control (`side-nav__toggle`), half-overlapping
+the panel's right border (`right: calc(--brand-scale-800 / -2)`) so it stays
+reachable in both expanded and compact states, showing `chevron_left` (collapse)
+/ `chevron_right` (expand). Controlled via a new `onToggleCompact?: () => void`
+prop — `isCompact` itself stays parent-controlled (same pattern as `Tabs`'
+`selectedId`/`onChange`). Hover/pressed/focus states were designed for it
+(`--mapped-surface-subtle-hover/-pressed`, standard focus ring) since it's a
+new control, not an inferred state on an existing one.
+
+### BottomNavigation props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `items` | `BottomNavItem[]` | `{ id, icon, label, isSelected? }` |
+| `onSelect` | `(id: string) => void` | |
+| `className` | `string` | |
+
+### BottomNavigation — variant → token mapping
+
+| Element / state | Token |
+|---|---|
+| Bar background | `--mapped-surface-page` |
+| Bar shadow | `--shadow-medium` (Figma `Dropshadow_medium`) |
+| Bar radius | `--brand-scale-800` (32px) |
+| Item tap target | `--brand-scale-1300` (64px) — Figma specifies 62px, off the ramp (56/64); rounded to nearest |
+| Item icon/label, default | `--mapped-icon-subtle-default` / `--mapped-text-subtle-default`, `.type-body-caption` |
+| Item icon/label, selected | `--mapped-icon-primary-default` / `--mapped-text-primary-default`, `.type-body-caption-semibold` |
+| Focus ring | `--mapped-border-primary-default` outline, `--brand-scale-50` width/offset (Tab.css pattern) |
+| Home indicator | `--mapped-border-subtlest-default`, radius `--brand-scale-1800` (full pill); 134×5px kept literal (fixed decorative bar) |
+| Overlay behind the pill | None — Figma's page-color gradient fade is omitted for this showcase; the wrapper has no background, page bg shows through |
+
+### SideNavigation props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `isCompact` | `boolean` | Default `false` |
+| `items` | `SideNavItem[]` | `{ id, icon, label, isSelected?, sectionTitle? }` — top nav group |
+| `utilityItems` | `SideNavItem[]` | Bottom nav group (Settings, Help Center) |
+| `profileName` / `profileEmail` / `profileAvatarSrc` | `string` | Profile row; row omitted entirely if `profileName` unset |
+| `searchValue` / `onSearchChange` | `string` / `(value: string) => void` | Passed through to `Field` |
+| `onSelect` | `(id: string) => void` | |
+| `onToggleCompact` | `() => void` | Renders the expand/collapse trigger when provided; omitted → no trigger rendered. Not in the Figma source — see below |
+| `className` | `string` | |
+
+### SideNavigation — variant → token mapping
+
+| Element / state | Token |
+|---|---|
+| Container | `--mapped-surface-page`, `--shadow-subtle` (Figma `Dropshadow_subtle`), padding `--brand-scale-800`/`--brand-scale-400`; width 255px / compact 76px kept literal (fixed container dimension, same precedent as `Toast`'s 624px) |
+| Wordmark "Monarch" | `.type-body-lg-medium` (Poppins, standing in for Figma's Satoshi), color `--mapped-icon-primary-default` (matches source, an icon token on text — preserved faithfully) |
+| Tab icon/label, default | `--mapped-icon-subtlest-subtlest` / `--mapped-text-subtlest-subtlest`, `.type-body-m` |
+| Tab icon/label, selected | `--mapped-icon-primary-default` / `--mapped-text-primary-default` |
+| Focus ring | Same pattern as `BottomNavigation` |
+| `sectionTitle` header | Border-top `--mapped-border-subtlest-default`, `.type-body-caption-semibold`; bottom padding literal `6px` (Figma `space.075`, off-ramp 4/8 — needs a Figma Variables fix). Not exercised in the source instance; available for future use |
+| Profile greeting / email | `.type-header-h6` / `.type-body-caption`, `--mapped-text-default-default` / `--mapped-text-subtle-default` |
+
+### Known Figma inconsistencies
+
+- **62px bottom-nav tap target**: off the `--brand-scale` ramp (56/64). Rounded to `--brand-scale-1300` (64px).
+- **`space.075` (6px) section-header padding**: no matching token; kept as a literal with a FAIL-LOUD comment in `SideNavigation.css`.
+- **Selected-state icon asset swap**: Figma's codegen exports a distinct SVG asset URL per selected/default icon state (e.g. bottom-nav Home). Treated as a per-instance baked fill-color export rather than a true shape change — implemented as one `Icon`, recolored via `--mapped-icon-*`, consistent with every other selected-state component in this system.
+- **Redundant `label1` variant axis**: Figma's `navigation/sidebar/tab` component exposes `isCompact` and `label1` as separate variant properties, but only two combinations exist in the source (`Compact=False,Label=False` and `Compact=True,Label=True`) — the two always move together. Collapsed to a single `isCompact` prop.
+- **Divider rendered as an image in Figma**: the horizontal rule above the profile row is exported as a raster/vector image asset rather than a stroke. Implemented with the existing `Divider` component instead.
+- **Fixed demo-frame dimensions**: Figma's `Sidebar` frame is 900px tall and the bottom-nav section is 375px wide — both are mockup-viewport artifacts. Built to fill the parent (`height`/`width: 100%`) instead.
+- **Logo mark aspect ratio**: the brand mark's native SVG is 24×14 (wide, not square), but `Logo` sizes by height. The `xs` tier is `14px` (off-ramp — 12/16 — but derived directly from the SVG's fixed 24:14 ratio to reproduce Figma's 24px-wide mark, not a guess).
+- **Gradient overlay omitted**: Figma's `navbar/mobile/section` wraps the pill in a page-color-to-transparent gradient fade (`from foundations/white` in source). By explicit direction this is left out of `BottomNavigation` for now — no background on `.bottom-nav`, just the pill and home indicator.
+- **`Field`'s fixed demo width**: `Field` defaults to `width: 240px` for standalone use. Overridden to `100%` inside the sidebar via a scoped selector (`.side-nav__brand .field:not(.field--compact)`), the same pattern already used in `RangeSlider.css`, so the search box sits flush with the panel edges as Figma shows.
+
+---
+
+## Header
+
+**Figma frame:** `128:17` (Components) — `Header/bg` (`219:2813`), `Header/default` (`178:6142`)
+**Parts reference frame:** `128:3341` — confirms `Background` (the swappable image) and `Message` (the light/dark greeting text block) as the two parts making up `Header/bg`. Not standalone Monarch components — built as internal markup inside `Header/`.
+
+Two components: `HeaderBg` (mobile screen header, background-image slot) and `HeaderDefault`
+(header used across function-flow screens).
+
+### Nested components
+
+| Instance | Role |
+|---|---|
+| `Icon` | `notifications` (24px, `l`) in `HeaderBg`; `search` (20px, `m`) in `HeaderBg`'s search field; `arrow_back` (20px, `m`) in `HeaderDefault` |
+| `StatusBar` | Rendered at the top of every `HeaderBg` variant (`mode="Dark"`) — see its own entry below |
+| `Avatar` | Profile photo in `HeaderBg` (`size="m"`, 32px) |
+| `Field` | Search box in `HeaderBg` (`default` variant only), stretched to `width: 100%` via the same scoped override used in `Navigation`/`SideNavigation` |
+| `Badge` | Notification dot (`type="dot" appearance="important"`) in `HeaderBg` |
+| `ProgressStepper` | Reused directly for `HeaderDefault`'s stepper variants — Figma's 7-segment bar is a byte-for-byte match to the already-built component (same sizing, gap, and active/inactive tokens); not reimplemented |
+| `Link` | "Action" trailing link in `HeaderDefault` (`appearance="default" size="M"`) |
+
+### HeaderBg props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `variant` | `'default' \| 'noSearchBar' \| 'compact'` | Default `'default'` |
+| `background` | `ReactNode` | **Required** — swappable slot (image, gradient, video, etc.), per source direction |
+| `greeting` | `string` | Shown in `default`/`noSearchBar` |
+| `title` | `string` | Shown in `compact` |
+| `avatarSrc` / `avatarName` | `string` | Passed through to `Avatar` |
+| `statusBarTime` | `string` | Default `'09:30'` — passed through to `StatusBar` |
+| `searchValue` / `onSearchChange` | `string` / `(value: string) => void` | `default` variant only |
+| `hasNotification` | `boolean` | Default `true` — shows the badge dot |
+| `onNotificationsClick` | `() => void` | |
+| `className` | `string` | |
+
+### HeaderBg — variant → token mapping
+
+| Element | Token |
+|---|---|
+| Status bar | Reused `StatusBar` (`mode="Dark"`) — own padding (`--brand-scale-200`/`--brand-scale-400`), not double-padded by `HeaderBg` |
+| Background | `ReactNode` slot, `object-fit: cover`, absolutely positioned behind content |
+| Compact scrim | `linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0))` at 0.8 opacity — a fixed-black legibility scrim over an arbitrary photo, not a design token |
+| Greeting / title / notify icon | `--alias-foundations-white` — deliberately static (see inconsistency note below), `.type-header-h6` (greeting) / `.type-body-m-semibold` (compact title) |
+| Notification badge | Reused `Badge` |
+| Search field | Reused `Field` |
+| Content row padding | `0 var(--brand-scale-400)` per row (greeting/title row, search row) — each row owns its own horizontal inset, matching Figma's per-row model (only `StatusBar` has its own vertical padding) |
+| Content bottom padding | `--brand-scale-250` (10px) on `.header-bg__content` — see inconsistency note below |
+| Focus ring | `--mapped-border-primary-default` outline, `--brand-scale-50` (Tab.css pattern) |
+
+### HeaderDefault props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `title` / `subtitle` | `string` | |
+| `hasSubtitle` | `boolean` | Default `true` |
+| `isProgressStepper` | `boolean` | Default `false`. Figma never combines this with `actionLabel` |
+| `currentStep` / `totalSteps` | `number` | Passed through to `ProgressStepper` |
+| `actionLabel` | `string` | Renders the trailing `Link` when set |
+| `onAction` | `() => void` | |
+| `onBack` | `() => void` | |
+| `className` | `string` | |
+
+### HeaderDefault — variant → token mapping
+
+| Element / state | Token |
+|---|---|
+| Back icon | `--mapped-icon-default-default` |
+| Title | `--mapped-text-default-default` (Accent02 gap — see below), `.type-body-m-semibold` |
+| Subtitle, no stepper | `--mapped-text-subtlest-subtlest`, `.type-body-caption` (regular) |
+| Subtitle, with stepper | Same color, `.type-body-caption-semibold` — Figma genuinely weights this case differently from the no-stepper subtitle; preserved faithfully |
+| Stepper | Reused `ProgressStepper` |
+| Action | Reused `Link` |
+| Focus ring | Same pattern as `HeaderBg` |
+
+### Known Figma inconsistencies
+
+- **`--alias-foundations-white` on `HeaderBg` content**: this is the one deliberate non-`--mapped-*` color in the component. The header's foreground sits on an arbitrary user-supplied photo, not an app surface — `--mapped-*-on-color` tokens flip white↔black with the *app's own* theme (confirmed via `--mapped-text-on-color-heading` and `--mapped-icon-primary-on-color`, both of which invert in dark mode), which would make the text/icon vanish against a photo in dark mode. The static primitive is correct here, same reasoning as `Badge`'s `dark` appearance.
+- **`Accent02` (`#2d3436`) token-source gap**: `HeaderDefault`'s title color is a raw, unnamed Figma variable with no equivalent anywhere in brand/alias/mapped (nearest is `--mapped-text-default-default` at `#363c43` — a different, if very close, color). Mapped to `--mapped-text-default-default` per approval.
+- **`Link` weight mismatch**: Figma's "Action" link renders SemiBold; the built `Link` component's caption class is Regular-only (no weight variant exposed). Used `Link` as-is rather than extending it for one caller.
+- **Badge dot radius**: Figma's notification dot in this component uses an 8px corner radius (`border-radius/md`) on a 12px box, not a true circle. Kept the existing `Badge` component's circular dot (`border-radius: 50%`) rather than deviate from its already-established, documented shape.
+- **Bottom padding not in the raw codegen**: Figma's `Header/bg` frame has a fixed total height (173px `default`, 112px `noSearchBar`/`compact`) that's taller than its content's natural hug height, leaving real breathing room below the last row — but that margin isn't expressed as an explicit padding class anywhere in the component's own generated code (no `pb-*` on the outer container). Confirmed by back-solving frame height minus `StatusBar` + row heights across all 3 variants, which resolves cleanly to 10px in two of three (the third, `default`, is consistent within rounding of the search field's own box-model). Added as explicit `padding-bottom: --brand-scale-250` on `.header-bg__content`.
+
+---
+
+## StatusBar
+
+**Figma node:** `125:294`
+
+A standalone, reusable fake-OS-chrome status bar (time + signal/wifi/battery icons). Composed into
+`HeaderBg` (always `mode="Dark"`, since that header always sits on an image), and usable standalone
+wherever a plain-surface header needs one (`mode="Light"`).
+
+### Props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `mode` | `'Light' \| 'Dark'` | Default `'Light'`. Fixed per-mode OS-chrome styling — **not** tied to the app's own light/dark theme (see below) |
+| `time` | `string` | Default `'9:41'` |
+| `className` | `string` | |
+
+### Variant → token mapping
+
+| Element | Token |
+|---|---|
+| Padding | `--brand-scale-200` / `--brand-scale-400` (8px/16px) |
+| Icon gap | `--brand-scale-100` (4px) — Figma specifies 5px, off the ramp (4/8); rounded to the nearer step per approval |
+| `mode="Light"` color | `--alias-neutral-800` (static) |
+| `mode="Dark"` color | `--alias-foundations-white` (static) |
+| Icons | `signal_cellular_alt`, `wifi` (both newly added to `Icon`'s registry, from the same `@material-design-icons/svg/round` package as every other icon), `icon_battery_horizontal` (existing custom icon — already correctly horizontal; Figma's own asset needed a 90°-rotate hack because its source SVG was portrait-oriented, ours doesn't) |
+
+### Known Figma inconsistencies
+
+- **Both modes use static, non-flipping colors** (`--alias-*`, not `--mapped-*`). This mirrors a real OS status-bar API (e.g. iOS's light-content/dark-content style) — the mode is chosen per the surface behind it, not per the app's semantic theme. Flagged per the alias/mapped dark-flip rule, but this is a deliberate exception: unlike an interactive-state color, there is no "theme" for fake OS chrome to track.
+- **5px icon gap**: off the `--brand-scale` ramp (4/8px). Rounded to `--brand-scale-100` (4px) per approval.
+
+---
+
+## Item
+
+**Figma frame:** `136:2764` (Parts) — `Item/list` (`153:1841`), `item/summary` (`237:665`), `list/chart legend` (`242:363` and `261:413`)
+
+Three components covering list rows that appear across the UI in different contexts — `ListItem`,
+`SummaryItem`, `ChartLegendItem`. `ChartLegendItem` merges what Figma documents as two separate
+instances ("Chart legend item" and "Recent contributions item") of the **same underlying component**
+(identical Figma layer name and description: "Use for donut chart legend, drop down function
+available") into one component with a `variant` prop, rather than building it twice.
+
+### Nested components
+
+| Instance | Role |
+|---|---|
+| `Icon` | `receipt_long` (new), `icon_triangle_up` (new `xs`=12px size), `icon_chevron_expand_more`, `question_mark` (new) — all reused, none reimplemented |
+| `IconObject` | Leading badge in `SummaryItem` (`color="slate" size="large"`) and `ChartLegendItem` (`color="gray" size="xl"`) |
+
+`ListItem`'s leading visual (company logo / `Avatar` photo / crypto mark, depending on `type`) is a
+`ReactNode` slot — Figma's specific demo assets (`logo/aeon`, `logo/bitcoin`, a named avatar photo)
+are placeholder content per instance, not fixed requirements.
+
+### ListItem — 3 variants via `type`
+
+| Prop | Type | Notes |
+|---|---|---|
+| `type` | `'default' \| 'profile' \| 'crypto'` | Default `'default'` |
+| `leading` | `ReactNode` | Slot — logo/Avatar/crypto mark |
+| `title` | `string` | Required |
+| `titleInfo` | `string` | Subtitle text |
+| `hasTitleInfo` | `boolean` | `profile` only — toggles the subtitle line |
+| `amount` | `string` | `default`/`crypto` only |
+| `amountInfo` | `string` | `default`: caption under amount. `crypto`: trend caption |
+| `hasReceiptIcon` | `boolean` | `default` only |
+| `hasChevron` | `boolean` | `profile` only |
+| `miniChart` | `ReactNode` | `crypto` only — sparkline slot |
+| `onClick` | `() => void` | Renders as `<button>` when set, else a plain `<div>` |
+| `className` | `string` | |
+
+### ListItem — variant → token mapping
+
+| Element | Token |
+|---|---|
+| Leading | 40px circle, `overflow: hidden` (slot content) |
+| Title | `--mapped-text-default-default`, `.type-body-m-semibold` (all types) |
+| Subtitle | `--mapped-text-subtle-default`, `.type-body-caption` (default/crypto) or `.type-body-sm` (profile) |
+| Amount | `--mapped-text-default-default`, `.type-body-m-semibold` |
+| Amount info | `--mapped-text-subtle-default`, `.type-body-caption` |
+| Receipt icon | `--mapped-icon-default-default` |
+| Trend triangle | `--mapped-icon-success-default` (green) |
+| Chevron (profile) | `--mapped-icon-subtle-default` |
+| Focus ring | `--mapped-border-primary-default` outline, `--brand-scale-50` (Tab.css pattern) |
+
+### SummaryItem
+
+| Prop | Type | Notes |
+|---|---|---|
+| `icon` | `ReactNode` | Default `<Icon name="question_mark" size="m" />` |
+| `amount` | `string` | Required |
+| `type` | `string` | Required — label under the amount |
+| `className` | `string` | |
+
+| Element | Token |
+|---|---|
+| Icon badge | Reused `IconObject` (`color="slate" size="large"`) |
+| Amount | `--mapped-text-default-default` (Accent02 gap — see below), `.type-body-m-semibold` |
+| Type label | `--mapped-text-subtle-default`, `.type-body-caption` |
+
+### ChartLegendItem — both Figma flavors via `variant`
+
+| Prop | Type | Notes |
+|---|---|---|
+| `variant` | `'legend' \| 'contribution'` | Default `'legend'` |
+| `icon` | `ReactNode` | Default `<Icon name="question_mark" size="m" />` |
+| `hasIcon` | `boolean` | `contribution` only — `legend` always shows the icon |
+| `title` | `string` | Required |
+| `subtitle` | `string` | |
+| `hasSubtitle` | `boolean` | Default `true` |
+| `amount` | `string` | Required |
+| `hasChevron` | `boolean` | `legend` only |
+| `onClick` | `() => void` | Renders as `<button>` when set |
+| `className` | `string` | |
+
+| Element / variant | Token |
+|---|---|
+| Icon badge | Reused `IconObject` (`color="gray" size="xl"`) |
+| Title, `legend` | `--mapped-text-default-default`, `.type-body-m-semibold` |
+| Title, `contribution` | `--mapped-text-subtle-default`, `.type-body-m-medium` |
+| Subtitle | `--mapped-text-subtle-default`, `.type-body-sm` |
+| Amount, `legend` | `--mapped-text-default-default`, `.type-body-m-semibold` |
+| Amount, `contribution` | `--mapped-text-default-default`, `.type-body-m-medium` |
+| Chevron (`legend` only) | `--mapped-icon-subtle-default` |
+| Focus ring | Same pattern as `ListItem` |
+
+### Known Figma inconsistencies
+
+- **Same component, two documented instances**: `list/chart legend` (`242:363`, `261:413`) is one Figma component with identical name/description, shown twice with different property combinations. Modeled as one `ChartLegendItem` with a `variant` prop rather than two separate components.
+- **`Accent02` (`#2d3436`) token-source gap** (`SummaryItem` amount): same raw, unmapped Figma variable already flagged on `HeaderDefault`. Mapped to `--mapped-text-default-default` per the same approval, not re-asked.
+- **Crypto sparkline positioning**: Figma absolutely-positions the mini chart at `left: calc(50%+6px)`, tied to the item's fixed 300px width. Since `ListItem` is fluid-width, `miniChart` is a normal in-flow flex slot between the text and amount instead — same visual result, doesn't break at other widths.
+- **Crypto leading-mark radius**: Figma specifies `rounded-[32px]` (not full round) on a 40px box — visually indistinguishable from a true circle since 32px > half the box size. Unified to `--brand-scale-1800` (full round) for consistency with the `default`/`profile` leading marks, same token, cleaner intent.
+- **New icons added**: `receipt_long`, `question_mark` — same mechanical addition (already available in `@material-design-icons/svg/round`) as `wifi`/`signal_cellular_alt` earlier. `Icon` also gained an `xs` (12px) size, mapping to `ElementWrapper`'s existing `xs` token — needed for the crypto trend triangle, which Figma specifies at 12px (below the previous smallest `s`=16px).
+
+---
+
+## Card
+
+**Figma frame:** `146:1244` (Components) — `card/Smart insights` (`147:1300`), `card/Action` (`159:1244`), `card/Balance` (`222:219`), `card/data display` (`224:340`), `card/monthly budget` (`237:736`, 2 states), `card/goals` (`253:184`), `card/features and education` (`324:336`, 5 variants)
+**Parts reference frame:** `235:845` — confirms the `Img` background slot (`img/goal01`/`img/goal02`) used by `CardGoals` is swappable, not fixed content.
+**Reference:** `146:1275` ("Ready-made examples") — showed `CardSmartInsights`' title color, icon, and link label all vary per instance (cyan/black/red across the 3 examples shown), which is why `titleColor` is an open prop rather than a fixed token.
+
+Seven card components. Three of them compose already-built components directly rather than
+reimplementing their markup: `CardMonthlyBudget` uses `ProgressRing` (the Figma source for
+`ProgressRing`'s own build cites the exact same node, `235:5710`) and `SummaryItem` (×2); `CardGoals`
+uses `ProgressBar`; `CardBalance` uses `IconObject`.
+
+### CardSmartInsights
+
+| Prop | Type | Notes |
+|---|---|---|
+| `icon` | `ReactNode` | Leading icon slot |
+| `title` | `string` | Required |
+| `titleColor` | `string` | CSS color override — varies per instance in Figma's own examples (default `--mapped-text-default-default`) |
+| `description` | `string` | Required |
+| `linkLabel` | `string` | Default `'View'` |
+| `onLinkClick` | `() => void` | |
+| `className` | `string` | |
+
+| Element | Token |
+|---|---|
+| Container | `--mapped-surface-elevation-default`, `--shadow-subtlest`, radius `--brand-scale-200` |
+| Padding | `--brand-scale-200` (8px) — Figma specifies 10px, off-ramp (8/12), rounded per approval |
+| Title | `.type-body-m-semibold`, color = `titleColor` prop or `--mapped-text-default-default` |
+| Description | `--mapped-text-subtle-default`, `.type-body-caption` |
+| Link | `--mapped-text-subtle-default`, `.type-body-sm`, `chevron_right` icon |
+
+### CardAction
+
+| Prop | Type | Notes |
+|---|---|---|
+| `icon` | `ReactNode` | Required — inside the leading badge |
+| `title` / `description` | `string` | Required |
+| `onClick` | `() => void` | Renders as `<button>` when set |
+| `className` | `string` | |
+
+| Element | Token |
+|---|---|
+| Container | Border `--mapped-border-subtlest-default`, radius `--brand-scale-200`, padding `--brand-scale-400` (16px, on-ramp) |
+| Icon badge | `--mapped-icon-primary-default` bg, `--mapped-text-primary-on-color` icon — built inline (doesn't match any `IconObject` color option; Figma models it as bespoke markup, not a component instance) |
+| Title | `--mapped-text-default-default`, `.type-body-m-semibold` |
+| Description | `--mapped-text-subtle-default`, `.type-body-caption` |
+
+### CardBalance
+
+| Prop | Type | Notes |
+|---|---|---|
+| `icon` | `ReactNode` | Inside the reused `IconObject` |
+| `type` / `name` / `amount` | `string` | Required |
+| `className` | `string` | |
+
+| Element | Token |
+|---|---|
+| Container | `--mapped-surface-elevation-default`, `--shadow-subtlest`, width 161px (min 128 / max 172) |
+| Padding | `--brand-scale-200` (8px) — same 10px→8px rounding as `CardSmartInsights` |
+| Icon | Reused `IconObject` (`color="slate" size="large"`) |
+| Type label | `--mapped-text-subtle-default`, `.type-body-caption` |
+| Name | `--mapped-text-primary-default` (blue), `.type-body-caption-semibold` |
+| Amount | `--mapped-text-default-default`, `.type-body-m-semibold` |
+
+### CardDataDisplay
+
+| Prop | Type | Notes |
+|---|---|---|
+| `info` | `string` | Required |
+| `content` / `content2` | `string` | `content2` optional — second value line |
+| `className` | `string` | |
+
+| Element | Token |
+|---|---|
+| Container | `--mapped-surface-subtlest-default`, padding `--brand-scale-400` (16px, on-ramp), width 164px (min 128 / max 300) |
+| Info | `--mapped-text-subtle-default`, `.type-body-caption-semibold` (Figma's outer wrapper applies semibold to every line, including the label — preserved faithfully rather than "correcting" it to regular) |
+| Content | `--mapped-text-default-default`, `.type-body-m-semibold` |
+
+### CardMonthlyBudget
+
+| Prop | Type | Notes |
+|---|---|---|
+| `state` | `'default' \| 'addNew'` | Default `'default'` |
+| `period` | `string` | `default` only |
+| `onDetailsClick` | `() => void` | |
+| `percentage` | `number` | Drives `ProgressRing` |
+| `amountLeft` / `totalAmount` / `availableAmount` / `spentAmount` | `string` | `default` only |
+| `onAddNew` | `() => void` | `addNew` only |
+| `className` | `string` | |
+
+| Element | Token |
+|---|---|
+| Container (`default`) | `--mapped-surface-elevation-default`, `--shadow-subtlest`; padding `16px` top/sides, `20px` bottom (real Figma value, asymmetric — not a typo); width `343px` (fixed Figma component width, same precedent as `Toast`'s `624px`) |
+| Container (`addNew`) | Dashed border `--mapped-border-subtle-default`, no fill |
+| Ring | Reused `ProgressRing` (`size="medium"`) — zero new markup |
+| Available / Spent rows | Reused `SummaryItem` ×2 — icons `icon_wallet` / `icon_track_spending` (substituted for Figma's `icon_Spend`, which doesn't exist in our registry or any obvious Material equivalent) |
+| Header title / dot / period | `--mapped-text-default-default` / `--mapped-text-subtle-default` / `--mapped-text-subtle-default` |
+| Details link | `--mapped-text-primary-default` |
+| Add-new icon button | `--mapped-icon-subtle-default` bg, `--mapped-text-primary-on-color` icon |
+
+### CardGoals
+
+| Prop | Type | Notes |
+|---|---|---|
+| `image` | `ReactNode` | Full-bleed banner slot — swappable per the Parts frame |
+| `title` | `string` | Required |
+| `percentage` / `current` / `total` | `number` / `string` | Drives the reused `ProgressBar` |
+| `onClick` | `() => void` | Renders as `<button>` when set |
+| `className` | `string` | |
+
+| Element | Token |
+|---|---|
+| Container | `--mapped-surface-elevation-default`, `--shadow-subtlest`, radius `--brand-scale-200`, `overflow: hidden` (clips the image to the card's rounded corners); width `200px` (fixed Figma component width) |
+| Image banner | Height `68px` (fixed Figma value, spans the container's full width) |
+| Title | `--mapped-text-default-default`, `.type-body-m-medium` |
+| Progress | Reused `ProgressBar` |
+
+### CardFeaturesAndEducation
+
+| Prop | Type | Notes |
+|---|---|---|
+| `variant` | `'blue' \| 'orange' \| 'green' \| 'purple' \| 'outline'` | Default `'blue'` — collapses Figma's `appearance`×`color` properties, which only ever appear in these 5 valid combos |
+| `icon` | `ReactNode` | Required |
+| `title` | `string` | Required |
+| `onClick` | `() => void` | Renders as `<button>` when set |
+| `className` | `string` | |
+
+| Element / variant | Token |
+|---|---|
+| Container (all variants) | Width `109px` (min `90px`, max `109px` — fixed Figma component sizing) |
+| `blue`/`orange`/`green`/`purple` bg | `--brand-blue-400` / `--brand-orange-400` / `--brand-green-400` / `--brand-purple-400` — same palette `IconObject` already uses |
+| Fill icon/title | `--mapped-text-primary-on-color` / `--mapped-text-on-color-heading` |
+| `outline` | Border `--mapped-border-default`, explicit `120px` height (taller than fill variants — real Figma value) |
+| Outline icon/title | `--mapped-icon-default-default` / `--mapped-text-default-default` |
+
+### Known Figma inconsistencies
+
+- **`CardSmartInsights.titleColor` is an open prop, not a fixed token**: confirmed via the `146:1275` reference frame, where the same component shows cyan, default(black), and error(red) titles across 3 different instances. No single token captures this — it's a per-instance category color the caller supplies.
+- **10px padding** (`CardSmartInsights`, `CardBalance`): off the `--brand-scale` ramp (8/12). Rounded to `--brand-scale-200` (8px) per approval.
+- **`icon_Spend` substitution**: Figma's `card/monthly budget` "Spent" row uses an icon (`icon_Spend`) not present in our registry and with no obvious Material equivalent. Substituted `icon_track_spending` per approval.
+- **Asymmetric card padding** (`CardMonthlyBudget`, `default` state): `16px` top/sides, `20px` bottom. Confirmed real (not a copy-paste error) from Figma's own generated code.
+- **`card/action`'s icon badge doesn't match any `IconObject` color**: Figma models it as bespoke inline markup (`--mapped-icon-primary-default` bg), not an `IconObject` instance — built inline rather than force-fitting the existing component's swatch palette.
+- **`CardFeaturesAndEducation`'s `outline` variant is 120px tall**, taller than the ~108-120px fill variants (which size to content). Both are real, independently-specified Figma heights.

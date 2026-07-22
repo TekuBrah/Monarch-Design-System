@@ -29,7 +29,7 @@
   flex-shrink: 0;
   background: var(--mapped-icon-subtlest-subtlest);
   border-radius: var(--brand-scale-1800); /* 512px → pill */
-  transition: background 0.15s ease;
+  transition: background 0.12s ease;
 }
 
 /* regular: 32×16px */
@@ -38,9 +38,12 @@
   height: var(--brand-scale-400); /* 16px */
 }
 
-/* large: 46×24px  (46 = 48-2 via scale math) */
+/* large: 46×24px. Figma: 46px, off the brand-scale ramp (1000=40px, 1100=48px)
+   — no calc() curve-fit between unrelated steps (banned pattern, fabricates a
+   relationship that doesn't exist in the source); plain literal until a
+   Figma Variables fix lands. */
 .toggle--large .toggle__track {
-  width: calc(var(--brand-scale-1100) - var(--brand-scale-50)); /* 48-2 = 46px */
+  width: 46px;
   height: var(--brand-scale-600); /* 24px */
 }
 
@@ -52,7 +55,7 @@
   background: var(--mapped-text-primary-on-color);
   border-radius: 50%;
   box-shadow: var(--shadow-subtle);
-  transition: left 0.15s ease;
+  transition: left 0.12s ease;
 }
 
 /* regular dot: 12px */
@@ -100,6 +103,6 @@
 
 /* === Focus ring === */
 .toggle__input:focus-visible + .toggle__track {
-  outline: 2px solid var(--mapped-border-primary-default);
-  outline-offset: 2px;
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default); /* 2px */
+  outline-offset: var(--brand-scale-50); /* 2px */
 }

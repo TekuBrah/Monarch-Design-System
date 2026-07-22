@@ -14,7 +14,7 @@
   box-sizing: border-box;
   width: 400px; /* Figma demo width; caller-controllable */
   height: 160px; /* Figma demo height; caller-controllable */
-  min-height: 56px;
+  min-height: var(--brand-scale-1200); /* 56px */
   padding: var(--brand-scale-200) var(--brand-scale-300); /* 8px 12px */
   border: var(--brand-scale-25) solid var(--mapped-border-subtlest-default); /* 1px */
   border-radius: var(--brand-scale-200); /* 8px = border-radius/md */

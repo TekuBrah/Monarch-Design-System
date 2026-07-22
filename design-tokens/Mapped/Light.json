@@ -1509,6 +1509,38 @@
           "com.figma.hiddenFromPublishing": false
         }
       }
+    },
+    "Alpha": {
+      "default": {
+        "value": "#00000000",
+        "type": "color",
+        "$extensions": {
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.hiddenFromPublishing": false
+        }
+      },
+      "hover": {
+        "value": "{Alpha dark mode.100}",
+        "type": "color",
+        "$extensions": {
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.hiddenFromPublishing": false
+        }
+      },
+      "pressed": {
+        "value": "{Alpha dark mode.200}",
+        "type": "color",
+        "$extensions": {
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.hiddenFromPublishing": false
+        }
+      }
     }
   },
   "border": {

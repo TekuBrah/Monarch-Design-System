@@ -58,6 +58,106 @@
   outline-offset: var(--brand-scale-50) !important;
 }
 
+/* ── Variant token maps ──────────────────────────────────────────── */
+/* Light values below; dark mode is not a separate `appearance` — the same
+   button re-maps its --btn-* vars under [data-theme="dark"] to the on-color
+   / alpha-wash treatment (Figma's "Inverse" appearance = dark mode). */
+
+.btn--primary {
+  --btn-bg:              var(--mapped-surface-primary-default);
+  --btn-bg-hover:        var(--mapped-surface-primary-default-hover);
+  --btn-bg-pressed:      var(--mapped-surface-primary-default-pressed);
+  --btn-bg-disabled:     var(--mapped-surface-disabled-default);
+  --btn-border:          var(--mapped-border-primary-default);
+  --btn-border-hover:    var(--mapped-border-primary-default-hover);
+  --btn-border-pressed:  var(--mapped-border-primary-default-pressed);
+  --btn-border-disabled: var(--mapped-border-disabled-default);
+  --btn-text:            var(--mapped-text-primary-on-color);
+  --btn-text-hover:      var(--mapped-text-primary-on-color-hover);
+  --btn-text-pressed:    var(--mapped-text-primary-on-color-pressed);
+  --btn-text-disabled:   var(--mapped-text-disabled-on-color);
+  --btn-focus-ring:      var(--mapped-border-primary-default);
+}
+
+.btn--secondary {
+  --btn-bg:              transparent;
+  /* Light hover/press fill is a blue tint applied to buttons ONLY — referenced
+     from the brand blue ramp directly (not the shared --mapped-surface-primary-
+     default-subtle-* token, which stays gray so it doesn't tint inputs/etc.).
+     Dark mode overrides these to the alpha wash below. */
+  --btn-bg-hover:        var(--brand-blue-50);
+  --btn-bg-pressed:      var(--brand-blue-100);
+  --btn-bg-disabled:     transparent; /* outlined button — disabled has no fill (Figma) */
+  --btn-border:          var(--mapped-border-primary-default);
+  --btn-border-hover:    var(--mapped-border-primary-default-hover);
+  --btn-border-pressed:  var(--mapped-border-primary-default-pressed);
+  --btn-border-disabled: var(--mapped-border-disabled-default);
+  --btn-text:            var(--mapped-text-primary-default);
+  --btn-text-hover:      var(--mapped-text-primary-default-hover);
+  --btn-text-pressed:    var(--mapped-text-primary-default-pressed);
+  --btn-text-disabled:   var(--mapped-text-disabled-default);
+  --btn-focus-ring:      var(--mapped-border-primary-default);
+}
+
+.btn--tertiary {
+  --btn-bg:              transparent;
+  /* Blue tint applied to buttons only (see .btn--secondary note); dark overrides to alpha wash. */
+  --btn-bg-hover:        var(--brand-blue-50);
+  --btn-bg-pressed:      var(--brand-blue-100);
+  --btn-bg-disabled:     transparent;
+  --btn-border:          transparent;
+  --btn-border-hover:    transparent;
+  --btn-border-pressed:  transparent;
+  --btn-border-disabled: transparent;
+  --btn-text:            var(--mapped-text-primary-default);
+  --btn-text-hover:      var(--mapped-text-primary-default-hover);
+  --btn-text-pressed:    var(--mapped-text-primary-default-pressed);
+  --btn-text-disabled:   var(--mapped-text-disabled-default);
+  --btn-focus-ring:      var(--mapped-border-primary-default);
+}
+
+/* ── Dark mode (= Figma "Inverse" appearance) ────────────────────── */
+/* Primary: white fill + blue label. Fill/border route through the
+   buttons-only interactive-on-color family (white / neutral-100 / neutral-200
+   in dark) to avoid flipping the shared surface-primary-default token. */
+[data-theme="dark"] .btn--primary {
+  --btn-bg:              var(--mapped-surface-interactive-on-color);
+  --btn-bg-hover:        var(--mapped-surface-interactive-on-color-hover);
+  --btn-bg-pressed:      var(--mapped-surface-interactive-on-color-pressed);
+  --btn-border:          var(--mapped-surface-interactive-on-color);
+  --btn-border-hover:    var(--mapped-surface-interactive-on-color-hover);
+  --btn-border-pressed:  var(--mapped-surface-interactive-on-color-pressed);
+  --btn-text:            var(--mapped-text-primary-default);
+  --btn-text-hover:      var(--mapped-text-primary-default-hover);
+  --btn-text-pressed:    var(--mapped-text-primary-default-pressed);
+  --btn-focus-ring:      var(--mapped-surface-interactive-on-color);
+}
+
+/* Secondary: transparent fill, white border → gray, white label.
+   Hover/press fill = alpha wash (light-based in dark). */
+[data-theme="dark"] .btn--secondary {
+  --btn-bg-hover:        var(--mapped-surface-alpha-hover);
+  --btn-bg-pressed:      var(--mapped-surface-alpha-pressed);
+  --btn-border:          var(--mapped-border-interactive-on-color);
+  --btn-border-hover:    var(--mapped-border-interactive-on-color-hover);
+  --btn-border-pressed:  var(--mapped-border-interactive-on-color-pressed);
+  --btn-text:            var(--mapped-text-primary-on-color);
+  --btn-text-hover:      var(--mapped-text-primary-on-color-hover);
+  --btn-text-pressed:    var(--mapped-text-primary-on-color-pressed);
+  --btn-text-disabled:   var(--mapped-text-disabled-on-color);
+  --btn-focus-ring:      var(--mapped-border-interactive-on-color);
+}
+
+/* Tertiary: transparent, no border, white label. Hover/press = alpha wash. */
+[data-theme="dark"] .btn--tertiary {
+  --btn-bg-hover:        var(--mapped-surface-alpha-hover);
+  --btn-bg-pressed:      var(--mapped-surface-alpha-pressed);
+  --btn-text:            var(--mapped-text-primary-on-color);
+  --btn-text-hover:      var(--mapped-text-primary-on-color-hover);
+  --btn-text-pressed:    var(--mapped-text-primary-on-color-pressed);
+  --btn-focus-ring:      var(--mapped-surface-interactive-on-color);
+}
+
 /* ── Size variants ───────────────────────────────────────────────── */
 .btn--s {
   padding: var(--brand-scale-100);
@@ -70,4 +170,3 @@
 .btn--l {
   padding: var(--brand-scale-300) var(--brand-scale-400);
 }
-

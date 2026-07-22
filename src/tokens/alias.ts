@@ -1,5 +1,5 @@
 export const alias = {
-  Primary: {
+  'Primary': {
     50: '--brand-blue-50',
     100: '--brand-blue-100',
     150: '--brand-blue-150',
@@ -13,7 +13,7 @@ export const alias = {
     900: '--brand-blue-900',
     950: '--brand-blue-950',
   },
-  Error: {
+  'Error': {
     100: '--brand-red-100',
     150: '--brand-red-150',
     200: '--brand-red-200',
@@ -26,7 +26,7 @@ export const alias = {
     900: '--brand-red-900',
     950: '--brand-red-950',
   },
-  Success: {
+  'Success': {
     100: '--brand-green-100',
     150: '--brand-green-150',
     200: '--brand-green-200',
@@ -39,7 +39,7 @@ export const alias = {
     900: '--brand-green-900',
     950: '--brand-green-950',
   },
-  Information: {
+  'Information': {
     100: '--brand-teal-100',
     150: '--brand-teal-150',
     200: '--brand-teal-200',
@@ -52,7 +52,7 @@ export const alias = {
     900: '--brand-teal-900',
     950: '--brand-teal-950',
   },
-  Warning: {
+  'Warning': {
     100: '--brand-orange-100',
     150: '--brand-orange-150',
     200: '--brand-orange-200',
@@ -65,7 +65,7 @@ export const alias = {
     900: '--brand-orange-900',
     950: '--brand-orange-950',
   },
-  Surface: {
+  'Surface': {
     50: '--brand-gray-50',
     100: '--brand-gray-100',
     150: '--brand-gray-150',
@@ -79,11 +79,11 @@ export const alias = {
     900: '--brand-gray-900',
     950: '--brand-gray-950',
   },
-  Foundations: {
+  'Foundations': {
     'white': '--brand-white',
     'black': '--brand-black',
   },
-  Interactive: {
+  'Interactive': {
     100: '--brand-purple-100',
     150: '--brand-purple-150',
     200: '--brand-purple-200',
@@ -96,7 +96,7 @@ export const alias = {
     900: '--brand-purple-900',
     950: '--brand-purple-950',
   },
-  Neutral: {
+  'Neutral': {
     50: '--brand-slate-50',
     100: '--brand-slate-100',
     150: '--brand-slate-150',
@@ -109,6 +109,30 @@ export const alias = {
     800: '--brand-slate-800',
     900: '--brand-slate-900',
     950: '--brand-slate-950',
+  },
+  'Alpha light mode': {
+    50: '#f9f9f90d',
+    100: '#f9f9f91a',
+    200: '#f9f9f933',
+    300: '#f9f9f94d',
+    400: '#f9f9f966',
+    500: '#f9f9f980',
+    600: '#f9f9f999',
+    700: '#f9f9f9b3',
+    800: '#f9f9f9cc',
+    900: '#f9f9f9e6',
+  },
+  'Alpha dark mode': {
+    50: '#1313130d',
+    100: '#1313131a',
+    200: '#13131333',
+    300: '#1313134d',
+    400: '#13131366',
+    500: '#13131380',
+    600: '#13131399',
+    700: '#131313b3',
+    800: '#131313cc',
+    900: '#131313e6',
   },
 } as const
 

@@ -1,0 +1,66 @@
+.header-default {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--brand-scale-200);
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--brand-scale-300) var(--brand-scale-400);
+  background: var(--mapped-surface-page);
+}
+
+.header-default__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--mapped-icon-default-default);
+}
+
+.header-default__back:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+  outline-offset: var(--brand-scale-50);
+  border-radius: var(--brand-scale-100);
+}
+
+.header-default__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--brand-scale-100);
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: center;
+}
+
+.header-default__title,
+.header-default__subtitle {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-default__title {
+  /* Figma specifies a raw, unmapped variable ("Accent02" #2d3436) with no
+     equivalent anywhere in brand/alias/mapped — mapped to the nearest real
+     semantic token per approval, not a literal. */
+  color: var(--mapped-text-default-default);
+}
+
+.header-default__subtitle {
+  color: var(--mapped-text-subtlest-subtlest);
+}
+
+.header-default__action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  min-width: var(--brand-scale-500); /* 20px — balances the back icon when empty */
+}

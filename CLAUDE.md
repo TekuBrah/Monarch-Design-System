@@ -73,6 +73,27 @@ src/
 - **Per-layer scripts**: consider consolidating into a single `npm run build:tokens`
   that runs all five in order. Style Dictionary is a longer-term option if the
   pipeline grows complex.
+- **PARTIALLY RESOLVED — `on-color`/`Interactive.on-color` dark-mode bindings.**
+  In `Mapped/Dark.json`, this family was bound to `Foundations.black` (verified
+  in the JSON). These tokens describe content on a *fixed* colored surface that
+  doesn't flip with the app theme, so black bindings were a real semantic error.
+  - **FIXED (2026-07-22, manual JSON edit — user maintains Figma but exports
+    manually):** `surface.Interactive.on-color{,-hover,-pressed}` →
+    `{Foundations.white}` / `{Neutral.100}` / `{Neutral.200}`, and
+    `border.Interactive.on-color{,-hover,-pressed}` → `{Foundations.white}` /
+    `{Surface.100}` / `{Surface.200}`, matching Figma's Inverse-variant dark
+    values. This is the family `Button`/`IconButton` depend on. Those two
+    components were also refactored to collapse the old `inverse` appearance
+    into `[data-theme="dark"]` (no more `appearance` prop) — see
+    `docs/component-tokens.md`'s Button entry. Both now render correctly in dark
+    (white primary, white-bordered secondary, alpha-wash hover). Zero blast
+    radius: the `interactive-on-color` family is consumed only by the buttons.
+  - **STILL OUTSTANDING:** `text.on-color.heading/body`, `icon.*.on-color`, and
+    other `on-color` members remain bound to `Foundations.black` in Dark.json.
+    Not consumed by Button/IconButton, but the narrower workarounds in `Toast`
+    (icons), `Badge` (`dark` appearance), `ProgressRing` (pill), and `HeaderBg`
+    (static color) are still in place for those. A proper Figma Variables fix +
+    re-sync would let those self-correct; until then they stay as-is.
 
 ## Next
 Build the first component (e.g. Button) on top of the token foundation:
@@ -121,7 +142,26 @@ Build the first component (e.g. Button) on top of the token foundation:
   `'press'`. `onChange` callbacks pass the new value, e.g.
   `(checked: boolean) => void` — not a bare `() => void`. React list keys
   are stable IDs, never array indices.
-- React + TypeScript. One component per folder: src/components/<Name>/<Name>.tsx + index.ts.
+- **Styling lives in a companion `.css` file** — never inline `style={{}}`
+  objects for static, token-driven values, even simple ones. This isn't just
+  a style preference: audits work by grepping every component's `.css` for
+  token/hardcode violations, so inline styles are invisible to that process
+  and become a permanent blind spot. (`Avatar`/`Logo` were originally built
+  with inline styles for size-driven values; converted to `.css` + size
+  modifier classes for exactly this reason.) The only legitimate exception is
+  a genuinely per-instance computed value that can't be expressed as a finite
+  set of classes (e.g. a live drag-position offset) — and even then, only the
+  dynamic part should be inline, not the whole style object.
+- React + TypeScript. One component per folder: src/components/<Name>/<Name>.tsx + index.ts —
+  **except** a tightly-coupled family sharing one Figma component set or Parts
+  frame, built and checkpointed together in one session (e.g. `Navigation`'s
+  `BottomNavigation`+`SideNavigation`, `Header`'s `HeaderBg`+`HeaderDefault`,
+  `Item`'s `ListItem`+`SummaryItem`+`ChartLegendItem`, `Card`'s 7 card types).
+  These may share one folder, one file per exported component, one `index.ts`.
+  In `docs/component-tokens.md`, such a family shares one `## <Family>`
+  heading with `### <Component>` subsections underneath, rather than a
+  separate `##` per component — shared context (Figma frame refs, nested-
+  component notes) lives once at the top instead of repeating per component.
 - Build one component at a time. Show output for review before moving on.
 
 ## Accessibility baseline

@@ -2,12 +2,10 @@ import React from 'react'
 import './Button.css'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'tertiary'
-export type ButtonAppearance = 'default' | 'inverse'
 export type ButtonSize = 's' | 'm' | 'l'
 
 export interface ButtonProps {
   variant?: ButtonVariant
-  appearance?: ButtonAppearance
   size?: ButtonSize
   label?: string
   leadingIcon?: React.ReactNode
@@ -18,120 +16,8 @@ export interface ButtonProps {
   previewState?: 'hover' | 'pressed' | 'focus'
 }
 
-type TokenSet = {
-  bg: string; bgHover: string; bgPressed: string; bgDisabled: string
-  border: string; borderHover: string; borderPressed: string; borderDisabled: string
-  text: string; textHover: string; textPressed: string; textDisabled: string
-  focusRing: string
-}
-
-const v = (t: string) => `var(${t})`
-
-const TOKENS: Record<ButtonVariant, Record<ButtonAppearance, TokenSet>> = {
-  primary: {
-    default: {
-      bg:             v('--mapped-surface-primary-default'),
-      bgHover:        v('--mapped-surface-primary-default-hover'),
-      bgPressed:      v('--mapped-surface-primary-default-pressed'),
-      bgDisabled:     v('--mapped-surface-disabled-default'),
-      border:         v('--mapped-border-primary-default'),
-      borderHover:    v('--mapped-border-primary-default-hover'),
-      borderPressed:  v('--mapped-border-primary-default-pressed'),
-      borderDisabled: v('--mapped-border-disabled-default'),
-      text:           v('--mapped-text-primary-on-color'),
-      textHover:      v('--mapped-text-primary-on-color-hover'),
-      textPressed:    v('--mapped-text-primary-on-color-pressed'),
-      textDisabled:   v('--mapped-text-disabled-on-color'),
-      focusRing:      v('--mapped-border-primary-default'),
-    },
-    inverse: {
-      // Primary Inverse: white button, branded-blue text (inverse of blue-bg/white-text)
-      bg:             v('--mapped-surface-interactive-on-color'),
-      bgHover:        v('--mapped-surface-interactive-on-color-hover'),
-      bgPressed:      v('--mapped-surface-interactive-on-color-pressed'),
-      bgDisabled:     v('--mapped-surface-disabled-default'),
-      border:         v('--mapped-surface-interactive-on-color'),
-      borderHover:    v('--mapped-surface-interactive-on-color-hover'),
-      borderPressed:  v('--mapped-surface-interactive-on-color-pressed'),
-      borderDisabled: v('--mapped-border-disabled-default'),
-      text:           v('--mapped-text-primary-default'),
-      textHover:      v('--mapped-text-primary-default-hover'),
-      textPressed:    v('--mapped-text-primary-default-pressed'),
-      textDisabled:   v('--mapped-text-disabled-default'),
-      focusRing:      v('--mapped-border-interactive-on-color'),
-    },
-  },
-  secondary: {
-    default: {
-      bg:             v('--mapped-surface-primary-default-subtle'),
-      bgHover:        v('--mapped-surface-primary-default-subtle-hover'),
-      bgPressed:      v('--mapped-surface-primary-default-subtle-pressed'),
-      bgDisabled:     v('--mapped-surface-disabled-default'),
-      border:         v('--mapped-border-primary-default'),
-      borderHover:    v('--mapped-border-primary-default-hover'),
-      borderPressed:  v('--mapped-border-primary-default-pressed'),
-      borderDisabled: v('--mapped-border-disabled-default'),
-      text:           v('--mapped-text-primary-default'),
-      textHover:      v('--mapped-text-primary-default-hover'),
-      textPressed:    v('--mapped-text-primary-default-pressed'),
-      textDisabled:   v('--mapped-text-disabled-default'),
-      focusRing:      v('--mapped-border-primary-default'),
-    },
-    inverse: {
-      // Secondary Inverse: outlined button on colored bg — label on-color (white)
-      bg:             'transparent',
-      bgHover:        v('--mapped-surface-interactive-on-color-hover'),
-      bgPressed:      v('--mapped-surface-interactive-on-color-pressed'),
-      bgDisabled:     v('--mapped-surface-disabled-default'),
-      border:         v('--mapped-border-interactive-on-color'),
-      borderHover:    v('--mapped-border-interactive-on-color-hover'),
-      borderPressed:  v('--mapped-border-interactive-on-color-pressed'),
-      borderDisabled: v('--mapped-border-disabled-default'),
-      text:           v('--mapped-text-on-color-label'),
-      textHover:      v('--mapped-text-on-color-label-hover'),
-      textPressed:    v('--mapped-text-on-color-label-pressed'),
-      textDisabled:   v('--mapped-text-disabled-on-color'),
-      focusRing:      v('--mapped-border-interactive-on-color'),
-    },
-  },
-  tertiary: {
-    default: {
-      bg:             'transparent',
-      bgHover:        v('--mapped-surface-subtle-hover'),
-      bgPressed:      v('--mapped-surface-subtle-pressed'),
-      bgDisabled:     'transparent',
-      border:         'transparent',
-      borderHover:    'transparent',
-      borderPressed:  'transparent',
-      borderDisabled: 'transparent',
-      text:           v('--mapped-text-default-default'),
-      textHover:      v('--mapped-text-default-hover'),
-      textPressed:    v('--mapped-text-default-pressed'),
-      textDisabled:   v('--mapped-text-disabled-default'),
-      focusRing:      v('--mapped-border-primary-default'),
-    },
-    inverse: {
-      // Tertiary Inverse: ghost button on colored bg — label on-color (white)
-      bg:             'transparent',
-      bgHover:        v('--mapped-surface-interactive-on-color-hover'),
-      bgPressed:      v('--mapped-surface-interactive-on-color-pressed'),
-      bgDisabled:     'transparent',
-      border:         'transparent',
-      borderHover:    'transparent',
-      borderPressed:  'transparent',
-      borderDisabled: 'transparent',
-      text:           v('--mapped-text-on-color-label'),
-      textHover:      v('--mapped-text-on-color-label-hover'),
-      textPressed:    v('--mapped-text-on-color-label-pressed'),
-      textDisabled:   v('--mapped-text-disabled-on-color'),
-      focusRing:      v('--mapped-border-interactive-on-color'),
-    },
-  },
-}
-
 export function Button({
   variant = 'primary',
-  appearance = 'default',
   size = 'm',
   label = 'Button',
   leadingIcon,
@@ -140,30 +26,13 @@ export function Button({
   onClick,
   previewState,
 }: ButtonProps) {
-  const t = TOKENS[variant][appearance]
-
   return (
     <button
       type="button"
       disabled={disabled}
       onClick={onClick}
       data-preview={previewState}
-      className={`btn btn--${size}`}
-      style={{
-        '--btn-bg':              t.bg,
-        '--btn-bg-hover':        t.bgHover,
-        '--btn-bg-pressed':      t.bgPressed,
-        '--btn-bg-disabled':     t.bgDisabled,
-        '--btn-border':          t.border,
-        '--btn-border-hover':    t.borderHover,
-        '--btn-border-pressed':  t.borderPressed,
-        '--btn-border-disabled': t.borderDisabled,
-        '--btn-text':            t.text,
-        '--btn-text-hover':      t.textHover,
-        '--btn-text-pressed':    t.textPressed,
-        '--btn-text-disabled':   t.textDisabled,
-        '--btn-focus-ring':      t.focusRing,
-      } as React.CSSProperties}
+      className={`btn btn--${variant} btn--${size}`}
     >
       {leadingIcon}
       <span className="type-body-sm-semibold">{label}</span>

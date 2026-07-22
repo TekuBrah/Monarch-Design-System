@@ -1,0 +1,25 @@
+.card-data-display {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--brand-scale-200); /* 8px */
+  /* Figma component dimensions — fixed width with a min/max range, not
+     scale/radius tokens (same precedent as Toast's fixed width). */
+  width: 164px;
+  min-width: 128px;
+  max-width: 300px;
+  box-sizing: border-box;
+  padding: var(--brand-scale-400); /* 16px */
+  background: var(--mapped-surface-subtlest-default);
+  border-radius: var(--brand-scale-200); /* 8px */
+}
+
+.card-data-display__info {
+  color: var(--mapped-text-subtle-default);
+  white-space: nowrap;
+}
+
+.card-data-display__content {
+  color: var(--mapped-text-default-default);
+  white-space: nowrap;
+}

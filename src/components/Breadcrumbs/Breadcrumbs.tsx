@@ -8,6 +8,8 @@ export interface BreadcrumbItem {
   href?: string
   /** Leading icon — typically only used on the first item (e.g. home) */
   icon?: React.ReactNode
+  /** Stable identity for React keys; falls back to label+index if omitted. */
+  id?: string
 }
 
 export interface BreadcrumbsProps {
@@ -22,7 +24,7 @@ export function Breadcrumbs({ items, ariaLabel = 'Breadcrumb' }: BreadcrumbsProp
         const isLast = i === items.length - 1
         return (
           <Link
-            key={i}
+            key={item.id ?? `${item.label}-${i}`}
             label={item.label}
             href={item.href}
             appearance="subtle"

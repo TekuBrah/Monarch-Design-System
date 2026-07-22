@@ -1,0 +1,73 @@
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--brand-scale-300); /* 12px */
+  width: 100%;
+  box-sizing: border-box;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: default;
+  font-family: inherit;
+  text-align: left;
+}
+
+button.chart-legend-item {
+  cursor: pointer;
+}
+
+button.chart-legend-item:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+  outline-offset: var(--brand-scale-50);
+  border-radius: var(--brand-scale-100);
+}
+
+.chart-legend-item__leading-group {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-300); /* 12px */
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.chart-legend-item__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--brand-scale-100); /* 4px */
+  min-width: 0;
+}
+
+.chart-legend-item__title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chart-legend-item--legend .chart-legend-item__title {
+  color: var(--mapped-text-default-default);
+}
+
+.chart-legend-item--contribution .chart-legend-item__title {
+  color: var(--mapped-text-subtle-default);
+}
+
+.chart-legend-item__subtitle {
+  color: var(--mapped-text-subtle-default);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chart-legend-item__trailing {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-100); /* 4px */
+  flex-shrink: 0;
+  color: var(--mapped-icon-subtle-default);
+}
+
+.chart-legend-item__amount {
+  color: var(--mapped-text-default-default);
+  white-space: nowrap;
+}
