@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import './styles/globals.css'
+import './AppShell.css'
 import { brand, alias, mapped, spacing, gradients, shadows } from './tokens'
 import { Badge } from './components/Badge'
 import type { BadgeAppearance } from './components/Badge'
@@ -87,7 +88,7 @@ const CARD_BODY: React.CSSProperties = { padding: '0.4rem 0.5rem', background: '
 const SWATCH_GRID: React.CSSProperties = { display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }
 const GROUP_LABEL: React.CSSProperties = {
   fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase',
-  letterSpacing: '0.08em', color: '#888', marginBottom: '0.5rem',
+  letterSpacing: '0.08em', color: 'var(--mapped-text-subtle-default, #888)', marginBottom: '0.5rem',
 }
 const SECTION: React.CSSProperties = { marginBottom: '2rem' }
 
@@ -253,11 +254,11 @@ function SpacingSection() {
     <div style={{ maxWidth: '480px' }}>
       {Object.entries(spacing).map(([step, varName]) => (
         <div key={step} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-          <span style={{ fontSize: '0.63rem', fontFamily: 'monospace', color: '#888', minWidth: '10rem', textAlign: 'right' }}>
+          <span style={{ fontSize: '0.63rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtle-default, #888)', minWidth: '10rem', textAlign: 'right' }}>
             {varName}
           </span>
           {step === 'none'
-            ? <span style={{ fontSize: '0.63rem', color: '#bbb', fontFamily: 'monospace' }}>0</span>
+            ? <span style={{ fontSize: '0.63rem', color: 'var(--mapped-text-subtlest-subtlest, #bbb)', fontFamily: 'monospace' }}>0</span>
             : <div style={{ height: '1.5rem', width: `var(${varName})`, background: 'var(--alias-primary-500, #046eff)', borderRadius: '2px', minWidth: '2px' }} />
           }
         </div>
@@ -334,7 +335,7 @@ function ResponsiveTypeSection() {
             lineHeight: `var(--responsive-font-copy-${s}-line-height)`,
             marginBottom: '1rem',
           }}>
-            <span style={{ fontWeight: 700, color: '#aaa', fontSize: '0.6rem', fontFamily: 'monospace', marginRight: '0.5rem' }}>
+            <span style={{ fontWeight: 700, color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontSize: '0.6rem', fontFamily: 'monospace', marginRight: '0.5rem' }}>
               {s}
             </span>
             The quick brown fox jumps over the lazy dog.
@@ -357,20 +358,20 @@ function GradientCard({ name, token }: { name: string; token: { var: string; val
   }
   return (
     <div style={{ marginBottom: '1.5rem' }}>
-      <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#333', marginBottom: '0.2rem' }}>{name}</div>
-      <div style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: '#888', marginBottom: '0.1rem' }}>{token.var}</div>
+      <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #333)', marginBottom: '0.2rem' }}>{name}</div>
+      <div style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtle-default, #888)', marginBottom: '0.1rem' }}>{token.var}</div>
       {token.description && (
-        <div style={{ fontSize: '0.6rem', color: '#aaa', marginBottom: '0.5rem' }}>{token.description}</div>
+        <div style={{ fontSize: '0.6rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.5rem' }}>{token.description}</div>
       )}
       <div style={{ display: 'flex', gap: '0.75rem' }}>
         <div>
-          <div style={{ fontSize: '0.55rem', color: '#aaa', marginBottom: '0.2rem' }}>light bg</div>
+          <div style={{ fontSize: '0.55rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.2rem' }}>light bg</div>
           <div style={{ ...TILE, background: '#e5e7eb' }}>
             <div style={OVERLAY} />
           </div>
         </div>
         <div>
-          <div style={{ fontSize: '0.55rem', color: '#aaa', marginBottom: '0.2rem' }}>dark bg</div>
+          <div style={{ fontSize: '0.55rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.2rem' }}>dark bg</div>
           <div style={{ ...TILE, background: '#1b1e21' }}>
             <div style={OVERLAY} />
           </div>
@@ -392,20 +393,20 @@ function ShadowCard({ name, token }: { name: string; token: ShadowToken }) {
   }
   return (
     <div style={{ marginBottom: '1.75rem' }}>
-      <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#333', marginBottom: '0.2rem' }}>{name}</div>
-      <div style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: '#888', marginBottom: '0.1rem' }}>{token.var}</div>
+      <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #333)', marginBottom: '0.2rem' }}>{name}</div>
+      <div style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtle-default, #888)', marginBottom: '0.1rem' }}>{token.var}</div>
       {token.description && (
-        <div style={{ fontSize: '0.6rem', color: '#aaa', marginBottom: '0.6rem' }}>{token.description}</div>
+        <div style={{ fontSize: '0.6rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.6rem' }}>{token.description}</div>
       )}
       <div style={{ display: 'flex', gap: '1.5rem' }}>
         <div>
-          <div style={{ fontSize: '0.55rem', color: '#aaa', marginBottom: '0.4rem' }}>light surface</div>
+          <div style={{ fontSize: '0.55rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.4rem' }}>light surface</div>
           <div style={{ ...TILE, background: '#ffffff', boxShadow: `var(${token.var})` }}>
             {token.var}
           </div>
         </div>
         <div>
-          <div style={{ fontSize: '0.55rem', color: '#aaa', marginBottom: '0.4rem' }}>dark surface</div>
+          <div style={{ fontSize: '0.55rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.4rem' }}>dark surface</div>
           <div style={{ ...TILE, background: '#1b1e21', color: '#555', boxShadow: `var(${token.var})` }}>
             {token.var}
           </div>
@@ -1009,7 +1010,72 @@ function RangeSliderDemo() {
 
 // ── App ───────────────────────────────────────────────────────────────────────
 
-const HR: React.CSSProperties = { border: 'none', borderTop: '2px solid rgba(128,128,128,0.2)', margin: '2rem 0 2.5rem' }
+const HR: React.CSSProperties = { border: 'none', borderTop: '2px solid rgba(128,128,128,0.2)', margin: '2rem auto 2.5rem', maxWidth: '1200px' }
+
+// Sidebar nav metadata — slugs must match the `id="section-<slug>"` on each
+// section wrapper below. Grouping/order approved 2026-07-24 (showcase redesign).
+type SidebarSection = { slug: string; label: string }
+const SIDEBAR_CATEGORIES: { name: string; items: SidebarSection[] }[] = [
+  { name: 'Actions', items: [
+    { slug: 'button', label: 'Button' },
+    { slug: 'icon-button', label: 'Icon Button' },
+    { slug: 'button-group', label: 'Button Group' },
+    { slug: 'link', label: 'Link' },
+  ] },
+  { name: 'Selection & Input', items: [
+    { slug: 'checkbox', label: 'Checkbox' },
+    { slug: 'radio', label: 'Radio' },
+    { slug: 'toggle', label: 'Toggle' },
+    { slug: 'field', label: 'Field' },
+    { slug: 'select', label: 'Select' },
+    { slug: 'select-transfer', label: 'Select / Transfer' },
+    { slug: 'select-wallet-account', label: 'Select / Wallet Account' },
+    { slug: 'date-picker', label: 'Date Picker' },
+    { slug: 'time-picker', label: 'Time Picker' },
+    { slug: 'text-area', label: 'Text Area' },
+    { slug: 'filter-chips', label: 'Filter Chips' },
+  ] },
+  { name: 'Sliders', items: [
+    { slug: 'slider', label: 'Slider' },
+    { slug: 'range-slider', label: 'Range Slider' },
+  ] },
+  { name: 'Status & Feedback', items: [
+    { slug: 'badge', label: 'Badge' },
+    { slug: 'chips', label: 'Chips' },
+    { slug: 'tag', label: 'Tag' },
+    { slug: 'loader', label: 'Loader' },
+    { slug: 'toast', label: 'Toast' },
+    { slug: 'progress-bar', label: 'Progress Bar' },
+    { slug: 'progress-ring', label: 'Progress Ring' },
+    { slug: 'progress-stepper', label: 'Progress Stepper' },
+  ] },
+  { name: 'Navigation', items: [
+    { slug: 'tabs', label: 'Tabs & Tab' },
+    { slug: 'breadcrumbs', label: 'Breadcrumbs' },
+    { slug: 'menu', label: 'Menu' },
+    { slug: 'menu-item', label: 'Menu Item' },
+    { slug: 'navigation', label: 'Navigation' },
+  ] },
+  { name: 'Data Display', items: [
+    { slug: 'avatar', label: 'Avatar' },
+    { slug: 'card', label: 'Card' },
+    { slug: 'label', label: 'Label' },
+    { slug: 'icon-object', label: 'Icon Object' },
+    { slug: 'divider', label: 'Divider' },
+    { slug: 'item', label: 'Item' },
+    { slug: 'element-wrapper', label: 'Element Wrapper' },
+  ] },
+  { name: 'Overlays', items: [
+    { slug: 'modal', label: 'Modal' },
+    { slug: 'blanket', label: 'Blanket' },
+  ] },
+  { name: 'Media & Branding', items: [
+    { slug: 'icon', label: 'Icon' },
+    { slug: 'logo', label: 'Logo' },
+    { slug: 'header', label: 'Header' },
+    { slug: 'status-bar', label: 'Status Bar' },
+  ] },
+]
 
 export default function App() {
   const { dark, toggle } = useTheme()
@@ -1020,59 +1086,140 @@ export default function App() {
   const [sideNavSelected, setSideNavSelected] = useState('home')
   const [sideNavCompact, setSideNavCompact] = useState(false)
   const [lastItemClicked, setLastItemClicked] = useState<string | null>(null)
+  const [toggleOn, setToggleOn] = useState(true)
+  const [toggleLargeOn, setToggleLargeOn] = useState(false)
+  const [cbChecked, setCbChecked] = useState(false)
+  const [cbNotify, setCbNotify] = useState(true)
+  const [radioValue, setRadioValue] = useState('standard')
+  const [tagSelected, setTagSelected] = useState<Record<string, boolean>>({ groceries: true })
+  const [sidebarSearch, setSidebarSearch] = useState('')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [activeSlug, setActiveSlug] = useState<string | null>(null)
 
-  const tabBtn = (id: typeof tab, label: string) => (
-    <button
-      onClick={() => setTab(id)}
-      style={{
-        padding: '0.35rem 0.9rem', borderRadius: '999px', border: 'none',
-        cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600,
-        background: tab === id ? (dark ? '#fff' : '#111') : 'transparent',
-        color: tab === id ? (dark ? '#111' : '#fff') : (dark ? '#888' : '#555'),
-        transition: 'all 0.15s',
-      }}
-    >
-      {label}
-    </button>
-  )
+  const scrollToSection = (slug: string) => {
+    document.getElementById(`section-${slug}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    setSidebarOpen(false)
+  }
+
+  // Scrollspy — highlight whichever section is currently under the "trigger
+  // zone" (just below the sticky top nav). rootMargin shrinks the observed
+  // viewport to a thin band near the top, so the active item follows scroll
+  // position instead of just reacting to click.
+  useEffect(() => {
+    if (tab !== 'components') return
+    const sections = SIDEBAR_CATEGORIES.flatMap(c => c.items)
+    const els = sections
+      .map(s => ({ slug: s.slug, el: document.getElementById(`section-${s.slug}`) }))
+      .filter((s): s is { slug: string; el: HTMLElement } => !!s.el)
+    if (els.length === 0) return
+
+    const observer = new IntersectionObserver(
+      entries => {
+        const visible = entries.filter(e => e.isIntersecting)
+        if (visible.length === 0) return
+        // topmost currently-intersecting section wins
+        const top = visible.reduce((a, b) => (a.boundingClientRect.top < b.boundingClientRect.top ? a : b))
+        const match = els.find(s => s.el === top.target)
+        if (match) setActiveSlug(match.slug)
+      },
+      { rootMargin: '-49px 0px -70% 0px', threshold: 0 }
+    )
+    els.forEach(s => observer.observe(s.el))
+    return () => observer.disconnect()
+  }, [tab])
+
+  const query = sidebarSearch.trim().toLowerCase()
+  const filteredCategories = SIDEBAR_CATEGORIES
+    .map(cat => ({ ...cat, items: cat.items.filter(i => i.label.toLowerCase().includes(query)) }))
+    .filter(cat => cat.items.length > 0)
+  const hasResults = filteredCategories.length > 0
 
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', minHeight: '100vh' }}>
 
-      {/* Sticky bar — tabs left, toggle right */}
-      <div style={{
-        position: 'sticky', top: 0, zIndex: 100,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0.5rem 2rem',
-        background: dark ? '#111' : '#f0f0f0',
-        borderBottom: '1px solid rgba(128,128,128,0.2)',
-      }}>
-        <div style={{ display: 'flex', gap: '0.25rem' }}>
-          {tabBtn('foundations', 'Foundations')}
-          {tabBtn('components', 'Components')}
+      {/* Top nav — logo left, Foundations/Components tabs center, theme toggle right */}
+      <div className="app-topnav" style={{ position: 'sticky', top: 0, zIndex: 100, background: 'var(--mapped-surface-page, #fff)' }}>
+        <div className="app-topnav__left">
+          <Logo name="monarch_logo_style_thick" size="s" />
         </div>
-        <button
-          onClick={toggle}
-          style={{
-            padding: '0.35rem 0.9rem', borderRadius: '999px', border: 'none',
-            cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600,
-            background: dark ? '#fff' : '#111', color: dark ? '#111' : '#fff',
-            transition: 'all 0.15s',
-          }}
-        >
-          {dark ? '☀ Light mode' : '☾ Dark mode'}
-        </button>
+
+        {tab === 'components' && (
+          <div className="app-topnav__menu-btn">
+            <IconButton
+              variant="tertiary"
+              size="m"
+              icon={<Icon name="menu" size="m" />}
+              ariaLabel={sidebarOpen ? 'Close component list' : 'Open component list'}
+              onClick={() => setSidebarOpen(o => !o)}
+            />
+          </div>
+        )}
+
+        <div className="app-topnav__center">
+          <Tabs
+            tabs={[
+              { id: 'foundations', label: 'Foundations' },
+              { id: 'components', label: 'Components' },
+            ]}
+            selectedId={tab}
+            onChange={id => setTab(id as typeof tab)}
+            ariaLabel="Documentation section"
+          />
+        </div>
+
+        <div className="app-topnav__right">
+          <span style={{ fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)' }}>{dark ? 'Dark' : 'Light'}</span>
+          <Toggle size="regular" isChecked={dark} onChange={toggle} ariaLabel="Toggle dark mode" />
+        </div>
       </div>
+
+      <div className="app-body">
+        {tab === 'components' && (
+          <aside className={`app-sidebar${sidebarOpen ? ' app-sidebar--open' : ''}`}>
+            <div className="app-sidebar__search">
+              <Field
+                placeholder="Search components…"
+                value={sidebarSearch}
+                onChange={setSidebarSearch}
+                leadingIcon={<Icon name="search" size="s" />}
+                ariaLabel="Search components"
+              />
+            </div>
+            <div className="app-sidebar__scroll">
+              <nav aria-label="Component sections">
+                {hasResults ? filteredCategories.map(cat => (
+                  <div key={cat.name} className="app-sidebar__group">
+                    <div className="app-sidebar__group-label">{cat.name}</div>
+                    {cat.items.map(item => (
+                      <button
+                        key={item.slug}
+                        type="button"
+                        className={`app-sidebar__item${activeSlug === item.slug ? ' app-sidebar__item--active' : ''}`}
+                        onClick={() => scrollToSection(item.slug)}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                )) : (
+                  <div className="app-sidebar__empty">No components found</div>
+                )}
+              </nav>
+            </div>
+          </aside>
+        )}
+
+        <main className="app-main">
 
       {/* ── FOUNDATIONS TAB ── */}
       {tab === 'foundations' && (
         <>
           {/* Brand primitives */}
-          <div style={{ padding: '2rem', background: '#f9f9f9' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page-secondary, #f9f9f9)' , color: 'var(--mapped-text-default-default, #111)' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
               Brand Primitives
             </h1>
-            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               Brand/Value.json — {brandScales.length} color scales + foundations
             </p>
             {brandScales.map(([name, steps]) => (
@@ -1084,11 +1231,11 @@ export default function App() {
           <hr style={HR} />
 
           {/* Alias / Semantic */}
-          <div style={{ padding: '0 2rem 2rem', background: '#f9f9f9' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+          <div style={{ padding: '0 2rem 2rem', background: 'var(--mapped-surface-page-secondary, #f9f9f9)' , color: 'var(--mapped-text-default-default, #111)' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
               Alias / Semantic
             </h1>
-            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               Alias/Alias.json — {aliasGroups.length} groups — alias → brand token
             </p>
             {aliasGroups.map(([name, steps]) => (
@@ -1115,11 +1262,11 @@ export default function App() {
           <hr style={HR} />
 
           {/* Spacing scale */}
-          <div style={{ padding: '2rem', background: '#f9f9f9' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page-secondary, #f9f9f9)' , color: 'var(--mapped-text-default-default, #111)' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
               Spacing scale
             </h1>
-            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               --spacing-* → var(--brand-scale-*) in px &nbsp;·&nbsp; {Object.keys(spacing).length} tokens
             </p>
             <SpacingSection />
@@ -1128,11 +1275,11 @@ export default function App() {
           <hr style={HR} />
 
           {/* Responsive type */}
-          <div style={{ padding: '2rem', background: '#f9f9f9' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page-secondary, #f9f9f9)' , color: 'var(--mapped-text-default-default, #111)' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
               Responsive type
             </h1>
-            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               Base values: mobile. Resize past 768px to see headings change (H1–H4 + body-sm grow).
             </p>
             <ResponsiveTypeSection />
@@ -1141,11 +1288,11 @@ export default function App() {
           <hr style={HR} />
 
           {/* Typography */}
-          <div style={{ padding: '2rem', background: '#fff' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)' , color: 'var(--mapped-text-default-default, #111)' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
               Typography
             </h1>
-            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               22 composite styles — Poppins 400 / 500 / 600 — headings responsive at 768 px
             </p>
             <TypographySection />
@@ -1154,11 +1301,11 @@ export default function App() {
           <hr style={HR} />
 
           {/* Gradients */}
-          <div style={{ padding: '2rem', background: '#f9f9f9' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page-secondary, #f9f9f9)' , color: 'var(--mapped-text-default-default, #111)' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
               Gradients
             </h1>
-            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               Brand/Value.json → Gradient — {Object.keys(gradients).length} tokens — shown over light + dark backgrounds
             </p>
             {(Object.entries(gradients) as [string, { var: string; value: string; description: string }][]).map(
@@ -1169,11 +1316,11 @@ export default function App() {
           <hr style={HR} />
 
           {/* Shadows / Effects */}
-          <div style={{ padding: '2rem', background: '#f0f2f4' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', marginBottom: '0.2rem' }}>
+          <div style={{ padding: '2rem', background: 'var(--mapped-surface-subtle-default, #f0f2f4)' , color: 'var(--mapped-text-default-default, #111)' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
               Shadows / Effects
             </h1>
-            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               Brand/Value.json → Dropshadow_* — {Object.keys(shadows).length} tokens — shown over light + dark surfaces
             </p>
             {(Object.entries(shadows) as [string, ShadowToken][]).map(
@@ -1186,163 +1333,8 @@ export default function App() {
       {/* ── COMPONENTS TAB ── */}
       {tab === 'components' && (
         <>
-          {/* Badge */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Badge
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              7 appearances × 2 types — tokens only — responds to light/dark toggle
-            </p>
-            <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: 'left', padding: '0.4rem 1rem 0.4rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>appearance</th>
-                  <th style={{ textAlign: 'left', padding: '0.4rem 1rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>type=default</th>
-                  <th style={{ textAlign: 'left', padding: '0.4rem 1rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>type=dot</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(['default', 'primary', 'inverted', 'important', 'added', 'removed', 'dark'] as BadgeAppearance[]).map(ap => (
-                  <tr key={ap}>
-                    <td style={{ padding: '0.5rem 1rem 0.5rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>{ap}</td>
-                    <td style={{ padding: '0.5rem 1rem' }}><Badge appearance={ap} type="default" label="25" /></td>
-                    <td style={{ padding: '0.5rem 1rem', verticalAlign: 'middle' }}><Badge appearance={ap} type="dot" /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <hr style={HR} />
-
-          {/* Element Wrapper */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Element Wrapper
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              7 sizes — square centering shell for Icon / Avatar / Logo — tokens only
-            </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-              {(['xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl'] as ElementWrapperSize[]).map(size => (
-                <div key={size} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                  <ElementWrapper size={size}>
-                    {/* placeholder SVG — fills the wrapper */}
-                    <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                      <rect x="1" y="1" width="22" height="22" rx="3" stroke="var(--mapped-border-primary-default, #046eff)" strokeWidth="1.5" strokeDasharray="4 2" />
-                      <circle cx="12" cy="12" r="3" fill="var(--mapped-surface-primary-default, #046eff)" />
-                    </svg>
-                  </ElementWrapper>
-                  <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>{size}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <hr style={HR} />
-
-          {/* Icon Button */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Icon Button
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              3 variants × 3 sizes — same token matrix as Button — light + dark — states forced for preview
-            </p>
-
-            {/* Default appearance — table per size */}
-            {(['s', 'm', 'l'] as IconButtonSize[]).map(size => (
-              <div key={size} style={{ marginBottom: '2rem' }}>
-                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-                  Size {size.toUpperCase()} — light mode
-                </p>
-                <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
-                  <thead>
-                    <tr>
-                      <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>state</th>
-                      {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(v => (
-                        <th key={v} style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{v}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {([
-                      [undefined,   'default'],
-                      ['hover',     'hover'],
-                      ['pressed',   'pressed'],
-                      ['focus',     'focus'],
-                    ] as const).map(([ps, label]) => (
-                      <tr key={label}>
-                        <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>{label}</td>
-                        {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
-                          <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
-                            <IconButton variant={variant} size={size} icon={<Icon name="add" size="l" />} ariaLabel={variant} previewState={ps} />
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                    <tr>
-                      <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>disabled</td>
-                      {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
-                        <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
-                          <IconButton variant={variant} size={size} icon={<Icon name="add" size="l" />} ariaLabel={variant} disabled />
-                        </td>
-                      ))}
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            ))}
-
-            {/* Dark mode — the SAME component with no appearance prop; [data-theme="dark"]
-                re-maps the --btn-* tokens to the on-color / alpha-wash treatment. */}
-            <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-              Dark mode — same component under [data-theme="dark"]
-            </p>
-            <div data-theme="dark" style={{ display: 'inline-block', background: 'var(--mapped-surface-page)', padding: '1.5rem', borderRadius: 'var(--brand-scale-200)' }}>
-              <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
-                <thead>
-                  <tr>
-                    <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>state</th>
-                    {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(v => (
-                      <th key={v} style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{v}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {([
-                    [undefined,   'default'],
-                    ['hover',     'hover'],
-                    ['pressed',   'pressed'],
-                    ['focus',     'focus'],
-                  ] as const).map(([ps, label]) => (
-                    <tr key={label}>
-                      <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>{label}</td>
-                      {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
-                        <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
-                          <IconButton variant={variant} size="m" icon={<Icon name="add" size="l" />} ariaLabel={variant} previewState={ps} />
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                  <tr>
-                    <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>disabled</td>
-                    {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
-                      <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
-                        <IconButton variant={variant} size="m" icon={<Icon name="add" size="l" />} ariaLabel={variant} disabled />
-                      </td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <hr style={HR} />
-
           {/* Button */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <div id="section-button" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
             <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
               Button
             </h1>
@@ -1402,593 +1394,77 @@ export default function App() {
               </div>
             ))}
 
-            {/* Dark mode — same component, no appearance prop; [data-theme="dark"]
-                re-maps the --btn-* tokens (Figma's "Inverse" = dark mode). */}
-            <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-              Dark mode — same component under [data-theme="dark"]
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {tab === 'components' && (
+        <>
+          {/* Icon Button */}
+          <div id="section-icon-button" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Icon Button
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              3 variants × 3 sizes — same token matrix as Button — light + dark — states forced for preview
             </p>
-            <div data-theme="dark" style={{ display: 'inline-block', background: 'var(--mapped-surface-page)', padding: '1.5rem', borderRadius: 'var(--brand-scale-200)' }}>
-              <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
-                <thead>
-                  <tr>
-                    <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>state</th>
-                    {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(v => (
-                      <th key={v} style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{v}</th>
+
+            {/* Default appearance — table per size */}
+            {(['s', 'm', 'l'] as IconButtonSize[]).map(size => (
+              <div key={size} style={{ marginBottom: '2rem' }}>
+                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                  Size {size.toUpperCase()} — light mode
+                </p>
+                <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
+                  <thead>
+                    <tr>
+                      <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>state</th>
+                      {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(v => (
+                        <th key={v} style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{v}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {([
+                      [undefined,   'default'],
+                      ['hover',     'hover'],
+                      ['pressed',   'pressed'],
+                      ['focus',     'focus'],
+                    ] as const).map(([ps, label]) => (
+                      <tr key={label}>
+                        <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>{label}</td>
+                        {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
+                          <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
+                            <IconButton variant={variant} size={size} icon={<Icon name="add" size="l" />} ariaLabel={variant} previewState={ps} />
+                          </td>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {([
-                    [undefined,   'default'],
-                    ['hover',     'hover'],
-                    ['pressed',   'pressed'],
-                    ['focus',     'focus'],
-                  ] as const).map(([ps, label]) => (
-                    <tr key={label}>
-                      <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>{label}</td>
+                    <tr>
+                      <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>disabled</td>
                       {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
                         <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
-                          <Button variant={variant} size="m" label="Button"
-                            leadingIcon={<Icon name="add" size="m" />}
-                            trailingIcon={<Icon name="chevron_right" size="m" />}
-                            previewState={ps}
-                          />
+                          <IconButton variant={variant} size={size} icon={<Icon name="add" size="l" />} ariaLabel={variant} disabled />
                         </td>
                       ))}
                     </tr>
-                  ))}
-                  <tr>
-                    <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>disabled</td>
-                    {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
-                      <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
-                        <Button variant={variant} size="m" label="Button"
-                          leadingIcon={<Icon name="add" size="m" />}
-                          trailingIcon={<Icon name="chevron_right" size="m" />}
-                          disabled
-                        />
-                      </td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <hr style={HR} />
-
-          {/* Icon */}
-          {(() => {
-            const GROUPS: { label: string; names: IconName[] }[] = [
-              { label: 'Actions', names: ['add', 'remove', 'edit', 'delete', 'close', 'content_copy', 'refresh', 'share', 'download', 'upload', 'open_in_new', 'attach_file'] },
-              { label: 'Navigation', names: ['home', 'menu', 'arrow_back', 'arrow_forward', 'arrow_upward', 'arrow_downward', 'chevron_left', 'chevron_right', 'expand_more', 'expand_less', 'unfold_more'] },
-              { label: 'Search & Controls', names: ['search', 'filter_list', 'sort', 'settings', 'tune', 'more_vert', 'more_horiz'] },
-              { label: 'Status & Feedback', names: ['info', 'warning', 'error', 'check_circle', 'check', 'done', 'cancel', 'help_outline', 'visibility', 'visibility_off'] },
-              { label: 'People & Comms', names: ['person', 'account_circle', 'group', 'login', 'logout', 'notifications', 'mail'] },
-              { label: 'App & Content', names: ['dashboard', 'calendar_today', 'schedule', 'link'] },
-              { label: 'Ratings', names: ['star', 'star_border', 'favorite', 'favorite_border'] },
-              { label: 'Form Controls', names: ['radio_button_unchecked', 'radio_button_checked', 'check_box', 'check_box_outline_blank'] },
-            ]
-            const CUSTOM_GROUPS: { label: string; names: IconName[] }[] = [
-              { label: 'Finance & Accounts', names: ['icon_finance', 'icon_bank', 'icon_wallet', 'icon_stocks', 'icon_crypto', 'icon_gold', 'icon_battery_horizontal'] },
-              { label: 'Transactions', names: ['icon_transfer', 'icon_receive', 'icon_buy_and_sell_crypto', 'icon_crypto_transfers'] },
-              { label: 'Categories', names: ['icon_grocery', 'icon_grocery_1', 'icon_food', 'icon_car', 'icon_healthcare', 'icon_healthcare_1', 'icon_shopping', 'icon_bills'] },
-              { label: 'Budgeting & Insights', names: ['icon_budget', 'icon_duration', 'icon_aiinsights', 'icon_aimage', 'icon_track_spending', 'icon_spending_alert', 'icon_scheduled_payments', 'icon_automatic_savings'] },
-              { label: 'UI & Navigation', names: ['icon_home', 'icon_more', 'icon_chevron_expand_less', 'icon_chevron_expand_more', 'icon_triangle_up', 'icon_triangle_down'] },
-              { label: 'Other', names: ['icon_pdf', 'icon_monarchacademy'] },
-            ]
-            const iconCell = (name: IconName) => (
-              <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}>
-                <Icon name={name} size="m" />
-                <span style={{ fontSize: '0.5rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', maxWidth: '4rem', textAlign: 'center', wordBreak: 'break-all' }}>{name}</span>
-              </div>
-            )
-            return (
-              <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-                <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-                  Icon
-                </h1>
-                <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-                  94 icons (59 Material Round + 35 Custom) — sized via --brand-scale-* — inherits currentColor
-                </p>
-
-                {GROUPS.map(({ label, names }) => (
-                  <div key={label} style={{ marginBottom: '1.75rem' }}>
-                    <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-                      {label}
-                    </p>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', alignItems: 'flex-end' }}>
-                      {names.map(iconCell)}
-                    </div>
-                  </div>
-                ))}
-
-                {/* Custom icons */}
-                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--mapped-text-primary-default)', marginBottom: '1rem', marginTop: '0.25rem', borderTop: '1px solid var(--mapped-border-subtlest-default)', paddingTop: '1.5rem' }}>
-                  Custom icons — currentColor normalized
-                </p>
-                {CUSTOM_GROUPS.map(({ label, names }) => (
-                  <div key={label} style={{ marginBottom: '1.75rem' }}>
-                    <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-                      {label}
-                    </p>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', alignItems: 'flex-end' }}>
-                      {names.map(iconCell)}
-                    </div>
-                  </div>
-                ))}
-
-                {/* currentColor test: custom icon inside a primary button */}
-                <div style={{ marginBottom: '1.75rem' }}>
-                  <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-                    currentColor test — custom inside primary button (should be white)
-                  </p>
-                  <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <Button variant="primary" size="m" label="Wallet" leadingIcon={<Icon name="icon_wallet" size="m" />} />
-                    <Button variant="primary" size="m" label="Finance" leadingIcon={<Icon name="icon_finance" size="m" />} />
-                    <Button variant="primary" size="m" label="Transfer" leadingIcon={<Icon name="icon_transfer" size="m" />} />
-                  </div>
-                </div>
-
-                {/* Size comparison */}
-                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem', marginTop: '0.5rem' }}>
-                  Sizes — s 16px · m 20px · l 24px
-                </p>
-                <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-end', marginBottom: '1.75rem' }}>
-                  {(['s', 'm', 'l'] as const).map(sz => (
-                    <div key={sz} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}>
-                      <Icon name="search" size={sz} />
-                      <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>{sz}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Color inheritance */}
-                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-                  Color inheritance
-                </p>
-                <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                    <Icon name="search" size="l" />
-                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>body</span>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                    <span style={{ color: 'var(--mapped-text-primary-default)' }}><Icon name="search" size="l" /></span>
-                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>primary</span>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                    <div style={{ background: 'var(--mapped-surface-primary-default)', padding: 'var(--brand-scale-200)', borderRadius: 'var(--brand-scale-200)', color: 'var(--mapped-text-primary-on-color)', display: 'inline-flex' }}>
-                      <Icon name="search" size="l" />
-                    </div>
-                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>on-color</span>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                    <span style={{ color: 'var(--mapped-text-error-default-default, #c00)' }}><Icon name="error" size="l" /></span>
-                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>error</span>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                    <span style={{ color: 'var(--mapped-text-success-default-default, #1a7a3a)' }}><Icon name="check_circle" size="l" /></span>
-                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>success</span>
-                  </div>
-                </div>
-              </div>
-            )
-          })()}
-
-          <hr style={HR} />
-
-          {/* Avatar */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Avatar
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              3 states (photo / initials / placeholder) × 3 sizes — tokens only
-            </p>
-
-            {(['l', 'm', 's'] as AvatarSize[]).map(size => (
-              <div key={size} style={{ marginBottom: '2rem' }}>
-                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-                  Size {size.toUpperCase()} — {size === 'l' ? '40px' : size === 'm' ? '32px' : '24px'}
-                </p>
-                <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                    <Avatar size={size} src="https://i.pravatar.cc/80?img=47" alt="Sample photo" />
-                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>photo</span>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                    <Avatar size={size} name="Margaret Green" />
-                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>initials (name)</span>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                    <Avatar size={size} initials="MG" />
-                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>initials (explicit)</span>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                    <Avatar size={size} />
-                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>placeholder</span>
-                  </div>
-                </div>
+                  </tbody>
+                </table>
               </div>
             ))}
-          </div>
 
-          <hr style={HR} />
-
-          {/* Logo */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Logo
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              30 logos auto-registered from Assets/logo/ — full color preserved — no token coloring
-            </p>
-
-            {(['brand', 'crypto'] as const).map(category => (
-              <div key={category} style={{ marginBottom: '2.5rem' }}>
-                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '1rem' }}>
-                  {category}
-                </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', alignItems: 'center' }}>
-                  {LOGOS_BY_CATEGORY[category].map(({ name }) => (
-                    <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                      <div style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        padding: '0.5rem', borderRadius: 'var(--brand-scale-200)',
-                        background: 'var(--mapped-surface-subtle-default, #f5f5f5)',
-                        minWidth: '3rem',
-                      }}>
-                        <Logo name={name} size="m" />
-                      </div>
-                      <span style={{ fontSize: '0.55rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', maxWidth: '4.5rem', textAlign: 'center', wordBreak: 'break-all' }}>
-                        {name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <hr style={HR} />
-
-          {/* Blanket */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Blanket
-            </h1>
-            <BlanketDemo />
-          </div>
-
-          <hr style={HR} />
-
-          {/* Divider */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Divider
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              2 weights × 2 orientations — token: --mapped-border-subtle-default
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '400px' }}>
-              <div>
-                <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>horizontal weight=1</span>
-                <div style={{ marginTop: '0.5rem' }}><Divider weight={1} orientation="horizontal" /></div>
-              </div>
-              <div>
-                <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>horizontal weight=2</span>
-                <div style={{ marginTop: '0.5rem' }}><Divider weight={2} orientation="horizontal" /></div>
-              </div>
-              <div style={{ display: 'flex', gap: '2rem', alignItems: 'stretch', height: '48px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
-                  <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>vertical w=1</span>
-                  <Divider weight={1} orientation="vertical" />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
-                  <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>vertical w=2</span>
-                  <Divider weight={2} orientation="vertical" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <hr style={HR} />
-
-          {/* Chips */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Chips
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              6 appearances × 2 bold states — lozenge / status badge — always shows done icon
-            </p>
-            <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>appearance</th>
-                  <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>subtle (isBold=false)</th>
-                  <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>bold (isBold=true)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(['default', 'inprogress', 'moved', 'new', 'removed', 'success'] as ChipsAppearance[]).map(ap => (
-                  <tr key={ap}>
-                    <td style={{ padding: '0.5rem 1.5rem 0.5rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>{ap}</td>
-                    <td style={{ padding: '0.5rem 1.5rem 0.5rem 0' }}><Chips appearance={ap} isBold={false} label={ap} /></td>
-                    <td style={{ padding: '0.5rem 1.5rem 0.5rem 0' }}><Chips appearance={ap} isBold={true} label={ap} /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <hr style={HR} />
-
-          {/* Label */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Label
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              2 sizes × optional required asterisk × optional leading/trailing icons
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              {(['M', 'S'] as const).map(size => (
-                <div key={size} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>size={size}</span>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'center' }}>
-                    <Label label="Label" size={size} />
-                    <Label label="Required" size={size} isRequired />
-                    <Label label="With icons" size={size}
-                      iconBefore={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
-                      iconAfter={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
-                    />
-                    <Label label="Required + icons" size={size} isRequired
-                      iconBefore={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
-                      iconAfter={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </>
       )}
 
-      <hr style={HR} />
-
-      {/* ── Toggle ─────────────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <>
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Toggle</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              2 sizes × checked/unchecked × disabled — tokens: --mapped-surface-primary-default, --mapped-icon-subtlest-subtlest
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {(['regular', 'large'] as const).map(size => (
-                <div key={size} style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-                  <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '80px' }}>size={size}</span>
-                  <Toggle size={size} isChecked={false} ariaLabel={`${size} unchecked`} />
-                  <Toggle size={size} isChecked={true} ariaLabel={`${size} checked`} />
-                  <Toggle size={size} isChecked={false} isDisabled ariaLabel={`${size} disabled unchecked`} />
-                  <Toggle size={size} isChecked={true} isDisabled ariaLabel={`${size} disabled checked`} />
-                </div>
-              ))}
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)' }}>
-                unchecked · checked · disabled unchecked · disabled checked
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      <hr style={HR} />
-
-      {/* ── ProgressStepper ────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <>
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Progress Stepper</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              7 steps, active bar = --mapped-icon-primary-default · inactive = --mapped-surface-default-default
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {[1, 3, 5, 7].map(step => (
-                <div key={step} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                  <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '80px' }}>step {step}/7</span>
-                  <ProgressStepper totalSteps={7} currentStep={step} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-
-      <hr style={HR} />
-
-      {/* ── Tag ────────────────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <>
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Tag</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              2 appearances × 2 sizes × states (hover/active via pseudo-classes) + selected + disabled
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {(['default', 'overlay'] as TagAppearance[]).map(ap => (
-                <div key={ap} style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap', padding: ap === 'overlay' ? '0.75rem' : '0', background: ap === 'overlay' ? 'var(--mapped-text-default-default)' : 'transparent', borderRadius: '0.5rem' }}>
-                  <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '80px', color: ap === 'overlay' ? 'white' : 'inherit' }}>{ap}</span>
-                  <Tag appearance={ap} label="Tag M" size="M" iconBefore={<Icon name="filter_list" size="s" />} iconAfter={<Icon name="close" size="s" />} />
-                  <Tag appearance={ap} label="Tag S" size="S" />
-                  <Tag appearance={ap} label="Selected" size="M" isSelected />
-                  <Tag appearance={ap} label="Disabled" size="M" isDisabled />
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-
-      <hr style={HR} />
-
-      {/* ── Icon Object ────────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <>
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Icon Object</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              13 colors × circle/square × 5 sizes — --brand-[color]-400 backgrounds, white icon via currentColor
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Colors (circle, xl)</div>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  {(['slate', 'blue', 'gray', 'red', 'orange', 'green', 'teal', 'purple', 'cyan', 'yellow', 'lime', 'violet', 'ai'] as IconObjectColor[]).map(c => (
-                    <IconObject key={c} color={c} shape="circle" size="xl"><Icon name="person" size="m" /></IconObject>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Sizes × shapes (blue)</div>
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                  {(['small', 'medium', 'large', 'xl', 'xxl'] as IconObjectSize[]).map(sz => (
-                    <div key={sz} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
-                      <IconObject color="blue" shape="circle" size={sz}><Icon name="person" size={sz === 'small' ? 's' : sz === 'medium' ? 's' : sz === 'large' ? 'm' : 'l'} /></IconObject>
-                      <IconObject color="blue" shape="square" size={sz}><Icon name="person" size={sz === 'small' ? 's' : sz === 'medium' ? 's' : sz === 'large' ? 'm' : 'l'} /></IconObject>
-                      <span style={{ fontFamily: 'monospace', fontSize: '0.6rem' }}>{sz}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      <hr style={HR} />
-
-      {/* ── Checkbox ───────────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <>
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Checkbox</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              medium / large × unchecked / checked / indeterminate × invalid × required × disabled
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {(['medium', 'large'] as const).map(size => (
-                <div key={size} style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '60px' }}>{size}</span>
-                  <Checkbox size={size} label="Unchecked" />
-                  <Checkbox size={size} label="Checked" isChecked />
-                  <Checkbox size={size} label="Indeterminate" isIndeterminate />
-                  <Checkbox size={size} label="Invalid" isInvalid />
-                  <Checkbox size={size} label="Required" isRequired />
-                  <Checkbox size={size} label="Disabled" isDisabled />
-                  <Checkbox size={size} label="Checked + disabled" isChecked isDisabled />
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-
-      <hr style={HR} />
-
-      {/* ── Radio ──────────────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <>
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Radio</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              unchecked / checked / invalid / required / disabled states — 14×14px radio circle inside 24px wrap
-            </p>
-            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-              <Radio label="Unchecked" />
-              <Radio label="Checked" isChecked />
-              <Radio label="Invalid" isInvalid />
-              <Radio label="Required" isRequired />
-              <Radio label="Disabled" isDisabled />
-              <Radio label="Checked + disabled" isChecked isDisabled />
-            </div>
-          </div>
-        </>
-      )}
-
-      <hr style={HR} />
-
-      {/* ── Tabs ───────────────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <>
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Tabs</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              Controlled wrapper composing Tab instances — flex container, no tokens of its own
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ padding: '0.5rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem', width: 'fit-content' }}>
-                <Tabs
-                  tabs={[
-                    { id: 'overview', label: 'Overview' },
-                    { id: 'activity', label: 'Activity' },
-                    { id: 'settings', label: 'Settings' },
-                    { id: 'members', label: 'Members' },
-                  ]}
-                  selectedId={tabsSelected}
-                  onChange={setTabsSelected}
-                  ariaLabel="Section navigation"
-                />
-              </div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)' }}>
-                Selected: <strong>{tabsSelected}</strong> — click tabs above to switch
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      <hr style={HR} />
-
-      {/* ── Tab ────────────────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <>
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Tab</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              2 selection states × 4 interaction states — type-body-caption-semibold — tokens: --mapped-surface-primary-default-subtle, --mapped-border-primary-default
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>State matrix</div>
-                <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center', flexWrap: 'wrap', padding: '0.5rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem' }}>
-                  <Tab label="Default" />
-                  <Tab label="Selected" isSelected />
-                  <Tab label="Hover" previewState="hover" />
-                  <Tab label="Press" previewState="pressed" />
-                  <Tab label="Focus" previewState="focus" />
-                  <Tab label="Focus+Sel" isSelected previewState="focus" />
-                </div>
-              </div>
-              <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Example group (Overview selected)</div>
-                <div role="tablist" style={{ display: 'flex', gap: '0', padding: '0.25rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem', width: 'fit-content' }}>
-                  <Tab label="Overview" isSelected />
-                  <Tab label="Activity" />
-                  <Tab label="Settings" />
-                  <Tab label="Members" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      <hr style={HR} />
+      {tab === 'components' && <hr style={HR} />}
 
       {/* ── Button Group ───────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <div id="section-button-group" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
             <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Button Group</h1>
             <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               Composite: leading IconButton (tertiary, more_horiz) + 2–N Button (primary, m) — data-driven via buttons prop
@@ -2007,68 +1483,12 @@ export default function App() {
         </>
       )}
 
-      <hr style={HR} />
-
-      {/* ── Filter Chips ───────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <>
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Filter Chips</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              2 states × 4 icon combos — selected bg via color-mix() (no opacity token in source) — hover/press on unselected only (deliberate addition, see docs)
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Default — icon combos</div>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0.5rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem' }}>
-                  <FilterChip label="Chip" />
-                  <FilterChip label="Chip" iconLeft={<Icon name="add" size="s" />} />
-                  <FilterChip label="Chip" iconRight={<Icon name="add" size="s" />} />
-                  <FilterChip label="Chip" iconLeft={<Icon name="add" size="s" />} iconRight={<Icon name="close" size="s" />} />
-                </div>
-              </div>
-              <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Selected — icon combos</div>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0.5rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem' }}>
-                  <FilterChip label="Chip" isSelected />
-                  <FilterChip label="Chip" isSelected iconLeft={<Icon name="add" size="s" />} />
-                  <FilterChip label="Chip" isSelected iconRight={<Icon name="add" size="s" />} />
-                  <FilterChip label="Chip" isSelected iconLeft={<Icon name="add" size="s" />} iconRight={<Icon name="close" size="s" />} />
-                </div>
-              </div>
-              <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Forced states (unselected)</div>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0.5rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem' }}>
-                  <FilterChip label="Default" />
-                  <FilterChip label="Hover" previewState="hover" />
-                  <FilterChip label="Pressed" previewState="pressed" />
-                  <FilterChip label="Focus" previewState="focus" />
-                </div>
-              </div>
-              <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Interactive example — click to toggle</div>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  {['chip1', 'chip2', 'chip3'].map(id => (
-                    <FilterChip
-                      key={id}
-                      label={id}
-                      isSelected={!!filterChipsSelected[id]}
-                      onClick={() => setFilterChipsSelected(s => ({ ...s, [id]: !s[id] }))}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      <hr style={HR} />
+      {tab === 'components' && <hr style={HR} />}
 
       {/* ── Link ───────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <div id="section-link" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
             <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Link</h1>
             <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               3 appearances × 3 states × visited — Size=M renders smaller than Size=S (Figma source, not a bug) — leaf dependency for Breadcrumbs
@@ -2116,70 +1536,120 @@ export default function App() {
         </>
       )}
 
-      <hr style={HR} />
+      {tab === 'components' && <hr style={HR} />}
 
-      {/* ── Breadcrumbs ────────────────────────────────────────────── */}
+      {/* ── Checkbox ───────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Breadcrumbs</h1>
+          <div id="section-checkbox" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Checkbox</h1>
             <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              Composes Link (subtle) + Icon (chevron_right separator) — data-driven via items array — last item gets isCurrent (underline + aria-current)
+              medium / large × unchecked / checked / indeterminate × invalid × required × disabled
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>With leading home icon</div>
-                <Breadcrumbs
-                  items={[
-                    { label: 'Home', href: '#', icon: <Icon name="home" size="s" /> },
-                    { label: 'Settings', href: '#' },
-                    { label: 'Profile', href: '#' },
-                  ]}
-                />
-              </div>
-              <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Two items, no leading icon</div>
-                <Breadcrumbs
-                  items={[
-                    { label: 'Dashboard', href: '#' },
-                    { label: 'Reports', href: '#' },
-                  ]}
-                />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {(['medium', 'large'] as const).map(size => (
+                <div key={size} style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '60px', color: 'var(--mapped-text-subtle-default)' }}>{size}</span>
+                  <Checkbox size={size} label="Unchecked" />
+                  <Checkbox size={size} label="Checked" isChecked />
+                  <Checkbox size={size} label="Indeterminate" isIndeterminate />
+                  <Checkbox size={size} label="Invalid" isInvalid />
+                  <Checkbox size={size} label="Required" isRequired />
+                  <Checkbox size={size} label="Disabled" isDisabled />
+                  <Checkbox size={size} label="Checked + disabled" isChecked isDisabled />
+                </div>
+              ))}
+              <div className="showcase-interactive" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap', marginTop: '0.25rem' }}>
+                <span className="showcase-interactive__label" style={{ marginBottom: 0 }}>interactive</span>
+                <Checkbox size="medium" label="I agree to the terms" isChecked={cbChecked} onChange={setCbChecked} />
+                <Checkbox size="medium" label="Email notifications" isChecked={cbNotify} onChange={setCbNotify} />
+                <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)' }}>
+                  terms: <strong>{cbChecked ? 'yes' : 'no'}</strong> · notify: <strong>{cbNotify ? 'on' : 'off'}</strong>
+                </span>
               </div>
             </div>
           </div>
         </>
       )}
 
-      <hr style={HR} />
+      {tab === 'components' && <hr style={HR} />}
 
-      {/* ── Loader ─────────────────────────────────────────────────── */}
+      {/* ── Radio ──────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Loader</h1>
+          <div id="section-radio" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Radio</h1>
             <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              First CSS @keyframes animation in this codebase — 32px container + color confirmed from source; stroke width and rotation speed are estimates (see docs)
+              unchecked / checked / invalid / required / disabled states — 14×14px radio circle inside 24px wrap
             </p>
-            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-              <Loader />
-              <Loader ariaLabel="Loading transactions" />
+            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <Radio label="Unchecked" />
+              <Radio label="Checked" isChecked />
+              <Radio label="Invalid" isInvalid />
+              <Radio label="Required" isRequired />
+              <Radio label="Disabled" isDisabled />
+              <Radio label="Checked + disabled" isChecked isDisabled />
+            </div>
+            <div className="showcase-interactive" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap', marginTop: '1rem' }}>
+              <span className="showcase-interactive__label" style={{ marginBottom: 0 }}>interactive</span>
+              {([['standard', 'Standard'], ['express', 'Express'], ['priority', 'Priority']] as const).map(([val, label]) => (
+                <Radio key={val} name="shipping" value={val} label={label} isChecked={radioValue === val} onChange={() => setRadioValue(val)} />
+              ))}
+              <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)' }}>
+                selected: <strong>{radioValue}</strong>
+              </span>
             </div>
           </div>
         </>
       )}
 
-      <hr style={HR} />
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Toggle ─────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div id="section-toggle" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Toggle</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              2 sizes × checked/unchecked × disabled — tokens: --mapped-surface-primary-default, --mapped-icon-subtlest-subtlest
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {(['regular', 'large'] as const).map(size => (
+                <div key={size} style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+                  <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '80px', color: 'var(--mapped-text-subtle-default)' }}>size={size}</span>
+                  <Toggle size={size} isChecked={false} ariaLabel={`${size} unchecked`} />
+                  <Toggle size={size} isChecked={true} ariaLabel={`${size} checked`} />
+                  <Toggle size={size} isChecked={false} isDisabled ariaLabel={`${size} disabled unchecked`} />
+                  <Toggle size={size} isChecked={true} isDisabled ariaLabel={`${size} disabled checked`} />
+                </div>
+              ))}
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)' }}>
+                unchecked · checked · disabled unchecked · disabled checked
+              </div>
+              <div className="showcase-interactive" style={{ display: 'flex', gap: '2rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                <span className="showcase-interactive__label" style={{ marginBottom: 0 }}>interactive</span>
+                <Toggle size="regular" isChecked={toggleOn} onChange={setToggleOn} ariaLabel="Interactive regular toggle" />
+                <Toggle size="large" isChecked={toggleLargeOn} onChange={setToggleLargeOn} ariaLabel="Interactive large toggle" />
+                <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)' }}>
+                  regular: <strong>{toggleOn ? 'on' : 'off'}</strong> · large: <strong>{toggleLargeOn ? 'on' : 'off'}</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
 
       {/* ── Field ──────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <div id="section-field" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
             <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Field</h1>
             <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               Text input — Standard/Subtle × label × states × invalid/disabled/compact. Focus = 2px blue border + faint outer glow ring, persists until blur (:focus-within)
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '540px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
                 <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
@@ -2210,17 +1680,17 @@ export default function App() {
         </>
       )}
 
-      <hr style={HR} />
+      {tab === 'components' && <hr style={HR} />}
 
       {/* ── Select ─────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <div id="section-select" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
             <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Select</h1>
             <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               Searchable combobox trigger — Standard/Subtle × Default/Hover/Focus/Typing/Filled/Selected/Invalid/Disabled. Chevron built-in; the dropdown menu is an app-provided slot.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '760px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
                 <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
@@ -2239,8 +1709,8 @@ export default function App() {
                   <Select appearance="subtle" label="Label" placeholder="Placeholder" ariaLabel="Subtle" />
                 </div>
               </div>
-              <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Interactive — click to open, type to filter (menu = example slot)</div>
+              <div className="showcase-interactive">
+                <div className="showcase-interactive__label">Interactive — click to open, type to filter (menu = example slot)</div>
                 <SelectDemo />
               </div>
             </div>
@@ -2248,7 +1718,7 @@ export default function App() {
         </>
       )}
 
-      <hr style={HR} />
+      {tab === 'components' && <hr style={HR} />}
 
       {/* ── Select / Transfer ──────────────────────────────────────── */}
       {tab === 'components' && (() => {
@@ -2258,12 +1728,12 @@ export default function App() {
           </ElementWrapper>
         )
         return (
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <div id="section-select-transfer" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
             <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Select / Transfer</h1>
             <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               Amount input + currency picker (flag = ElementWrapper slot). Standard/Subtle bordered box + Attention underline style. Dual dropdowns are app slots.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '760px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
                 <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
@@ -2292,8 +1762,8 @@ export default function App() {
                   <SelectTransfer appearance="attention" label="Send" value="1,250" currencyLabel="MYR" currencyFlag={flag} isDisabled ariaLabel="Attention disabled" />
                 </div>
               </div>
-              <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+              <div className="showcase-interactive">
+                <div className="showcase-interactive__label">
                   Interactive — one per appearance. Type to search (dropdown only appears if there's a match — Option A: decided by the app via isOpen, not a component prop); click the chevron to change currency.
                 </div>
                 <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
@@ -2307,16 +1777,16 @@ export default function App() {
         )
       })()}
 
-      <hr style={HR} />
+      {tab === 'components' && <hr style={HR} />}
 
       {/* ── Select / Wallet Account ────────────────────────────────── */}
       {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+        <div id="section-select-wallet-account" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
           <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Select / Wallet Account</h1>
           <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
             Button trigger for a wallet/account picker — the trigger itself never shows a logo (confirmed absent from all 14 variants); logos only appear per-row in the dropdown. Unlike Select/Select Transfer, the trigger never becomes an editable input — the dropdown's search field is an app-composed slot.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '760px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
@@ -2343,8 +1813,8 @@ export default function App() {
                 <SelectWalletAccount appearance="subtle" labelCrypto="Crypto" labelWallet="Wallet" labelAmount="$0,000.00" labelAmtCrypto="0.00 ETH" isDisabled ariaLabel="Subtle disabled" />
               </div>
             </div>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+            <div className="showcase-interactive">
+              <div className="showcase-interactive__label">
                 Interactive — click to open; menu composes a real Field for search plus the option list (menu = example slot)
               </div>
               <SelectWalletAccountDemo />
@@ -2353,59 +1823,16 @@ export default function App() {
         </div>
       )}
 
-      <hr style={HR} />
-
-      {/* ── Text area ──────────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Text area</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Multi-line sibling of Field — same box tokens/states, no icon slots, real &lt;textarea&gt;.
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <TextArea label="Label" placeholder="Text" ariaLabel="Default" />
-                <TextArea label="Label" placeholder="Text" ariaLabel="Hover" previewState="hover" />
-                <TextArea label="Label" placeholder="Text" ariaLabel="Focus" previewState="focus" />
-                <TextArea label="Label" defaultValue="Typed value that can wrap across multiple lines" ariaLabel="Filled" />
-              </div>
-            </div>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Invalid · disabled · subtle</div>
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <TextArea label="Label" placeholder="Text" isInvalid ariaLabel="Invalid" />
-                <TextArea label="Label" placeholder="Text" isDisabled ariaLabel="Disabled" />
-                <TextArea appearance="subtle" label="Label" placeholder="Text" ariaLabel="Subtle" />
-              </div>
-            </div>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Subtle — focus · invalid · disabled (disabled drops the border entirely)</div>
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <TextArea appearance="subtle" label="Label" placeholder="Text" ariaLabel="Subtle focus" previewState="focus" />
-                <TextArea appearance="subtle" label="Label" placeholder="Text" isInvalid ariaLabel="Subtle invalid" />
-                <TextArea appearance="subtle" label="Label" placeholder="Text" isDisabled ariaLabel="Subtle disabled" />
-              </div>
-            </div>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Interactive — type directly (real textarea, native focus/typing behavior)</div>
-              <TextArea label="Message" placeholder="Type something…" ariaLabel="Interactive" />
-            </div>
-          </div>
-        </div>
-      )}
-
-      <hr style={HR} />
+      {tab === 'components' && <hr style={HR} />}
 
       {/* ── Date Picker ────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+        <div id="section-date-picker" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
           <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Date Picker</h1>
           <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
             No label slot. Trailing icon swaps calendar_month ↔ cancel (clear) — has a value AND unfocused only. The calendar is an app-provided slot.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
@@ -2432,8 +1859,8 @@ export default function App() {
                 <DatePicker appearance="subtle" isDisabled ariaLabel="Subtle disabled" />
               </div>
             </div>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+            <div className="showcase-interactive">
+              <div className="showcase-interactive__label">
                 Interactive — click to open; calendarSlot composes a real month grid with prev/next navigation
               </div>
               <DatePickerDemo />
@@ -2442,16 +1869,16 @@ export default function App() {
         </div>
       )}
 
-      <hr style={HR} />
+      {tab === 'components' && <hr style={HR} />}
 
       {/* ── Time Picker ────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+        <div id="section-time-picker" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
           <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Time Picker</h1>
           <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
             No label slot. Single clear icon fades in only when filled AND unfocused (Hydrate keeps it hidden). Time list is an app-provided slot.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
@@ -2479,8 +1906,8 @@ export default function App() {
                 <TimePicker appearance="subtle" isDisabled ariaLabel="Subtle disabled" />
               </div>
             </div>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+            <div className="showcase-interactive">
+              <div className="showcase-interactive__label">
                 Interactive — click to open; timesSlot composes a real scrollable option list
               </div>
               <TimePickerDemo />
@@ -2489,11 +1916,527 @@ export default function App() {
         </div>
       )}
 
-      <hr style={HR} />
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Text area ──────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div id="section-text-area" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Text area</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Multi-line sibling of Field — same box tokens/states, no icon slots, real &lt;textarea&gt;.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <TextArea label="Label" placeholder="Text" ariaLabel="Default" />
+                <TextArea label="Label" placeholder="Text" ariaLabel="Hover" previewState="hover" />
+                <TextArea label="Label" placeholder="Text" ariaLabel="Focus" previewState="focus" />
+                <TextArea label="Label" defaultValue="Typed value that can wrap across multiple lines" ariaLabel="Filled" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Invalid · disabled · subtle</div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <TextArea label="Label" placeholder="Text" isInvalid ariaLabel="Invalid" />
+                <TextArea label="Label" placeholder="Text" isDisabled ariaLabel="Disabled" />
+                <TextArea appearance="subtle" label="Label" placeholder="Text" ariaLabel="Subtle" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Subtle — focus · invalid · disabled (disabled drops the border entirely)</div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <TextArea appearance="subtle" label="Label" placeholder="Text" ariaLabel="Subtle focus" previewState="focus" />
+                <TextArea appearance="subtle" label="Label" placeholder="Text" isInvalid ariaLabel="Subtle invalid" />
+                <TextArea appearance="subtle" label="Label" placeholder="Text" isDisabled ariaLabel="Subtle disabled" />
+              </div>
+            </div>
+            <div className="showcase-interactive">
+              <div className="showcase-interactive__label">Interactive — type directly (real textarea, native focus/typing behavior)</div>
+              <TextArea label="Message" placeholder="Type something…" ariaLabel="Interactive" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Filter Chips ───────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div id="section-filter-chips" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Filter Chips</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              2 states × 4 icon combos — selected bg via color-mix() (no opacity token in source) — hover/press on unselected only (deliberate addition, see docs)
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Default — icon combos</div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <FilterChip label="Chip" />
+                  <FilterChip label="Chip" iconLeft={<Icon name="add" size="s" />} />
+                  <FilterChip label="Chip" iconRight={<Icon name="add" size="s" />} />
+                  <FilterChip label="Chip" iconLeft={<Icon name="add" size="s" />} iconRight={<Icon name="close" size="s" />} />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Selected — icon combos</div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <FilterChip label="Chip" isSelected />
+                  <FilterChip label="Chip" isSelected iconLeft={<Icon name="add" size="s" />} />
+                  <FilterChip label="Chip" isSelected iconRight={<Icon name="add" size="s" />} />
+                  <FilterChip label="Chip" isSelected iconLeft={<Icon name="add" size="s" />} iconRight={<Icon name="close" size="s" />} />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Forced states (unselected)</div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <FilterChip label="Default" />
+                  <FilterChip label="Hover" previewState="hover" />
+                  <FilterChip label="Pressed" previewState="pressed" />
+                  <FilterChip label="Focus" previewState="focus" />
+                </div>
+              </div>
+              <div className="showcase-interactive">
+                <div className="showcase-interactive__label">Interactive example — click to toggle</div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  {['chip1', 'chip2', 'chip3'].map(id => (
+                    <FilterChip
+                      key={id}
+                      label={id}
+                      isSelected={!!filterChipsSelected[id]}
+                      onClick={() => setFilterChipsSelected(s => ({ ...s, [id]: !s[id] }))}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Slider ─────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div id="section-slider" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Slider</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Single-thumb value slider — track + fill + white/blue thumb (0.25 halo on focus/drag). Drag, click, or arrow keys / Home / End.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '400px' }}>
+            <div className="showcase-interactive">
+              <div className="showcase-interactive__label">Interactive</div>
+              <SliderDemo />
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>disabled</div>
+              <div style={{ maxWidth: '246px' }}>
+                <Slider value={60} disabled ariaLabel="Disabled slider" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Range Slider ───────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div id="section-range-slider" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Range Slider</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Two-thumb min/max range with a tooltip on the active thumb and two synced Field inputs (drag ↔ type). Thumbs can't cross.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '400px' }}>
+            <div className="showcase-interactive">
+              <div className="showcase-interactive__label">Interactive — drag a thumb (tooltip appears) or type in a field</div>
+              <RangeSliderDemo />
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>showInputs=false — bare range track</div>
+              <div style={{ maxWidth: '246px' }}>
+                <RangeSlider minValue={30} maxValue={80} onChange={() => {}} showInputs={false} formatValue={v => `${v}%`} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {tab === 'components' && (
+        <>
+          {/* Badge */}
+          <div id="section-badge" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Badge
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              7 appearances × 2 types — tokens only — responds to light/dark toggle
+            </p>
+            <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: 'left', padding: '0.4rem 1rem 0.4rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>appearance</th>
+                  <th style={{ textAlign: 'left', padding: '0.4rem 1rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>type=default</th>
+                  <th style={{ textAlign: 'left', padding: '0.4rem 1rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>type=dot</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(['default', 'primary', 'inverted', 'important', 'added', 'removed', 'dark'] as BadgeAppearance[]).map(ap => (
+                  <tr key={ap}>
+                    <td style={{ padding: '0.5rem 1rem 0.5rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>{ap}</td>
+                    <td style={{ padding: '0.5rem 1rem' }}><Badge appearance={ap} type="default" label="25" /></td>
+                    <td style={{ padding: '0.5rem 1rem', verticalAlign: 'middle' }}><Badge appearance={ap} type="dot" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {tab === 'components' && (
+        <>
+          {/* Chips */}
+          <div id="section-chips" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Chips
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              6 appearances × 2 bold states — lozenge / status badge — always shows done icon
+            </p>
+            <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>appearance</th>
+                  <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>subtle (isBold=false)</th>
+                  <th style={{ textAlign: 'left', padding: '0.3rem 1.5rem 0.3rem 0', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>bold (isBold=true)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(['default', 'inprogress', 'moved', 'new', 'removed', 'success'] as ChipsAppearance[]).map(ap => (
+                  <tr key={ap}>
+                    <td style={{ padding: '0.5rem 1.5rem 0.5rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>{ap}</td>
+                    <td style={{ padding: '0.5rem 1.5rem 0.5rem 0' }}><Chips appearance={ap} isBold={false} label={ap} /></td>
+                    <td style={{ padding: '0.5rem 1.5rem 0.5rem 0' }}><Chips appearance={ap} isBold={true} label={ap} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Tag ────────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div id="section-tag" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Tag</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              2 sizes × states (hover/active via pseudo-classes) + selected + disabled + interactive
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '80px', color: 'var(--mapped-text-subtle-default)' }}>static</span>
+                <Tag label="Tag M" size="M" iconBefore={<Icon name="filter_list" size="s" />} iconAfter={<Icon name="close" size="s" />} />
+                <Tag label="Tag S" size="S" />
+                <Tag label="Selected" size="M" isSelected />
+                <Tag label="Disabled" size="M" isDisabled />
+              </div>
+              <div className="showcase-interactive" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <span className="showcase-interactive__label" style={{ marginBottom: 0 }}>interactive</span>
+                {([['groceries', 'Groceries'], ['bills', 'Bills'], ['travel', 'Travel']] as const).map(([id, label]) => (
+                  <Tag
+                    key={id}
+                    label={label}
+                    size="M"
+                    isSelected={!!tagSelected[id]}
+                    iconBefore={<Icon name="filter_list" size="s" />}
+                    onClick={() => setTagSelected(s => ({ ...s, [id]: !s[id] }))}
+                  />
+                ))}
+                <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)' }}>
+                  selected: <strong>{Object.entries(tagSelected).filter(([, v]) => v).map(([k]) => k).join(', ') || 'none'}</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Loader ─────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div id="section-loader" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Loader</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              First CSS @keyframes animation in this codebase — 32px container + color confirmed from source; stroke width and rotation speed are estimates (see docs)
+            </p>
+            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+              <Loader />
+              <Loader ariaLabel="Loading transactions" />
+            </div>
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Toast (desktop + mobile) ───────────────────────────────── */}
+      {tab === 'components' && (
+        <div id="section-toast" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Toast</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            System message in 6 appearances (ai = gradient), auto icon per appearance, description + actions slots, role=status/alert live region. Two layouts: desktop (Link actions + dismiss) and mobile (compact, inverse-tertiary Button).
+          </p>
+          <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Toast — desktop</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '624px', maxWidth: '100%' }}>
+                {(['information', 'success', 'warning', 'error', 'discovery', 'ai'] as ToastAppearance[]).map(a => (
+                  <Toast
+                    key={a}
+                    appearance={a}
+                    title="Title"
+                    role={a === 'error' || a === 'warning' ? 'alert' : 'status'}
+                    onDismiss={() => {}}
+                    actions={
+                      <>
+                        <Link appearance="inverse" size="S" label="Action" href="#" />
+                        <Link appearance="inverse" size="S" label="Action" href="#" />
+                      </>
+                    }
+                  >
+                    Short and brief
+                  </Toast>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>ToastMobile — compact</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '312px', maxWidth: '100%' }}>
+                {(['information', 'success', 'warning', 'error', 'discovery', 'ai'] as ToastAppearance[]).map(a => (
+                  <ToastMobile
+                    key={a}
+                    appearance={a}
+                    title="Title"
+                    role={a === 'error' || a === 'warning' ? 'alert' : 'status'}
+                    actions={<Button variant="tertiary" size="m" label="Button" onClick={() => {}} />}
+                  >
+                    Short and brief
+                  </ToastMobile>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Progress Bar ───────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div id="section-progress-bar" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Progress Bar</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Horizontal track, fill = success surface. Two versions: percentage-only, and a stepper with the current/total readout. Sizes S (caption) / M (body). Drag the controls to drive it.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '400px' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Percentage only — sizes S &amp; M</div>
+              <ProgressBarPercentDemo />
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Stepper (current / total) — sizes S &amp; M</div>
+              <ProgressBarStepperDemo />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Progress Ring ──────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div id="section-progress-ring" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Progress Ring</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            270° gauge with a conic blue→purple→red fill over a gray track; centre caption + amount + Badge (dark) pill. Sizes medium (h5) / large (h4). Enter a budget and amount spent to drive the "left to spend" gauge.
+          </p>
+          <ProgressRingDemo />
+        </div>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── ProgressStepper ────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div id="section-progress-stepper" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Progress Stepper</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              7 steps, active bar = --mapped-icon-primary-default · inactive = --mapped-surface-default-default
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {[1, 3, 5, 7].map(step => (
+                <div key={step} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                  <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '80px', color: 'var(--mapped-text-subtle-default)' }}>step {step}/7</span>
+                  <ProgressStepper totalSteps={7} currentStep={step} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Tabs & Tab ─────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div id="section-tabs" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Tabs</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              Controlled Tabs wrapper composing Tab instances, plus the Tab state matrix — no container background
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div className="showcase-interactive">
+                <div className="showcase-interactive__label">Interactive — click to switch</div>
+                <div style={{ width: 'fit-content' }}>
+                  <Tabs
+                    tabs={[
+                      { id: 'overview', label: 'Overview' },
+                      { id: 'activity', label: 'Activity' },
+                      { id: 'settings', label: 'Settings' },
+                      { id: 'members', label: 'Members' },
+                    ]}
+                    selectedId={tabsSelected}
+                    onChange={setTabsSelected}
+                    ariaLabel="Section navigation"
+                  />
+                </div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.5rem' }}>
+                  Selected: <strong>{tabsSelected}</strong>
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Tab — state matrix</div>
+                <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center', flexWrap: 'wrap', width: 'fit-content' }}>
+                  <Tab label="Default" />
+                  <Tab label="Selected" isSelected />
+                  <Tab label="Hover" previewState="hover" />
+                  <Tab label="Press" previewState="pressed" />
+                  <Tab label="Focus" previewState="focus" />
+                  <Tab label="Focus+Sel" isSelected previewState="focus" />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Example group (Overview selected)</div>
+                <div role="tablist" style={{ display: 'flex', gap: '0', width: 'fit-content' }}>
+                  <Tab label="Overview" isSelected />
+                  <Tab label="Activity" />
+                  <Tab label="Settings" />
+                  <Tab label="Members" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Breadcrumbs ────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div id="section-breadcrumbs" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Breadcrumbs</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              Composes Link (subtle) + Icon (chevron_right separator) — data-driven via items array — last item gets isCurrent (underline + aria-current)
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>With leading home icon</div>
+                <Breadcrumbs
+                  items={[
+                    { label: 'Home', href: '#', icon: <Icon name="home" size="s" /> },
+                    { label: 'Settings', href: '#' },
+                    { label: 'Profile', href: '#' },
+                  ]}
+                />
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Two items, no leading icon</div>
+                <Breadcrumbs
+                  items={[
+                    { label: 'Dashboard', href: '#' },
+                    { label: 'Reports', href: '#' },
+                  ]}
+                />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Menu ───────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div id="section-menu" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Menu</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Floating dropdown chrome that wraps MenuItem rows. searchBar can be hidden for a plain option-list menu; slotContent is an app-provided option list.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>With search bar (default)</div>
+              <Menu
+                slotContent={
+                  <div style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
+                    {MENU_ITEM_OPTIONS.map((opt, i) => (
+                      <MenuItem key={opt} label={opt} isSelected={i === 1} />
+                    ))}
+                  </div>
+                }
+              />
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>searchBar=false — plain option-list dropdown (e.g. a nested currency picker with no search)</div>
+              <Menu
+                searchBar={false}
+                slotContent={
+                  <div style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
+                    {MENU_ITEM_OPTIONS.map((opt, i) => (
+                      <MenuItem key={opt} label={opt} isSelected={i === 2} />
+                    ))}
+                  </div>
+                }
+              />
+            </div>
+            <div className="showcase-interactive">
+              <div className="showcase-interactive__label">
+                Interactive — real search filtering + real click selection
+              </div>
+              <MenuDemo />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
 
       {/* ── Menu Item ──────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+        <div id="section-menu-item" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
           <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Menu Item</h1>
           <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
             Shared row atom for Select-family dropdowns — composes into optionsSlot/timesSlot content. Menu chrome itself remains an app-provided slot.
@@ -2546,8 +2489,8 @@ export default function App() {
                 <MenuItem type="radio" label="Label" isSelected previewState="pressed" />
               </div>
             </div>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+            <div className="showcase-interactive">
+              <div className="showcase-interactive__label">
                 Interactive — real click/keyboard selection (role="listbox" of type="default" rows)
               </div>
               <MenuItemDemo />
@@ -2556,211 +2499,11 @@ export default function App() {
         </div>
       )}
 
-      <hr style={HR} />
-
-      {/* ── Menu ───────────────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Menu</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Floating dropdown chrome that wraps MenuItem rows. searchBar can be hidden for a plain option-list menu; slotContent is an app-provided option list.
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>With search bar (default)</div>
-              <Menu
-                slotContent={
-                  <div style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
-                    {MENU_ITEM_OPTIONS.map((opt, i) => (
-                      <MenuItem key={opt} label={opt} isSelected={i === 1} />
-                    ))}
-                  </div>
-                }
-              />
-            </div>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>searchBar=false — plain option-list dropdown (e.g. a nested currency picker with no search)</div>
-              <Menu
-                searchBar={false}
-                slotContent={
-                  <div style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
-                    {MENU_ITEM_OPTIONS.map((opt, i) => (
-                      <MenuItem key={opt} label={opt} isSelected={i === 2} />
-                    ))}
-                  </div>
-                }
-              />
-            </div>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-                Interactive — real search filtering + real click selection
-              </div>
-              <MenuDemo />
-            </div>
-          </div>
-        </div>
-      )}
-
-      <hr style={HR} />
-
-      {/* ── Modal ──────────────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Modal</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Generic dialog container over a Blanket scrim: title + close, a flexible content slot, and a footer that composes real Buttons. Portaled to body; dialog a11y (aria-modal, focus trap, Escape).
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
-                Interactive — opens a real overlay; ✕ / Escape / scrim click all close
-              </div>
-              <ModalDemo />
-            </div>
-          </div>
-        </div>
-      )}
-
-      <hr style={HR} />
-
-      {/* ── Progress Bar ───────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Progress Bar</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Horizontal track, fill = success surface. Two versions: percentage-only, and a stepper with the current/total readout. Sizes S (caption) / M (body). Drag the controls to drive it.
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '400px' }}>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Percentage only — sizes S &amp; M</div>
-              <ProgressBarPercentDemo />
-            </div>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Stepper (current / total) — sizes S &amp; M</div>
-              <ProgressBarStepperDemo />
-            </div>
-          </div>
-        </div>
-      )}
-
-      <hr style={HR} />
-
-      {/* ── Progress Ring ──────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Progress Ring</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            270° gauge with a conic blue→purple→red fill over a gray track; centre caption + amount + Badge (dark) pill. Sizes medium (h5) / large (h4). Enter a budget and amount spent to drive the "left to spend" gauge.
-          </p>
-          <ProgressRingDemo />
-        </div>
-      )}
-
-      <hr style={HR} />
-
-      {/* ── Slider ─────────────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Slider</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Single-thumb value slider — track + fill + white/blue thumb (0.25 halo on focus/drag). Drag, click, or arrow keys / Home / End.
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '400px' }}>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Interactive</div>
-              <SliderDemo />
-            </div>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>disabled</div>
-              <div style={{ maxWidth: '246px' }}>
-                <Slider value={60} disabled ariaLabel="Disabled slider" />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <hr style={HR} />
-
-      {/* ── Range Slider ───────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Range Slider</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Two-thumb min/max range with a tooltip on the active thumb and two synced Field inputs (drag ↔ type). Thumbs can't cross.
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '400px' }}>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Interactive — drag a thumb (tooltip appears) or type in a field</div>
-              <RangeSliderDemo />
-            </div>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>showInputs=false — bare range track</div>
-              <div style={{ maxWidth: '246px' }}>
-                <RangeSlider minValue={30} maxValue={80} onChange={() => {}} showInputs={false} formatValue={v => `${v}%`} />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <hr style={HR} />
-
-      {/* ── Toast (desktop + mobile) ───────────────────────────────── */}
-      {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Toast</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            System message in 6 appearances (ai = gradient), auto icon per appearance, description + actions slots, role=status/alert live region. Two layouts: desktop (Link actions + dismiss) and mobile (compact, inverse-tertiary Button).
-          </p>
-          <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Toast — desktop</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '624px', maxWidth: '100%' }}>
-                {(['information', 'success', 'warning', 'error', 'discovery', 'ai'] as ToastAppearance[]).map(a => (
-                  <Toast
-                    key={a}
-                    appearance={a}
-                    title="Title"
-                    role={a === 'error' || a === 'warning' ? 'alert' : 'status'}
-                    onDismiss={() => {}}
-                    actions={
-                      <>
-                        <Link appearance="inverse" size="S" label="Action" href="#" />
-                        <Link appearance="inverse" size="S" label="Action" href="#" />
-                      </>
-                    }
-                  >
-                    Short and brief
-                  </Toast>
-                ))}
-              </div>
-            </div>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>ToastMobile — compact</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '312px', maxWidth: '100%' }}>
-                {(['information', 'success', 'warning', 'error', 'discovery', 'ai'] as ToastAppearance[]).map(a => (
-                  <ToastMobile
-                    key={a}
-                    appearance={a}
-                    title="Title"
-                    role={a === 'error' || a === 'warning' ? 'alert' : 'status'}
-                    actions={<Button variant="tertiary" size="m" label="Button" onClick={() => {}} />}
-                  >
-                    Short and brief
-                  </ToastMobile>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <hr style={HR} />
+      {tab === 'components' && <hr style={HR} />}
 
       {/* ── Navigation ─────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+        <div id="section-navigation" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
           <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Navigation</h1>
           <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
             BottomNavigation (mobile tab bar) and SideNavigation (desktop sidebar, default + compact)
@@ -2812,159 +2555,53 @@ export default function App() {
         </div>
       )}
 
-      <hr style={HR} />
+      {tab === 'components' && <hr style={HR} />}
 
-      {/* ── StatusBar ──────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>StatusBar</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Fake OS-chrome status bar — Light/Dark modes are fixed per surface, not tied to the app theme
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '375px' }}>
-            <div style={{ background: '#ffffff', border: '1px solid var(--mapped-border-subtlest-default, #ccc)' }}>
-              <StatusBar mode="Light" />
-            </div>
-            <div style={{ background: '#262626' }}>
-              <StatusBar mode="Dark" />
-            </div>
+        <>
+          {/* Avatar */}
+          <div id="section-avatar" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Avatar
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              3 states (photo / initials / placeholder) × 3 sizes — tokens only
+            </p>
+
+            {(['l', 'm', 's'] as AvatarSize[]).map(size => (
+              <div key={size} style={{ marginBottom: '2rem' }}>
+                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                  Size {size.toUpperCase()} — {size === 'l' ? '40px' : size === 'm' ? '32px' : '24px'}
+                </p>
+                <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                    <Avatar size={size} src="https://i.pravatar.cc/80?img=47" alt="Sample photo" />
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>photo</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                    <Avatar size={size} name="Margaret Green" />
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>initials (name)</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                    <Avatar size={size} initials="MG" />
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>initials (explicit)</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                    <Avatar size={size} />
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>placeholder</span>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+        </>
       )}
 
-      <hr style={HR} />
-
-      {/* ── Header ─────────────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Header</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            HeaderBg (mobile screen header, swappable background slot) and HeaderDefault (function-flow header, 6 variants)
-          </p>
-          <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>HeaderBg — default</div>
-              <div style={{ width: '375px', maxWidth: '100%' }}>
-                <HeaderBg
-                  variant="default"
-                  background={<div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, #1a1f6e 0%, #2a4dbd 40%, #4f7fe0 70%, #cfa64a 100%)' }} />}
-                />
-              </div>
-            </div>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>HeaderBg — noSearchBar</div>
-              <div style={{ width: '375px', maxWidth: '100%' }}>
-                <HeaderBg
-                  variant="noSearchBar"
-                  background={<div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, #1a1f6e 0%, #2a4dbd 40%, #4f7fe0 70%, #cfa64a 100%)' }} />}
-                />
-              </div>
-            </div>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>HeaderBg — compact</div>
-              <div style={{ width: '375px', maxWidth: '100%' }}>
-                <HeaderBg
-                  variant="compact"
-                  title="Finance"
-                  background={<div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, #1a1f6e 0%, #2a4dbd 40%, #4f7fe0 70%, #cfa64a 100%)' }} />}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div style={{ marginTop: '2.5rem' }}>
-            <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>HeaderDefault — 6 variants</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: '500px', border: '1px solid var(--mapped-border-subtlest-default, #ccc)', borderRadius: '0.5rem', overflow: 'hidden' }}>
-              <HeaderDefault title="Title" subtitle="Subtitle" hasSubtitle actionLabel="Action" />
-              <HeaderDefault title="Title" subtitle="Subtitle" hasSubtitle />
-              <HeaderDefault subtitle="Subtitle" hasSubtitle isProgressStepper currentStep={1} totalSteps={7} />
-              <HeaderDefault title="Title" hasSubtitle={false} />
-              <HeaderDefault hasSubtitle={false} isProgressStepper currentStep={3} totalSteps={7} />
-              <HeaderDefault title="Title" hasSubtitle={false} actionLabel="Action" />
-            </div>
-          </div>
-        </div>
-      )}
-
-      <hr style={HR} />
-
-      {/* ── Item ───────────────────────────────────────────────────── */}
-      {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Item</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            ListItem (default / profile / crypto), SummaryItem, and ChartLegendItem (legend / contribution)
-          </p>
-          <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>ListItem</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '320px' }}>
-                <ListItem
-                  type="default"
-                  leading={<Avatar size="l" name="Aeon Bank" />}
-                  title="Aeon Bank"
-                  titleInfo="Transfer"
-                  amount="$120.00"
-                  amountInfo="Today"
-                  onClick={() => setLastItemClicked('default')}
-                />
-                <ListItem
-                  type="profile"
-                  leading={<Avatar size="l" src="https://i.pravatar.cc/80?img=5" name="Rachel Um" />}
-                  title="Rachel Um"
-                  titleInfo="rachel@gmail.com"
-                  onClick={() => setLastItemClicked('profile')}
-                />
-                <ListItem
-                  type="crypto"
-                  leading={<Logo name="bitcoin" size="s" />}
-                  title="Bitcoin"
-                  titleInfo="BTC"
-                  amount="$0.00"
-                  amountInfo="0%"
-                  miniChart={
-                    <svg width="80" height="40" viewBox="0 0 80 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                        d="M0 30 L15 22 L30 26 L45 12 L60 18 L80 4 L80 40 L0 40 Z"
-                        fill="var(--mapped-icon-success-default)"
-                        opacity="0.15"
-                      />
-                      <path
-                        d="M0 30 L15 22 L30 26 L45 12 L60 18 L80 4"
-                        stroke="var(--mapped-icon-success-default)"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  }
-                  onClick={() => setLastItemClicked('crypto')}
-                />
-              </div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.75rem' }}>
-                Last clicked: <strong>{lastItemClicked ?? '—'}</strong>
-              </div>
-
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', margin: '1.5rem 0 0.75rem' }}>SummaryItem</div>
-              <SummaryItem amount="RM 0,00" type="Income" />
-            </div>
-
-            <div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>ChartLegendItem</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '320px' }}>
-                <ChartLegendItem variant="legend" title="Groceries" subtitle="32%" amount="RM320.00" />
-                <ChartLegendItem variant="contribution" title="Transfer" subtitle="Subtitle" amount="0" />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <hr style={HR} />
+      {tab === 'components' && <hr style={HR} />}
 
       {/* ── Card ───────────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+        <div id="section-card" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
           <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Card</h1>
           <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
             7 card types — SmartInsights, Action, Balance, DataDisplay, MonthlyBudget (default / addNew), Goals, FeaturesAndEducation
@@ -3046,6 +2683,492 @@ export default function App() {
         </div>
       )}
 
+      {tab === 'components' && <hr style={HR} />}
+
+      {tab === 'components' && (
+        <>
+          {/* Label */}
+          <div id="section-label" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Label
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              2 sizes × optional required asterisk × optional leading/trailing icons
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              {(['M', 'S'] as const).map(size => (
+                <div key={size} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>size={size}</span>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'center' }}>
+                    <Label label="Label" size={size} />
+                    <Label label="Required" size={size} isRequired />
+                    <Label label="With icons" size={size}
+                      iconBefore={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
+                      iconAfter={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
+                    />
+                    <Label label="Required + icons" size={size} isRequired
+                      iconBefore={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
+                      iconAfter={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Icon Object ────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <div id="section-icon-object" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Icon Object</h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              13 colors × circle/square × 5 sizes — --brand-[color]-400 backgrounds, white icon via currentColor
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Colors (circle, xl)</div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  {(['slate', 'blue', 'gray', 'red', 'orange', 'green', 'teal', 'purple', 'cyan', 'yellow', 'lime', 'violet', 'ai'] as IconObjectColor[]).map(c => (
+                    <IconObject key={c} color={c} shape="circle" size="xl"><Icon name="person" size="m" /></IconObject>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Sizes × shapes (blue)</div>
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                  {(['small', 'medium', 'large', 'xl', 'xxl'] as IconObjectSize[]).map(sz => (
+                    <div key={sz} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+                      <IconObject color="blue" shape="circle" size={sz}><Icon name="person" size={sz === 'small' ? 's' : sz === 'medium' ? 's' : sz === 'large' ? 'm' : 'l'} /></IconObject>
+                      <IconObject color="blue" shape="square" size={sz}><Icon name="person" size={sz === 'small' ? 's' : sz === 'medium' ? 's' : sz === 'large' ? 'm' : 'l'} /></IconObject>
+                      <span style={{ fontFamily: 'monospace', fontSize: '0.6rem' }}>{sz}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {tab === 'components' && (
+        <>
+          {/* Divider */}
+          <div id="section-divider" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Divider
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              2 weights × 2 orientations — token: --mapped-border-subtle-default
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '400px' }}>
+              <div>
+                <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>horizontal weight=1</span>
+                <div style={{ marginTop: '0.5rem' }}><Divider weight={1} orientation="horizontal" /></div>
+              </div>
+              <div>
+                <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>horizontal weight=2</span>
+                <div style={{ marginTop: '0.5rem' }}><Divider weight={2} orientation="horizontal" /></div>
+              </div>
+              <div style={{ display: 'flex', gap: '2rem', alignItems: 'stretch', height: '48px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+                  <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>vertical w=1</span>
+                  <Divider weight={1} orientation="vertical" />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+                  <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>vertical w=2</span>
+                  <Divider weight={2} orientation="vertical" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Item ───────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div id="section-item" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Item</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            ListItem (default / profile / crypto), SummaryItem, and ChartLegendItem (legend / contribution)
+          </p>
+          <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>ListItem</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '320px' }}>
+                <ListItem
+                  type="default"
+                  leading={<Avatar size="l" name="Aeon Bank" />}
+                  title="Aeon Bank"
+                  titleInfo="Transfer"
+                  amount="$120.00"
+                  amountInfo="Today"
+                  onClick={() => setLastItemClicked('default')}
+                />
+                <ListItem
+                  type="profile"
+                  leading={<Avatar size="l" src="https://i.pravatar.cc/80?img=5" name="Rachel Um" />}
+                  title="Rachel Um"
+                  titleInfo="rachel@gmail.com"
+                  onClick={() => setLastItemClicked('profile')}
+                />
+                <ListItem
+                  type="crypto"
+                  leading={<Logo name="bitcoin" size="s" />}
+                  title="Bitcoin"
+                  titleInfo="BTC"
+                  amount="$0.00"
+                  amountInfo="0%"
+                  miniChart={
+                    <svg width="80" height="40" viewBox="0 0 80 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M0 30 L15 22 L30 26 L45 12 L60 18 L80 4 L80 40 L0 40 Z"
+                        fill="var(--mapped-icon-success-default)"
+                        opacity="0.15"
+                      />
+                      <path
+                        d="M0 30 L15 22 L30 26 L45 12 L60 18 L80 4"
+                        stroke="var(--mapped-icon-success-default)"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  }
+                  onClick={() => setLastItemClicked('crypto')}
+                />
+              </div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.75rem' }}>
+                Last clicked: <strong>{lastItemClicked ?? '—'}</strong>
+              </div>
+
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', margin: '1.5rem 0 0.75rem' }}>SummaryItem</div>
+              <SummaryItem amount="RM 0,00" type="Income" />
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>ChartLegendItem</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '320px' }}>
+                <ChartLegendItem variant="legend" title="Groceries" subtitle="32%" amount="RM320.00" />
+                <ChartLegendItem variant="contribution" title="Transfer" subtitle="Subtitle" amount="0" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {tab === 'components' && (
+        <>
+          {/* Element Wrapper */}
+          <div id="section-element-wrapper" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Element Wrapper
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              7 sizes — square centering shell for Icon / Avatar / Logo — tokens only
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+              {(['xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl'] as ElementWrapperSize[]).map(size => (
+                <div key={size} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                  <ElementWrapper size={size}>
+                    {/* placeholder SVG — fills the wrapper */}
+                    <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <rect x="1" y="1" width="22" height="22" rx="3" stroke="var(--mapped-border-primary-default, #046eff)" strokeWidth="1.5" strokeDasharray="4 2" />
+                      <circle cx="12" cy="12" r="3" fill="var(--mapped-surface-primary-default, #046eff)" />
+                    </svg>
+                  </ElementWrapper>
+                  <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>{size}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Modal ──────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div id="section-modal" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Modal</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Generic dialog container over a Blanket scrim: title + close, a flexible content slot, and a footer that composes real Buttons. Portaled to body; dialog a11y (aria-modal, focus trap, Escape).
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
+            <div className="showcase-interactive">
+              <div className="showcase-interactive__label">
+                Interactive — opens a real overlay; ✕ / Escape / scrim click all close
+              </div>
+              <ModalDemo />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {tab === 'components' && (
+        <>
+          {/* Blanket */}
+          <div id="section-blanket" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Blanket
+            </h1>
+            <BlanketDemo />
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {tab === 'components' && (
+        <>
+          {/* Icon */}
+          {(() => {
+            const GROUPS: { label: string; names: IconName[] }[] = [
+              { label: 'Actions', names: ['add', 'remove', 'edit', 'delete', 'close', 'content_copy', 'refresh', 'share', 'download', 'upload', 'open_in_new', 'attach_file'] },
+              { label: 'Navigation', names: ['home', 'menu', 'arrow_back', 'arrow_forward', 'arrow_upward', 'arrow_downward', 'chevron_left', 'chevron_right', 'expand_more', 'expand_less', 'unfold_more'] },
+              { label: 'Search & Controls', names: ['search', 'filter_list', 'sort', 'settings', 'tune', 'more_vert', 'more_horiz'] },
+              { label: 'Status & Feedback', names: ['info', 'warning', 'error', 'check_circle', 'check', 'done', 'cancel', 'help_outline', 'visibility', 'visibility_off'] },
+              { label: 'People & Comms', names: ['person', 'account_circle', 'group', 'login', 'logout', 'notifications', 'mail'] },
+              { label: 'App & Content', names: ['dashboard', 'calendar_today', 'schedule', 'link'] },
+              { label: 'Ratings', names: ['star', 'star_border', 'favorite', 'favorite_border'] },
+              { label: 'Form Controls', names: ['radio_button_unchecked', 'radio_button_checked', 'check_box', 'check_box_outline_blank'] },
+            ]
+            const CUSTOM_GROUPS: { label: string; names: IconName[] }[] = [
+              { label: 'Finance & Accounts', names: ['icon_finance', 'icon_bank', 'icon_wallet', 'icon_stocks', 'icon_crypto', 'icon_gold', 'icon_battery_horizontal'] },
+              { label: 'Transactions', names: ['icon_transfer', 'icon_receive', 'icon_buy_and_sell_crypto', 'icon_crypto_transfers'] },
+              { label: 'Categories', names: ['icon_grocery', 'icon_grocery_1', 'icon_food', 'icon_car', 'icon_healthcare', 'icon_healthcare_1', 'icon_shopping', 'icon_bills'] },
+              { label: 'Budgeting & Insights', names: ['icon_budget', 'icon_duration', 'icon_aiinsights', 'icon_aimage', 'icon_track_spending', 'icon_spending_alert', 'icon_scheduled_payments', 'icon_automatic_savings'] },
+              { label: 'UI & Navigation', names: ['icon_home', 'icon_more', 'icon_chevron_expand_less', 'icon_chevron_expand_more', 'icon_triangle_up', 'icon_triangle_down'] },
+              { label: 'Other', names: ['icon_pdf', 'icon_monarchacademy'] },
+            ]
+            const iconCell = (name: IconName) => (
+              <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem', color: 'var(--mapped-icon-default-default)' }}>
+                <Icon name={name} size="m" />
+                <span style={{ fontSize: '0.5rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', maxWidth: '4rem', textAlign: 'center', wordBreak: 'break-all' }}>{name}</span>
+              </div>
+            )
+            return (
+              <div id="section-icon" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+                <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+                  Icon
+                </h1>
+                <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+                  94 icons (59 Material Round + 35 Custom) — sized via --brand-scale-* — inherits currentColor
+                </p>
+
+                {GROUPS.map(({ label, names }) => (
+                  <div key={label} style={{ marginBottom: '1.75rem' }}>
+                    <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                      {label}
+                    </p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', alignItems: 'flex-end' }}>
+                      {names.map(iconCell)}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Custom icons */}
+                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--mapped-text-primary-default)', marginBottom: '1rem', marginTop: '0.25rem', borderTop: '1px solid var(--mapped-border-subtlest-default)', paddingTop: '1.5rem' }}>
+                  Custom icons — currentColor normalized
+                </p>
+                {CUSTOM_GROUPS.map(({ label, names }) => (
+                  <div key={label} style={{ marginBottom: '1.75rem' }}>
+                    <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                      {label}
+                    </p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', alignItems: 'flex-end' }}>
+                      {names.map(iconCell)}
+                    </div>
+                  </div>
+                ))}
+
+                {/* currentColor test: custom icon inside a primary button */}
+                <div style={{ marginBottom: '1.75rem' }}>
+                  <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                    currentColor test — custom inside primary button (should be white)
+                  </p>
+                  <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <Button variant="primary" size="m" label="Wallet" leadingIcon={<Icon name="icon_wallet" size="m" />} />
+                    <Button variant="primary" size="m" label="Finance" leadingIcon={<Icon name="icon_finance" size="m" />} />
+                    <Button variant="primary" size="m" label="Transfer" leadingIcon={<Icon name="icon_transfer" size="m" />} />
+                  </div>
+                </div>
+
+                {/* Size comparison */}
+                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem', marginTop: '0.5rem' }}>
+                  Sizes — s 16px · m 20px · l 24px
+                </p>
+                <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-end', marginBottom: '1.75rem', color: 'var(--mapped-icon-default-default)' }}>
+                  {(['s', 'm', 'l'] as const).map(sz => (
+                    <div key={sz} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}>
+                      <Icon name="search" size={sz} />
+                      <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>{sz}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Color inheritance */}
+                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                  Color inheritance
+                </p>
+                <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                    <Icon name="search" size="l" />
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>body</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                    <span style={{ color: 'var(--mapped-text-primary-default)' }}><Icon name="search" size="l" /></span>
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>primary</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                    <div style={{ background: 'var(--mapped-surface-primary-default)', padding: 'var(--brand-scale-200)', borderRadius: 'var(--brand-scale-200)', color: 'var(--mapped-text-primary-on-color)', display: 'inline-flex' }}>
+                      <Icon name="search" size="l" />
+                    </div>
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>on-color</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                    <span style={{ color: 'var(--mapped-text-error-default-default, #c00)' }}><Icon name="error" size="l" /></span>
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>error</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                    <span style={{ color: 'var(--mapped-text-success-default-default, #1a7a3a)' }}><Icon name="check_circle" size="l" /></span>
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>success</span>
+                  </div>
+                </div>
+              </div>
+            )
+          })()}
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {tab === 'components' && (
+        <>
+          {/* Logo */}
+          <div id="section-logo" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
+              Logo
+            </h1>
+            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+              30 logos auto-registered from Assets/logo/ — full color preserved — no token coloring
+            </p>
+
+            {(['brand', 'crypto'] as const).map(category => (
+              <div key={category} style={{ marginBottom: '2.5rem' }}>
+                <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '1rem' }}>
+                  {category}
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', alignItems: 'center' }}>
+                  {LOGOS_BY_CATEGORY[category].map(({ name }) => (
+                    <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                      <div style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        padding: '0.5rem', borderRadius: 'var(--brand-scale-200)',
+                        background: 'var(--mapped-surface-subtle-default, #f5f5f5)',
+                        minWidth: '3rem',
+                      }}>
+                        <Logo name={name} size="m" />
+                      </div>
+                      <span style={{ fontSize: '0.55rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', maxWidth: '4.5rem', textAlign: 'center', wordBreak: 'break-all' }}>
+                        {name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Header ─────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div id="section-header" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Header</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            HeaderBg (mobile screen header, swappable background slot) and HeaderDefault (function-flow header, 6 variants)
+          </p>
+          <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>HeaderBg — default</div>
+              <div style={{ width: '375px', maxWidth: '100%' }}>
+                <HeaderBg
+                  variant="default"
+                  background={<div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, #1a1f6e 0%, #2a4dbd 40%, #4f7fe0 70%, #cfa64a 100%)' }} />}
+                />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>HeaderBg — noSearchBar</div>
+              <div style={{ width: '375px', maxWidth: '100%' }}>
+                <HeaderBg
+                  variant="noSearchBar"
+                  background={<div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, #1a1f6e 0%, #2a4dbd 40%, #4f7fe0 70%, #cfa64a 100%)' }} />}
+                />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>HeaderBg — compact</div>
+              <div style={{ width: '375px', maxWidth: '100%' }}>
+                <HeaderBg
+                  variant="compact"
+                  title="Finance"
+                  background={<div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, #1a1f6e 0%, #2a4dbd 40%, #4f7fe0 70%, #cfa64a 100%)' }} />}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginTop: '2.5rem' }}>
+            <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>HeaderDefault — 6 variants</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: '500px', border: '1px solid var(--mapped-border-subtlest-default, #ccc)', borderRadius: '0.5rem', overflow: 'hidden' }}>
+              <HeaderDefault title="Title" subtitle="Subtitle" hasSubtitle actionLabel="Action" />
+              <HeaderDefault title="Title" subtitle="Subtitle" hasSubtitle />
+              <HeaderDefault subtitle="Subtitle" hasSubtitle isProgressStepper currentStep={1} totalSteps={7} />
+              <HeaderDefault title="Title" hasSubtitle={false} />
+              <HeaderDefault hasSubtitle={false} isProgressStepper currentStep={3} totalSteps={7} />
+              <HeaderDefault title="Title" hasSubtitle={false} actionLabel="Action" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── StatusBar ──────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <div id="section-status-bar" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>StatusBar</h1>
+          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
+            Fake OS-chrome status bar — Light/Dark modes are fixed per surface, not tied to the app theme
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '375px' }}>
+            <div style={{ background: '#ffffff', border: '1px solid var(--mapped-border-subtlest-default, #ccc)' }}>
+              <StatusBar mode="Light" />
+            </div>
+            <div style={{ background: '#262626' }}>
+              <StatusBar mode="Dark" />
+            </div>
+          </div>
+        </div>
+      )}
+
+        </main>
+      </div>
     </div>
   )
 }

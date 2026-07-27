@@ -7,6 +7,7 @@
   border: var(--brand-scale-25) solid var(--mapped-border-subtle-default);
   border-radius: var(--brand-scale-200); /* 8px */
   background: transparent;
+  color: var(--mapped-text-default-default); /* icon (currentColor) + label both follow this */
   cursor: pointer;
   font-family: inherit;
   transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
@@ -22,7 +23,7 @@
 }
 
 .filter-chip__label {
-  color: var(--mapped-text-default-default);
+  color: inherit; /* follows .filter-chip color, so icon + label always match */
 }
 
 /* === Icon-driven padding/gap (Figma: icon hugs its adjacent edge at 12px, opposite edge stays 16px) === */
@@ -53,14 +54,10 @@
    Figma's omitted combos. See docs/component-tokens.md for full rationale. */
 .filter-chip:not(.filter-chip--selected):hover:not(:active) {
   background: var(--mapped-surface-subtle-hover);
-}
-.filter-chip:not(.filter-chip--selected):hover:not(:active) .filter-chip__label {
   color: var(--mapped-text-default-hover);
 }
 .filter-chip:not(.filter-chip--selected):active {
   background: var(--mapped-surface-subtle-pressed);
-}
-.filter-chip:not(.filter-chip--selected):active .filter-chip__label {
   color: var(--mapped-text-default-pressed);
 }
 
@@ -69,9 +66,16 @@
   border-color: var(--mapped-border-primary-default);
   /* No opacity/tint token exists in source — derived from the real mapped border token. See docs. */
   background: color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent);
-}
-.filter-chip--selected .filter-chip__label {
   color: var(--mapped-text-primary-default);
+}
+/* Selected hover/press — user-requested feedback (deliberate addition beyond
+   Figma source): deepen the same border-derived tint so the fill reads
+   brighter/darker on interaction. */
+.filter-chip--selected:hover:not(:active) {
+  background: color-mix(in srgb, var(--mapped-border-primary-default) 16%, transparent);
+}
+.filter-chip--selected:active {
+  background: color-mix(in srgb, var(--mapped-border-primary-default) 24%, transparent);
 }
 
 /* === Focus (keyboard) === */
@@ -83,14 +87,10 @@
 /* Preview overrides — showcase only, not for production use */
 .filter-chip[data-preview="hover"]:not(.filter-chip--selected) {
   background: var(--mapped-surface-subtle-hover) !important;
-}
-.filter-chip[data-preview="hover"]:not(.filter-chip--selected) .filter-chip__label {
   color: var(--mapped-text-default-hover) !important;
 }
 .filter-chip[data-preview="pressed"]:not(.filter-chip--selected) {
   background: var(--mapped-surface-subtle-pressed) !important;
-}
-.filter-chip[data-preview="pressed"]:not(.filter-chip--selected) .filter-chip__label {
   color: var(--mapped-text-default-pressed) !important;
 }
 .filter-chip[data-preview="focus"] {

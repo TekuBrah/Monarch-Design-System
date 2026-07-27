@@ -1147,7 +1147,7 @@ A single-selection toggle chip — button-like pill that flips between an unsele
 | `default`, any icon combo | `--mapped-border-subtle-default` | transparent | `--mapped-text-default-default` |
 | `Selected`, any icon combo | `--mapped-border-primary-default` | `color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent)` | `--mapped-text-primary-default` |
 
-Icons are caller-supplied `ReactNode` slots (e.g. `<Icon name="..." />`), coloring via `currentColor` inheritance — no dedicated icon-color token needed.
+Icons are caller-supplied `ReactNode` slots (e.g. `<Icon name="..." />`), coloring via `currentColor` inheritance — **the color is set once on the root `.filter-chip`** (`color: var(--mapped-text-default-default)`, overridden to `--mapped-text-primary-default` when `.filter-chip--selected`), and `.filter-chip__label`/`.filter-chip__icon` both inherit it via `color: inherit`. This guarantees the icon always matches the label/border in every state without a second token. **Fixed** — icons previously had no color set at all (defaulted to black), so a selected chip's icon didn't follow its blue label/border.
 
 ### Geometry
 
@@ -1167,9 +1167,19 @@ Icons are caller-supplied `ReactNode` slots (e.g. `<Icon name="..." />`), colori
 
 Figma's source (12:137) defines only 2 states — `default` and `Selected` — with **no hover or press variant at all**, for either selection state. This differs from the Tab gap (where Figma defines hover/press but omits only the `hover+selected`/`press+selected` combo): here the omission is total.
 
-**Decision:** added hover/press feedback for the **unselected** state only (`--mapped-surface-subtle-hover`/`-pressed` background, `--mapped-text-default-hover`/`-pressed` text). No selected+hover/press combo was added, consistent with Tab's precedent of respecting Figma's omitted combos rather than inventing new ones.
+**Decision:** added hover/press feedback for the **unselected** state (`--mapped-surface-subtle-hover`/`-pressed` background, `--mapped-text-default-hover`/`-pressed` text, inherited by the icon).
 
 This is a **case-by-case UX call, not a CLAUDE.md mandate and not an automatic extension of the Tag precedent** — CLAUDE.md's "map interaction states to tokens" rule governs which token layer to use once a state is needed, it does not mandate inventing states absent from Figma. Future components with similarly sparse interaction-state source should be evaluated individually, not assumed to get the same treatment automatically.
+
+**REVISED — selected+hover/press added.** Originally the selected state was excluded from hover/press entirely (`:not(.filter-chip--selected)` on both rules), matching Tab's precedent of respecting Figma's omitted combos. User feedback: a selected filter chip is still clickable (to deselect) and needs the same interaction feedback as unselected — the omission read as a bug, not a deliberate omission, once live. Fixed by deepening the same border-derived tint on hover/press:
+
+| Selected state | Background |
+|---|---|
+| default | `color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent)` |
+| hover | `color-mix(in srgb, var(--mapped-border-primary-default) 16%, transparent)` |
+| pressed | `color-mix(in srgb, var(--mapped-border-primary-default) 24%, transparent)` |
+
+The 16%/24% steps are not Figma-sourced (Figma has no selected-hover/press variant at all, per above) — chosen to read as a visible brighten/darken of the existing 10% tint, consistent in direction with how the unselected state darkens on press. Border/text color unchanged across selected states.
 
 ### Known Figma inconsistencies
 
@@ -2320,9 +2330,18 @@ deferred).
 | Card background | `--mapped-surface-elevation-default` (dark-flips) |
 | Card radius | `--brand-scale-200` (8px) |
 | Card padding | `--brand-scale-300` (12px) top/bottom, 0 sides |
-| Card gap | `--brand-scale-200` (8px) |
+| Card gap (search bar ↔ list) | `--brand-scale-200` (8px), via `.menu`'s own `gap` |
+| List row gap (`.menu__list`) | `var(--spacing-none)` — **0**, rows sit flush | 
 | Search bar wrapper padding | `--brand-scale-200` (8px) horizontal |
 | Search field | `Field` (unmodified) |
+
+**REVISED — inter-item gap removed.** `.menu__list` originally reused the
+card's own `--brand-scale-200` (8px) gap between `MenuItem` rows. User
+feedback: dropdown menu items should sit with no gap between them at all —
+each row's own padding/hover background is what should separate them
+visually, not a track gap. Fixed to `var(--spacing-none)`. The `.menu`
+card-level gap (search bar to list) is untouched — this only affects spacing
+*between* rows inside `.menu__list`.
 
 ### Known Figma inconsistencies
 
@@ -2836,11 +2855,16 @@ a `:focus-visible` outline in the on-color text colour.
 - **`ai` gradient uses brand primitives** (`--brand-blue-500 → --brand-violet-500`),
   no mapped gradient token — the same approved treatment as `ProgressRing`;
   fixed, does not dark-flip.
-- **Icons go black in dark mode.** `--mapped-icon-primary-on-color` (Figma's
-  `icon/primary/on-color`) resolves to **black** in dark, while the paired
-  **text** on-color token stays white — so in dark mode the title is white but
-  the icons are black on the coloured banner. Kept as bound **by decision**
-  (faithful to Figma); flagged as a likely dark-mode token bug in the source.
+- **RESOLVED — icons no longer go black in dark mode.** `--mapped-icon-primary-on-color`
+  was bound to `Foundations.black` in `Mapped/Dark.json` (Figma's own dark
+  export), while the paired **text** on-color token correctly stayed white —
+  so in dark mode the title was white but icons were black on the coloured
+  banner. Fixed at the token layer (dark-mode repair, see CLAUDE.md's known
+  items): the whole `on-color` family (`text.*.on-color`, `icon.*.on-color`,
+  `border.on-color`, `Blanket.on-color`) now uses each token's own light
+  value in dark, since this content sits on a *fixed* colored surface that
+  doesn't invert with the app theme. No component change needed — `Toast`
+  already referenced the correct token names.
 - **Two components** (per decision): `Toast` (desktop) + `ToastMobile`
   (compact), matching Figma's two symbols, rather than one component with a
   `layout` prop.

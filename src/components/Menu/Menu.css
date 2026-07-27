@@ -33,6 +33,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--brand-scale-200); /* 8px — matches .menu's inter-item gap */
+  gap: var(--spacing-none); /* items sit flush — no gap between dropdown rows */
   width: 100%;
 }

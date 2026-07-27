@@ -73,27 +73,39 @@ src/
 - **Per-layer scripts**: consider consolidating into a single `npm run build:tokens`
   that runs all five in order. Style Dictionary is a longer-term option if the
   pipeline grows complex.
-- **PARTIALLY RESOLVED — `on-color`/`Interactive.on-color` dark-mode bindings.**
-  In `Mapped/Dark.json`, this family was bound to `Foundations.black` (verified
-  in the JSON). These tokens describe content on a *fixed* colored surface that
-  doesn't flip with the app theme, so black bindings were a real semantic error.
+- **RESOLVED — `on-color`/`Interactive.on-color` dark-mode bindings, plus a
+  broader dark-mode token audit/repair.** In `Mapped/Dark.json`, the entire
+  `on-color` family (`text.on-color.heading/body`, `text.*.on-color`,
+  `icon.*.on-color`, `border.on-color`, `Blanket.on-color`,
+  `surface/border.Interactive.on-color`) was bound to `Foundations.black`
+  (verified in the JSON). These tokens describe content on a *fixed* colored
+  surface that doesn't flip with the app theme, so black bindings were a real
+  semantic error.
   - **FIXED (2026-07-22, manual JSON edit — user maintains Figma but exports
-    manually):** `surface.Interactive.on-color{,-hover,-pressed}` →
-    `{Foundations.white}` / `{Neutral.100}` / `{Neutral.200}`, and
-    `border.Interactive.on-color{,-hover,-pressed}` → `{Foundations.white}` /
-    `{Surface.100}` / `{Surface.200}`, matching Figma's Inverse-variant dark
-    values. This is the family `Button`/`IconButton` depend on. Those two
-    components were also refactored to collapse the old `inverse` appearance
-    into `[data-theme="dark"]` (no more `appearance` prop) — see
-    `docs/component-tokens.md`'s Button entry. Both now render correctly in dark
-    (white primary, white-bordered secondary, alpha-wash hover). Zero blast
-    radius: the `interactive-on-color` family is consumed only by the buttons.
-  - **STILL OUTSTANDING:** `text.on-color.heading/body`, `icon.*.on-color`, and
-    other `on-color` members remain bound to `Foundations.black` in Dark.json.
-    Not consumed by Button/IconButton, but the narrower workarounds in `Toast`
-    (icons), `Badge` (`dark` appearance), `ProgressRing` (pill), and `HeaderBg`
-    (static color) are still in place for those. A proper Figma Variables fix +
-    re-sync would let those self-correct; until then they stay as-is.
+    manually), in two passes:**
+    1. `surface/border.Interactive.on-color{,-hover,-pressed}` → white /
+       neutral-100 / neutral-200 (surface) and white / surface-100 /
+       surface-200 (border), matching Figma's Inverse-variant dark values —
+       the family `Button`/`IconButton` depend on. Those two components were
+       also refactored to collapse the old `inverse` appearance into
+       `[data-theme="dark"]` (no more `appearance` prop) — see
+       `docs/component-tokens.md`'s Button entry.
+    2. A full dark-mode audit (read-only phase, then applied by explicit
+       cluster-by-cluster approval) found the same black-binding pattern
+       across the **entire** `on-color` family plus two more clusters: the
+       neutral surface ramp (`subtlest`/`subtle`/`default`) resolving to
+       *light* grays on a black page instead of dark ones, and
+       `primary.default-subtle` hover/pressed/selected collapsing to
+       page-black (invisible feedback). All three clusters fixed by
+       re-pointing existing tokens in `Mapped/Dark.json` only — no new
+       tokens, no `:root`/light-mode changes (verified byte-identical after
+       each cluster). Fixed real breakage in `Badge` `default` (text
+       contrast was 1.03, now 10.24), `Toast`/`ToastMobile` icons, `Chips`,
+       `Tab`/`MenuItem`/`Select`-family hover-selected states, and
+       Avatar/ProgressBar/Slider/RangeSlider track fills.
+  - Zero component-code changes were required for this repair — it was
+    entirely a `Mapped/Dark.json` → regenerate fix, per the pipeline's
+    light/dark block separation (see `build-mapped.mjs`).
 
 ## Next
 Build the first component (e.g. Button) on top of the token foundation:
@@ -244,3 +256,16 @@ per-component stops for the next one.
 - Incremental. One layer/component at a time. Verify before proceeding.
 - Do not generate many files unseen — show output, review, then continue.
 - Components consume tokens (CSS vars / `.type-*` classes). No hardcoded values.
+
+## Build roadmap
+
+`MONARCH-BUILD-ROADMAP.md` (repo root) holds the locked plan for the current
+work: phase/step structure, locked architectural decisions (D1–D8), standing
+rules, and parked items.
+
+- When a session references a phase or step number (e.g. "Phase 0, Step 0.1"),
+  read the roadmap first and follow that step's stated scope, gates, and
+  acceptance criteria.
+- Do not deviate from a locked decision in the D-table. If a step appears to
+  require deviating, STOP and report rather than proceeding.
+- Do not mark checkboxes complete on your own initiative. Teku does that.

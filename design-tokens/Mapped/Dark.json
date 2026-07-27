@@ -2,7 +2,7 @@
   "text": {
     "on-color": {
       "heading": {
-        "value": "{Foundations.black}",
+        "value": "{Foundations.white}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -12,7 +12,7 @@
         }
       },
       "body": {
-        "value": "{Foundations.black}",
+        "value": "{Foundations.white}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -156,7 +156,7 @@
         }
       },
       "on-color": {
-        "value": "{Foundations.black}",
+        "value": "{Foundations.white}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -166,7 +166,7 @@
         }
       },
       "on-color-hover": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -186,7 +186,7 @@
         }
       },
       "on-color-pressed": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.200}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -218,7 +218,7 @@
         }
       },
       "on-color": {
-        "value": "{Foundations.black}",
+        "value": "{Foundations.white}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -228,7 +228,7 @@
         }
       },
       "on-color-hover": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -248,7 +248,7 @@
         }
       },
       "on-color-pressed 2": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.200}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -280,7 +280,7 @@
         }
       },
       "on-color": {
-        "value": "{Foundations.black}",
+        "value": "{Foundations.white}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -290,7 +290,7 @@
         }
       },
       "on-color-hover": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -310,7 +310,7 @@
         }
       },
       "on-color-pressed": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.200}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -342,7 +342,7 @@
         }
       },
       "on-color": {
-        "value": "{Foundations.black}",
+        "value": "{Foundations.white}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -352,7 +352,7 @@
         }
       },
       "on-color-hover": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -372,7 +372,7 @@
         }
       },
       "on-color-pressed": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.200}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -500,7 +500,7 @@
         }
       },
       "on-color": {
-        "value": "{Foundations.black}",
+        "value": "{Foundations.white}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -510,7 +510,7 @@
         }
       },
       "on-color-hover": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -520,7 +520,7 @@
         }
       },
       "on-color-pressed": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.200}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -586,7 +586,7 @@
         }
       },
       "on-color": {
-        "value": "{Foundations.black}",
+        "value": "{Foundations.white}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -596,7 +596,7 @@
         }
       },
       "on-color-hover": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -616,7 +616,7 @@
         }
       },
       "on-color-pressed": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.200}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -648,7 +648,7 @@
         }
       },
       "on-color": {
-        "value": "{Foundations.black}",
+        "value": "{Error.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -658,7 +658,7 @@
         }
       },
       "on-color-hover": {
-        "value": "{Foundations.black}",
+        "value": "{Error.200}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -678,7 +678,7 @@
         }
       },
       "on-color-pressed": {
-        "value": "{Foundations.black}",
+        "value": "{Error.300}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -710,7 +710,7 @@
         }
       },
       "on-color": {
-        "value": "{Foundations.black}",
+        "value": "{Information.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -720,7 +720,7 @@
         }
       },
       "on-color-hover": {
-        "value": "{Foundations.black}",
+        "value": "{Information.200}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -740,7 +740,7 @@
         }
       },
       "on-color-pressed": {
-        "value": "{Foundations.black}",
+        "value": "{Information.300}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -772,7 +772,7 @@
         }
       },
       "on-color": {
-        "value": "{Foundations.black}",
+        "value": "{Warning.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -782,7 +782,7 @@
         }
       },
       "on-color-hover": {
-        "value": "{Foundations.black}",
+        "value": "{Warning.200}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -802,7 +802,7 @@
         }
       },
       "on-color-pressed": {
-        "value": "{Foundations.black}",
+        "value": "{Warning.300}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -834,7 +834,7 @@
         }
       },
       "on-color": {
-        "value": "{Foundations.black}",
+        "value": "{Success.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -844,7 +844,7 @@
         }
       },
       "on-color-hover": {
-        "value": "{Foundations.black}",
+        "value": "{Success.200}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -864,7 +864,7 @@
         }
       },
       "on-color-pressed": {
-        "value": "{Foundations.black}",
+        "value": "{Success.300}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -992,7 +992,7 @@
         }
       },
       "on-color": {
-        "value": "{Foundations.black}",
+        "value": "{Foundations.white}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1002,7 +1002,7 @@
         }
       },
       "on-color-hover": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1012,7 +1012,7 @@
         }
       },
       "on-color-pressed": {
-        "value": "{Foundations.black}",
+        "value": "{Neutral.200}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1088,7 +1088,7 @@
         }
       },
       "default-subtle-hover": {
-        "value": "{Foundations.black}",
+        "value": "{Surface.900}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1108,7 +1108,7 @@
         }
       },
       "default-subtle-pressed": {
-        "value": "{Foundations.black}",
+        "value": "{Surface.800}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1118,7 +1118,7 @@
         }
       },
       "default-subtle-selected": {
-        "value": "{Foundations.black}",
+        "value": "{Surface.900}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1150,7 +1150,7 @@
     },
     "subtle": {
       "default": {
-        "value": "{Surface.300}",
+        "value": "{Surface.900}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1160,7 +1160,7 @@
         }
       },
       "hover": {
-        "value": "{Surface.200}",
+        "value": "{Surface.800}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1170,7 +1170,7 @@
         }
       },
       "pressed": {
-        "value": "{Surface.400}",
+        "value": "{Surface.700}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1384,7 +1384,7 @@
     },
     "Default": {
       "default": {
-        "value": "{Surface.500}",
+        "value": "{Surface.800}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1394,7 +1394,7 @@
         }
       },
       "hover": {
-        "value": "{Surface.400}",
+        "value": "{Surface.700}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1416,7 +1416,7 @@
     },
     "subtlest": {
       "default": {
-        "value": "{Surface.200}",
+        "value": "{Surface.950}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1426,7 +1426,7 @@
         }
       },
       "hover": {
-        "value": "{Surface.150}",
+        "value": "{Surface.900}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1436,7 +1436,7 @@
         }
       },
       "pressed": {
-        "value": "{Surface.300}",
+        "value": "{Surface.800}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1566,7 +1566,7 @@
         }
       },
       "default-subtle": {
-        "value": "{Foundations.black}",
+        "value": "{Surface.800}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1576,7 +1576,7 @@
         }
       },
       "default-subtle-hover": {
-        "value": "{Foundations.black}",
+        "value": "{Surface.700}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1596,7 +1596,7 @@
         }
       },
       "default-subtle-pressed": {
-        "value": "{Foundations.black}",
+        "value": "{Surface.600}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1647,7 +1647,7 @@
       }
     },
     "on-color": {
-      "value": "{Foundations.black}",
+      "value": "{Foundations.white}",
       "type": "color",
       "$extensions": {
         "com.figma.scopes": [
@@ -1985,7 +1985,7 @@
       }
     },
     "on-color": {
-      "value": "{Foundations.black}",
+      "value": "{Foundations.white}",
       "type": "color",
       "$extensions": {
         "com.figma.scopes": [
