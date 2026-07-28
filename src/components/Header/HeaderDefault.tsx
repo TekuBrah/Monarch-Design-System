@@ -1,4 +1,3 @@
-import React from 'react'
 import { Icon } from '../Icon'
 import { Link } from '../Link'
 import { ProgressStepper } from '../ProgressStepper'

@@ -1,4 +1,3 @@
-import React from 'react'
 import './CardDataDisplay.css'
 
 export interface CardDataDisplayProps {

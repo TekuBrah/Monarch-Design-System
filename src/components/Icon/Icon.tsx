@@ -1,4 +1,3 @@
-import React from 'react'
 import { ElementWrapper } from '../ElementWrapper'
 import type { ElementWrapperSize } from '../ElementWrapper'
 import { ICONS } from './icons'

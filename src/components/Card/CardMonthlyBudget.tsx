@@ -1,4 +1,3 @@
-import React from 'react'
 import { Icon } from '../Icon'
 import { ProgressRing } from '../ProgressRing'
 import { SummaryItem } from '../Item'

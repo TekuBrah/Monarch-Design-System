@@ -1,4 +1,3 @@
-import React from 'react'
 import './Radio.css'
 
 export interface RadioProps {

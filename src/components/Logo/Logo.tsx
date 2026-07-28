@@ -1,4 +1,3 @@
-import React from 'react'
 import './Logo.css'
 import { LOGO_MAP } from './logos'
 import type { LogoName, LogoCategory } from './logos'

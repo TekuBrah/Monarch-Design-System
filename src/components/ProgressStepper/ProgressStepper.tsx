@@ -1,4 +1,3 @@
-import React from 'react'
 import './ProgressStepper.css'
 
 export interface ProgressStepperProps {

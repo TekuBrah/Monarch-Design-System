@@ -1,4 +1,3 @@
-import React from 'react'
 import './Divider.css'
 
 export type DividerWeight = 1 | 2
