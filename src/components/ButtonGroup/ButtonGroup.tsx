@@ -9,7 +9,7 @@ export interface ButtonGroupItem {
   /** Stable identity for React keys; falls back to label+index if omitted. */
   id?: string
   onClick?: React.MouseEventHandler<HTMLButtonElement>
-  disabled?: boolean
+  isDisabled?: boolean
 }
 
 export interface ButtonGroupProps {
@@ -37,7 +37,7 @@ export function ButtonGroup({ buttons, onMoreClick, moreAriaLabel = 'More action
           size="m"
           label={b.label}
           onClick={b.onClick}
-          disabled={b.disabled}
+          isDisabled={b.isDisabled}
         />
       ))}
     </div>

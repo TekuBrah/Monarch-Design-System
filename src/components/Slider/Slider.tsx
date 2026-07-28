@@ -7,7 +7,7 @@ export interface SliderProps {
   max?: number
   step?: number
   onChange?: (value: number) => void
-  disabled?: boolean
+  isDisabled?: boolean
   id?: string
   className?: string
   ariaLabel?: string
@@ -21,7 +21,7 @@ export function Slider({
   max = 100,
   step = 1,
   onChange,
-  disabled = false,
+  isDisabled = false,
   id,
   className,
   ariaLabel,
@@ -43,7 +43,7 @@ export function Slider({
   }
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (disabled) return
+    if (isDisabled) return
     e.preventDefault()
     setFromClientX(e.clientX)
     thumbRef.current?.focus()
@@ -59,7 +59,7 @@ export function Slider({
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (disabled) return
+    if (isDisabled) return
     let next = value
     switch (e.key) {
       case 'ArrowLeft':
@@ -75,7 +75,7 @@ export function Slider({
   }
 
   return (
-    <div className={['slider', disabled && 'slider--disabled', className].filter(Boolean).join(' ')} id={id}>
+    <div className={['slider', isDisabled && 'slider--disabled', className].filter(Boolean).join(' ')} id={id}>
       <div className="slider__track" ref={trackRef} onPointerDown={handlePointerDown}>
         <div className="slider__fill" style={{ width: `${pct}%` }} />
         <div
@@ -83,13 +83,13 @@ export function Slider({
           ref={thumbRef}
           style={{ left: `${pct}%` }}
           role="slider"
-          tabIndex={disabled ? -1 : 0}
+          tabIndex={isDisabled ? -1 : 0}
           aria-valuenow={value}
           aria-valuemin={min}
           aria-valuemax={max}
           aria-valuetext={ariaValueText}
           aria-label={ariaLabel}
-          aria-disabled={disabled || undefined}
+          aria-disabled={isDisabled || undefined}
           onKeyDown={handleKeyDown}
         >
           <span className="slider__halo" aria-hidden="true" />

@@ -1383,7 +1383,7 @@ export default function App() {
                           <Button variant={variant} size={size} label="Button"
                             leadingIcon={<Icon name="add" size={size} />}
                             trailingIcon={<Icon name="chevron_right" size={size} />}
-                            disabled
+                            isDisabled
                           />
                         </td>
                       ))}
@@ -1445,7 +1445,7 @@ export default function App() {
                       <td style={{ padding: '0.4rem 1.5rem 0.4rem 0', color: 'var(--mapped-text-subtle-default, #888)' }}>disabled</td>
                       {(['primary', 'secondary', 'tertiary'] as ButtonVariant[]).map(variant => (
                         <td key={variant} style={{ padding: '0.4rem 1.5rem 0.4rem 0' }}>
-                          <IconButton variant={variant} size={size} icon={<Icon name="add" size="l" />} ariaLabel={variant} disabled />
+                          <IconButton variant={variant} size={size} icon={<Icon name="add" size="l" />} ariaLabel={variant} isDisabled />
                         </td>
                       ))}
                     </tr>
@@ -2031,7 +2031,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>disabled</div>
               <div style={{ maxWidth: '246px' }}>
-                <Slider value={60} disabled ariaLabel="Disabled slider" />
+                <Slider value={60} isDisabled ariaLabel="Disabled slider" />
               </div>
             </div>
           </div>

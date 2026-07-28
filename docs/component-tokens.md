@@ -79,7 +79,7 @@ showcase's dark panel, or `ToastMobile`'s action slot on its colored surface).
 | `label` | `string` | `'Button'` | Visible text label |
 | `leadingIcon` | `ReactNode` | — | Optional icon before label |
 | `trailingIcon` | `ReactNode` | — | Optional icon after label |
-| `disabled` | `boolean` | `false` | |
+| `isDisabled` | `boolean` | `false` | |
 | `onClick` | `MouseEventHandler` | — | |
 | `previewState` | `'hover' \| 'pressed' \| 'focus'` | — | Showcase-only: forces a visual state without interaction |
 
@@ -251,7 +251,7 @@ An icon-only action trigger. Shares the full variant classes with Button — sam
 | `size` | `IconButtonSize` | `'m'` | `'s'` \| `'m'` \| `'l'` |
 | `icon` | `ReactNode` | — | The icon content; wrapped in `ElementWrapper size="l"` (24px) |
 | `ariaLabel` | `string` | — | Accessible name — required in production for icon-only buttons |
-| `disabled` | `boolean` | `false` | |
+| `isDisabled` | `boolean` | `false` | |
 | `onClick` | `MouseEventHandler` | — | |
 | `previewState` | `'hover' \| 'pressed' \| 'focus'` | — | Showcase-only |
 
@@ -1088,12 +1088,12 @@ A composite that pairs a leading "more actions" trigger with a row of primary ac
 
 | Prop | Type | Default | Notes |
 |---|---|---|---|
-| `buttons` | `ButtonGroupItem[]` | — | Array of `{ label, id?, onClick?, disabled? }` — one `Button` per item |
+| `buttons` | `ButtonGroupItem[]` | — | Array of `{ label, id?, onClick?, isDisabled? }` — one `Button` per item |
 | `onMoreClick` | `(e) => void` | — | Click handler for the leading `IconButton` trigger |
 | `moreAriaLabel` | `string` | `'More actions'` | `aria-label` on the leading `IconButton` |
 | `ariaLabel` | `string` | `'Button group'` | Accessible name for the wrapping `role="group"` |
 
-`ButtonGroupItem` type: `{ label: string; id?: string; onClick?: MouseEventHandler; disabled?: boolean }`
+`ButtonGroupItem` type: `{ label: string; id?: string; onClick?: MouseEventHandler; isDisabled?: boolean }`
 
 The wrapper is a `role="group"` with `aria-label`. React keys use `item.id` when provided, falling back to `` `${label}-${index}` `` (labels alone aren't unique — the showcase intentionally repeats "Button"), so pass `id` for stable identity when items can reorder.
 
@@ -2687,7 +2687,7 @@ focus/drag. Sibling of `RangeSlider` (shares the thumb/track look).
 | `value` | `number` | — | Current value |
 | `min` / `max` / `step` | `number` | `0` / `100` / `1` | Scale + increment |
 | `onChange` | `(value: number) => void` | — | Fires on drag, track-click, and keyboard |
-| `disabled` | `boolean` | `false` | |
+| `isDisabled` | `boolean` | `false` | |
 | `id` / `className` | `string` | — | |
 | `ariaLabel` | `string` | — | Accessible name |
 | `ariaValueText` | `string` | — | Human-readable value for AT |
@@ -2749,7 +2749,7 @@ synced with the thumbs. Thumbs cannot cross.
 | `formatValue` | `(value) => string` | `String` | Formats tooltip + Field text (e.g. `` v => `RM ${v}` ``) |
 | `showTooltip` | `boolean` | `true` | Tooltip on the active thumb |
 | `showInputs` | `boolean` | `true` | The Field row |
-| `disabled` | `boolean` | `false` | |
+| `isDisabled` | `boolean` | `false` | |
 | `id` / `className` | `string` | — | |
 | `ariaLabelMin` / `ariaLabelMax` | `string` | `'Minimum'` / `'Maximum'` | Per-thumb names |
 

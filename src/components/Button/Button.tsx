@@ -10,7 +10,7 @@ export interface ButtonProps {
   label?: string
   leadingIcon?: React.ReactNode
   trailingIcon?: React.ReactNode
-  disabled?: boolean
+  isDisabled?: boolean
   onClick?: React.MouseEventHandler<HTMLButtonElement>
   /** Showcase only — forces a visual state without interaction */
   previewState?: 'hover' | 'pressed' | 'focus'
@@ -22,14 +22,14 @@ export function Button({
   label = 'Button',
   leadingIcon,
   trailingIcon,
-  disabled = false,
+  isDisabled = false,
   onClick,
   previewState,
 }: ButtonProps) {
   return (
     <button
       type="button"
-      disabled={disabled}
+      disabled={isDisabled}
       onClick={onClick}
       data-preview={previewState}
       className={`btn btn--${variant} btn--${size}`}

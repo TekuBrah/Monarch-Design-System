@@ -11,7 +11,7 @@ export interface IconButtonProps {
   size?: IconButtonSize
   icon?: React.ReactNode
   ariaLabel?: string
-  disabled?: boolean
+  isDisabled?: boolean
   onClick?: React.MouseEventHandler<HTMLButtonElement>
   /** Showcase only — forces a visual state without interaction */
   previewState?: 'hover' | 'pressed' | 'focus'
@@ -24,14 +24,14 @@ export function IconButton({
   size = 'm',
   icon,
   ariaLabel,
-  disabled = false,
+  isDisabled = false,
   onClick,
   previewState,
 }: IconButtonProps) {
   return (
     <button
       type="button"
-      disabled={disabled}
+      disabled={isDisabled}
       onClick={onClick}
       aria-label={ariaLabel}
       data-preview={previewState}

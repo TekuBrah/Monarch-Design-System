@@ -18,7 +18,7 @@ export interface RangeSliderProps {
   formatValue?: (value: number) => string
   showTooltip?: boolean
   showInputs?: boolean
-  disabled?: boolean
+  isDisabled?: boolean
   id?: string
   className?: string
   ariaLabelMin?: string
@@ -42,7 +42,7 @@ export function RangeSlider({
   formatValue = v => String(v),
   showTooltip = true,
   showInputs = true,
-  disabled = false,
+  isDisabled = false,
   id,
   className,
   ariaLabelMin = 'Minimum',
@@ -69,7 +69,7 @@ export function RangeSlider({
   }
 
   const startDrag = (which: Thumb) => (e: React.PointerEvent) => {
-    if (disabled) return
+    if (isDisabled) return
     e.preventDefault()
     e.stopPropagation()
     setActive(which)
@@ -85,7 +85,7 @@ export function RangeSlider({
 
   // Clicking the track moves the nearest thumb.
   const handleTrackPointerDown = (e: React.PointerEvent) => {
-    if (disabled) return
+    if (isDisabled) return
     const raw = valueFromClientX(e.clientX)
     const which: Thumb = Math.abs(raw - minValue) <= Math.abs(raw - maxValue) ? 'min' : 'max'
     setActive(which)
@@ -94,7 +94,7 @@ export function RangeSlider({
   }
 
   const handleKeyDown = (which: Thumb) => (e: React.KeyboardEvent) => {
-    if (disabled) return
+    if (isDisabled) return
     const current = which === 'min' ? minValue : maxValue
     let next = current
     switch (e.key) {
@@ -120,13 +120,13 @@ export function RangeSlider({
         ref={which === 'min' ? minRef : maxRef}
         style={{ left: `${toPct(value)}%` }}
         role="slider"
-        tabIndex={disabled ? -1 : 0}
+        tabIndex={isDisabled ? -1 : 0}
         aria-valuenow={value}
         aria-valuemin={lo}
         aria-valuemax={hi}
         aria-valuetext={formatValue(value)}
         aria-label={which === 'min' ? ariaLabelMin : ariaLabelMax}
-        aria-disabled={disabled || undefined}
+        aria-disabled={isDisabled || undefined}
         onKeyDown={handleKeyDown(which)}
         onPointerDown={startDrag(which)}
         onFocus={() => setActive(which)}
@@ -143,7 +143,7 @@ export function RangeSlider({
   }
 
   return (
-    <div className={['range-slider', disabled && 'range-slider--disabled', className].filter(Boolean).join(' ')} id={id}>
+    <div className={['range-slider', isDisabled && 'range-slider--disabled', className].filter(Boolean).join(' ')} id={id}>
       <div className="range-slider__track" ref={trackRef} onPointerDown={handleTrackPointerDown}>
         <div
           className="range-slider__fill"
@@ -159,7 +159,7 @@ export function RangeSlider({
             <Field
               value={formatValue(minValue)}
               ariaLabel={ariaLabelMin}
-              isDisabled={disabled}
+              isDisabled={isDisabled}
               onChange={s => {
                 const n = parseNum(s)
                 if (n != null) commit('min', n)
@@ -170,7 +170,7 @@ export function RangeSlider({
             <Field
               value={formatValue(maxValue)}
               ariaLabel={ariaLabelMax}
-              isDisabled={disabled}
+              isDisabled={isDisabled}
               onChange={s => {
                 const n = parseNum(s)
                 if (n != null) commit('max', n)
