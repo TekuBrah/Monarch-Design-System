@@ -38,27 +38,27 @@ export function ToastMobile({
   return (
     <div
       id={id}
-      className={['toast-mobile', `toast-mobile--${appearance}`, className].filter(Boolean).join(' ')}
+      className={['mn-toast-mobile', `mn-toast-mobile--${appearance}`, className].filter(Boolean).join(' ')}
       style={{ background: TOAST_BG[appearance] }}
       role={role}
       aria-live={role === 'alert' ? 'assertive' : 'polite'}
     >
-      <div className="toast-mobile__main">
+      <div className="mn-toast-mobile__main">
         {showIcon && (
-          <span className="toast-mobile__icon">
+          <span className="mn-toast-mobile__icon">
             {icon ?? <Icon name={TOAST_DEFAULT_ICON[appearance]} size="m" />}
           </span>
         )}
-        <div className="toast-mobile__stack">
-          {title && <p className="toast-mobile__title type-body-m-semibold">{title}</p>}
-          {children && <div className="toast-mobile__desc type-body-sm">{children}</div>}
+        <div className="mn-toast-mobile__stack">
+          {title && <p className="mn-toast-mobile__title type-body-m-semibold">{title}</p>}
+          {children && <div className="mn-toast-mobile__desc type-body-sm">{children}</div>}
         </div>
       </div>
 
-      {actions && <div className="toast-mobile__actions" data-theme="dark">{actions}</div>}
+      {actions && <div className="mn-toast-mobile__actions" data-theme="dark">{actions}</div>}
 
       {onDismiss && (
-        <button type="button" className="toast-mobile__close" aria-label="Dismiss" onClick={onDismiss}>
+        <button type="button" className="mn-toast-mobile__close" aria-label="Dismiss" onClick={onDismiss}>
           <Icon name="close" size="l" />
         </button>
       )}

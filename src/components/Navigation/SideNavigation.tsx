@@ -43,8 +43,8 @@ function SideNavTab({
   return (
     <>
       {item.sectionTitle && (
-        <div className="side-nav__section-header">
-          <span className="side-nav__section-title type-body-caption-semibold">
+        <div className="mn-side-nav__section-header">
+          <span className="mn-side-nav__section-title type-body-caption-semibold">
             {item.sectionTitle}
           </span>
         </div>
@@ -52,9 +52,9 @@ function SideNavTab({
       <button
         type="button"
         className={[
-          'side-nav__tab',
-          item.isSelected && 'side-nav__tab--selected',
-          isCompact && 'side-nav__tab--compact',
+          'mn-side-nav__tab',
+          item.isSelected && 'mn-side-nav__tab--selected',
+          isCompact && 'mn-side-nav__tab--compact',
         ]
           .filter(Boolean)
           .join(' ')}
@@ -63,7 +63,7 @@ function SideNavTab({
       >
         <Icon name={item.icon} size="l" />
         {!isCompact && (
-          <span className="side-nav__tab-label type-body-m">{item.label}</span>
+          <span className="mn-side-nav__tab-label type-body-m">{item.label}</span>
         )}
       </button>
     </>
@@ -86,8 +86,8 @@ export function SideNavigation({
   return (
     <aside
       className={[
-        'side-nav',
-        isCompact && 'side-nav--compact',
+        'mn-side-nav',
+        isCompact && 'mn-side-nav--compact',
         className,
       ]
         .filter(Boolean)
@@ -96,7 +96,7 @@ export function SideNavigation({
       {onToggleCompact && (
         <button
           type="button"
-          className="side-nav__toggle"
+          className="mn-side-nav__toggle"
           onClick={onToggleCompact}
           aria-expanded={!isCompact}
           aria-label={isCompact ? 'Expand navigation' : 'Collapse navigation'}
@@ -105,11 +105,11 @@ export function SideNavigation({
         </button>
       )}
 
-      <div className="side-nav__brand">
-        <div className="side-nav__logo-row">
+      <div className="mn-side-nav__brand">
+        <div className="mn-side-nav__logo-row">
           <Logo name="monarch_logo_style_thick" size="xs" />
           {!isCompact && (
-            <span className="side-nav__wordmark type-body-lg-medium">Monarch</span>
+            <span className="mn-side-nav__wordmark type-body-lg-medium">Monarch</span>
           )}
         </div>
         <Field
@@ -122,15 +122,15 @@ export function SideNavigation({
         />
       </div>
 
-      <nav className="side-nav__items" aria-label="Primary">
+      <nav className="mn-side-nav__items" aria-label="Primary">
         {items.map(item => (
           <SideNavTab key={item.id} item={item} isCompact={isCompact} onSelect={onSelect} />
         ))}
       </nav>
 
-      <div className="side-nav__footer">
+      <div className="mn-side-nav__footer">
         {utilityItems && utilityItems.length > 0 && (
-          <nav className="side-nav__items" aria-label="Utility">
+          <nav className="mn-side-nav__items" aria-label="Utility">
             {utilityItems.map(item => (
               <SideNavTab key={item.id} item={item} isCompact={isCompact} onSelect={onSelect} />
             ))}
@@ -139,10 +139,10 @@ export function SideNavigation({
         {profileName && (
           <>
             <Divider weight={1} orientation="horizontal" />
-            <div className="side-nav__profile">
+            <div className="mn-side-nav__profile">
               <Avatar size="l" src={profileAvatarSrc} name={profileName} />
               {!isCompact && (
-                <div className="side-nav__profile-text">
+                <div className="mn-side-nav__profile-text">
                   <p className="type-header-h6">{profileName}</p>
                   {profileEmail && <p className="type-body-caption">{profileEmail}</p>}
                 </div>

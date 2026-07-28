@@ -20,20 +20,20 @@ export function Label({
 }: LabelProps) {
   const isM = size === 'm'
   return (
-    <div className="label">
+    <div className="mn-label">
       {iconBefore && (
-        <span className="label__icon">{iconBefore}</span>
+        <span className="mn-label__icon">{iconBefore}</span>
       )}
-      <span className={`label__text ${isM ? 'type-body-m-semibold' : 'type-body-sm-semibold'}`}>
+      <span className={`mn-label__text ${isM ? 'type-body-m-semibold' : 'type-body-sm-semibold'}`}>
         {label}
         {isRequired && (
-          <span className={`label__required ${isM ? 'type-body-m-semibold' : 'type-body-caption-semibold'}`}>
+          <span className={`mn-label__required ${isM ? 'type-body-m-semibold' : 'type-body-caption-semibold'}`}>
             *
           </span>
         )}
       </span>
       {iconAfter && (
-        <span className="label__icon">{iconAfter}</span>
+        <span className="mn-label__icon">{iconAfter}</span>
       )}
     </div>
   )

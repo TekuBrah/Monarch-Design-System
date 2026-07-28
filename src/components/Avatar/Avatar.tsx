@@ -24,11 +24,11 @@ function deriveInitials(name: string): string {
 }
 
 export function Avatar({ size = 'm', src, name, initials, alt }: AvatarProps) {
-  const sizeClass = `avatar--${size}`
+  const sizeClass = `mn-avatar--${size}`
 
   if (src) {
     return (
-      <div className={`avatar avatar--photo ${sizeClass}`}>
+      <div className={`mn-avatar mn-avatar--photo ${sizeClass}`}>
         <img src={src} alt={alt ?? name ?? ''} />
       </div>
     )
@@ -38,14 +38,14 @@ export function Avatar({ size = 'm', src, name, initials, alt }: AvatarProps) {
 
   if (label) {
     return (
-      <div className={`avatar avatar--initials ${sizeClass}`}>
-        <span className={`avatar__label ${TYPE_CLASS[size]}`}>{label}</span>
+      <div className={`mn-avatar mn-avatar--initials ${sizeClass}`}>
+        <span className={`mn-avatar__label ${TYPE_CLASS[size]}`}>{label}</span>
       </div>
     )
   }
 
   return (
-    <div className={`avatar avatar--placeholder ${sizeClass}`}>
+    <div className={`mn-avatar mn-avatar--placeholder ${sizeClass}`}>
       <Icon name="person" size={size} />
     </div>
   )

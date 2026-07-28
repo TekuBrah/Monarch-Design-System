@@ -6,5 +6,5 @@ export interface BlanketProps {
 }
 
 export function Blanket({ onClick }: BlanketProps) {
-  return <div className="blanket" onClick={onClick} />
+  return <div className="mn-blanket" onClick={onClick} />
 }

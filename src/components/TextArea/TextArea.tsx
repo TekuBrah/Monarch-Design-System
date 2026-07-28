@@ -39,11 +39,11 @@ export function TextArea({
   const inputId = id ?? autoId
 
   const className = [
-    'textarea',
-    `textarea--${appearance}`,
-    isDisabled && 'textarea--disabled',
-    isInvalid && 'textarea--invalid',
-    previewState && `textarea--${previewState}`,
+    'mn-textarea',
+    `mn-textarea--${appearance}`,
+    isDisabled && 'mn-textarea--disabled',
+    isInvalid && 'mn-textarea--invalid',
+    previewState && `mn-textarea--${previewState}`,
   ]
     .filter(Boolean)
     .join(' ')
@@ -51,14 +51,14 @@ export function TextArea({
   return (
     <div className={className} data-preview={previewState}>
       {label && (
-        <label htmlFor={inputId} className="textarea__label type-body-caption">
+        <label htmlFor={inputId} className="mn-textarea__label type-body-caption">
           {label}
         </label>
       )}
       <textarea
         id={inputId}
         name={name}
-        className="textarea__input type-body-m"
+        className="mn-textarea__input type-body-m"
         placeholder={placeholder}
         value={value}
         defaultValue={defaultValue}

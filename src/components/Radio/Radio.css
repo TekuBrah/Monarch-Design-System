@@ -1,4 +1,4 @@
-.radio {
+.mn-radio {
   display: inline-flex;
   align-items: center;
   gap: var(--brand-scale-100); /* 4px */
@@ -6,13 +6,13 @@
   user-select: none;
 }
 
-.radio--disabled {
+.mn-radio--disabled {
   cursor: not-allowed;
   pointer-events: none;
 }
 
 /* Visually hidden native input */
-.radio__input {
+.mn-radio__input {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -25,7 +25,7 @@
 }
 
 /* === Icon wrapper (24px — provides touch area + focus ring anchor) === */
-.radio__icon-wrap {
+.mn-radio__icon-wrap {
   position: relative;
   flex-shrink: 0;
   width: var(--brand-scale-600);  /* 24px */
@@ -36,7 +36,7 @@
 }
 
 /* === Radio circle (14×14px, centered in 24px wrap via p-[5px]) === */
-.radio__circle {
+.mn-radio__circle {
   /* FAIL LOUD: Figma source specifies 14px — not on our --brand-scale ramp
      (nearest: --brand-scale-300=12px, --brand-scale-400=16px). No token
      matches. Recorded as a literal per design source; needs a Figma
@@ -53,13 +53,13 @@
 }
 
 /* === Checked fill === */
-.radio__circle--checked {
+.mn-radio__circle--checked {
   background: var(--mapped-surface-primary-default);
   border-color: var(--mapped-surface-primary-default);
 }
 
 /* === Inner dot (visible when checked) === */
-.radio__dot {
+.mn-radio__dot {
   /* FAIL LOUD: Figma source specifies 6px — not on our --brand-scale ramp
      (nearest: --brand-scale-100=4px, --brand-scale-200=8px). No token
      matches. Recorded as a literal per design source; needs a Figma
@@ -72,77 +72,77 @@
 }
 
 /* === Invalid === */
-.radio--invalid .radio__circle:not(.radio__circle--checked) {
+.mn-radio--invalid .mn-radio__circle:not(.mn-radio__circle--checked) {
   border-color: var(--mapped-border-error-default);
 }
 
-.radio__circle--invalid.radio__circle--checked {
+.mn-radio__circle--invalid.mn-radio__circle--checked {
   background: var(--mapped-surface-error-default);
   border-color: var(--mapped-surface-error-default);
 }
 
 /* === Hover (unchecked) === */
-.radio:hover:not(.radio--disabled) .radio__circle:not(.radio__circle--checked) {
+.mn-radio:hover:not(.mn-radio--disabled) .mn-radio__circle:not(.mn-radio__circle--checked) {
   background: var(--mapped-surface-primary-default-subtle-hover);
   border-color: var(--mapped-border-subtlest-default);
 }
 
 /* === Hover (checked) === */
-.radio:hover:not(.radio--disabled) .radio__circle--checked {
+.mn-radio:hover:not(.mn-radio--disabled) .mn-radio__circle--checked {
   background: var(--mapped-surface-primary-default-hover);
   border-color: var(--mapped-border-primary-default-hover);
 }
 
 /* === Active / press (unchecked) === */
-.radio:active:not(.radio--disabled) .radio__circle:not(.radio__circle--checked) {
+.mn-radio:active:not(.mn-radio--disabled) .mn-radio__circle:not(.mn-radio__circle--checked) {
   background: var(--mapped-surface-primary-default-subtle-pressed);
   border-color: var(--mapped-border-subtlest-default);
 }
 
 /* === Active / press (checked) === */
-.radio:active:not(.radio--disabled) .radio__circle--checked {
+.mn-radio:active:not(.mn-radio--disabled) .mn-radio__circle--checked {
   background: var(--mapped-surface-primary-default-pressed);
   border-color: var(--mapped-border-primary-default-pressed);
 }
 
 /* === Focus ring === */
-.radio__input:focus-visible + .radio__icon-wrap {
+.mn-radio__input:focus-visible + .mn-radio__icon-wrap {
   outline: 2px solid var(--mapped-border-primary-default);
   outline-offset: 2px;
   border-radius: var(--brand-scale-1800);
 }
 
 /* === Disabled === */
-.radio--disabled .radio__circle {
+.mn-radio--disabled .mn-radio__circle {
   background: var(--mapped-surface-disabled-default);
   border-color: var(--mapped-border-disabled-default);
 }
 
-.radio--disabled .radio__circle--checked {
+.mn-radio--disabled .mn-radio__circle--checked {
   background: var(--mapped-icon-disabled-default);
   border-color: var(--mapped-icon-disabled-default);
 }
 
 /* === Label text === */
-.radio__label {
+.mn-radio__label {
   color: var(--mapped-text-default-default);
   transition: color 0.12s ease;
 }
 
-.radio:hover:not(.radio--disabled) .radio__label {
+.mn-radio:hover:not(.mn-radio--disabled) .mn-radio__label {
   color: var(--mapped-text-default-hover);
 }
 
-.radio:active:not(.radio--disabled) .radio__label {
+.mn-radio:active:not(.mn-radio--disabled) .mn-radio__label {
   color: var(--mapped-text-default-pressed);
 }
 
-.radio--disabled .radio__label {
+.mn-radio--disabled .mn-radio__label {
   color: var(--mapped-text-disabled-default);
 }
 
 /* Required asterisk — Figma uses `color.text.danger` #ae2e24 (no match); mapped to --mapped-text-error-default */
-.radio__required {
+.mn-radio__required {
   color: var(--mapped-text-error-default);
   margin-left: var(--brand-scale-25);
 }

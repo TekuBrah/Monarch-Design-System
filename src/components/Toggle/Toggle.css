@@ -1,17 +1,17 @@
-.toggle {
+.mn-toggle {
   display: inline-flex;
   align-items: center;
   cursor: pointer;
   user-select: none;
 }
 
-.toggle--disabled {
+.mn-toggle--disabled {
   cursor: not-allowed;
   pointer-events: none;
 }
 
 /* Visually hidden input — siblings still work via CSS + combinator */
-.toggle__input {
+.mn-toggle__input {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -24,7 +24,7 @@
 }
 
 /* === Track === */
-.toggle__track {
+.mn-toggle__track {
   position: relative;
   flex-shrink: 0;
   background: var(--mapped-icon-subtlest-subtlest);
@@ -33,7 +33,7 @@
 }
 
 /* m: 32×16px */
-.toggle--m .toggle__track {
+.mn-toggle--m .mn-toggle__track {
   width: var(--brand-scale-800);  /* 32px */
   height: var(--brand-scale-400); /* 16px */
 }
@@ -42,13 +42,13 @@
    — no calc() curve-fit between unrelated steps (banned pattern, fabricates a
    relationship that doesn't exist in the source); plain literal until a
    Figma Variables fix lands. */
-.toggle--l .toggle__track {
+.mn-toggle--l .mn-toggle__track {
   width: 46px;
   height: var(--brand-scale-600); /* 24px */
 }
 
 /* === Dot === */
-.toggle__dot {
+.mn-toggle__dot {
   position: absolute;
   top: var(--brand-scale-50); /* 2px */
   left: var(--brand-scale-50); /* 2px — unchecked position */
@@ -59,50 +59,50 @@
 }
 
 /* m dot: 12px */
-.toggle--m .toggle__dot {
+.mn-toggle--m .mn-toggle__dot {
   width: var(--brand-scale-300);  /* 12px */
   height: var(--brand-scale-300); /* 12px */
 }
 
 /* l dot: 20px */
-.toggle--l .toggle__dot {
+.mn-toggle--l .mn-toggle__dot {
   width: var(--brand-scale-500);  /* 20px */
   height: var(--brand-scale-500); /* 20px */
 }
 
 /* === Checked — dot slides to right === */
 /* m: left = 32-12-2 = 18px = (800 - 300 - 50) = 18px */
-.toggle--m .toggle__input:checked + .toggle__track .toggle__dot {
+.mn-toggle--m .mn-toggle__input:checked + .mn-toggle__track .mn-toggle__dot {
   left: calc(var(--brand-scale-800) - var(--brand-scale-300) - var(--brand-scale-50));
 }
 
 /* l: left = 46-20-2 = 24px */
-.toggle--l .toggle__input:checked + .toggle__track .toggle__dot {
+.mn-toggle--l .mn-toggle__input:checked + .mn-toggle__track .mn-toggle__dot {
   left: var(--brand-scale-600); /* 24px */
 }
 
 /* === Track colour — checked === */
-.toggle__input:checked + .toggle__track {
+.mn-toggle__input:checked + .mn-toggle__track {
   background: var(--mapped-surface-primary-default);
 }
 
 /* === Hover (unchecked) === */
-.toggle:hover:not(.toggle--disabled) .toggle__track {
+.mn-toggle:hover:not(.mn-toggle--disabled) .mn-toggle__track {
   background: var(--mapped-icon-subtlest-subtlest-hover);
 }
 
 /* === Hover (checked) === */
-.toggle:hover:not(.toggle--disabled) .toggle__input:checked + .toggle__track {
+.mn-toggle:hover:not(.mn-toggle--disabled) .mn-toggle__input:checked + .mn-toggle__track {
   background: var(--mapped-surface-primary-default-hover);
 }
 
 /* === Disabled === */
-.toggle--disabled .toggle__track {
+.mn-toggle--disabled .mn-toggle__track {
   background: var(--mapped-icon-disabled-default);
 }
 
 /* === Focus ring === */
-.toggle__input:focus-visible + .toggle__track {
+.mn-toggle__input:focus-visible + .mn-toggle__track {
   outline: var(--brand-scale-50) solid var(--mapped-border-primary-default); /* 2px */
   outline-offset: var(--brand-scale-50); /* 2px */
 }

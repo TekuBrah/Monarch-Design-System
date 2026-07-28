@@ -101,9 +101,9 @@ export function Menu({
   }
 
   return (
-    <div id={id} className={['menu', className].filter(Boolean).join(' ')}>
+    <div id={id} className={['mn-menu', className].filter(Boolean).join(' ')}>
       {searchBar && (
-        <div className="menu__search">
+        <div className="mn-menu__search">
           <Field
             leadingIcon={<Icon name="search" size="s" />}
             placeholder={searchPlaceholder}
@@ -117,7 +117,7 @@ export function Menu({
         <div
           ref={listRef}
           role="listbox"
-          className="menu__list"
+          className="mn-menu__list"
           onKeyDown={handleListKeyDown}
           onFocus={handleListFocus}
         >

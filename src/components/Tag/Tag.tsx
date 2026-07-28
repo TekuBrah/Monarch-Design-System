@@ -29,22 +29,22 @@ export function Tag({
     <button
       type="button"
       className={[
-        'tag',
-        `tag--${appearance}`,
-        `tag--${size}`,
-        isSelected && 'tag--selected',
-        isDisabled && 'tag--disabled',
+        'mn-tag',
+        `mn-tag--${appearance}`,
+        `mn-tag--${size}`,
+        isSelected && 'mn-tag--selected',
+        isDisabled && 'mn-tag--disabled',
       ]
         .filter(Boolean)
         .join(' ')}
       disabled={isDisabled}
       onClick={onClick}
     >
-      {iconBefore && <span className="tag__icon">{iconBefore}</span>}
-      <span className={`tag__label ${size === 'm' ? 'type-body-sm' : 'type-body-caption'}`}>
+      {iconBefore && <span className="mn-tag__icon">{iconBefore}</span>}
+      <span className={`mn-tag__label ${size === 'm' ? 'type-body-sm' : 'type-body-caption'}`}>
         {label}
       </span>
-      {iconAfter && <span className="tag__icon">{iconAfter}</span>}
+      {iconAfter && <span className="mn-tag__icon">{iconAfter}</span>}
     </button>
   )
 }

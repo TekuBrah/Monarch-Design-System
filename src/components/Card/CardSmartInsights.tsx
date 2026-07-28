@@ -23,14 +23,14 @@ export function CardSmartInsights({
   className,
 }: CardSmartInsightsProps) {
   return (
-    <div className={['card-smart-insights', className].filter(Boolean).join(' ')}>
-      <span className="card-smart-insights__title type-body-m-semibold" style={titleColor ? { color: titleColor } : undefined}>
+    <div className={['mn-card-smart-insights', className].filter(Boolean).join(' ')}>
+      <span className="mn-card-smart-insights__title type-body-m-semibold" style={titleColor ? { color: titleColor } : undefined}>
         {title}
       </span>
-      <p className="card-smart-insights__description type-body-caption">{description}</p>
-      <div className="card-smart-insights__footer">
-        {icon && <span className="card-smart-insights__icon">{icon}</span>}
-        <button type="button" className="card-smart-insights__link type-body-sm" onClick={onLinkClick}>
+      <p className="mn-card-smart-insights__description type-body-caption">{description}</p>
+      <div className="mn-card-smart-insights__footer">
+        {icon && <span className="mn-card-smart-insights__icon">{icon}</span>}
+        <button type="button" className="mn-card-smart-insights__link type-body-sm" onClick={onLinkClick}>
           {linkLabel}
           <Icon name="chevron_right" size="s" />
         </button>

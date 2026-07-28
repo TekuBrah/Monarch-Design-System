@@ -32,7 +32,7 @@ export function Button({
       disabled={isDisabled}
       onClick={onClick}
       data-preview={previewState}
-      className={`btn btn--${variant} btn--${size}`}
+      className={`mn-btn mn-btn--${variant} mn-btn--${size}`}
     >
       {leadingIcon}
       <span className="type-body-sm-semibold">{label}</span>

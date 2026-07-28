@@ -29,21 +29,21 @@ export function HeaderDefault({
   className,
 }: HeaderDefaultProps) {
   return (
-    <header className={['header-default', className].filter(Boolean).join(' ')}>
+    <header className={['mn-header-default', className].filter(Boolean).join(' ')}>
       <button
         type="button"
-        className="header-default__back"
+        className="mn-header-default__back"
         aria-label="Back"
         onClick={onBack}
       >
         <Icon name="arrow_back" size="m" />
       </button>
 
-      <div className="header-default__center">
+      <div className="mn-header-default__center">
         {isProgressStepper ? (
           <>
             {hasSubtitle && (
-              <span className="header-default__subtitle type-body-caption-semibold">
+              <span className="mn-header-default__subtitle type-body-caption-semibold">
                 {subtitle}
               </span>
             )}
@@ -51,15 +51,15 @@ export function HeaderDefault({
           </>
         ) : (
           <>
-            <span className="header-default__title type-body-m-semibold">{title}</span>
+            <span className="mn-header-default__title type-body-m-semibold">{title}</span>
             {hasSubtitle && (
-              <span className="header-default__subtitle type-body-caption">{subtitle}</span>
+              <span className="mn-header-default__subtitle type-body-caption">{subtitle}</span>
             )}
           </>
         )}
       </div>
 
-      <div className="header-default__action">
+      <div className="mn-header-default__action">
         {actionLabel && (
           <Link
             label={actionLabel}

@@ -1,4 +1,4 @@
-.slider {
+.mn-slider {
   position: relative;
   display: flex;
   align-items: center;
@@ -6,7 +6,7 @@
   width: 100%;
 }
 
-.slider__track {
+.mn-slider__track {
   position: relative;
   width: 100%;
   height: var(--brand-scale-200); /* 8px — Figma is 6px (no token); rounded up to the 8px step by approval */
@@ -16,7 +16,7 @@
   touch-action: none;
 }
 
-.slider__fill {
+.mn-slider__fill {
   position: absolute;
   left: 0;
   top: 0;
@@ -25,7 +25,7 @@
   border-radius: var(--brand-scale-1800);
 }
 
-.slider__thumb {
+.mn-slider__thumb {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -41,7 +41,7 @@
 }
 
 /* blue core */
-.slider__thumb::before {
+.mn-slider__thumb::before {
   content: '';
   position: absolute;
   top: 50%;
@@ -54,7 +54,7 @@
 }
 
 /* focus/press halo — 28px blue at 0.25 (the established Field/Select glow-ring alpha) */
-.slider__halo {
+.mn-slider__halo {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -68,24 +68,24 @@
   pointer-events: none;
 }
 
-.slider__thumb:focus-visible .slider__halo,
-.slider__thumb[data-active] .slider__halo {
+.mn-slider__thumb:focus-visible .mn-slider__halo,
+.mn-slider__thumb[data-active] .mn-slider__halo {
   opacity: 0.25;
 }
 
-.slider__thumb:active {
+.mn-slider__thumb:active {
   cursor: grabbing;
 }
 
-.slider--disabled .slider__track,
-.slider--disabled .slider__thumb {
+.mn-slider--disabled .mn-slider__track,
+.mn-slider--disabled .mn-slider__thumb {
   cursor: not-allowed;
 }
 
-.slider--disabled .slider__fill {
+.mn-slider--disabled .mn-slider__fill {
   background: var(--mapped-surface-disabled-default);
 }
 
-.slider--disabled .slider__thumb::before {
+.mn-slider--disabled .mn-slider__thumb::before {
   background: var(--mapped-surface-disabled-default);
 }

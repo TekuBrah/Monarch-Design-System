@@ -10,13 +10,13 @@ export interface CardActionProps {
 }
 
 export function CardAction({ icon, title, description, onClick, className }: CardActionProps) {
-  const classes = ['card-action', className].filter(Boolean).join(' ')
+  const classes = ['mn-card-action', className].filter(Boolean).join(' ')
   const content = (
     <>
-      <span className="card-action__icon">{icon}</span>
-      <div className="card-action__text">
-        <span className="card-action__title type-body-m-semibold">{title}</span>
-        <p className="card-action__description type-body-caption">{description}</p>
+      <span className="mn-card-action__icon">{icon}</span>
+      <div className="mn-card-action__text">
+        <span className="mn-card-action__title type-body-m-semibold">{title}</span>
+        <p className="mn-card-action__description type-body-caption">{description}</p>
       </div>
     </>
   )

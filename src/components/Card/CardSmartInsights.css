@@ -1,4 +1,4 @@
-.card-smart-insights {
+.mn-card-smart-insights {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -13,32 +13,32 @@
   box-shadow: var(--shadow-subtlest);
 }
 
-.card-smart-insights__title {
+.mn-card-smart-insights__title {
   color: var(--mapped-text-default-default); /* overridden inline via titleColor when provided */
 }
 
-.card-smart-insights__description {
+.mn-card-smart-insights__description {
   color: var(--mapped-text-subtle-default);
   width: 100%;
   /* Figma reserves a fixed 2-line-ish height (32px) regardless of content length. */
   min-height: 32px;
 }
 
-.card-smart-insights__footer {
+.mn-card-smart-insights__footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
 }
 
-.card-smart-insights__icon {
+.mn-card-smart-insights__icon {
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--mapped-icon-default-default);
 }
 
-.card-smart-insights__link {
+.mn-card-smart-insights__link {
   display: flex;
   align-items: center;
   gap: var(--brand-scale-100); /* 4px */
@@ -50,7 +50,7 @@
   font-family: inherit;
 }
 
-.card-smart-insights__link:focus-visible {
+.mn-card-smart-insights__link:focus-visible {
   outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
   outline-offset: var(--brand-scale-50);
   border-radius: var(--brand-scale-100);

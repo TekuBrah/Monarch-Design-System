@@ -18,10 +18,10 @@ export function Toggle({
   ariaLabel,
 }: ToggleProps) {
   return (
-    <label className={`toggle toggle--${size}${isDisabled ? ' toggle--disabled' : ''}`}>
+    <label className={`mn-toggle mn-toggle--${size}${isDisabled ? ' mn-toggle--disabled' : ''}`}>
       <input
         type="checkbox"
-        className="toggle__input"
+        className="mn-toggle__input"
         checked={isChecked}
         disabled={isDisabled}
         onChange={e => onChange?.(e.target.checked)}
@@ -29,8 +29,8 @@ export function Toggle({
         role="switch"
         aria-checked={isChecked}
       />
-      <span className="toggle__track">
-        <span className="toggle__dot" />
+      <span className="mn-toggle__track">
+        <span className="mn-toggle__dot" />
       </span>
     </label>
   )

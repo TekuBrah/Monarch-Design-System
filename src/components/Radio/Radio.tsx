@@ -26,9 +26,9 @@ export function Radio({
   return (
     <label
       className={[
-        'radio',
-        isInvalid && 'radio--invalid',
-        isDisabled && 'radio--disabled',
+        'mn-radio',
+        isInvalid && 'mn-radio--invalid',
+        isDisabled && 'mn-radio--disabled',
       ]
         .filter(Boolean)
         .join(' ')}
@@ -38,7 +38,7 @@ export function Radio({
         id={id}
         name={name}
         value={value}
-        className="radio__input"
+        className="mn-radio__input"
         checked={isChecked}
         disabled={isDisabled}
         required={isRequired}
@@ -46,16 +46,16 @@ export function Radio({
         aria-invalid={isInvalid || undefined}
         onChange={e => onChange?.(e.target.checked)}
       />
-      <span className="radio__icon-wrap">
-        <span className={`radio__circle${isChecked ? ' radio__circle--checked' : ''}${isInvalid ? ' radio__circle--invalid' : ''}`}>
-          {isChecked && <span className="radio__dot" />}
+      <span className="mn-radio__icon-wrap">
+        <span className={`mn-radio__circle${isChecked ? ' mn-radio__circle--checked' : ''}${isInvalid ? ' mn-radio__circle--invalid' : ''}`}>
+          {isChecked && <span className="mn-radio__dot" />}
         </span>
       </span>
       {label && (
-        <span className="radio__label type-body-sm">
+        <span className="mn-radio__label type-body-sm">
           {label}
           {isRequired && (
-            <span className="radio__required type-body-caption-semibold">*</span>
+            <span className="mn-radio__required type-body-caption-semibold">*</span>
           )}
         </span>
       )}

@@ -7,7 +7,7 @@
    no vector path or motion data exists to read them from. See
    docs/component-tokens.md for the full inconsistency note. */
 
-.loader {
+.mn-loader {
   display: inline-block;
   width: var(--brand-scale-800); /* 32px, matches source container exactly */
   height: var(--brand-scale-800);

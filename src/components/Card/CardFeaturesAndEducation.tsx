@@ -19,8 +19,8 @@ export function CardFeaturesAndEducation({
   className,
 }: CardFeaturesAndEducationProps) {
   const classes = [
-    'card-features',
-    `card-features--${variant}`,
+    'mn-card-features',
+    `mn-card-features--${variant}`,
     className,
   ]
     .filter(Boolean)
@@ -28,8 +28,8 @@ export function CardFeaturesAndEducation({
 
   const content = (
     <>
-      <span className="card-features__icon">{icon}</span>
-      <span className="card-features__title type-body-caption-medium">{title}</span>
+      <span className="mn-card-features__icon">{icon}</span>
+      <span className="mn-card-features__title type-body-caption-medium">{title}</span>
     </>
   )
 

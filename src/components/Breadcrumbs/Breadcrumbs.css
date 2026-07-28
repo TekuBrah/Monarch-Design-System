@@ -1,4 +1,4 @@
-.breadcrumbs {
+.mn-breadcrumbs {
   display: flex;
   align-items: flex-start;
   gap: 0; /* chevron separators abut the next item, per Figma */

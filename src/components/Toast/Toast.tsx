@@ -58,25 +58,25 @@ export function Toast({
   return (
     <div
       id={id}
-      className={['toast', `toast--${appearance}`, className].filter(Boolean).join(' ')}
+      className={['mn-toast', `mn-toast--${appearance}`, className].filter(Boolean).join(' ')}
       style={{ background: TOAST_BG[appearance] }}
       role={role}
       aria-live={role === 'alert' ? 'assertive' : 'polite'}
     >
       {showIcon && (
-        <span className="toast__icon">
+        <span className="mn-toast__icon">
           {icon ?? <Icon name={TOAST_DEFAULT_ICON[appearance]} size="l" />}
         </span>
       )}
 
-      <div className="toast__body">
-        {title && <p className="toast__title type-body-m-semibold">{title}</p>}
-        {children && <div className="toast__desc type-body-sm">{children}</div>}
-        {actions && <div className="toast__actions">{actions}</div>}
+      <div className="mn-toast__body">
+        {title && <p className="mn-toast__title type-body-m-semibold">{title}</p>}
+        {children && <div className="mn-toast__desc type-body-sm">{children}</div>}
+        {actions && <div className="mn-toast__actions">{actions}</div>}
       </div>
 
       {onDismiss && (
-        <button type="button" className="toast__close" aria-label="Dismiss" onClick={onDismiss}>
+        <button type="button" className="mn-toast__close" aria-label="Dismiss" onClick={onDismiss}>
           <Icon name="close" size="l" />
         </button>
       )}

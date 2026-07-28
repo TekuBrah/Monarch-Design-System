@@ -10,13 +10,13 @@
    screenshot — logos appear only in the dropdown's option rows (not yet
    built; deferred with Menu/Option). */
 
-.select-wallet-account {
+.mn-select-wallet-account {
   position: relative;
   display: inline-block;
   width: 320px; /* Figma demo width; caller-controllable */
 }
 
-.select-wallet-account__control {
+.mn-select-wallet-account__control {
   position: relative;
   box-sizing: border-box;
   display: flex;
@@ -34,44 +34,44 @@
   transition: background 0.12s ease, border-color 0.12s ease;
 }
 
-.select-wallet-account__main {
+.mn-select-wallet-account__main {
   display: flex;
   flex: 1 1 auto;
   min-width: 0;
   align-items: center;
   gap: var(--brand-scale-200);
 }
-.select-wallet-account__stack {
+.mn-select-wallet-account__stack {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--brand-scale-100); /* 4px */
   min-width: 0;
 }
-.select-wallet-account__name,
-.select-wallet-account__wallet {
+.mn-select-wallet-account__name,
+.mn-select-wallet-account__wallet {
   color: var(--mapped-text-subtle-default);
   white-space: nowrap;
 }
 
-.select-wallet-account__side {
+.mn-select-wallet-account__side {
   display: flex;
   align-items: center;
   gap: var(--brand-scale-200); /* 8px */
   flex-shrink: 0;
 }
-.select-wallet-account__amounts {
+.mn-select-wallet-account__amounts {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: var(--brand-scale-50); /* 2px */
 }
-.select-wallet-account__amount,
-.select-wallet-account__amtcrypto {
+.mn-select-wallet-account__amount,
+.mn-select-wallet-account__amtcrypto {
   color: var(--mapped-text-subtle-default);
   white-space: nowrap;
 }
-.select-wallet-account__chevron {
+.mn-select-wallet-account__chevron {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -80,109 +80,109 @@
 }
 
 /* === Subtle appearance — transparent at rest === */
-.select-wallet-account--subtle .select-wallet-account__control {
+.mn-select-wallet-account--subtle .mn-select-wallet-account__control {
   background: transparent;
   border-color: transparent;
 }
 
 /* === Filled / Selected / Invalid — two-tone text: name+amount go to
    text/default/default, wallet+amtCrypto stay text/subtle/default === */
-.select-wallet-account--filled .select-wallet-account__name,
-.select-wallet-account--filled .select-wallet-account__amount,
-.select-wallet-account--selected .select-wallet-account__name,
-.select-wallet-account--selected .select-wallet-account__amount,
-.select-wallet-account--invalid .select-wallet-account__name,
-.select-wallet-account--invalid .select-wallet-account__amount {
+.mn-select-wallet-account--filled .mn-select-wallet-account__name,
+.mn-select-wallet-account--filled .mn-select-wallet-account__amount,
+.mn-select-wallet-account--selected .mn-select-wallet-account__name,
+.mn-select-wallet-account--selected .mn-select-wallet-account__amount,
+.mn-select-wallet-account--invalid .mn-select-wallet-account__name,
+.mn-select-wallet-account--invalid .mn-select-wallet-account__amount {
   color: var(--mapped-text-default-default);
 }
 
 /* === Selected / Typing (open) — 2px primary border only, no glow ring
    (confirmed absent from source, unlike Select/SelectTransfer) === */
-.select-wallet-account--selected .select-wallet-account__control,
-.select-wallet-account--open .select-wallet-account__control {
+.mn-select-wallet-account--selected .mn-select-wallet-account__control,
+.mn-select-wallet-account--open .mn-select-wallet-account__control {
   border-color: var(--mapped-border-primary-default);
   border-width: var(--brand-scale-50); /* 2px */
 }
 
 /* === Invalid === */
-.select-wallet-account--invalid .select-wallet-account__control {
+.mn-select-wallet-account--invalid .mn-select-wallet-account__control {
   border-color: var(--mapped-border-error-default);
   border-width: var(--brand-scale-50); /* 2px */
 }
 
 /* === Hover (Standard) — confirmed wholesale recolor: all four text lines
    (and the chevron) go uniformly to -hover tokens, overriding any two-tone. === */
-.select-wallet-account--standard:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open):hover .select-wallet-account__control,
-.select-wallet-account--standard.select-wallet-account--hover:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open) .select-wallet-account__control {
+.mn-select-wallet-account--standard:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open):hover .mn-select-wallet-account__control,
+.mn-select-wallet-account--standard.mn-select-wallet-account--hover:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open) .mn-select-wallet-account__control {
   background: var(--mapped-surface-primary-default-subtle-hover);
   border-color: var(--mapped-border-primary-default-subtle-hover);
 }
-.select-wallet-account--standard:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open):hover .select-wallet-account__name,
-.select-wallet-account--standard:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open):hover .select-wallet-account__wallet,
-.select-wallet-account--standard:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open):hover .select-wallet-account__amount,
-.select-wallet-account--standard:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open):hover .select-wallet-account__amtcrypto,
-.select-wallet-account--standard.select-wallet-account--hover:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open) .select-wallet-account__name,
-.select-wallet-account--standard.select-wallet-account--hover:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open) .select-wallet-account__wallet,
-.select-wallet-account--standard.select-wallet-account--hover:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open) .select-wallet-account__amount,
-.select-wallet-account--standard.select-wallet-account--hover:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open) .select-wallet-account__amtcrypto {
+.mn-select-wallet-account--standard:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open):hover .mn-select-wallet-account__name,
+.mn-select-wallet-account--standard:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open):hover .mn-select-wallet-account__wallet,
+.mn-select-wallet-account--standard:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open):hover .mn-select-wallet-account__amount,
+.mn-select-wallet-account--standard:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open):hover .mn-select-wallet-account__amtcrypto,
+.mn-select-wallet-account--standard.mn-select-wallet-account--hover:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open) .mn-select-wallet-account__name,
+.mn-select-wallet-account--standard.mn-select-wallet-account--hover:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open) .mn-select-wallet-account__wallet,
+.mn-select-wallet-account--standard.mn-select-wallet-account--hover:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open) .mn-select-wallet-account__amount,
+.mn-select-wallet-account--standard.mn-select-wallet-account--hover:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open) .mn-select-wallet-account__amtcrypto {
   color: var(--mapped-text-subtle-hover);
 }
-.select-wallet-account--standard:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open):hover .select-wallet-account__chevron,
-.select-wallet-account--standard.select-wallet-account--hover:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open) .select-wallet-account__chevron {
+.mn-select-wallet-account--standard:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open):hover .mn-select-wallet-account__chevron,
+.mn-select-wallet-account--standard.mn-select-wallet-account--hover:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open) .mn-select-wallet-account__chevron {
   color: var(--mapped-icon-subtle-hover);
 }
 
 /* === Subtle — no bg/border change at rest or hover, text-only recolor === */
-.select-wallet-account--subtle:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open):hover .select-wallet-account__name,
-.select-wallet-account--subtle:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open):hover .select-wallet-account__wallet,
-.select-wallet-account--subtle:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open):hover .select-wallet-account__amount,
-.select-wallet-account--subtle:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open):hover .select-wallet-account__amtcrypto,
-.select-wallet-account--subtle.select-wallet-account--hover:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open) .select-wallet-account__name,
-.select-wallet-account--subtle.select-wallet-account--hover:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open) .select-wallet-account__wallet,
-.select-wallet-account--subtle.select-wallet-account--hover:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open) .select-wallet-account__amount,
-.select-wallet-account--subtle.select-wallet-account--hover:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open) .select-wallet-account__amtcrypto {
+.mn-select-wallet-account--subtle:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open):hover .mn-select-wallet-account__name,
+.mn-select-wallet-account--subtle:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open):hover .mn-select-wallet-account__wallet,
+.mn-select-wallet-account--subtle:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open):hover .mn-select-wallet-account__amount,
+.mn-select-wallet-account--subtle:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open):hover .mn-select-wallet-account__amtcrypto,
+.mn-select-wallet-account--subtle.mn-select-wallet-account--hover:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open) .mn-select-wallet-account__name,
+.mn-select-wallet-account--subtle.mn-select-wallet-account--hover:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open) .mn-select-wallet-account__wallet,
+.mn-select-wallet-account--subtle.mn-select-wallet-account--hover:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open) .mn-select-wallet-account__amount,
+.mn-select-wallet-account--subtle.mn-select-wallet-account--hover:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open) .mn-select-wallet-account__amtcrypto {
   color: var(--mapped-text-subtle-hover);
 }
-.select-wallet-account--subtle:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open):hover .select-wallet-account__chevron,
-.select-wallet-account--subtle.select-wallet-account--hover:not(.select-wallet-account--disabled):not(.select-wallet-account--invalid):not(.select-wallet-account--open) .select-wallet-account__chevron {
+.mn-select-wallet-account--subtle:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open):hover .mn-select-wallet-account__chevron,
+.mn-select-wallet-account--subtle.mn-select-wallet-account--hover:not(.mn-select-wallet-account--disabled):not(.mn-select-wallet-account--invalid):not(.mn-select-wallet-account--open) .mn-select-wallet-account__chevron {
   color: var(--mapped-icon-subtle-hover);
 }
 
 /* === Disabled — Standard uses -on-color tokens (sits on a colored disabled
    surface); Subtle uses -default tokens (stays transparent, confirmed
    divergence from Standard). === */
-.select-wallet-account--disabled.select-wallet-account--standard .select-wallet-account__control {
+.mn-select-wallet-account--disabled.mn-select-wallet-account--standard .mn-select-wallet-account__control {
   background: var(--mapped-surface-disabled-default);
   border-color: var(--mapped-border-disabled-default);
 }
-.select-wallet-account--disabled.select-wallet-account--subtle .select-wallet-account__control {
+.mn-select-wallet-account--disabled.mn-select-wallet-account--subtle .mn-select-wallet-account__control {
   background: transparent;
   border-color: transparent;
 }
-.select-wallet-account--disabled .select-wallet-account__control {
+.mn-select-wallet-account--disabled .mn-select-wallet-account__control {
   cursor: not-allowed;
 }
-.select-wallet-account--disabled.select-wallet-account--standard .select-wallet-account__name,
-.select-wallet-account--disabled.select-wallet-account--standard .select-wallet-account__wallet,
-.select-wallet-account--disabled.select-wallet-account--standard .select-wallet-account__amount,
-.select-wallet-account--disabled.select-wallet-account--standard .select-wallet-account__amtcrypto {
+.mn-select-wallet-account--disabled.mn-select-wallet-account--standard .mn-select-wallet-account__name,
+.mn-select-wallet-account--disabled.mn-select-wallet-account--standard .mn-select-wallet-account__wallet,
+.mn-select-wallet-account--disabled.mn-select-wallet-account--standard .mn-select-wallet-account__amount,
+.mn-select-wallet-account--disabled.mn-select-wallet-account--standard .mn-select-wallet-account__amtcrypto {
   color: var(--mapped-text-disabled-on-color);
 }
-.select-wallet-account--disabled.select-wallet-account--subtle .select-wallet-account__name,
-.select-wallet-account--disabled.select-wallet-account--subtle .select-wallet-account__wallet,
-.select-wallet-account--disabled.select-wallet-account--subtle .select-wallet-account__amount,
-.select-wallet-account--disabled.select-wallet-account--subtle .select-wallet-account__amtcrypto {
+.mn-select-wallet-account--disabled.mn-select-wallet-account--subtle .mn-select-wallet-account__name,
+.mn-select-wallet-account--disabled.mn-select-wallet-account--subtle .mn-select-wallet-account__wallet,
+.mn-select-wallet-account--disabled.mn-select-wallet-account--subtle .mn-select-wallet-account__amount,
+.mn-select-wallet-account--disabled.mn-select-wallet-account--subtle .mn-select-wallet-account__amtcrypto {
   color: var(--mapped-text-disabled-default);
 }
-.select-wallet-account--disabled.select-wallet-account--standard .select-wallet-account__chevron {
+.mn-select-wallet-account--disabled.mn-select-wallet-account--standard .mn-select-wallet-account__chevron {
   color: var(--mapped-icon-disabled-on-color);
 }
-.select-wallet-account--disabled.select-wallet-account--subtle .select-wallet-account__chevron {
+.mn-select-wallet-account--disabled.mn-select-wallet-account--subtle .mn-select-wallet-account__chevron {
   color: var(--mapped-icon-disabled-default);
 }
 
 /* === Menu — positioned below; the slot brings its own container/shadow/items === */
-.select-wallet-account__menu {
+.mn-select-wallet-account__menu {
   position: absolute;
   top: calc(100% + var(--brand-scale-100)); /* 4px below the box */
   left: 0;

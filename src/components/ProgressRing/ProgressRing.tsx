@@ -96,7 +96,7 @@ export function ProgressRing({
 
   return (
     <div
-      className={['progress-ring', `progress-ring--${size}`, className].filter(Boolean).join(' ')}
+      className={['mn-progress-ring', `mn-progress-ring--${size}`, className].filter(Boolean).join(' ')}
       id={id}
       style={{ width: w, height: h }}
       role="progressbar"
@@ -105,7 +105,7 @@ export function ProgressRing({
       aria-valuemax={100}
       aria-label={ariaLabel ?? `${pctText} ${caption}`}
     >
-      <svg className="progress-ring__svg" width={w} height={w} viewBox="0 0 100 100" aria-hidden="true">
+      <svg className="mn-progress-ring__svg" width={w} height={w} viewBox="0 0 100 100" aria-hidden="true">
         <defs>
           <mask id={maskId} maskUnits="userSpaceOnUse">
             {/* white reveals the gradient; only the value-portion of the arc is white */}
@@ -127,21 +127,21 @@ export function ProgressRing({
             Omitted at 0% so the round line-cap doesn't render a stray dot. */}
         {pct > 0 && (
           <foreignObject x="0" y="0" width="100" height="100" mask={`url(#${maskId})`}>
-            <div className="progress-ring__gradient" />
+            <div className="mn-progress-ring__gradient" />
           </foreignObject>
         )}
       </svg>
 
       {/* centred on the arc's circle centre (0.5 × svg width), not the container's
           shorter box — otherwise the content sits too high in the open gauge */}
-      <div className="progress-ring__content" style={{ '--ring-center-y': `${w / 2}px` } as React.CSSProperties}>
-        <div className={`progress-ring__caption ${captionType}`}>
-          <span className={`progress-ring__caption-pct ${captionEmphType}`}>{pctText}</span>
-          <span className={`progress-ring__caption-dot ${captionEmphType}`} aria-hidden="true">•</span>
+      <div className="mn-progress-ring__content" style={{ '--ring-center-y': `${w / 2}px` } as React.CSSProperties}>
+        <div className={`mn-progress-ring__caption ${captionType}`}>
+          <span className={`mn-progress-ring__caption-pct ${captionEmphType}`}>{pctText}</span>
+          <span className={`mn-progress-ring__caption-dot ${captionEmphType}`} aria-hidden="true">•</span>
           <span>{caption}</span>
         </div>
-        <div className={`progress-ring__amount ${amountType}`}>{amount}</div>
-        <div className={`progress-ring__pill ${pillType}`}>
+        <div className={`mn-progress-ring__amount ${amountType}`}>{amount}</div>
+        <div className={`mn-progress-ring__pill ${pillType}`}>
           <span>of</span>
           <span>{total}</span>
         </div>

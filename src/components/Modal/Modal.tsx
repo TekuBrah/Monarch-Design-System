@@ -94,7 +94,7 @@ export function Modal({
   if (!isOpen) return null
 
   return createPortal(
-    <div className={['modal', className].filter(Boolean).join(' ')}>
+    <div className={['mn-modal', className].filter(Boolean).join(' ')}>
       <Blanket onClick={closeOnScrimClick ? onClose : undefined} />
       <div
         ref={cardRef}
@@ -104,18 +104,18 @@ export function Modal({
         aria-labelledby={title ? titleId : undefined}
         aria-label={title ? undefined : ariaLabel}
         tabIndex={-1}
-        className="modal__card"
+        className="mn-modal__card"
       >
-        <div className="modal__header">
-          <span className="modal__header-side" aria-hidden="true" />
+        <div className="mn-modal__header">
+          <span className="mn-modal__header-side" aria-hidden="true" />
           {title ? (
-            <h2 id={titleId} className="modal__title type-body-m-semibold">
+            <h2 id={titleId} className="mn-modal__title type-body-m-semibold">
               {title}
             </h2>
           ) : (
-            <span className="modal__title" aria-hidden="true" />
+            <span className="mn-modal__title" aria-hidden="true" />
           )}
-          <span className="modal__header-side modal__header-side--end">
+          <span className="mn-modal__header-side mn-modal__header-side--end">
             <IconButton
               variant="tertiary"
               size="s"
@@ -126,9 +126,9 @@ export function Modal({
           </span>
         </div>
 
-        <div className="modal__content">{children}</div>
+        <div className="mn-modal__content">{children}</div>
 
-        {footer && <div className="modal__footer">{footer}</div>}
+        {footer && <div className="mn-modal__footer">{footer}</div>}
       </div>
     </div>,
     document.body,

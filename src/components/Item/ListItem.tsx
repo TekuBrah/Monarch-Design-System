@@ -47,42 +47,42 @@ export function ListItem({
 
   const content = (
     <>
-      <div className="list-item__leading-group">
-        {leading && <div className="list-item__leading">{leading}</div>}
-        <div className="list-item__text">
-          <span className="list-item__title type-body-m-semibold">{title}</span>
+      <div className="mn-list-item__leading-group">
+        {leading && <div className="mn-list-item__leading">{leading}</div>}
+        <div className="mn-list-item__text">
+          <span className="mn-list-item__title type-body-m-semibold">{title}</span>
           {isDefault && titleInfo && (
-            <span className="list-item__subtitle type-body-caption">{titleInfo}</span>
+            <span className="mn-list-item__subtitle type-body-caption">{titleInfo}</span>
           )}
           {isProfile && hasTitleInfo && titleInfo && (
-            <span className="list-item__subtitle type-body-sm">{titleInfo}</span>
+            <span className="mn-list-item__subtitle type-body-sm">{titleInfo}</span>
           )}
           {isCrypto && titleInfo && (
-            <span className="list-item__subtitle type-body-caption">{titleInfo}</span>
+            <span className="mn-list-item__subtitle type-body-caption">{titleInfo}</span>
           )}
         </div>
       </div>
 
-      {isCrypto && miniChart && <div className="list-item__chart">{miniChart}</div>}
+      {isCrypto && miniChart && <div className="mn-list-item__chart">{miniChart}</div>}
 
       {isDefault && (
-        <div className="list-item__trailing">
-          <div className="list-item__amount-row">
+        <div className="mn-list-item__trailing">
+          <div className="mn-list-item__amount-row">
             {hasReceiptIcon && <Icon name="receipt_long" size="s" />}
-            <span className="list-item__amount type-body-m-semibold">{amount}</span>
+            <span className="mn-list-item__amount type-body-m-semibold">{amount}</span>
           </div>
           {amountInfo && (
-            <span className="list-item__amount-info type-body-caption">{amountInfo}</span>
+            <span className="mn-list-item__amount-info type-body-caption">{amountInfo}</span>
           )}
         </div>
       )}
 
       {isCrypto && (
-        <div className="list-item__trailing">
-          <span className="list-item__amount type-body-m-semibold">{amount}</span>
-          <div className="list-item__trend">
+        <div className="mn-list-item__trailing">
+          <span className="mn-list-item__amount type-body-m-semibold">{amount}</span>
+          <div className="mn-list-item__trend">
             <Icon name="icon_triangle_up" size="xs" />
-            <span className="list-item__amount-info type-body-caption">{amountInfo}</span>
+            <span className="mn-list-item__amount-info type-body-caption">{amountInfo}</span>
           </div>
         </div>
       )}
@@ -93,7 +93,7 @@ export function ListItem({
     </>
   )
 
-  const classes = ['list-item', `list-item--${type}`, className].filter(Boolean).join(' ')
+  const classes = ['mn-list-item', `mn-list-item--${type}`, className].filter(Boolean).join(' ')
 
   if (onClick) {
     return (

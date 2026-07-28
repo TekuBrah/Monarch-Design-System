@@ -46,13 +46,13 @@ export function HeaderBg({
   const notifyButton = (
     <button
       type="button"
-      className="header-bg__notify"
+      className="mn-header-bg__notify"
       aria-label="Notifications"
       onClick={onNotificationsClick}
     >
       <Icon name="notifications" size="l" />
       {hasNotification && (
-        <span className="header-bg__notify-dot">
+        <span className="mn-header-bg__notify-dot">
           <Badge type="dot" appearance="important" />
         </span>
       )}
@@ -61,36 +61,36 @@ export function HeaderBg({
 
   return (
     <header
-      className={['header-bg', isCompact && 'header-bg--compact', className]
+      className={['mn-header-bg', isCompact && 'mn-header-bg--compact', className]
         .filter(Boolean)
         .join(' ')}
     >
-      <div className="header-bg__background" aria-hidden="true">
+      <div className="mn-header-bg__background" aria-hidden="true">
         {background}
       </div>
-      {isCompact && <div className="header-bg__scrim" aria-hidden="true" />}
+      {isCompact && <div className="mn-header-bg__scrim" aria-hidden="true" />}
 
-      <div className="header-bg__content">
+      <div className="mn-header-bg__content">
         <StatusBar mode="Dark" time={statusBarTime} />
 
         {isCompact ? (
-          <div className="header-bg__row header-bg__row--title">
+          <div className="mn-header-bg__row mn-header-bg__row--title">
             <Avatar size="m" src={avatarSrc} name={avatarName} />
-            <span className="header-bg__title type-body-m-semibold">{title}</span>
+            <span className="mn-header-bg__title type-body-m-semibold">{title}</span>
             {notifyButton}
           </div>
         ) : (
-          <div className="header-bg__row header-bg__row--greeting">
-            <div className="header-bg__greeting-group">
+          <div className="mn-header-bg__row mn-header-bg__row--greeting">
+            <div className="mn-header-bg__greeting-group">
               <Avatar size="m" src={avatarSrc} name={avatarName} />
-              <span className="header-bg__greeting type-header-h6">{greeting}</span>
+              <span className="mn-header-bg__greeting type-header-h6">{greeting}</span>
             </div>
             {notifyButton}
           </div>
         )}
 
         {showSearch && (
-          <div className="header-bg__search">
+          <div className="mn-header-bg__search">
             <Field
               leadingIcon={<Icon name="search" size="m" />}
               placeholder="Search"

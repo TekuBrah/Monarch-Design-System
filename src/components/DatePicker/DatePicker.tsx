@@ -66,11 +66,11 @@ export function DatePicker({
   const showClearIcon = (hasValue && !isFocused) || isInvalid
 
   const className = [
-    'datepicker',
-    `datepicker--${appearance}`,
-    isDisabled && 'datepicker--disabled',
-    isInvalid && 'datepicker--invalid',
-    previewState && `datepicker--${previewState}`,
+    'mn-datepicker',
+    `mn-datepicker--${appearance}`,
+    isDisabled && 'mn-datepicker--disabled',
+    isInvalid && 'mn-datepicker--invalid',
+    previewState && `mn-datepicker--${previewState}`,
   ]
     .filter(Boolean)
     .join(' ')
@@ -88,20 +88,20 @@ export function DatePicker({
   return (
     <div className={className} data-preview={previewState}>
       <div
-        className="datepicker__control"
+        className="mn-datepicker__control"
         onClick={() => {
           if (isDisabled) return
           inputRef.current?.focus()
           setOpen(true)
         }}
       >
-        <span className="datepicker__stack">
+        <span className="mn-datepicker__stack">
           <input
             ref={inputRef}
             id={inputId}
             name={name}
             type="text"
-            className="datepicker__input type-body-m"
+            className="mn-datepicker__input type-body-m"
             value={currentValue}
             placeholder={placeholder}
             disabled={isDisabled}
@@ -131,7 +131,7 @@ export function DatePicker({
         {showClearIcon ? (
           <button
             type="button"
-            className="datepicker__icon datepicker__icon--clear"
+            className="mn-datepicker__icon mn-datepicker__icon--clear"
             tabIndex={-1}
             aria-label="Clear date"
             disabled={isDisabled}
@@ -143,13 +143,13 @@ export function DatePicker({
             <Icon name="cancel" size="m" />
           </button>
         ) : (
-          <span className="datepicker__icon" aria-hidden="true">
+          <span className="mn-datepicker__icon" aria-hidden="true">
             <Icon name="calendar_month" size="m" />
           </span>
         )}
       </div>
       {showCalendar && (
-        <div id={menuId} className="datepicker__menu" role="dialog" aria-label="Choose date">
+        <div id={menuId} className="mn-datepicker__menu" role="dialog" aria-label="Choose date">
           {calendarSlot}
         </div>
       )}

@@ -37,42 +37,42 @@ export function CardMonthlyBudget({
   return (
     <div
       className={[
-        'card-monthly-budget',
-        isAddNew && 'card-monthly-budget--add-new',
+        'mn-card-monthly-budget',
+        isAddNew && 'mn-card-monthly-budget--add-new',
         className,
       ]
         .filter(Boolean)
         .join(' ')}
     >
       {isAddNew ? (
-        <button type="button" className="card-monthly-budget__add-new" onClick={onAddNew}>
-          <span className="card-monthly-budget__add-icon">
+        <button type="button" className="mn-card-monthly-budget__add-new" onClick={onAddNew}>
+          <span className="mn-card-monthly-budget__add-icon">
             <Icon name="add" size="m" />
           </span>
-          <span className="card-monthly-budget__add-label type-body-caption-semibold">
+          <span className="mn-card-monthly-budget__add-label type-body-caption-semibold">
             Add New Budget
           </span>
         </button>
       ) : (
         <>
-          <div className="card-monthly-budget__header">
-            <div className="card-monthly-budget__header-text type-body-caption">
-              <span className="card-monthly-budget__header-title type-body-caption-semibold">
+          <div className="mn-card-monthly-budget__header">
+            <div className="mn-card-monthly-budget__header-text type-body-caption">
+              <span className="mn-card-monthly-budget__header-title type-body-caption-semibold">
                 Monthly Budget
               </span>
-              <span className="card-monthly-budget__header-dot">•</span>
+              <span className="mn-card-monthly-budget__header-dot">•</span>
               <span>{period}</span>
             </div>
             <button
               type="button"
-              className="card-monthly-budget__details type-body-caption-semibold"
+              className="mn-card-monthly-budget__details type-body-caption-semibold"
               onClick={onDetailsClick}
             >
               Details
             </button>
           </div>
 
-          <div className="card-monthly-budget__body">
+          <div className="mn-card-monthly-budget__body">
             <ProgressRing
               value={percentage}
               size="m"
@@ -80,7 +80,7 @@ export function CardMonthlyBudget({
               amount={amountLeft}
               total={totalAmount}
             />
-            <div className="card-monthly-budget__summary">
+            <div className="mn-card-monthly-budget__summary">
               <SummaryItem icon={<Icon name="icon_wallet" size="m" />} amount={availableAmount} type="Available" />
               <SummaryItem icon={<Icon name="icon_track_spending" size="m" />} amount={spentAmount} type="Spent" />
             </div>

@@ -39,7 +39,7 @@ export function Tabs({ tabs, selectedId, onChange, ariaLabel }: TabsProps) {
 
   return (
     <div
-      className="tabs"
+      className="mn-tabs"
       role="tablist"
       aria-label={ariaLabel}
       ref={listRef}

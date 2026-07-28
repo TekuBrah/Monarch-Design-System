@@ -12,17 +12,17 @@ export interface CardBalanceProps {
 
 export function CardBalance({ icon, type, name, amount, className }: CardBalanceProps) {
   return (
-    <div className={['card-balance', className].filter(Boolean).join(' ')}>
-      <div className="card-balance__header">
+    <div className={['mn-card-balance', className].filter(Boolean).join(' ')}>
+      <div className="mn-card-balance__header">
         <IconObject color="slate" size="l">
           {icon}
         </IconObject>
-        <div className="card-balance__text">
-          <span className="card-balance__type type-body-caption">{type}</span>
-          <span className="card-balance__name type-body-caption-semibold">{name}</span>
+        <div className="mn-card-balance__text">
+          <span className="mn-card-balance__type type-body-caption">{type}</span>
+          <span className="mn-card-balance__name type-body-caption-semibold">{name}</span>
         </div>
       </div>
-      <span className="card-balance__amount type-body-m-semibold">{amount}</span>
+      <span className="mn-card-balance__amount type-body-m-semibold">{amount}</span>
     </div>
   )
 }

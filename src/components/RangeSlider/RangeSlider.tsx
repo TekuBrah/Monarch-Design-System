@@ -116,7 +116,7 @@ export function RangeSlider({
     const hi = which === 'min' ? maxValue : max
     return (
       <div
-        className="range-slider__thumb"
+        className="mn-range-slider__thumb"
         ref={which === 'min' ? minRef : maxRef}
         style={{ left: `${toPct(value)}%` }}
         role="slider"
@@ -132,9 +132,9 @@ export function RangeSlider({
         onFocus={() => setActive(which)}
         onBlur={() => setActive(a => (a === which ? null : a))}
       >
-        <span className="range-slider__halo" aria-hidden="true" />
+        <span className="mn-range-slider__halo" aria-hidden="true" />
         {showTooltip && active === which && (
-          <span className="range-slider__tooltip type-body-sm-semibold" role="status">
+          <span className="mn-range-slider__tooltip type-body-sm-semibold" role="status">
             {formatValue(value)}
           </span>
         )}
@@ -143,10 +143,10 @@ export function RangeSlider({
   }
 
   return (
-    <div className={['range-slider', isDisabled && 'range-slider--disabled', className].filter(Boolean).join(' ')} id={id}>
-      <div className="range-slider__track" ref={trackRef} onPointerDown={handleTrackPointerDown}>
+    <div className={['mn-range-slider', isDisabled && 'mn-range-slider--disabled', className].filter(Boolean).join(' ')} id={id}>
+      <div className="mn-range-slider__track" ref={trackRef} onPointerDown={handleTrackPointerDown}>
         <div
-          className="range-slider__fill"
+          className="mn-range-slider__fill"
           style={{ left: `${toPct(minValue)}%`, width: `${toPct(maxValue) - toPct(minValue)}%` }}
         />
         {renderThumb('min')}
@@ -154,8 +154,8 @@ export function RangeSlider({
       </div>
 
       {showInputs && (
-        <div className="range-slider__inputs">
-          <div className="range-slider__input">
+        <div className="mn-range-slider__inputs">
+          <div className="mn-range-slider__input">
             <Field
               value={formatValue(minValue)}
               ariaLabel={ariaLabelMin}
@@ -166,7 +166,7 @@ export function RangeSlider({
               }}
             />
           </div>
-          <div className="range-slider__input">
+          <div className="mn-range-slider__input">
             <Field
               value={formatValue(maxValue)}
               ariaLabel={ariaLabelMax}

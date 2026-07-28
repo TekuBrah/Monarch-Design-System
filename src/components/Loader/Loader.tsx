@@ -5,5 +5,5 @@ export interface LoaderProps {
 }
 
 export function Loader({ ariaLabel = 'Loading' }: LoaderProps) {
-  return <span className="loader" role="status" aria-label={ariaLabel} />
+  return <span className="mn-loader" role="status" aria-label={ariaLabel} />
 }

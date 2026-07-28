@@ -5,13 +5,13 @@
    swap. The dropdown is confirmed as an app-provided slot (Figma: "Example
    Slot for Select <Menu>"), a simple scrollable time-option list. */
 
-.timepicker {
+.mn-timepicker {
   position: relative;
   display: inline-block;
   width: 240px; /* Figma demo width; caller-controllable */
 }
 
-.timepicker__control {
+.mn-timepicker__control {
   position: relative;
   box-sizing: border-box;
   display: flex;
@@ -26,12 +26,12 @@
   transition: background 0.12s ease, border-color 0.12s ease;
 }
 
-.timepicker__stack {
+.mn-timepicker__stack {
   display: flex;
   flex: 1 1 auto;
   min-width: 0;
 }
-.timepicker__input {
+.mn-timepicker__input {
   width: 100%;
   min-width: 0;
   border: none;
@@ -42,19 +42,19 @@
   caret-color: var(--mapped-text-default-default);
   font-family: inherit;
 }
-.timepicker__input::placeholder {
+.mn-timepicker__input::placeholder {
   color: var(--mapped-text-subtle-default);
   opacity: 1;
 }
 
-.timepicker__icon {
+.mn-timepicker__icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   transition: opacity 0.12s ease;
 }
-.timepicker__clear {
+.mn-timepicker__clear {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -64,13 +64,13 @@
   cursor: pointer;
   color: var(--mapped-icon-subtle-default);
 }
-.timepicker__clear:disabled {
+.mn-timepicker__clear:disabled {
   cursor: default;
 }
 
 /* === Hover (Standard) === */
-.timepicker--standard:not(.timepicker--disabled):not(.timepicker--invalid):hover:not(:focus-within) .timepicker__control,
-.timepicker--standard.timepicker--hover:not(.timepicker--disabled):not(.timepicker--invalid) .timepicker__control {
+.mn-timepicker--standard:not(.mn-timepicker--disabled):not(.mn-timepicker--invalid):hover:not(:focus-within) .mn-timepicker__control,
+.mn-timepicker--standard.mn-timepicker--hover:not(.mn-timepicker--disabled):not(.mn-timepicker--invalid) .mn-timepicker__control {
   background: var(--mapped-surface-primary-default-subtle-hover);
   border-color: var(--mapped-border-primary-default-subtle-hover);
 }
@@ -78,12 +78,12 @@
 /* === Subtle appearance — transparent border at rest; CONFIRMED divergence
    from DatePicker/Field/TextArea: Subtle-Hover here DOES gain a background
    tint (no border added), it isn't fully inert like its siblings. === */
-.timepicker--subtle .timepicker__control {
+.mn-timepicker--subtle .mn-timepicker__control {
   background: transparent;
   border-color: transparent;
 }
-.timepicker--subtle:not(.timepicker--disabled):not(.timepicker--invalid):hover:not(:focus-within) .timepicker__control,
-.timepicker--subtle.timepicker--hover:not(.timepicker--disabled):not(.timepicker--invalid) .timepicker__control {
+.mn-timepicker--subtle:not(.mn-timepicker--disabled):not(.mn-timepicker--invalid):hover:not(:focus-within) .mn-timepicker__control,
+.mn-timepicker--subtle.mn-timepicker--hover:not(.mn-timepicker--disabled):not(.mn-timepicker--invalid) .mn-timepicker__control {
   background: var(--mapped-surface-primary-default-subtle-hover);
 }
 
@@ -91,13 +91,13 @@
    Persists via :focus-within; Hydrate is not a separate class — it's just
    Focus with a real value (icon logic handles the value-vs-empty visual
    difference via JS, not CSS). */
-.timepicker:not(.timepicker--disabled) .timepicker__control:focus-within,
-.timepicker.timepicker--focus:not(.timepicker--disabled) .timepicker__control {
+.mn-timepicker:not(.mn-timepicker--disabled) .mn-timepicker__control:focus-within,
+.mn-timepicker.timepicker--focus:not(.mn-timepicker--disabled) .mn-timepicker__control {
   border-color: var(--mapped-border-primary-default);
   border-width: var(--brand-scale-50); /* 2px = Border Width/sm */
 }
-.timepicker:not(.timepicker--disabled) .timepicker__control:focus-within::after,
-.timepicker.timepicker--focus:not(.timepicker--disabled) .timepicker__control::after {
+.mn-timepicker:not(.mn-timepicker--disabled) .mn-timepicker__control:focus-within::after,
+.mn-timepicker.timepicker--focus:not(.mn-timepicker--disabled) .mn-timepicker__control::after {
   content: '';
   position: absolute;
   inset: calc(-1 * var(--brand-scale-100)); /* -4px */
@@ -108,7 +108,7 @@
 }
 
 /* === Invalid === */
-.timepicker--invalid .timepicker__control {
+.mn-timepicker--invalid .mn-timepicker__control {
   border-color: var(--mapped-border-error-default);
   border-width: var(--brand-scale-50); /* 2px */
 }
@@ -119,39 +119,39 @@
    here). Treated as a Figma authoring slip and normalized to match the
    established pattern, per explicit approval. Subtle drops the border
    entirely, same divergence as the rest of the family. === */
-.timepicker--disabled.timepicker--standard .timepicker__control {
+.mn-timepicker--disabled.mn-timepicker--standard .mn-timepicker__control {
   background: var(--mapped-surface-disabled-default);
   border-color: var(--mapped-border-disabled-default);
 }
-.timepicker--disabled.timepicker--subtle .timepicker__control {
+.mn-timepicker--disabled.mn-timepicker--subtle .mn-timepicker__control {
   background: transparent;
   border-color: transparent;
 }
-.timepicker--disabled .timepicker__control {
+.mn-timepicker--disabled .mn-timepicker__control {
   cursor: not-allowed;
 }
-.timepicker--disabled.timepicker--standard .timepicker__input {
+.mn-timepicker--disabled.mn-timepicker--standard .mn-timepicker__input {
   color: var(--mapped-text-disabled-on-color);
 }
-.timepicker--disabled.timepicker--standard .timepicker__input::placeholder {
+.mn-timepicker--disabled.mn-timepicker--standard .mn-timepicker__input::placeholder {
   color: var(--mapped-text-disabled-on-color);
 }
-.timepicker--disabled.timepicker--standard .timepicker__clear {
+.mn-timepicker--disabled.mn-timepicker--standard .mn-timepicker__clear {
   color: var(--mapped-icon-disabled-on-color);
 }
-.timepicker--disabled.timepicker--subtle .timepicker__input {
+.mn-timepicker--disabled.mn-timepicker--subtle .mn-timepicker__input {
   color: var(--mapped-text-disabled-default);
 }
-.timepicker--disabled.timepicker--subtle .timepicker__input::placeholder {
+.mn-timepicker--disabled.mn-timepicker--subtle .mn-timepicker__input::placeholder {
   color: var(--mapped-text-disabled-default);
 }
-.timepicker--disabled.timepicker--subtle .timepicker__clear {
+.mn-timepicker--disabled.mn-timepicker--subtle .mn-timepicker__clear {
   color: var(--mapped-icon-disabled-default);
 }
 
 /* === Times dropdown — positioned below; the slot brings its own
    container/shadow/list === */
-.timepicker__menu {
+.mn-timepicker__menu {
   position: absolute;
   top: calc(100% + var(--brand-scale-100)); /* 4px below the box */
   left: 0;

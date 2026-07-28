@@ -46,15 +46,15 @@ export function Link({
       aria-current={isCurrent ? 'page' : undefined}
       data-preview={previewState}
       className={[
-        'link',
-        `link--${appearance}`,
-        hasVisited && 'link--visited',
-        isCurrent && 'link--current',
+        'mn-link',
+        `mn-link--${appearance}`,
+        hasVisited && 'mn-link--visited',
+        isCurrent && 'mn-link--current',
       ].filter(Boolean).join(' ')}
     >
-      {iconBefore && <span className="link__icon">{iconBefore}</span>}
+      {iconBefore && <span className="mn-link__icon">{iconBefore}</span>}
       <span className={typeClass}>{label}</span>
-      {iconAfter && <span className="link__icon">{iconAfter}</span>}
+      {iconAfter && <span className="mn-link__icon">{iconAfter}</span>}
     </a>
   )
 }

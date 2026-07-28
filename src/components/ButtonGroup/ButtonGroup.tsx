@@ -22,7 +22,7 @@ export interface ButtonGroupProps {
 
 export function ButtonGroup({ buttons, onMoreClick, moreAriaLabel = 'More actions', ariaLabel = 'Button group' }: ButtonGroupProps) {
   return (
-    <div className="button-group" role="group" aria-label={ariaLabel}>
+    <div className="mn-button-group" role="group" aria-label={ariaLabel}>
       <IconButton
         variant="tertiary"
         size="m"

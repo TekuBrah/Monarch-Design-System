@@ -18,13 +18,13 @@ export function SummaryItem({
   className,
 }: SummaryItemProps) {
   return (
-    <div className={['summary-item', className].filter(Boolean).join(' ')}>
+    <div className={['mn-summary-item', className].filter(Boolean).join(' ')}>
       <IconObject color="slate" size="l">
         {icon}
       </IconObject>
-      <div className="summary-item__text">
-        <span className="summary-item__amount type-body-m-semibold">{amount}</span>
-        <span className="summary-item__type type-body-caption">{type}</span>
+      <div className="mn-summary-item__text">
+        <span className="mn-summary-item__amount type-body-m-semibold">{amount}</span>
+        <span className="mn-summary-item__type type-body-caption">{type}</span>
       </div>
     </div>
   )

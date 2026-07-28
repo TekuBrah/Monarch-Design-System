@@ -1,9 +1,9 @@
-.progress-ring {
+.mn-progress-ring {
   position: relative;
   flex-shrink: 0;
 }
 
-.progress-ring__svg {
+.mn-progress-ring__svg {
   position: absolute;
   top: 0;
   left: 0;
@@ -20,7 +20,7 @@
    build needed a #8c5b99 literal for the gradient's cyclic seam; restructuring the
    stops around φ removes it. Brand primitives by approval (fixed data-viz gradient,
    no mapped token, does not dark-flip). */
-.progress-ring__gradient {
+.mn-progress-ring__gradient {
   width: 100%;
   height: 100%;
   background: conic-gradient(
@@ -34,7 +34,7 @@
   );
 }
 
-.progress-ring__content {
+.mn-progress-ring__content {
   position: absolute;
   left: 50%;
   /* centred on the arc's circle centre (0.5 × svg width, passed inline), not the
@@ -48,14 +48,14 @@
   white-space: nowrap;
 }
 
-.progress-ring__caption {
+.mn-progress-ring__caption {
   display: flex;
   align-items: center;
   gap: var(--brand-scale-50); /* 2px */
   color: var(--mapped-text-default-default);
 }
 
-.progress-ring__amount {
+.mn-progress-ring__amount {
   color: var(--mapped-text-default-default);
 }
 
@@ -63,7 +63,7 @@
    "dark" appearance: explicit vertical padding (Badge uses paddingBlock:0, relying
    on line-height alone) and both words in the row share one caption-semibold weight
    (Badge's API only styles the label, not a two-part "of {total}" row). */
-.progress-ring__pill {
+.mn-progress-ring__pill {
   display: flex;
   align-items: center;
   gap: var(--brand-scale-100); /* 4px */

@@ -1,4 +1,4 @@
-.card-data-display {
+.mn-card-data-display {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -14,12 +14,12 @@
   border-radius: var(--brand-scale-200); /* 8px */
 }
 
-.card-data-display__info {
+.mn-card-data-display__info {
   color: var(--mapped-text-subtle-default);
   white-space: nowrap;
 }
 
-.card-data-display__content {
+.mn-card-data-display__content {
   color: var(--mapped-text-default-default);
   white-space: nowrap;
 }

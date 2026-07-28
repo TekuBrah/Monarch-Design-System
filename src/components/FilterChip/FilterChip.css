@@ -1,4 +1,4 @@
-.filter-chip {
+.mn-filter-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -13,7 +13,7 @@
   transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
 }
 
-.filter-chip__icon {
+.mn-filter-chip__icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -22,22 +22,22 @@
   flex-shrink: 0;
 }
 
-.filter-chip__label {
-  color: inherit; /* follows .filter-chip color, so icon + label always match */
+.mn-filter-chip__label {
+  color: inherit; /* follows .mn-filter-chip color, so icon + label always match */
 }
 
 /* === Icon-driven padding/gap (Figma: icon hugs its adjacent edge at 12px, opposite edge stays 16px) === */
-.filter-chip[data-icon-left="true"]:not([data-icon-right="true"]) {
+.mn-filter-chip[data-icon-left="true"]:not([data-icon-right="true"]) {
   padding-left: var(--brand-scale-300); /* 12px */
   padding-right: var(--brand-scale-400); /* 16px */
   gap: var(--brand-scale-200); /* 8px */
 }
-.filter-chip[data-icon-right="true"]:not([data-icon-left="true"]) {
+.mn-filter-chip[data-icon-right="true"]:not([data-icon-left="true"]) {
   padding-left: var(--brand-scale-400);
   padding-right: var(--brand-scale-300);
   gap: var(--brand-scale-200);
 }
-.filter-chip[data-icon-left="true"][data-icon-right="true"] {
+.mn-filter-chip[data-icon-left="true"][data-icon-right="true"] {
   /* FAIL LOUD: Figma source specifies 10px here — not on our --brand-scale
      ramp (nearest: --brand-scale-200=8px, --brand-scale-300=12px). No token
      matches. Recorded as a literal per design source; needs a Figma
@@ -52,17 +52,17 @@
    toggle control needs hover/press feedback. Unselected state only; no
    selected+hover/press combo, matching Tab's precedent of respecting
    Figma's omitted combos. See docs/component-tokens.md for full rationale. */
-.filter-chip:not(.filter-chip--selected):hover:not(:active) {
+.mn-filter-chip:not(.mn-filter-chip--selected):hover:not(:active) {
   background: var(--mapped-surface-subtle-hover);
   color: var(--mapped-text-default-hover);
 }
-.filter-chip:not(.filter-chip--selected):active {
+.mn-filter-chip:not(.mn-filter-chip--selected):active {
   background: var(--mapped-surface-subtle-pressed);
   color: var(--mapped-text-default-pressed);
 }
 
 /* === Selected === */
-.filter-chip--selected {
+.mn-filter-chip--selected {
   border-color: var(--mapped-border-primary-default);
   /* No opacity/tint token exists in source — derived from the real mapped border token. See docs. */
   background: color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent);
@@ -71,29 +71,29 @@
 /* Selected hover/press — user-requested feedback (deliberate addition beyond
    Figma source): deepen the same border-derived tint so the fill reads
    brighter/darker on interaction. */
-.filter-chip--selected:hover:not(:active) {
+.mn-filter-chip--selected:hover:not(:active) {
   background: color-mix(in srgb, var(--mapped-border-primary-default) 16%, transparent);
 }
-.filter-chip--selected:active {
+.mn-filter-chip--selected:active {
   background: color-mix(in srgb, var(--mapped-border-primary-default) 24%, transparent);
 }
 
 /* === Focus (keyboard) === */
-.filter-chip:focus-visible {
+.mn-filter-chip:focus-visible {
   outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
   outline-offset: var(--brand-scale-50);
 }
 
 /* Preview overrides — showcase only, not for production use */
-.filter-chip[data-preview="hover"]:not(.filter-chip--selected) {
+.mn-filter-chip[data-preview="hover"]:not(.mn-filter-chip--selected) {
   background: var(--mapped-surface-subtle-hover) !important;
   color: var(--mapped-text-default-hover) !important;
 }
-.filter-chip[data-preview="pressed"]:not(.filter-chip--selected) {
+.mn-filter-chip[data-preview="pressed"]:not(.mn-filter-chip--selected) {
   background: var(--mapped-surface-subtle-pressed) !important;
   color: var(--mapped-text-default-pressed) !important;
 }
-.filter-chip[data-preview="focus"] {
+.mn-filter-chip[data-preview="focus"] {
   outline: var(--brand-scale-50) solid var(--mapped-border-primary-default) !important;
   outline-offset: var(--brand-scale-50) !important;
 }

@@ -31,15 +31,15 @@ export function Tab({
       aria-controls={ariaControls}
       tabIndex={tabIndex}
       className={[
-        'tab',
-        isSelected && 'tab--selected',
-        previewState && `tab--${previewState}`,
+        'mn-tab',
+        isSelected && 'mn-tab--selected',
+        previewState && `mn-tab--${previewState}`,
       ]
         .filter(Boolean)
         .join(' ')}
       onClick={onClick}
     >
-      <span className="tab__label type-body-caption-semibold">{label}</span>
+      <span className="mn-tab__label type-body-caption-semibold">{label}</span>
     </button>
   )
 }

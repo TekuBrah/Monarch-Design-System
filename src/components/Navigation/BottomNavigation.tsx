@@ -17,15 +17,15 @@ export interface BottomNavigationProps {
 
 export function BottomNavigation({ items, onSelect, className }: BottomNavigationProps) {
   return (
-    <div className={['bottom-nav', className].filter(Boolean).join(' ')}>
-      <nav className="bottom-nav__bar" aria-label="Primary">
+    <div className={['mn-bottom-nav', className].filter(Boolean).join(' ')}>
+      <nav className="mn-bottom-nav__bar" aria-label="Primary">
         {items.map(item => (
           <button
             key={item.id}
             type="button"
             className={[
-              'bottom-nav__item',
-              item.isSelected && 'bottom-nav__item--selected',
+              'mn-bottom-nav__item',
+              item.isSelected && 'mn-bottom-nav__item--selected',
             ]
               .filter(Boolean)
               .join(' ')}
@@ -35,7 +35,7 @@ export function BottomNavigation({ items, onSelect, className }: BottomNavigatio
             <Icon name={item.icon} size="l" />
             <span
               className={[
-                'bottom-nav__label',
+                'mn-bottom-nav__label',
                 item.isSelected ? 'type-body-caption-semibold' : 'type-body-caption',
               ].join(' ')}
             >
@@ -44,7 +44,7 @@ export function BottomNavigation({ items, onSelect, className }: BottomNavigatio
           </button>
         ))}
       </nav>
-      <div className="bottom-nav__home-indicator" aria-hidden="true" />
+      <div className="mn-bottom-nav__home-indicator" aria-hidden="true" />
     </div>
   )
 }

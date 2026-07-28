@@ -22,12 +22,12 @@ export function CardGoals({
   onClick,
   className,
 }: CardGoalsProps) {
-  const classes = ['card-goals', className].filter(Boolean).join(' ')
+  const classes = ['mn-card-goals', className].filter(Boolean).join(' ')
   const content = (
     <>
-      {image && <div className="card-goals__image">{image}</div>}
-      <div className="card-goals__content">
-        <span className="card-goals__title type-body-m-medium">{title}</span>
+      {image && <div className="mn-card-goals__image">{image}</div>}
+      <div className="mn-card-goals__content">
+        <span className="mn-card-goals__title type-body-m-medium">{title}</span>
         <ProgressBar value={percentage} current={current} total={total} />
       </div>
     </>

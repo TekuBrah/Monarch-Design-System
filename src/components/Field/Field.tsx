@@ -50,13 +50,13 @@ export function Field({
   const inputId = id ?? autoId
 
   const className = [
-    'field',
-    `field--${appearance}`,
-    label && !isCompact && 'field--labeled',
-    isCompact && 'field--compact',
-    isDisabled && 'field--disabled',
-    isInvalid && 'field--invalid',
-    previewState && `field--${previewState}`,
+    'mn-field',
+    `mn-field--${appearance}`,
+    label && !isCompact && 'mn-field--labeled',
+    isCompact && 'mn-field--compact',
+    isDisabled && 'mn-field--disabled',
+    isInvalid && 'mn-field--invalid',
+    previewState && `mn-field--${previewState}`,
   ]
     .filter(Boolean)
     .join(' ')
@@ -72,7 +72,7 @@ export function Field({
         role={ariaLabel ? 'img' : undefined}
         aria-label={ariaLabel}
       >
-        <span className="field__icon" aria-hidden="true">
+        <span className="mn-field__icon" aria-hidden="true">
           {leadingIcon}
         </span>
       </div>
@@ -81,20 +81,20 @@ export function Field({
 
   return (
     <div className={className} data-preview={previewState}>
-      <div className="field__main">
-        {leadingIcon && <span className="field__icon">{leadingIcon}</span>}
-        <div className="field__stack">
+      <div className="mn-field__main">
+        {leadingIcon && <span className="mn-field__icon">{leadingIcon}</span>}
+        <div className="mn-field__stack">
           {label && (
-            <label htmlFor={inputId} className="field__label type-body-caption">
+            <label htmlFor={inputId} className="mn-field__label type-body-caption">
               {label}
-              {isRequired && <span className="field__required"> *</span>}
+              {isRequired && <span className="mn-field__required"> *</span>}
             </label>
           )}
           <input
             id={inputId}
             name={name}
             type={type}
-            className="field__input type-body-m"
+            className="mn-field__input type-body-m"
             placeholder={placeholder}
             value={value}
             defaultValue={defaultValue}
@@ -107,7 +107,7 @@ export function Field({
           />
         </div>
       </div>
-      {trailingIcon && <span className="field__icon">{trailingIcon}</span>}
+      {trailingIcon && <span className="mn-field__icon">{trailingIcon}</span>}
     </div>
   )
 }

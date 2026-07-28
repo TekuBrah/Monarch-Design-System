@@ -75,11 +75,11 @@ export function Slider({
   }
 
   return (
-    <div className={['slider', isDisabled && 'slider--disabled', className].filter(Boolean).join(' ')} id={id}>
-      <div className="slider__track" ref={trackRef} onPointerDown={handlePointerDown}>
-        <div className="slider__fill" style={{ width: `${pct}%` }} />
+    <div className={['mn-slider', isDisabled && 'mn-slider--disabled', className].filter(Boolean).join(' ')} id={id}>
+      <div className="mn-slider__track" ref={trackRef} onPointerDown={handlePointerDown}>
+        <div className="mn-slider__fill" style={{ width: `${pct}%` }} />
         <div
-          className="slider__thumb"
+          className="mn-slider__thumb"
           ref={thumbRef}
           style={{ left: `${pct}%` }}
           role="slider"
@@ -92,7 +92,7 @@ export function Slider({
           aria-disabled={isDisabled || undefined}
           onKeyDown={handleKeyDown}
         >
-          <span className="slider__halo" aria-hidden="true" />
+          <span className="mn-slider__halo" aria-hidden="true" />
         </div>
       </div>
     </div>

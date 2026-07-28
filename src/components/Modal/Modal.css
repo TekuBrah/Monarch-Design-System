@@ -1,4 +1,4 @@
-.modal {
+.mn-modal {
   position: fixed;
   inset: 0;
   z-index: 100;
@@ -11,7 +11,7 @@
 
 /* Blanket (rendered as a child) is position:fixed z-index:100 via its own CSS;
    the card sits above it in this stacking context. */
-.modal__card {
+.mn-modal__card {
   position: relative;
   z-index: 101;
   display: flex;
@@ -25,31 +25,31 @@
   /* No drop shadow — Figma's Modal card has none; the Blanket scrim provides the depth. */
 }
 
-.modal__header {
+.mn-modal__header {
   display: grid;
   grid-template-columns: 1fr auto 1fr; /* empty | title (centered) | close */
   align-items: center;
   padding: var(--brand-scale-600) var(--brand-scale-400) var(--brand-scale-400); /* 24 / 16 / 16 */
 }
 
-.modal__title {
+.mn-modal__title {
   grid-column: 2;
   margin: 0;
   text-align: center;
   color: var(--mapped-text-default-default);
 }
 
-.modal__header-side {
+.mn-modal__header-side {
   display: flex;
   align-items: center;
 }
 
-.modal__header-side--end {
+.mn-modal__header-side--end {
   grid-column: 3;
   justify-self: end;
 }
 
-.modal__content {
+.mn-modal__content {
   display: flex;
   flex-direction: column;
   gap: var(--brand-scale-400); /* 16px */
@@ -59,7 +59,7 @@
   padding: 0 var(--brand-scale-400);
 }
 
-.modal__footer {
+.mn-modal__footer {
   display: flex;
   flex-direction: column;
   gap: var(--brand-scale-400); /* 16px */
@@ -69,6 +69,6 @@
 }
 
 /* Figma's footer is a full-width vertical button stack. */
-.modal__footer > * {
+.mn-modal__footer > * {
   width: 100%;
 }

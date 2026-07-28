@@ -3,14 +3,14 @@
    an app-provided slot). Default/Selected/Typing/Disabled read from source;
    Hover/Focus/Invalid follow Field's confirmed box tokens (identical container). */
 
-.select {
+.mn-select {
   position: relative;
   display: inline-block;
   width: 320px; /* Figma demo width; caller-controllable */
 }
 
 /* === The bordered field box === */
-.select__control {
+.mn-select__control {
   position: relative;
   box-sizing: border-box;
   display: flex;
@@ -26,12 +26,12 @@
 }
 
 /* === Layout === */
-.select__lead {
+.mn-select__lead {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
 }
-.select__stack {
+.mn-select__stack {
   display: flex;
   flex: 1 1 auto;
   min-width: 0;
@@ -39,11 +39,11 @@
   align-items: flex-start;
   gap: var(--brand-scale-50); /* 2px */
 }
-.select__label {
+.mn-select__label {
   color: var(--mapped-text-subtle-default);
   cursor: text;
 }
-.select__input {
+.mn-select__input {
   width: 100%;
   min-width: 0;
   border: none;
@@ -54,11 +54,11 @@
   caret-color: var(--mapped-text-default-default);
   font-family: inherit;
 }
-.select__input::placeholder {
+.mn-select__input::placeholder {
   color: var(--mapped-text-subtle-default);
   opacity: 1;
 }
-.select__chevron {
+.mn-select__chevron {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -71,28 +71,28 @@
 }
 
 /* === Hover (Standard) === */
-.select--standard:not(.select--disabled):not(.select--invalid):not(.select--selected) .select__control:hover:not(:focus-within),
-.select--standard.select--hover:not(.select--disabled):not(.select--invalid):not(.select--selected) .select__control {
+.mn-select--standard:not(.mn-select--disabled):not(.mn-select--invalid):not(.mn-select--selected) .mn-select__control:hover:not(:focus-within),
+.mn-select--standard.mn-select--hover:not(.mn-select--disabled):not(.mn-select--invalid):not(.mn-select--selected) .mn-select__control {
   background: var(--mapped-surface-primary-default-subtle-hover);
   border-color: var(--mapped-border-primary-default-subtle-hover);
 }
 
 /* === Subtle appearance — transparent at rest & hover === */
-.select--subtle .select__control {
+.mn-select--subtle .mn-select__control {
   background: transparent;
   border-color: transparent;
 }
 
 /* === Focus / Typing / Selected — 2px blue border + faint outer glow ring === */
-.select:not(.select--disabled) .select__control:focus-within,
-.select--selected:not(.select--disabled) .select__control,
-.select--focus:not(.select--disabled) .select__control {
+.mn-select:not(.mn-select--disabled) .mn-select__control:focus-within,
+.mn-select--selected:not(.mn-select--disabled) .mn-select__control,
+.mn-select--focus:not(.mn-select--disabled) .mn-select__control {
   border-color: var(--mapped-border-primary-default);
   border-width: var(--brand-scale-50); /* 2px = Border Width/sm */
 }
-.select:not(.select--disabled) .select__control:focus-within::after,
-.select--selected:not(.select--disabled) .select__control::after,
-.select--focus:not(.select--disabled) .select__control::after {
+.mn-select:not(.mn-select--disabled) .mn-select__control:focus-within::after,
+.mn-select--selected:not(.mn-select--disabled) .mn-select__control::after,
+.mn-select--focus:not(.mn-select--disabled) .mn-select__control::after {
   content: '';
   position: absolute;
   inset: calc(-1 * var(--brand-scale-100)); /* -4px */
@@ -103,31 +103,31 @@
 }
 
 /* === Invalid === */
-.select--invalid .select__control {
+.mn-select--invalid .mn-select__control {
   border-color: var(--mapped-border-error-default);
   border-width: var(--brand-scale-50); /* 2px */
 }
 
 /* === Disabled — -default disabled tokens (not on-color, unlike Field) === */
-.select--disabled .select__control {
+.mn-select--disabled .mn-select__control {
   background: var(--mapped-surface-disabled-default);
   border-color: var(--mapped-border-disabled-default);
   cursor: not-allowed;
 }
-.select--disabled .select__label,
-.select--disabled .select__input {
+.mn-select--disabled .mn-select__label,
+.mn-select--disabled .mn-select__input {
   color: var(--mapped-text-disabled-default);
 }
-.select--disabled .select__input::placeholder {
+.mn-select--disabled .mn-select__input::placeholder {
   color: var(--mapped-text-disabled-default);
 }
-.select--disabled .select__chevron {
+.mn-select--disabled .mn-select__chevron {
   color: var(--mapped-icon-disabled-default);
   cursor: not-allowed;
 }
 
 /* === Menu — positioned below; the slot brings its own container/shadow/items === */
-.select__menu {
+.mn-select__menu {
   position: absolute;
   top: calc(100% + var(--brand-scale-100)); /* 4px below the box */
   left: 0;

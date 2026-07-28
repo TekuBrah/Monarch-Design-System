@@ -36,30 +36,30 @@ export function ProgressBar({
   const hasReadout = current != null || total != null
 
   return (
-    <div className={['progress-bar', `progress-bar--${size}`, className].filter(Boolean).join(' ')} id={id}>
+    <div className={['mn-progress-bar', `mn-progress-bar--${size}`, className].filter(Boolean).join(' ')} id={id}>
       {showLabels && (
-        <div className="progress-bar__labels">
-          <span className={`progress-bar__pct ${pctType}`}>
+        <div className="mn-progress-bar__labels">
+          <span className={`mn-progress-bar__pct ${pctType}`}>
             {percentageLabel ?? `${Math.round(pct)}%`}
           </span>
           {hasReadout && (
-            <span className={`progress-bar__readout ${labelType}`}>
-              <span className="progress-bar__current">{current}</span>
-              <span className="progress-bar__slash" aria-hidden="true">/</span>
-              <span className="progress-bar__total">{total}</span>
+            <span className={`mn-progress-bar__readout ${labelType}`}>
+              <span className="mn-progress-bar__current">{current}</span>
+              <span className="mn-progress-bar__slash" aria-hidden="true">/</span>
+              <span className="mn-progress-bar__total">{total}</span>
             </span>
           )}
         </div>
       )}
       <div
-        className="progress-bar__track"
+        className="mn-progress-bar__track"
         role="progressbar"
         aria-valuenow={Math.round(pct)}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-label={ariaLabel}
       >
-        <div className="progress-bar__fill" style={{ width: `${pct}%` }} />
+        <div className="mn-progress-bar__fill" style={{ width: `${pct}%` }} />
       </div>
     </div>
   )

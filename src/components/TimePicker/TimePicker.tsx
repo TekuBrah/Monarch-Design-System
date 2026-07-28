@@ -64,11 +64,11 @@ export function TimePicker({
   const showClearIcon = hasValue && !isFocused
 
   const className = [
-    'timepicker',
-    `timepicker--${appearance}`,
-    isDisabled && 'timepicker--disabled',
-    isInvalid && 'timepicker--invalid',
-    previewState && `timepicker--${previewState}`,
+    'mn-timepicker',
+    `mn-timepicker--${appearance}`,
+    isDisabled && 'mn-timepicker--disabled',
+    isInvalid && 'mn-timepicker--invalid',
+    previewState && `mn-timepicker--${previewState}`,
   ]
     .filter(Boolean)
     .join(' ')
@@ -86,20 +86,20 @@ export function TimePicker({
   return (
     <div className={className} data-preview={previewState}>
       <div
-        className="timepicker__control"
+        className="mn-timepicker__control"
         onClick={() => {
           if (isDisabled) return
           inputRef.current?.focus()
           setOpen(true)
         }}
       >
-        <span className="timepicker__stack">
+        <span className="mn-timepicker__stack">
           <input
             ref={inputRef}
             id={inputId}
             name={name}
             type="text"
-            className="timepicker__input type-body-m"
+            className="mn-timepicker__input type-body-m"
             value={currentValue}
             placeholder={placeholder}
             disabled={isDisabled}
@@ -116,10 +116,10 @@ export function TimePicker({
             onBlur={() => setIsFocused(false)}
           />
         </span>
-        <span className="timepicker__icon" style={{ opacity: showClearIcon ? 1 : 0 }}>
+        <span className="mn-timepicker__icon" style={{ opacity: showClearIcon ? 1 : 0 }}>
           <button
             type="button"
-            className="timepicker__clear"
+            className="mn-timepicker__clear"
             tabIndex={-1}
             aria-label="Clear time"
             aria-hidden={!showClearIcon}
@@ -134,7 +134,7 @@ export function TimePicker({
         </span>
       </div>
       {showTimes && (
-        <div id={menuId} className="timepicker__menu">
+        <div id={menuId} className="mn-timepicker__menu">
           {timesSlot}
         </div>
       )}

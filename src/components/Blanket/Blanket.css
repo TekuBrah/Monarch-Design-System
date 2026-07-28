@@ -1,4 +1,4 @@
-.blanket {
+.mn-blanket {
   position: fixed;
   inset: 0;
   background: var(--mapped-blanket-default-default);

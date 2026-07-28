@@ -1,4 +1,4 @@
-.card-balance {
+.mn-card-balance {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -17,14 +17,14 @@
   box-shadow: var(--shadow-subtlest);
 }
 
-.card-balance__header {
+.mn-card-balance__header {
   display: flex;
   align-items: center;
   gap: var(--brand-scale-250); /* 10px */
   width: 100%;
 }
 
-.card-balance__text {
+.mn-card-balance__text {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -34,17 +34,17 @@
   width: 100%;
 }
 
-.card-balance__type {
+.mn-card-balance__type {
   color: var(--mapped-text-subtle-default);
   width: 100%;
 }
 
-.card-balance__name {
+.mn-card-balance__name {
   color: var(--mapped-text-primary-default);
   width: 100%;
 }
 
-.card-balance__amount {
+.mn-card-balance__amount {
   color: var(--mapped-text-default-default);
   white-space: nowrap;
 }

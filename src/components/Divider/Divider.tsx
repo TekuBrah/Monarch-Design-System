@@ -11,7 +11,7 @@ export interface DividerProps {
 export function Divider({ weight = 1, orientation = 'horizontal' }: DividerProps) {
   return (
     <div
-      className={`divider divider--${orientation} divider--w${weight}`}
+      className={`mn-divider mn-divider--${orientation} mn-divider--w${weight}`}
       role="separator"
       aria-orientation={orientation}
     />

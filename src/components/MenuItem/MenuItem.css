@@ -1,4 +1,4 @@
-.menu-item {
+.mn-menu-item {
   display: flex;
   align-items: center;
   box-sizing: border-box;
@@ -13,22 +13,22 @@
 }
 
 /* === Checkbox/radio types hug the leading control (Figma: gap 0, pl 16, pr 12) === */
-.menu-item--checkbox,
-.menu-item--radio {
+.mn-menu-item--checkbox,
+.mn-menu-item--radio {
   gap: var(--spacing-none);
   padding: var(--brand-scale-300) var(--brand-scale-300) var(--brand-scale-300) var(--brand-scale-400);
 }
 
 /* === Hover / press (all types, unselected) === */
-.menu-item:hover {
+.mn-menu-item:hover {
   background: var(--mapped-surface-primary-default-subtle-hover);
 }
-.menu-item:active {
+.mn-menu-item:active {
   background: var(--mapped-surface-primary-default-subtle-pressed);
 }
 
 /* === Focus ring (keyboard) === */
-.menu-item:focus-visible {
+.mn-menu-item:focus-visible {
   outline: var(--brand-scale-50) solid var(--mapped-border-primary-default); /* 2px */
   outline-offset: calc(-1 * var(--brand-scale-50)); /* -2px — inset, row has no outer margin to offset into */
 }
@@ -40,35 +40,35 @@
    Figma file is an unrelated gray, #f2f2f2, not what's actually applied here).
    Derived from the mapped border token so it dark-flips, matching the
    Tag/FilterChip precedent (10%/20% ≈ exactly #e6f1ff/#cde2ff at these values). */
-.menu-item--selected {
+.mn-menu-item--selected {
   background: color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent);
 }
-.menu-item--selected .menu-item__label,
-.menu-item--selected .menu-item__crypto-name,
-.menu-item--selected .menu-item__trailing-label {
+.mn-menu-item--selected .mn-menu-item__label,
+.mn-menu-item--selected .mn-menu-item__crypto-name,
+.mn-menu-item--selected .mn-menu-item__trailing-label {
   color: var(--mapped-text-primary-default);
 }
 
 /* Selected + press (checkbox/radio only — Figma's only selected+press combo) */
-.menu-item--checkbox.menu-item--selected:active,
-.menu-item--radio.menu-item--selected:active {
+.mn-menu-item--checkbox.mn-menu-item--selected:active,
+.mn-menu-item--radio.mn-menu-item--selected:active {
   background: color-mix(in srgb, var(--mapped-border-primary-default) 20%, transparent);
 }
 
 /* === Preview overrides — showcase only, not for production use === */
-.menu-item[data-preview="hover"]:not(.menu-item--selected) {
+.mn-menu-item[data-preview="hover"]:not(.mn-menu-item--selected) {
   background: var(--mapped-surface-primary-default-subtle-hover) !important;
 }
-.menu-item[data-preview="pressed"]:not(.menu-item--selected) {
+.mn-menu-item[data-preview="pressed"]:not(.mn-menu-item--selected) {
   background: var(--mapped-surface-primary-default-subtle-pressed) !important;
 }
-.menu-item--checkbox[data-preview="pressed"].menu-item--selected,
-.menu-item--radio[data-preview="pressed"].menu-item--selected {
+.mn-menu-item--checkbox[data-preview="pressed"].mn-menu-item--selected,
+.mn-menu-item--radio[data-preview="pressed"].mn-menu-item--selected {
   background: color-mix(in srgb, var(--mapped-border-primary-default) 20%, transparent) !important;
 }
 
 /* === Label (type="default") === */
-.menu-item__label {
+.mn-menu-item__label {
   flex: 1 0 0;
   min-width: 0;
   color: var(--mapped-text-default-default);
@@ -78,23 +78,23 @@
 }
 
 /* === Leading icon/avatar slot === */
-.menu-item__icon {
+.mn-menu-item__icon {
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.menu-item__icon--default {
+.mn-menu-item__icon--default {
   width: var(--brand-scale-500); /* 20px */
   height: var(--brand-scale-500);
 }
-.menu-item__icon--crypto {
+.mn-menu-item__icon--crypto {
   width: var(--brand-scale-1000); /* 40px */
   height: var(--brand-scale-1000);
 }
 
 /* === type="crypto" content === */
-.menu-item__crypto-primary {
+.mn-menu-item__crypto-primary {
   flex: 1 0 0;
   min-width: 0;
   display: flex;
@@ -102,51 +102,51 @@
   gap: var(--brand-scale-100); /* 4px */
   align-items: flex-start;
 }
-.menu-item__crypto-trailing {
+.mn-menu-item__crypto-trailing {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: var(--brand-scale-50); /* 2px — on-ramp, was a raw literal */
   align-items: flex-end;
 }
-.menu-item__crypto-name {
+.mn-menu-item__crypto-name {
   color: var(--mapped-text-default-default);
 }
-.menu-item__crypto-sub {
+.mn-menu-item__crypto-sub {
   color: var(--mapped-text-subtle-default);
 }
-.menu-item--selected .menu-item__crypto-sub {
+.mn-menu-item--selected .mn-menu-item__crypto-sub {
   color: var(--mapped-text-primary-default);
 }
 
 /* === type="account" content === */
-.menu-item__label--account {
+.mn-menu-item__label--account {
   flex: 1 0 0;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.menu-item__trailing {
+.mn-menu-item__trailing {
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: var(--brand-scale-100); /* 4px */
 }
-.menu-item__trailing-label {
+.mn-menu-item__trailing-label {
   color: var(--mapped-text-default-default);
 }
 
 /* === Nested Checkbox/Radio (types "checkbox" / "radio", and Account's trailing dot) ===
    inert + aria-hidden: the row (role="option") owns selection semantics —
    these render the checked/unchecked glyph only, never take focus or clicks. */
-.menu-item__control {
+.mn-menu-item__control {
   flex: 1 0 0;
   min-width: 0;
   pointer-events: none;
 }
-.menu-item__control .checkbox,
-.menu-item__control .radio {
+.mn-menu-item__control .mn-checkbox,
+.mn-menu-item__control .mn-radio {
   cursor: inherit;
 }

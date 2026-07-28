@@ -15,7 +15,7 @@ export function Logo({ name, size = 'm' }: LogoProps) {
   if (!entry) return null
   const { Component } = entry
   return (
-    <span className={`logo logo--${size}`}>
+    <span className={`mn-logo mn-logo--${size}`}>
       <Component />
     </span>
   )

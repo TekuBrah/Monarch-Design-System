@@ -37,10 +37,10 @@ export function IconObject({
   return (
     <div
       className={[
-        'icon-object',
-        `icon-object--${color}`,
-        `icon-object--${shape}`,
-        `icon-object--${size}`,
+        'mn-icon-object',
+        `mn-icon-object--${color}`,
+        `mn-icon-object--${shape}`,
+        `mn-icon-object--${size}`,
       ].join(' ')}
       role={ariaLabel ? 'img' : undefined}
       aria-label={ariaLabel}

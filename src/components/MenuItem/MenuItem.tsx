@@ -79,9 +79,9 @@ export function MenuItem({
       onClick={() => onSelect?.(id)}
       onKeyDown={handleKeyDown}
       className={[
-        'menu-item',
-        `menu-item--${type}`,
-        isSelected && 'menu-item--selected',
+        'mn-menu-item',
+        `mn-menu-item--${type}`,
+        isSelected && 'mn-menu-item--selected',
         className,
       ]
         .filter(Boolean)
@@ -89,21 +89,21 @@ export function MenuItem({
     >
       {type === 'default' && (
         <>
-          {showIcon && iconSlot && <span className="menu-item__icon menu-item__icon--default">{iconSlot}</span>}
-          <span className="menu-item__label type-body-sm">{label}</span>
+          {showIcon && iconSlot && <span className="mn-menu-item__icon mn-menu-item__icon--default">{iconSlot}</span>}
+          <span className="mn-menu-item__label type-body-sm">{label}</span>
         </>
       )}
 
       {type === 'crypto' && (
         <>
-          {showIcon && iconSlot && <span className="menu-item__icon menu-item__icon--crypto">{iconSlot}</span>}
-          <span className="menu-item__crypto-primary">
-            <span className="menu-item__crypto-name type-body-m-semibold">{labelCrypto}</span>
-            <span className="menu-item__crypto-sub type-body-caption">{labelWallet}</span>
+          {showIcon && iconSlot && <span className="mn-menu-item__icon mn-menu-item__icon--crypto">{iconSlot}</span>}
+          <span className="mn-menu-item__crypto-primary">
+            <span className="mn-menu-item__crypto-name type-body-m-semibold">{labelCrypto}</span>
+            <span className="mn-menu-item__crypto-sub type-body-caption">{labelWallet}</span>
           </span>
-          <span className="menu-item__crypto-trailing">
-            <span className="menu-item__crypto-name type-body-m-semibold">{labelAmount}</span>
-            <span className="menu-item__crypto-sub type-body-caption">{labelAmountCrypto}</span>
+          <span className="mn-menu-item__crypto-trailing">
+            <span className="mn-menu-item__crypto-name type-body-m-semibold">{labelAmount}</span>
+            <span className="mn-menu-item__crypto-sub type-body-caption">{labelAmountCrypto}</span>
           </span>
         </>
       )}
@@ -111,15 +111,15 @@ export function MenuItem({
       {type === 'account' && (
         <>
           {showIcon && (
-            <span className="menu-item__icon menu-item__icon--account">
+            <span className="mn-menu-item__icon mn-menu-item__icon--account">
               <Avatar size="m" src={avatarSrc} name={avatarName} initials={avatarInitials} />
             </span>
           )}
-          <span className="menu-item__label menu-item__label--account type-body-m-semibold">{label}</span>
-          <span className="menu-item__trailing">
-            <span className="menu-item__trailing-label type-body-sm">{trailingLabel}</span>
+          <span className="mn-menu-item__label mn-menu-item__label--account type-body-m-semibold">{label}</span>
+          <span className="mn-menu-item__trailing">
+            <span className="mn-menu-item__trailing-label type-body-sm">{trailingLabel}</span>
             {/* Presentational — the row (role="option") owns selection semantics, not this dot. */}
-            <span className="menu-item__control" inert aria-hidden="true">
+            <span className="mn-menu-item__control" inert aria-hidden="true">
               <Radio isChecked={isSelected} label="" />
             </span>
           </span>
@@ -127,13 +127,13 @@ export function MenuItem({
       )}
 
       {type === 'checkbox' && (
-        <span className="menu-item__control menu-item__control--checkbox" inert aria-hidden="true">
+        <span className="mn-menu-item__control mn-menu-item__control--checkbox" inert aria-hidden="true">
           <Checkbox isChecked={isSelected} label={label} />
         </span>
       )}
 
       {type === 'radio' && (
-        <span className="menu-item__control menu-item__control--radio" inert aria-hidden="true">
+        <span className="mn-menu-item__control mn-menu-item__control--radio" inert aria-hidden="true">
           <Radio isChecked={isSelected} label={label} />
         </span>
       )}

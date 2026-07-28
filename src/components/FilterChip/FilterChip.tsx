@@ -27,11 +27,11 @@ export function FilterChip({
       data-preview={previewState}
       data-icon-left={!!iconLeft}
       data-icon-right={!!iconRight}
-      className={['filter-chip', isSelected && 'filter-chip--selected'].filter(Boolean).join(' ')}
+      className={['mn-filter-chip', isSelected && 'mn-filter-chip--selected'].filter(Boolean).join(' ')}
     >
-      {iconLeft && <span className="filter-chip__icon">{iconLeft}</span>}
-      <span className="filter-chip__label type-body-caption-semibold">{label}</span>
-      {iconRight && <span className="filter-chip__icon">{iconRight}</span>}
+      {iconLeft && <span className="mn-filter-chip__icon">{iconLeft}</span>}
+      <span className="mn-filter-chip__label type-body-caption-semibold">{label}</span>
+      {iconRight && <span className="mn-filter-chip__icon">{iconRight}</span>}
     </button>
   )
 }

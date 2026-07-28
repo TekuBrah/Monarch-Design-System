@@ -63,12 +63,12 @@ export function Select({
   const showMenu = open && !!menuSlot
 
   const className = [
-    'select',
-    `select--${appearance}`,
-    isSelected && 'select--selected',
-    isDisabled && 'select--disabled',
-    isInvalid && 'select--invalid',
-    previewState && `select--${previewState}`,
+    'mn-select',
+    `mn-select--${appearance}`,
+    isSelected && 'mn-select--selected',
+    isDisabled && 'mn-select--disabled',
+    isInvalid && 'mn-select--invalid',
+    previewState && `mn-select--${previewState}`,
   ]
     .filter(Boolean)
     .join(' ')
@@ -76,17 +76,17 @@ export function Select({
   return (
     <div className={className} data-preview={previewState}>
       <div
-        className="select__control"
+        className="mn-select__control"
         onClick={() => {
           if (isDisabled) return
           inputRef.current?.focus()
           setOpen(true)
         }}
       >
-        {leadingSlot && <span className="select__lead">{leadingSlot}</span>}
-        <span className="select__stack">
+        {leadingSlot && <span className="mn-select__lead">{leadingSlot}</span>}
+        <span className="mn-select__stack">
           {label && (
-            <label htmlFor={inputId} className="select__label type-body-caption">
+            <label htmlFor={inputId} className="mn-select__label type-body-caption">
               {label}
             </label>
           )}
@@ -95,7 +95,7 @@ export function Select({
             id={inputId}
             name={name}
             type="text"
-            className="select__input type-body-m"
+            className="mn-select__input type-body-m"
             value={value}
             placeholder={placeholder}
             readOnly={!searchable}
@@ -111,7 +111,7 @@ export function Select({
         </span>
         <button
           type="button"
-          className="select__chevron"
+          className="mn-select__chevron"
           tabIndex={-1}
           aria-label={open ? 'Close options' : 'Open options'}
           disabled={isDisabled}
@@ -124,7 +124,7 @@ export function Select({
         </button>
       </div>
       {showMenu && (
-        <div id={menuId} className="select__menu">
+        <div id={menuId} className="mn-select__menu">
           {menuSlot}
         </div>
       )}

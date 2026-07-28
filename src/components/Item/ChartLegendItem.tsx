@@ -39,30 +39,30 @@ export function ChartLegendItem({
 
   const content = (
     <>
-      <div className="chart-legend-item__leading-group">
+      <div className="mn-chart-legend-item__leading-group">
         {showIcon && (
           <IconObject color="gray" size="xl">
             {icon}
           </IconObject>
         )}
-        <div className="chart-legend-item__text">
+        <div className="mn-chart-legend-item__text">
           <span
             className={[
-              'chart-legend-item__title',
+              'mn-chart-legend-item__title',
               isLegend ? 'type-body-m-semibold' : 'type-body-m-medium',
             ].join(' ')}
           >
             {title}
           </span>
           {hasSubtitle && subtitle && (
-            <span className="chart-legend-item__subtitle type-body-sm">{subtitle}</span>
+            <span className="mn-chart-legend-item__subtitle type-body-sm">{subtitle}</span>
           )}
         </div>
       </div>
-      <div className="chart-legend-item__trailing">
+      <div className="mn-chart-legend-item__trailing">
         <span
           className={[
-            'chart-legend-item__amount',
+            'mn-chart-legend-item__amount',
             isLegend ? 'type-body-m-semibold' : 'type-body-m-medium',
           ].join(' ')}
         >
@@ -74,8 +74,8 @@ export function ChartLegendItem({
   )
 
   const classes = [
-    'chart-legend-item',
-    `chart-legend-item--${variant}`,
+    'mn-chart-legend-item',
+    `mn-chart-legend-item--${variant}`,
     className,
   ]
     .filter(Boolean)

@@ -6,7 +6,7 @@
    raw code-gen's per-state justify-content differences don't correspond to
    any visible layout change, so no centering logic is implemented. */
 
-.textarea {
+.mn-textarea {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -22,13 +22,13 @@
   transition: background 0.12s ease, border-color 0.12s ease;
 }
 
-.textarea__label {
+.mn-textarea__label {
   flex-shrink: 0;
   color: var(--mapped-text-subtle-default);
   cursor: text;
 }
 
-.textarea__input {
+.mn-textarea__input {
   flex: 1 1 auto;
   width: 100%;
   min-width: 0;
@@ -42,20 +42,20 @@
   caret-color: var(--mapped-text-default-default);
   font-family: inherit;
 }
-.textarea__input::placeholder {
+.mn-textarea__input::placeholder {
   color: var(--mapped-text-subtle-default);
   opacity: 1;
 }
 
 /* === Hover (Standard) === */
-.textarea--standard:not(.textarea--disabled):not(.textarea--invalid):hover:not(:focus-within),
-.textarea--standard.textarea--hover:not(.textarea--disabled):not(.textarea--invalid) {
+.mn-textarea--standard:not(.mn-textarea--disabled):not(.mn-textarea--invalid):hover:not(:focus-within),
+.mn-textarea--standard.mn-textarea--hover:not(.mn-textarea--disabled):not(.mn-textarea--invalid) {
   background: var(--mapped-surface-primary-default-subtle-hover);
   border-color: var(--mapped-border-primary-default-subtle-hover);
 }
 
 /* === Subtle appearance — transparent at rest & hover === */
-.textarea--subtle {
+.mn-textarea--subtle {
   background: transparent;
   border-color: transparent;
 }
@@ -63,13 +63,13 @@
 /* === Focus / Typing — 2px blue border + faint outer glow ring ===
    Persists via :focus-within until blur; Focus-vs-Typing text color is
    native placeholder-vs-value coloring, no separate class needed. */
-.textarea:not(.textarea--disabled):focus-within,
-.textarea.textarea--focus:not(.textarea--disabled) {
+.mn-textarea:not(.mn-textarea--disabled):focus-within,
+.mn-textarea.textarea--focus:not(.mn-textarea--disabled) {
   border-color: var(--mapped-border-primary-default);
   border-width: var(--brand-scale-50); /* 2px = Border Width/sm */
 }
-.textarea:not(.textarea--disabled):focus-within::after,
-.textarea.textarea--focus:not(.textarea--disabled)::after {
+.mn-textarea:not(.mn-textarea--disabled):focus-within::after,
+.mn-textarea.textarea--focus:not(.mn-textarea--disabled)::after {
   content: '';
   position: absolute;
   inset: calc(-1 * var(--brand-scale-100)); /* -4px */
@@ -80,7 +80,7 @@
 }
 
 /* === Invalid — 2px error border === */
-.textarea--invalid {
+.mn-textarea--invalid {
   border-color: var(--mapped-border-error-default);
   border-width: var(--brand-scale-50); /* 2px */
 }
@@ -89,31 +89,31 @@
    surface); Subtle drops the border entirely and uses -default tokens
    (confirmed divergence — same pattern as SelectWalletAccount's
    Subtle-Disabled). === */
-.textarea--disabled.textarea--standard {
+.mn-textarea--disabled.mn-textarea--standard {
   background: var(--mapped-surface-disabled-default);
   border-color: var(--mapped-border-disabled-default);
 }
-.textarea--disabled.textarea--subtle {
+.mn-textarea--disabled.mn-textarea--subtle {
   background: transparent;
   border-color: transparent;
 }
-.textarea--disabled {
+.mn-textarea--disabled {
   cursor: not-allowed;
 }
-.textarea--disabled.textarea--standard .textarea__label,
-.textarea--disabled.textarea--standard .textarea__input {
+.mn-textarea--disabled.mn-textarea--standard .mn-textarea__label,
+.mn-textarea--disabled.mn-textarea--standard .mn-textarea__input {
   color: var(--mapped-text-disabled-on-color);
 }
-.textarea--disabled.textarea--standard .textarea__input::placeholder {
+.mn-textarea--disabled.mn-textarea--standard .mn-textarea__input::placeholder {
   color: var(--mapped-text-disabled-on-color);
 }
-.textarea--disabled.textarea--subtle .textarea__label,
-.textarea--disabled.textarea--subtle .textarea__input {
+.mn-textarea--disabled.mn-textarea--subtle .mn-textarea__label,
+.mn-textarea--disabled.mn-textarea--subtle .mn-textarea__input {
   color: var(--mapped-text-disabled-default);
 }
-.textarea--disabled.textarea--subtle .textarea__input::placeholder {
+.mn-textarea--disabled.mn-textarea--subtle .mn-textarea__input::placeholder {
   color: var(--mapped-text-disabled-default);
 }
-.textarea--disabled .textarea__input {
+.mn-textarea--disabled .mn-textarea__input {
   cursor: not-allowed;
 }

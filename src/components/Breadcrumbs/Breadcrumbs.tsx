@@ -19,7 +19,7 @@ export interface BreadcrumbsProps {
 
 export function Breadcrumbs({ items, ariaLabel = 'Breadcrumb' }: BreadcrumbsProps) {
   return (
-    <nav aria-label={ariaLabel} className="breadcrumbs">
+    <nav aria-label={ariaLabel} className="mn-breadcrumbs">
       {items.map((item, i) => {
         const isLast = i === items.length - 1
         return (
