@@ -590,7 +590,7 @@ Form field label with optional required indicator and leading/trailing icon slot
 | Prop | Type | Default | Notes |
 |---|---|---|---|
 | `label` | `string` | `'Label'` | Visible text |
-| `size` | `'M' \| 'S'` | `'S'` | M = 16px / S = 14px body |
+| `size` | `'m' \| 's'` | `'s'` | m = 16px / s = 14px body |
 | `isRequired` | `boolean` | `false` | Shows `*` in error color after label text |
 | `iconBefore` | `ReactNode` | — | Leading icon slot (Figma uses `help_outline`) |
 | `iconAfter` | `ReactNode` | — | Trailing icon slot (Figma uses `help_outline`) |
@@ -607,8 +607,8 @@ Form field label with optional required indicator and leading/trailing icon slot
 
 | Size | Label class | Required `*` class |
 |---|---|---|
-| M | `type-body-m-semibold` (16px) | `type-body-m-semibold` (same size) |
-| S | `type-body-sm-semibold` (14px) | `type-body-caption-semibold` (12px — smaller) |
+| m | `type-body-m-semibold` (16px) | `type-body-m-semibold` (same size) |
+| s | `type-body-sm-semibold` (14px) | `type-body-caption-semibold` (12px — smaller) |
 
 ### Geometry tokens
 
@@ -618,7 +618,7 @@ Form field label with optional required indicator and leading/trailing icon slot
 
 ### Known Figma inconsistencies
 
-- **Required `*` size differs by size**: In size S, the asterisk is caption (12px) while label text is body-sm (14px). In size M, both share the same body/m font. Preserved as-is from Figma.
+- **Required `*` size differs by size**: In size s, the asterisk is caption (12px) while label text is body-sm (14px). In size m, both share the same body/m font. Preserved as-is from Figma.
 - Figma shows `help_outline` as the default icon; in code the icon slots are ReactNode for flexibility.
 
 ---
@@ -634,7 +634,7 @@ A binary on/off control rendered as a sliding pill track. Uses a hidden native `
 
 | Prop | Type | Default | Notes |
 |---|---|---|---|
-| `size` | `ToggleSize` | `'regular'` | `'regular'` \| `'large'` |
+| `size` | `ToggleSize` | `'m'` | `'m'` \| `'l'` |
 | `isChecked` | `boolean` | `false` | Controlled; triggers `onChange` |
 | `isDisabled` | `boolean` | `false` | |
 | `onChange` | `(checked: boolean) => void` | — | |
@@ -664,18 +664,18 @@ A binary on/off control rendered as a sliding pill track. Uses a hidden native `
 |---|---|---|
 | Track border-radius | `--brand-scale-1800` | 512px → always pill |
 | Dot offset (top/left unchecked) | `--brand-scale-50` | 2px |
-| **Regular** track width | `--brand-scale-800` | 32px |
-| **Regular** track height | `--brand-scale-400` | 16px |
-| **Regular** dot size | `--brand-scale-300` | 12px |
-| **Regular** dot checked left | `calc(--brand-scale-800 - --brand-scale-300 - --brand-scale-50)` | 18px |
-| **Large** track width | `46px` (literal) | 46px — off the ramp (1000=40px/1100=48px); see note below |
-| **Large** track height | `--brand-scale-600` | 24px |
-| **Large** dot size | `--brand-scale-500` | 20px |
-| **Large** dot checked left | `--brand-scale-600` | 24px |
+| **m** track width | `--brand-scale-800` | 32px |
+| **m** track height | `--brand-scale-400` | 16px |
+| **m** dot size | `--brand-scale-300` | 12px |
+| **m** dot checked left | `calc(--brand-scale-800 - --brand-scale-300 - --brand-scale-50)` | 18px |
+| **l** track width | `46px` (literal) | 46px — off the ramp (1000=40px/1100=48px); see note below |
+| **l** track height | `--brand-scale-600` | 24px |
+| **l** dot size | `--brand-scale-500` | 20px |
+| **l** dot checked left | `--brand-scale-600` | 24px |
 
 ### Known Figma inconsistencies
 
-- **Large track width = 46px**: no `--brand-scale-*` token resolves to 46px (nearest ramp steps: 1000=40px, 1100=48px). Previously implemented as `calc(var(--brand-scale-1100) - var(--brand-scale-50))` (48−2=46) — an **audit-flagged HIGH finding**, since this is exactly CLAUDE.md's banned pattern (a calc() curve-fit between unrelated scale tokens fabricating a relationship that doesn't exist in the source). Fixed: now a plain `46px` literal with a FAIL-LOUD comment in `Toggle.css`, pending a Figma Variables fix.
+- **l track width = 46px**: no `--brand-scale-*` token resolves to 46px (nearest ramp steps: 1000=40px, 1100=48px). Previously implemented as `calc(var(--brand-scale-1100) - var(--brand-scale-50))` (48−2=46) — an **audit-flagged HIGH finding**, since this is exactly CLAUDE.md's banned pattern (a calc() curve-fit between unrelated scale tokens fabricating a relationship that doesn't exist in the source). Fixed: now a plain `46px` literal with a FAIL-LOUD comment in `Toggle.css`, pending a Figma Variables fix.
 - **Figma dot is an image asset**: The Figma file shows the dot as a raster image asset. Replaced with pure CSS (`border-radius: 50%`, `--shadow-subtle`).
 - **No `checked-hover` mapped surface token prior to investigation**: Initial build used `--alias-primary-600` directly. Corrected to `--mapped-surface-primary-default-hover` after confirming the mapped token exists and resolves to `alias-primary-500` in dark mode (vs 600 in light mode) — dark-mode behaviour was wrong before the fix.
 
@@ -734,7 +734,7 @@ A filter/selection pill rendered as a `<button>`. Two appearances (default on wh
 |---|---|---|---|
 | `label` | `string` | `'Tag'` | Visible text |
 | `appearance` | `TagAppearance` | `'default'` | `'default'` \| `'overlay'` |
-| `size` | `TagSize` | `'M'` | `'M'` \| `'S'` |
+| `size` | `TagSize` | `'m'` | `'m'` \| `'s'` |
 | `isSelected` | `boolean` | `false` | Blue fill — maps to Figma "Focus" state |
 | `isDisabled` | `boolean` | `false` | |
 | `iconBefore` | `ReactNode` | — | Leading icon slot |
@@ -767,16 +767,16 @@ A filter/selection pill rendered as a `<button>`. Two appearances (default on wh
 | Property | Token | Resolved value |
 |---|---|---|
 | Border radius | `--brand-scale-100` | 4px |
-| Size M padding | `--brand-scale-100` (v) `--brand-scale-50` (h) | 4px / 2px |
-| Size S padding | `--brand-scale-50` (all) | 2px |
+| Size m padding | `--brand-scale-100` (v) `--brand-scale-50` (h) | 4px / 2px |
+| Size s padding | `--brand-scale-50` (all) | 2px |
 | Icon/label gap | `--brand-scale-100` | 4px |
 
 ### Typography
 
 | size | class | px |
 |---|---|---|
-| M | `type-body-sm` | 14px regular |
-| S | `type-body-caption` | 12px regular |
+| m | `type-body-sm` | 14px regular |
+| s | `type-body-caption` | 12px regular |
 
 ### Known Figma inconsistencies
 
@@ -798,7 +798,7 @@ A container that pairs a colored background (circle or square) with an icon chil
 |---|---|---|---|
 | `color` | `IconObjectColor` | `'gray'` | 12 solid + `'ai'` gradient — see table |
 | `shape` | `IconObjectShape` | `'circle'` | `'circle'` \| `'square'` |
-| `size` | `IconObjectSize` | `'xl'` | `'small'` \| `'medium'` \| `'large'` \| `'xl'` \| `'xxl'` |
+| `size` | `IconObjectSize` | `'xl'` | `'s'` \| `'m'` \| `'l'` \| `'xl'` \| `'xxl'` |
 | `children` | `ReactNode` | — | Icon slot; container sets `color: var(--mapped-text-primary-on-color)` so icons inherit white via `currentColor` |
 | `ariaLabel` | `string` | — | When provided, renders `role="img"` |
 
@@ -824,9 +824,9 @@ A container that pairs a colored background (circle or square) with an icon chil
 
 | size | token | resolved px |
 |---|---|---|
-| `small` | `--brand-scale-500` | 20px |
-| `medium` | `--brand-scale-600` | 24px |
-| `large` | `--brand-scale-800` | 32px |
+| `s` | `--brand-scale-500` | 20px |
+| `m` | `--brand-scale-600` | 24px |
+| `l` | `--brand-scale-800` | 32px |
 | `xl` | `--brand-scale-1000` | 40px |
 | `xxl` | `--brand-scale-1200` | 56px |
 
@@ -860,7 +860,7 @@ A form control with three selection states (unchecked/checked/indeterminate) and
 | Prop | Type | Default | Notes |
 |---|---|---|---|
 | `label` | `string` | `'Label'` | |
-| `size` | `CheckboxSize` | `'medium'` | `'medium'` \| `'large'` |
+| `size` | `CheckboxSize` | `'m'` | `'m'` \| `'l'` |
 | `isChecked` | `boolean` | `false` | |
 | `isIndeterminate` | `boolean` | `false` | Sets `input.indeterminate`; renders dash icon; `aria-checked="mixed"` |
 | `isInvalid` | `boolean` | `false` | Red border + red fill when marked |
@@ -893,9 +893,9 @@ A form control with three selection states (unchecked/checked/indeterminate) and
 
 | Property | Token | Resolved value |
 |---|---|---|
-| Box-wrap (medium) | `24×24px` — `--brand-scale-600` would be 24px but expressed as literal in CSS |
-| Box-wrap (large) | `32×32px` — `--brand-scale-800` |
-| Visual box | `inset: 25%` inside box-wrap — medium: 12×12px; large: 16×16px |
+| Box-wrap (m) | `24×24px` — `--brand-scale-600` would be 24px but expressed as literal in CSS |
+| Box-wrap (l) | `32×32px` — `--brand-scale-800` |
+| Visual box | `inset: 25%` inside box-wrap — m: 12×12px; l: 16×16px |
 | Box border-radius | `--brand-scale-50` | 2px |
 | Label gap | `--brand-scale-100` | 4px |
 
@@ -1120,12 +1120,12 @@ All surface/border/text/focus tokens are inherited unchanged from `IconButton` a
 
 ---
 
-## Filter Chips
+## Filter Chip
 
 **Figma node:** 12:137 (`filter/chips/toggle`, labeled "Toggle chip")
 **Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 148:2290 (Components documentation frame)
 
-A single-selection toggle chip — button-like pill that flips between an unselected outline state and a selected primary-tinted state. Component: `FilterChip` (singular), folder `src/components/FilterChips/`.
+A single-selection toggle chip — button-like pill that flips between an unselected outline state and a selected primary-tinted state. Component: `FilterChip` (singular), folder `src/components/FilterChip/`.
 
 **Out of scope, not built:** the same documentation frame (148:2290) also contains a second, unrelated component — `Field` (228:1296), labeled "Chip" — a removable tag with an "×" affordance. It is not nested inside `filter/chips/toggle`, does not match our existing `Chips` component (a status/appearance tag, different purpose), and was explicitly excluded from this build. Noted for future consideration.
 
@@ -1206,7 +1206,7 @@ A leaf hyperlink component — renders a real `<a>` tag. Built as a dependency f
 | `label` | `string` | `'Link'` | |
 | `href` | `string` | `'#'` | |
 | `appearance` | `'default' \| 'subtle' \| 'inverse'` | `'default'` | |
-| `size` | `'S' \| 'M'` | `'S'` | See size-inversion note below |
+| `size` | `'s' \| 'm'` | `'s'` | See size-inversion note below |
 | `hasVisited` | `boolean` | `false` | Only meaningful for `default`/`subtle`; `inverse` has no visited variants in source |
 | `isCurrent` | `boolean` | `false` | Forces underline without a color/interaction change — sets `aria-current="page"`. Added for Breadcrumbs' terminal item. |
 | `iconBefore` / `iconAfter` | `React.ReactNode` | `<Icon name="open_in_new" size="s" />` for both | Pass `null` to render no icon |
@@ -1239,14 +1239,14 @@ Icons inherit color via `currentColor` from the label — no separate icon-color
 | Property | Token | Px |
 |---|---|---|
 | Icon↔label gap | `--brand-scale-100` | 4px |
-| Icon size (both S and M link sizes) | `Icon size="s"` → `--brand-scale-400` | 16px |
+| Icon size (both s and m link sizes) | `Icon size="s"` → `--brand-scale-400` | 16px |
 | Focus outline width/offset | `--brand-scale-50` | 2px |
 | Typography, Size=S | `.type-body-sm` | 14px / 20px, regular |
 | Typography, Size=M | `.type-body-caption` | 12px / 16px, regular |
 
 ### Known Figma inconsistencies
 
-- **`Size=M` renders smaller than `Size=S`** (12px vs 14px) — backwards from the usual S<M convention. Preserved literally in the `size: 'S' | 'M'` prop rather than silently relabeling; naming is confirmed from source, not a code defect.
+- **`Size=M` renders smaller than `Size=S`** (12px vs 14px) — backwards from the usual S<M convention. Preserved literally in the `size: 's' | 'm'` prop rather than silently relabeling; naming is confirmed from source, not a code defect.
 - **Hover+visited reuses the plain `--mapped-text-interactive-default` token** instead of the existing `--mapped-text-interactive-default-hover` — confirmed via the actual Figma instance (73:171), not a code shortcut. Replicated exactly rather than "fixed."
 - **`inverse` appearance never demonstrates `hasVisited=true`** in source — always renders `--mapped-text-primary-on-color` regardless of the `hasVisited` prop. If a caller passes `hasVisited` with `appearance="inverse"`, the prop is accepted but has no visual effect (matches source, not a bug).
 - **Hidden `URL (Hidden)` element excluded from the build**: every Figma instance contains a non-visual paragraph (`opacity-0`, `size-[0.01px]`) carrying Atlassian tokens (`color.link`, `color.link.pressed`, `color.link.visited`, `color.text.subtle`, `color.text.inverse`) that don't exist in our token source. Confirmed via screenshot and design-context inspection that it renders nothing visible — treated as a Figma-internal artifact, not a missing-token gap requiring a fallback.
@@ -1262,7 +1262,7 @@ A composite that renders a sequence of `Link` instances (`appearance="subtle"`) 
 
 ### Nested components
 
-- **`Link`** (from `../Link`) — one per breadcrumb item, `appearance="subtle"` `size="S"`.
+- **`Link`** (from `../Link`) — one per breadcrumb item, `appearance="subtle"` `size="s"`.
 - **`Icon`** (from `../Icon`) — `chevron_right` as the separator (passed into each non-last item's `iconAfter` slot), plus any caller-supplied leading icon (e.g. `home`) passed into `iconBefore`.
 
 ### Props
@@ -2538,7 +2538,7 @@ aren't wired as the name).
 A ~270° gauge (90° gap centred at the bottom, 8px stroke) with a gray track
 and a **conic gradient fill** (Figma's exact 6-stop recipe — see below), plus
 centre content: a caption row (`{%} • {caption}`), a large amount, and a
-**custom pill** (not the shared `Badge`). Two sizes (**medium** / **large**).
+**custom pill** (not the shared `Badge`). Two sizes (**m** / **l**).
 
 > **Fill semantics — `value` is "% spent", not "% left".** Confirmed against
 > a real app screen (Finance → Budget tab): a budget at 82% spent (18% left)
@@ -2565,7 +2565,7 @@ inconsistencies" below. It's now bespoke markup local to this component.
 | Prop | Type | Default | Notes |
 |---|---|---|---|
 | `value` | `number` | — | 0–100; drives **only the arc fill** (+ the default `%` caption if `percentageLabel` is omitted) |
-| `size` | `'medium' \| 'large'` | `'medium'` | medium 162×140 (h5 amount) / large 220×190 (h4) |
+| `size` | `'m' \| 'l'` | `'m'` | m 162×140 (h5 amount) / l 220×190 (h4) |
 | `percentageLabel` | `string` | `` `${round(value)}%` `` | Caption number — pass this explicitly whenever it should read differently from `value` (see below) |
 | `caption` | `string` | `'Left to Spend'` | Caption text after the bullet |
 | `amount` | `string` | `'RM 0.00'` | Big centre amount |
@@ -2579,15 +2579,15 @@ inconsistencies" below. It's now bespoke markup local to this component.
 |---|---|
 | Track arc | `--mapped-surface-default-default`, 8px stroke (per-size, see below), round caps |
 | Gradient fill | conic `--brand-blue-500 → --brand-purple-500 → --brand-red-500` — see "Geometry / arc technique" |
-| Caption | `--mapped-text-default-default`; **medium** `.type-body-caption` / **large** `.type-body-m` (the `%`/`•` use the matching `-semibold`) |
-| Amount | `--mapped-text-default-default`; medium `.type-header-h5` / large `.type-header-h4` |
-| Pill text | **medium** `.type-body-caption-semibold` (12px semibold) / **large** `.type-body-m` (16px regular) |
+| Caption | `--mapped-text-default-default`; **m** `.type-body-caption` / **l** `.type-body-m` (the `%`/`•` use the matching `-semibold`) |
+| Amount | `--mapped-text-default-default`; m `.type-header-h5` / l `.type-header-h4` |
+| Pill text | **m** `.type-body-caption-semibold` (12px semibold) / **l** `.type-body-m` (16px regular) |
 | Pill box | `--brand-slate-600` bg + `--mapped-text-on-color-heading` |
 | Caption gap / content gap | `--brand-scale-50` (2) / `--brand-scale-100` (4) |
 | Pill padding / gap / radius | `--brand-scale-100` (4) vertical / `--brand-scale-200` (8) horizontal / `--brand-scale-100` (4) gap / `--brand-scale-200` (8) radius |
 
 **Per-size type scale (confirmed from Figma 235:5710 / 235:5712).** Everything
-in the centre steps up from `medium` to `large`: caption `caption`→`body`,
+in the centre steps up from `m` to `l`: caption `caption`→`body`,
 amount `h5`→`h4`, and the pill both grows (`caption`→`body`) **and** changes
 weight (semibold→regular). (`.type-header-h4` is 28px on mobile / 32px at
 ≥768px per the responsive type layer — Figma's 32px is the desktop value.)
@@ -2595,8 +2595,8 @@ weight (semibold→regular). (`.type-header-h4` is 28px on mobile / 32px at
 **Centre content position.** The content block is centred on the **arc's circle
 centre** (`0.5 × svg width`, passed inline as `--ring-center-y`), not the
 container's geometric centre — the SVG is a `w×w` square top-aligned in a
-shorter `w×h` box, so centring on the box would sit the content ~11px (medium) /
-~15px (large) too high in the open gauge.
+shorter `w×h` box, so centring on the box would sit the content ~11px (m) /
+~15px (l) too high in the open gauge.
 
 ### Geometry / arc technique
 
@@ -3020,7 +3020,7 @@ Two components: `HeaderBg` (mobile screen header, background-image slot) and `He
 | `Field` | Search box in `HeaderBg` (`default` variant only), stretched to `width: 100%` via the same scoped override used in `Navigation`/`SideNavigation` |
 | `Badge` | Notification dot (`type="dot" appearance="important"`) in `HeaderBg` |
 | `ProgressStepper` | Reused directly for `HeaderDefault`'s stepper variants — Figma's 7-segment bar is a byte-for-byte match to the already-built component (same sizing, gap, and active/inactive tokens); not reimplemented |
-| `Link` | "Action" trailing link in `HeaderDefault` (`appearance="default" size="M"`) |
+| `Link` | "Action" trailing link in `HeaderDefault` (`appearance="default" size="m"`) |
 
 ### HeaderBg props
 
@@ -3134,7 +3134,7 @@ available") into one component with a `variant` prop, rather than building it tw
 | Instance | Role |
 |---|---|
 | `Icon` | `receipt_long` (new), `icon_triangle_up` (new `xs`=12px size), `icon_chevron_expand_more`, `question_mark` (new) — all reused, none reimplemented |
-| `IconObject` | Leading badge in `SummaryItem` (`color="slate" size="large"`) and `ChartLegendItem` (`color="gray" size="xl"`) |
+| `IconObject` | Leading badge in `SummaryItem` (`color="slate" size="l"`) and `ChartLegendItem` (`color="gray" size="xl"`) |
 
 `ListItem`'s leading visual (company logo / `Avatar` photo / crypto mark, depending on `type`) is a
 `ReactNode` slot — Figma's specific demo assets (`logo/aeon`, `logo/bitcoin`, a named avatar photo)
@@ -3182,7 +3182,7 @@ are placeholder content per instance, not fixed requirements.
 
 | Element | Token |
 |---|---|
-| Icon badge | Reused `IconObject` (`color="slate" size="large"`) |
+| Icon badge | Reused `IconObject` (`color="slate" size="l"`) |
 | Amount | `--mapped-text-default-default` (Accent02 gap — see below), `.type-body-m-semibold` |
 | Type label | `--mapped-text-subtle-default`, `.type-body-caption` |
 
@@ -3281,7 +3281,7 @@ uses `ProgressBar`; `CardBalance` uses `IconObject`.
 |---|---|
 | Container | `--mapped-surface-elevation-default`, `--shadow-subtlest`, width 161px (min 128 / max 172) |
 | Padding | `--brand-scale-200` (8px) — same 10px→8px rounding as `CardSmartInsights` |
-| Icon | Reused `IconObject` (`color="slate" size="large"`) |
+| Icon | Reused `IconObject` (`color="slate" size="l"`) |
 | Type label | `--mapped-text-subtle-default`, `.type-body-caption` |
 | Name | `--mapped-text-primary-default` (blue), `.type-body-caption-semibold` |
 | Amount | `--mapped-text-default-default`, `.type-body-m-semibold` |
@@ -3316,7 +3316,7 @@ uses `ProgressBar`; `CardBalance` uses `IconObject`.
 |---|---|
 | Container (`default`) | `--mapped-surface-elevation-default`, `--shadow-subtlest`; padding `16px` top/sides, `20px` bottom (real Figma value, asymmetric — not a typo); width `343px` (fixed Figma component width, same precedent as `Toast`'s `624px`) |
 | Container (`addNew`) | Dashed border `--mapped-border-subtle-default`, no fill |
-| Ring | Reused `ProgressRing` (`size="medium"`) — zero new markup |
+| Ring | Reused `ProgressRing` (`size="m"`) — zero new markup |
 | Available / Spent rows | Reused `SummaryItem` ×2 — icons `icon_wallet` / `icon_track_spending` (substituted for Figma's `icon_Spend`, which doesn't exist in our registry or any obvious Material equivalent) |
 | Header title / dot / period | `--mapped-text-default-default` / `--mapped-text-subtle-default` / `--mapped-text-subtle-default` |
 | Details link | `--mapped-text-primary-default` |

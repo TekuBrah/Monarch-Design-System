@@ -74,13 +74,13 @@ export function SelectTransfer({
   const showCurrencyMenu = isCurrencyOpen && !!currencyMenuSlot
 
   const className = [
-    'stf',
-    `stf--${appearance}`,
-    isSelected && 'stf--selected',
-    isDisabled && 'stf--disabled',
-    isInvalid && 'stf--invalid',
-    isCurrencyOpen && 'stf--currency-open',
-    previewState && `stf--${previewState}`,
+    'select-transfer',
+    `select-transfer--${appearance}`,
+    isSelected && 'select-transfer--selected',
+    isDisabled && 'select-transfer--disabled',
+    isInvalid && 'select-transfer--invalid',
+    isCurrencyOpen && 'select-transfer--currency-open',
+    previewState && `select-transfer--${previewState}`,
   ]
     .filter(Boolean)
     .join(' ')
@@ -91,7 +91,7 @@ export function SelectTransfer({
       id={inputId}
       type="text"
       inputMode="decimal"
-      className={`stf__amount ${amountTypeClass}`}
+      className={`select-transfer__amount ${amountTypeClass}`}
       value={value}
       placeholder={placeholder}
       disabled={isDisabled}
@@ -107,14 +107,14 @@ export function SelectTransfer({
   )
 
   const currencyPicker = (
-    <div className="stf__currency">
-      <div className="stf__ccy-group">
-        {currencyFlag && <span className="stf__flag">{currencyFlag}</span>}
-        {currencyLabel && <span className="stf__ccy type-body-m-semibold">{currencyLabel}</span>}
+    <div className="select-transfer__currency">
+      <div className="select-transfer__ccy-group">
+        {currencyFlag && <span className="select-transfer__flag">{currencyFlag}</span>}
+        {currencyLabel && <span className="select-transfer__ccy type-body-m-semibold">{currencyLabel}</span>}
       </div>
       <button
         type="button"
-        className="stf__chevron"
+        className="select-transfer__chevron"
         tabIndex={-1}
         aria-haspopup="listbox"
         aria-expanded={isCurrencyOpen}
@@ -131,7 +131,7 @@ export function SelectTransfer({
   return (
     <div className={className} data-preview={previewState}>
       <div
-        className="stf__control"
+        className="select-transfer__control"
         onClick={() => {
           if (isDisabled) return
           inputRef.current?.focus()
@@ -139,24 +139,24 @@ export function SelectTransfer({
         }}
       >
         {isAttention ? (
-          <span className="stf__stack">
+          <span className="select-transfer__stack">
             {label && (
-              <label htmlFor={inputId} className={`stf__label ${labelTypeClass}`}>
+              <label htmlFor={inputId} className={`select-transfer__label ${labelTypeClass}`}>
                 {label}
               </label>
             )}
-            <span className="stf__amount-row">
+            <span className="select-transfer__amount-row">
               {amountInput}
-              <span className="stf__divider" aria-hidden="true" />
+              <span className="select-transfer__divider" aria-hidden="true" />
               {currencyPicker}
             </span>
           </span>
         ) : (
           <>
-            <div className="stf__main">
-              <span className="stf__stack">
+            <div className="select-transfer__main">
+              <span className="select-transfer__stack">
                 {label && (
-                  <label htmlFor={inputId} className={`stf__label ${labelTypeClass}`}>
+                  <label htmlFor={inputId} className={`select-transfer__label ${labelTypeClass}`}>
                     {label}
                   </label>
                 )}
@@ -168,12 +168,12 @@ export function SelectTransfer({
         )}
       </div>
       {showMenu && (
-        <div id={menuId} className="stf__menu">
+        <div id={menuId} className="select-transfer__menu">
           {menuSlot}
         </div>
       )}
       {showCurrencyMenu && (
-        <div id={curMenuId} className="stf__menu stf__menu--currency">
+        <div id={curMenuId} className="select-transfer__menu select-transfer__menu--currency">
           {currencyMenuSlot}
         </div>
       )}

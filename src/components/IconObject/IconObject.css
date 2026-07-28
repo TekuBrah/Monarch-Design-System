@@ -18,11 +18,11 @@
 }
 
 /* === Sizes (outer container) === */
-.icon-object--small  { width: var(--brand-scale-500);  height: var(--brand-scale-500);  } /* 20px */
-.icon-object--medium { width: var(--brand-scale-600);  height: var(--brand-scale-600);  } /* 24px */
-.icon-object--large  { width: var(--brand-scale-800);  height: var(--brand-scale-800);  } /* 32px */
-.icon-object--xl     { width: var(--brand-scale-1000); height: var(--brand-scale-1000); } /* 40px */
-.icon-object--xxl    { width: var(--brand-scale-1200); height: var(--brand-scale-1200); } /* 56px */
+.icon-object--s   { width: var(--brand-scale-500);  height: var(--brand-scale-500);  } /* 20px */
+.icon-object--m   { width: var(--brand-scale-600);  height: var(--brand-scale-600);  } /* 24px */
+.icon-object--l   { width: var(--brand-scale-800);  height: var(--brand-scale-800);  } /* 32px */
+.icon-object--xl  { width: var(--brand-scale-1000); height: var(--brand-scale-1000); } /* 40px */
+.icon-object--xxl { width: var(--brand-scale-1200); height: var(--brand-scale-1200); } /* 56px */
 
 /* === Solid brand-400 backgrounds === */
 /* All use the 400-level brand color — alias layer has no single mapped token for these */

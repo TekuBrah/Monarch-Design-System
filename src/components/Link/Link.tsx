@@ -3,7 +3,7 @@ import { Icon } from '../Icon'
 import './Link.css'
 
 export type LinkAppearance = 'default' | 'subtle' | 'inverse'
-export type LinkSize = 'S' | 'M'
+export type LinkSize = 's' | 'm'
 
 const DEFAULT_ICON = <Icon name="open_in_new" size="s" />
 
@@ -26,7 +26,7 @@ export function Link({
   label = 'Link',
   href = '#',
   appearance = 'default',
-  size = 'S',
+  size = 's',
   hasVisited = false,
   isCurrent = false,
   iconBefore = DEFAULT_ICON,
@@ -35,7 +35,7 @@ export function Link({
   onClick,
   previewState,
 }: LinkProps) {
-  const typeClass = size === 'S' ? 'type-body-sm' : 'type-body-caption'
+  const typeClass = size === 's' ? 'type-body-sm' : 'type-body-caption'
 
   return (
     <a

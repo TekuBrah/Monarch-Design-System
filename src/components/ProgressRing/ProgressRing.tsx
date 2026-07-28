@@ -1,7 +1,7 @@
 import React, { useId } from 'react'
 import './ProgressRing.css'
 
-export type ProgressRingSize = 'medium' | 'large'
+export type ProgressRingSize = 'm' | 'l'
 
 export interface ProgressRingProps {
   /** Fill amount, 0–100. Drives the gauge arc and the default `%` caption. */
@@ -57,7 +57,7 @@ const SIZES: Record<
     pillType: string // the "of {total}" pill text
   }
 > = {
-  medium: {
+  m: {
     w: 162,
     h: 140,
     amountType: 'type-header-h5',
@@ -65,7 +65,7 @@ const SIZES: Record<
     captionEmphType: 'type-body-caption-semibold',
     pillType: 'type-body-caption-semibold',
   },
-  large: {
+  l: {
     w: 220,
     h: 190,
     amountType: 'type-header-h4',
@@ -77,7 +77,7 @@ const SIZES: Record<
 
 export function ProgressRing({
   value,
-  size = 'medium',
+  size = 'm',
   percentageLabel,
   caption = 'Left to Spend',
   amount = 'RM 0.00',

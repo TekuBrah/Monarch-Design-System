@@ -64,7 +64,7 @@ export function HeaderDefault({
           <Link
             label={actionLabel}
             appearance="default"
-            size="M"
+            size="m"
             iconBefore={null}
             iconAfter={null}
             onClick={e => {

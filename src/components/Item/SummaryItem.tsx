@@ -19,7 +19,7 @@ export function SummaryItem({
 }: SummaryItemProps) {
   return (
     <div className={['summary-item', className].filter(Boolean).join(' ')}>
-      <IconObject color="slate" size="large">
+      <IconObject color="slate" size="l">
         {icon}
       </IconObject>
       <div className="summary-item__text">

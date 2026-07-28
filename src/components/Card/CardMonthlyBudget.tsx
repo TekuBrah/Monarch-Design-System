@@ -75,7 +75,7 @@ export function CardMonthlyBudget({
           <div className="card-monthly-budget__body">
             <ProgressRing
               value={percentage}
-              size="medium"
+              size="m"
               caption="Left to Spend"
               amount={amountLeft}
               total={totalAmount}

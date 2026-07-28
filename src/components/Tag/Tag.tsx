@@ -2,7 +2,7 @@ import React from 'react'
 import './Tag.css'
 
 export type TagAppearance = 'default' | 'overlay'
-export type TagSize = 'M' | 'S'
+export type TagSize = 'm' | 's'
 
 export interface TagProps {
   label?: string
@@ -18,7 +18,7 @@ export interface TagProps {
 export function Tag({
   label = 'Tag',
   appearance = 'default',
-  size = 'M',
+  size = 'm',
   isSelected = false,
   isDisabled = false,
   iconBefore,
@@ -31,7 +31,7 @@ export function Tag({
       className={[
         'tag',
         `tag--${appearance}`,
-        `tag--${size.toLowerCase()}`,
+        `tag--${size}`,
         isSelected && 'tag--selected',
         isDisabled && 'tag--disabled',
       ]
@@ -41,7 +41,7 @@ export function Tag({
       onClick={onClick}
     >
       {iconBefore && <span className="tag__icon">{iconBefore}</span>}
-      <span className={`tag__label ${size === 'M' ? 'type-body-sm' : 'type-body-caption'}`}>
+      <span className={`tag__label ${size === 'm' ? 'type-body-sm' : 'type-body-caption'}`}>
         {label}
       </span>
       {iconAfter && <span className="tag__icon">{iconAfter}</span>}

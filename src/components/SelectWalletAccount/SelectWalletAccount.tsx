@@ -54,14 +54,14 @@ export function SelectWalletAccount({
   const showMenu = open && !!menuSlot
 
   const className = [
-    'swa',
-    `swa--${appearance}`,
-    !open && state === 'filled' && 'swa--filled',
-    !open && state === 'selected' && 'swa--selected',
-    open && 'swa--open',
-    isDisabled && 'swa--disabled',
-    isInvalid && 'swa--invalid',
-    previewState && `swa--${previewState}`,
+    'select-wallet-account',
+    `select-wallet-account--${appearance}`,
+    !open && state === 'filled' && 'select-wallet-account--filled',
+    !open && state === 'selected' && 'select-wallet-account--selected',
+    open && 'select-wallet-account--open',
+    isDisabled && 'select-wallet-account--disabled',
+    isInvalid && 'select-wallet-account--invalid',
+    previewState && `select-wallet-account--${previewState}`,
   ]
     .filter(Boolean)
     .join(' ')
@@ -71,7 +71,7 @@ export function SelectWalletAccount({
       <button
         type="button"
         id={controlId}
-        className="swa__control"
+        className="select-wallet-account__control"
         disabled={isDisabled}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -83,26 +83,26 @@ export function SelectWalletAccount({
           setOpen(!open)
         }}
       >
-        <span className="swa__main">
-          <span className="swa__stack">
-            <span className="swa__name type-body-m-semibold">{labelCrypto}</span>
-            <span className="swa__wallet type-body-sm">{labelWallet}</span>
+        <span className="select-wallet-account__main">
+          <span className="select-wallet-account__stack">
+            <span className="select-wallet-account__name type-body-m-semibold">{labelCrypto}</span>
+            <span className="select-wallet-account__wallet type-body-sm">{labelWallet}</span>
           </span>
         </span>
-        <span className="swa__side">
-          <span className="swa__amounts">
-            <span className="swa__amount type-body-m-semibold">{labelAmount}</span>
-            <span className="swa__amtcrypto type-body-sm-semibold">{labelAmtCrypto}</span>
+        <span className="select-wallet-account__side">
+          <span className="select-wallet-account__amounts">
+            <span className="select-wallet-account__amount type-body-m-semibold">{labelAmount}</span>
+            <span className="select-wallet-account__amtcrypto type-body-sm-semibold">{labelAmtCrypto}</span>
           </span>
           {showChevron && (
-            <span className="swa__chevron">
+            <span className="select-wallet-account__chevron">
               <Icon name="icon_chevron_expand_more" size="m" />
             </span>
           )}
         </span>
       </button>
       {showMenu && (
-        <div id={menuId} className="swa__menu">
+        <div id={menuId} className="select-wallet-account__menu">
           {menuSlot}
         </div>
       )}

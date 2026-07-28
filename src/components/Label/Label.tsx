@@ -1,7 +1,7 @@
 import React from 'react'
 import './Label.css'
 
-export type LabelSize = 'M' | 'S'
+export type LabelSize = 'm' | 's'
 
 export interface LabelProps {
   label?: string
@@ -13,12 +13,12 @@ export interface LabelProps {
 
 export function Label({
   label = 'Label',
-  size = 'S',
+  size = 's',
   isRequired = false,
   iconBefore,
   iconAfter,
 }: LabelProps) {
-  const isM = size === 'M'
+  const isM = size === 'm'
   return (
     <div className="label">
       {iconBefore && (

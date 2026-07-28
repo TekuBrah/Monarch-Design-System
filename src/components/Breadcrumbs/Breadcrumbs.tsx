@@ -28,7 +28,7 @@ export function Breadcrumbs({ items, ariaLabel = 'Breadcrumb' }: BreadcrumbsProp
             label={item.label}
             href={item.href}
             appearance="subtle"
-            size="S"
+            size="s"
             isCurrent={isLast}
             iconBefore={item.icon ?? null}
             iconAfter={isLast ? null : <Icon name="chevron_right" size="s" />}

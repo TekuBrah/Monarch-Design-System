@@ -32,17 +32,17 @@
   transition: background 0.12s ease;
 }
 
-/* regular: 32×16px */
-.toggle--regular .toggle__track {
+/* m: 32×16px */
+.toggle--m .toggle__track {
   width: var(--brand-scale-800);  /* 32px */
   height: var(--brand-scale-400); /* 16px */
 }
 
-/* large: 46×24px. Figma: 46px, off the brand-scale ramp (1000=40px, 1100=48px)
+/* l: 46×24px. Figma: 46px, off the brand-scale ramp (1000=40px, 1100=48px)
    — no calc() curve-fit between unrelated steps (banned pattern, fabricates a
    relationship that doesn't exist in the source); plain literal until a
    Figma Variables fix lands. */
-.toggle--large .toggle__track {
+.toggle--l .toggle__track {
   width: 46px;
   height: var(--brand-scale-600); /* 24px */
 }
@@ -58,26 +58,26 @@
   transition: left 0.12s ease;
 }
 
-/* regular dot: 12px */
-.toggle--regular .toggle__dot {
+/* m dot: 12px */
+.toggle--m .toggle__dot {
   width: var(--brand-scale-300);  /* 12px */
   height: var(--brand-scale-300); /* 12px */
 }
 
-/* large dot: 20px */
-.toggle--large .toggle__dot {
+/* l dot: 20px */
+.toggle--l .toggle__dot {
   width: var(--brand-scale-500);  /* 20px */
   height: var(--brand-scale-500); /* 20px */
 }
 
 /* === Checked — dot slides to right === */
-/* regular: left = 32-12-2 = 18px = (800 - 300 - 50) = 18px */
-.toggle--regular .toggle__input:checked + .toggle__track .toggle__dot {
+/* m: left = 32-12-2 = 18px = (800 - 300 - 50) = 18px */
+.toggle--m .toggle__input:checked + .toggle__track .toggle__dot {
   left: calc(var(--brand-scale-800) - var(--brand-scale-300) - var(--brand-scale-50));
 }
 
-/* large: left = 46-20-2 = 24px */
-.toggle--large .toggle__input:checked + .toggle__track .toggle__dot {
+/* l: left = 46-20-2 = 24px */
+.toggle--l .toggle__input:checked + .toggle__track .toggle__dot {
   left: var(--brand-scale-600); /* 24px */
 }
 

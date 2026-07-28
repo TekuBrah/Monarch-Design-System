@@ -30,7 +30,7 @@ import { Radio } from './components/Radio'
 import { Tab } from './components/Tab'
 import { Tabs } from './components/Tabs'
 import { ButtonGroup } from './components/ButtonGroup'
-import { FilterChip } from './components/FilterChips'
+import { FilterChip } from './components/FilterChip'
 import { Link } from './components/Link'
 import { Breadcrumbs } from './components/Breadcrumbs'
 import { Loader } from './components/Loader'
@@ -827,7 +827,7 @@ function MenuItemDemo() {
           label={opt}
           isSelected={selected === opt}
           onSelect={() => setSelected(opt)}
-          iconSlot={<IconObject color="blue" size="small"><Icon name="person" size="s" /></IconObject>}
+          iconSlot={<IconObject color="blue" size="s"><Icon name="person" size="s" /></IconObject>}
         />
       ))}
     </div>
@@ -936,8 +936,8 @@ function ProgressRingDemo() {
         </label>
       </div>
       <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
-        <ProgressRing size="medium" {...shared} />
-        <ProgressRing size="large" {...shared} />
+        <ProgressRing size="m" {...shared} />
+        <ProgressRing size="l" {...shared} />
       </div>
     </div>
   )
@@ -1032,7 +1032,7 @@ const SIDEBAR_CATEGORIES: { name: string; items: SidebarSection[] }[] = [
     { slug: 'date-picker', label: 'Date Picker' },
     { slug: 'time-picker', label: 'Time Picker' },
     { slug: 'text-area', label: 'Text Area' },
-    { slug: 'filter-chips', label: 'Filter Chips' },
+    { slug: 'filter-chip', label: 'Filter Chip' },
   ] },
   { name: 'Sliders', items: [
     { slug: 'slider', label: 'Slider' },
@@ -1168,7 +1168,7 @@ export default function App() {
 
         <div className="app-topnav__right">
           <span style={{ fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)' }}>{dark ? 'Dark' : 'Light'}</span>
-          <Toggle size="regular" isChecked={dark} onChange={toggle} ariaLabel="Toggle dark mode" />
+          <Toggle size="m" isChecked={dark} onChange={toggle} ariaLabel="Toggle dark mode" />
         </div>
       </div>
 
@@ -1525,8 +1525,8 @@ export default function App() {
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Size comparison (S=14px, M=12px — Figma source naming)</div>
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <Link label="Size S" size="S" />
-                  <Link label="Size M" size="M" />
+                  <Link label="Size S" size="s" />
+                  <Link label="Size M" size="m" />
                   <Link label="No icons" iconBefore={null} iconAfter={null} />
                 </div>
               </div>
@@ -1543,10 +1543,10 @@ export default function App() {
           <div id="section-checkbox" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
             <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Checkbox</h1>
             <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              medium / large × unchecked / checked / indeterminate × invalid × required × disabled
+m / l × unchecked / checked / indeterminate × invalid × required × disabled
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {(['medium', 'large'] as const).map(size => (
+              {(['m', 'l'] as const).map(size => (
                 <div key={size} style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
                   <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '60px', color: 'var(--mapped-text-subtle-default)' }}>{size}</span>
                   <Checkbox size={size} label="Unchecked" />
@@ -1560,8 +1560,8 @@ export default function App() {
               ))}
               <div className="showcase-interactive" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap', marginTop: '0.25rem' }}>
                 <span className="showcase-interactive__label" style={{ marginBottom: 0 }}>interactive</span>
-                <Checkbox size="medium" label="I agree to the terms" isChecked={cbChecked} onChange={setCbChecked} />
-                <Checkbox size="medium" label="Email notifications" isChecked={cbNotify} onChange={setCbNotify} />
+                <Checkbox size="m" label="I agree to the terms" isChecked={cbChecked} onChange={setCbChecked} />
+                <Checkbox size="m" label="Email notifications" isChecked={cbNotify} onChange={setCbNotify} />
                 <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)' }}>
                   terms: <strong>{cbChecked ? 'yes' : 'no'}</strong> · notify: <strong>{cbNotify ? 'on' : 'off'}</strong>
                 </span>
@@ -1613,7 +1613,7 @@ export default function App() {
               2 sizes × checked/unchecked × disabled — tokens: --mapped-surface-primary-default, --mapped-icon-subtlest-subtlest
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {(['regular', 'large'] as const).map(size => (
+              {(['m', 'l'] as const).map(size => (
                 <div key={size} style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
                   <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '80px', color: 'var(--mapped-text-subtle-default)' }}>size={size}</span>
                   <Toggle size={size} isChecked={false} ariaLabel={`${size} unchecked`} />
@@ -1627,8 +1627,8 @@ export default function App() {
               </div>
               <div className="showcase-interactive" style={{ display: 'flex', gap: '2rem', alignItems: 'center', marginTop: '0.5rem' }}>
                 <span className="showcase-interactive__label" style={{ marginBottom: 0 }}>interactive</span>
-                <Toggle size="regular" isChecked={toggleOn} onChange={setToggleOn} ariaLabel="Interactive regular toggle" />
-                <Toggle size="large" isChecked={toggleLargeOn} onChange={setToggleLargeOn} ariaLabel="Interactive large toggle" />
+                <Toggle size="m" isChecked={toggleOn} onChange={setToggleOn} ariaLabel="Interactive regular toggle" />
+                <Toggle size="l" isChecked={toggleLargeOn} onChange={setToggleLargeOn} ariaLabel="Interactive large toggle" />
                 <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)' }}>
                   regular: <strong>{toggleOn ? 'on' : 'off'}</strong> · large: <strong>{toggleLargeOn ? 'on' : 'off'}</strong>
                 </span>
@@ -1960,11 +1960,11 @@ export default function App() {
 
       {tab === 'components' && <hr style={HR} />}
 
-      {/* ── Filter Chips ───────────────────────────────────────────── */}
+      {/* ── Filter Chip ───────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div id="section-filter-chips" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Filter Chips</h1>
+          <div id="section-filter-chip" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Filter Chip</h1>
             <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
               2 states × 4 icon combos — selected bg via color-mix() (no opacity token in source) — hover/press on unselected only (deliberate addition, see docs)
             </p>
@@ -2143,10 +2143,10 @@ export default function App() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '80px', color: 'var(--mapped-text-subtle-default)' }}>static</span>
-                <Tag label="Tag M" size="M" iconBefore={<Icon name="filter_list" size="s" />} iconAfter={<Icon name="close" size="s" />} />
-                <Tag label="Tag S" size="S" />
-                <Tag label="Selected" size="M" isSelected />
-                <Tag label="Disabled" size="M" isDisabled />
+                <Tag label="Tag M" size="m" iconBefore={<Icon name="filter_list" size="s" />} iconAfter={<Icon name="close" size="s" />} />
+                <Tag label="Tag S" size="s" />
+                <Tag label="Selected" size="m" isSelected />
+                <Tag label="Disabled" size="m" isDisabled />
               </div>
               <div className="showcase-interactive" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 <span className="showcase-interactive__label" style={{ marginBottom: 0 }}>interactive</span>
@@ -2154,7 +2154,7 @@ export default function App() {
                   <Tag
                     key={id}
                     label={label}
-                    size="M"
+                    size="m"
                     isSelected={!!tagSelected[id]}
                     iconBefore={<Icon name="filter_list" size="s" />}
                     onClick={() => setTagSelected(s => ({ ...s, [id]: !s[id] }))}
@@ -2209,8 +2209,8 @@ export default function App() {
                     onDismiss={() => {}}
                     actions={
                       <>
-                        <Link appearance="inverse" size="S" label="Action" href="#" />
-                        <Link appearance="inverse" size="S" label="Action" href="#" />
+                        <Link appearance="inverse" size="s" label="Action" href="#" />
+                        <Link appearance="inverse" size="s" label="Action" href="#" />
                       </>
                     }
                   >
@@ -2444,10 +2444,10 @@ export default function App() {
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>type="default" — states</div>
               <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '412px', border: '1px solid var(--mapped-border-subtlest-default)', borderRadius: 'var(--brand-scale-200)', overflow: 'hidden' }}>
-                <MenuItem label="Default" iconSlot={<IconObject color="orange" size="small"><Icon name="person" size="s" /></IconObject>} />
-                <MenuItem label="Hover" previewState="hover" iconSlot={<IconObject color="orange" size="small"><Icon name="person" size="s" /></IconObject>} />
-                <MenuItem label="Press" previewState="pressed" iconSlot={<IconObject color="orange" size="small"><Icon name="person" size="s" /></IconObject>} />
-                <MenuItem label="Selected" isSelected iconSlot={<IconObject color="orange" size="small"><Icon name="person" size="s" /></IconObject>} />
+                <MenuItem label="Default" iconSlot={<IconObject color="orange" size="s"><Icon name="person" size="s" /></IconObject>} />
+                <MenuItem label="Hover" previewState="hover" iconSlot={<IconObject color="orange" size="s"><Icon name="person" size="s" /></IconObject>} />
+                <MenuItem label="Press" previewState="pressed" iconSlot={<IconObject color="orange" size="s"><Icon name="person" size="s" /></IconObject>} />
+                <MenuItem label="Selected" isSelected iconSlot={<IconObject color="orange" size="s"><Icon name="person" size="s" /></IconObject>} />
               </div>
             </div>
             <div>
@@ -2695,19 +2695,19 @@ export default function App() {
               2 sizes × optional required asterisk × optional leading/trailing icons
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              {(['M', 'S'] as const).map(size => (
+              {(['m', 's'] as const).map(size => (
                 <div key={size} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>size={size}</span>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'center' }}>
                     <Label label="Label" size={size} />
                     <Label label="Required" size={size} isRequired />
                     <Label label="With icons" size={size}
-                      iconBefore={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
-                      iconAfter={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
+                      iconBefore={<Icon name="help_outline" size={size === 'm' ? 'm' : 's'} />}
+                      iconAfter={<Icon name="help_outline" size={size === 'm' ? 'm' : 's'} />}
                     />
                     <Label label="Required + icons" size={size} isRequired
-                      iconBefore={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
-                      iconAfter={<Icon name="help_outline" size={size === 'M' ? 'm' : 's'} />}
+                      iconBefore={<Icon name="help_outline" size={size === 'm' ? 'm' : 's'} />}
+                      iconAfter={<Icon name="help_outline" size={size === 'm' ? 'm' : 's'} />}
                     />
                   </div>
                 </div>
@@ -2739,10 +2739,10 @@ export default function App() {
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Sizes × shapes (blue)</div>
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                  {(['small', 'medium', 'large', 'xl', 'xxl'] as IconObjectSize[]).map(sz => (
+                  {(['s', 'm', 'l', 'xl', 'xxl'] as IconObjectSize[]).map(sz => (
                     <div key={sz} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
-                      <IconObject color="blue" shape="circle" size={sz}><Icon name="person" size={sz === 'small' ? 's' : sz === 'medium' ? 's' : sz === 'large' ? 'm' : 'l'} /></IconObject>
-                      <IconObject color="blue" shape="square" size={sz}><Icon name="person" size={sz === 'small' ? 's' : sz === 'medium' ? 's' : sz === 'large' ? 'm' : 'l'} /></IconObject>
+                      <IconObject color="blue" shape="circle" size={sz}><Icon name="person" size={sz === 's' ? 's' : sz === 'm' ? 's' : sz === 'l' ? 'm' : 'l'} /></IconObject>
+                      <IconObject color="blue" shape="square" size={sz}><Icon name="person" size={sz === 's' ? 's' : sz === 'm' ? 's' : sz === 'l' ? 'm' : 'l'} /></IconObject>
                       <span style={{ fontFamily: 'monospace', fontSize: '0.6rem' }}>{sz}</span>
                     </div>
                   ))}

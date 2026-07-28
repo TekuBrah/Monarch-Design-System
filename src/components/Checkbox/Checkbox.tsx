@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react'
 import './Checkbox.css'
 
-export type CheckboxSize = 'medium' | 'large'
+export type CheckboxSize = 'm' | 'l'
 
 export interface CheckboxProps {
   label?: string
@@ -17,7 +17,7 @@ export interface CheckboxProps {
 
 export function Checkbox({
   label = 'Label',
-  size = 'medium',
+  size = 'm',
   isChecked = false,
   isIndeterminate = false,
   isInvalid = false,

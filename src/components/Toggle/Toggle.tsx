@@ -1,6 +1,6 @@
 import './Toggle.css'
 
-export type ToggleSize = 'regular' | 'large'
+export type ToggleSize = 'm' | 'l'
 
 export interface ToggleProps {
   size?: ToggleSize
@@ -11,7 +11,7 @@ export interface ToggleProps {
 }
 
 export function Toggle({
-  size = 'regular',
+  size = 'm',
   isChecked = false,
   isDisabled = false,
   onChange,

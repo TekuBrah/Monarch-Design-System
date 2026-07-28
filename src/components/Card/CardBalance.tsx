@@ -14,7 +14,7 @@ export function CardBalance({ icon, type, name, amount, className }: CardBalance
   return (
     <div className={['card-balance', className].filter(Boolean).join(' ')}>
       <div className="card-balance__header">
-        <IconObject color="slate" size="large">
+        <IconObject color="slate" size="l">
           {icon}
         </IconObject>
         <div className="card-balance__text">
