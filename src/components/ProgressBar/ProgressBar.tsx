@@ -34,13 +34,20 @@ export function ProgressBar({
   const labelType = size === 'm' ? 'type-body-m' : 'type-body-caption'
   const pctType = size === 'm' ? 'type-body-m-medium' : 'type-body-caption'
   const hasReadout = current != null || total != null
+  const pctText = percentageLabel ?? `${Math.round(pct)}%`
+  // Fallback accessible name, mirroring ProgressRing's `ariaLabel ?? ...` pattern:
+  // a bare role="progressbar" with no name is an axe violation, and the visual
+  // labels are not wired as the name. Enriched with the current/total readout
+  // when one is present, since that is ProgressBar's analogue of Ring's caption.
+  const readoutText = hasReadout ? `${current ?? ''} of ${total ?? ''}`.trim() : ''
+  const fallbackLabel = readoutText ? `${pctText}, ${readoutText}` : pctText
 
   return (
     <div className={['mn-progress-bar', `mn-progress-bar--${size}`, className].filter(Boolean).join(' ')} id={id}>
       {showLabels && (
         <div className="mn-progress-bar__labels">
           <span className={`mn-progress-bar__pct ${pctType}`}>
-            {percentageLabel ?? `${Math.round(pct)}%`}
+            {pctText}
           </span>
           {hasReadout && (
             <span className={`mn-progress-bar__readout ${labelType}`}>
@@ -57,7 +64,7 @@ export function ProgressBar({
         aria-valuenow={Math.round(pct)}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-label={ariaLabel}
+        aria-label={ariaLabel ?? fallbackLabel}
       >
         <div className="mn-progress-bar__fill" style={{ width: `${pct}%` }} />
       </div>

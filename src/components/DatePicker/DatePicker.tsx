@@ -105,6 +105,7 @@ export function DatePicker({
             value={currentValue}
             placeholder={placeholder}
             disabled={isDisabled}
+            role="combobox"
             aria-haspopup="dialog"
             aria-expanded={open}
             aria-controls={showCalendar ? menuId : undefined}

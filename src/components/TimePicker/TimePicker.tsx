@@ -103,6 +103,7 @@ export function TimePicker({
             value={currentValue}
             placeholder={placeholder}
             disabled={isDisabled}
+            role="combobox"
             aria-haspopup="listbox"
             aria-expanded={open}
             aria-controls={showTimes ? menuId : undefined}

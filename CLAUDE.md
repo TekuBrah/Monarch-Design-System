@@ -218,6 +218,25 @@ retroactively conformed to this once already.
   in **both light and dark mode** — not the screenshot tool, which has been
   unreliable within sessions (stale/collapsed renders, timeouts). Screenshots
   are a nice-to-have once computed-style checks pass, not the primary check.
+  - **Caveat to the above — finish transitions first, or the reading is a
+    lie.** The preview pane doesn't advance animation frames, so CSS
+    transitions freeze at `currentTime: 0` and `getComputedStyle` keeps
+    returning the **pre-transition** value indefinitely. Most components
+    declare `transition: background/border-color 0.12s ease`, so this hits
+    exactly the properties dark-mode checks care about. Always run
+    `document.getAnimations().forEach(a => a.finish())` immediately before
+    reading any transitioned property (`background`, `border-color`,
+    `color`, `outline`, …), or measure a freshly-inserted probe element
+    (a new node has no transition to run). Untransitioned/structural
+    properties (padding, radius, `tabIndex`, `aria-*`, selector matching
+    via `Element.matches()`) are unaffected.
+  - This produced a **false-positive bug report** once: `Field` was logged
+    as "background doesn't flip in dark mode" (audit F1) purely because the
+    theme-flip transition was frozen mid-flight. The token, `Field.css`, and
+    both `globals.css` theme blocks were all correct the whole time — the
+    only defect was the measurement. Confirm a suspected styling bug with
+    `getAnimations()` (a stuck `CSSTransition` at `currentTime: 0`) or a
+    `transition: none` override **before** logging it or attempting a fix.
 - Before reporting on "what's built" or "what's left," check disk and git
   (`ls src/components/`, `git log --oneline`) — never rely on running session
   memory, which has drifted from actual repo state before.

@@ -483,6 +483,7 @@ function SelectDemo() {
       menuSlot={
         <Menu
           searchBar={false}
+          listAriaLabel="Tokens"
           slotContent={
             filtered.length === 0 ? (
               <div style={{ padding: '0.5rem 0.75rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.85rem' }}>No matches</div>
@@ -554,6 +555,7 @@ function SelectTransferDemo({ appearance }: { appearance: SelectTransferAppearan
         filtered.length > 0 ? (
           <Menu
             searchBar={false}
+            listAriaLabel="Recipients"
             slotContent={filtered.map(name => (
               <MenuItem
                 key={name}
@@ -569,6 +571,7 @@ function SelectTransferDemo({ appearance }: { appearance: SelectTransferAppearan
       currencyMenuSlot={
         <Menu
           searchBar={false}
+          listAriaLabel="Currencies"
           slotContent={TRANSFER_CURRENCIES.map((c, i) => (
             <MenuItem
               key={c.code}
@@ -628,6 +631,7 @@ function SelectWalletAccountDemo() {
         <Menu
           searchPlaceholder="Search accounts…"
           searchAriaLabel="Search accounts"
+          listAriaLabel="Accounts"
           searchValue={query}
           onSearchChange={setQuery}
           slotContent={filtered.map(a => {
@@ -787,6 +791,7 @@ function TimePickerDemo() {
       timesSlot={
         <Menu
           searchBar={false}
+          listAriaLabel="Times"
           slotContent={TIME_OPTIONS.map(t => (
             <MenuItem
               key={t}
@@ -845,6 +850,7 @@ function MenuDemo() {
     <Menu
       searchValue={query}
       onSearchChange={setQuery}
+      listAriaLabel="Interactive menu options"
       slotContent={
         <div style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
           {filtered.length === 0 ? (
@@ -2399,6 +2405,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>With search bar (default)</div>
               <Menu
+                listAriaLabel="Menu with search bar example"
                 slotContent={
                   <div style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
                     {MENU_ITEM_OPTIONS.map((opt, i) => (
@@ -2412,6 +2419,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>searchBar=false — plain option-list dropdown (e.g. a nested currency picker with no search)</div>
               <Menu
                 searchBar={false}
+                listAriaLabel="Menu without search bar example"
                 slotContent={
                   <div style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '0 var(--brand-scale-200)' }}>
                     {MENU_ITEM_OPTIONS.map((opt, i) => (

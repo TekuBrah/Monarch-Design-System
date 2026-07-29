@@ -10,6 +10,11 @@ export interface MenuProps {
   searchValue?: string
   onSearchChange?: (value: string) => void
   searchAriaLabel?: string
+  /** Accessible name for the `role="listbox"` (only rendered when
+   *  `isOptionList`). Deliberately has NO generated default — a generic
+   *  fallback would be a regression when several menus coexist on a page,
+   *  so callers should always supply a specific one. */
+  listAriaLabel?: string
   /** App-provided option list — typically a stack of `MenuItem` rows. */
   slotContent?: React.ReactNode
   /** Whether `slotContent` is a list of selectable options — adds
@@ -27,6 +32,7 @@ export function Menu({
   searchValue,
   onSearchChange,
   searchAriaLabel = 'Search',
+  listAriaLabel,
   slotContent,
   isOptionList = true,
   id,
@@ -117,6 +123,7 @@ export function Menu({
         <div
           ref={listRef}
           role="listbox"
+          aria-label={listAriaLabel}
           className="mn-menu__list"
           onKeyDown={handleListKeyDown}
           onFocus={handleListFocus}

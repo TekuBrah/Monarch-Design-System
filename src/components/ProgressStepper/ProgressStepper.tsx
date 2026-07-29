@@ -3,11 +3,21 @@ import './ProgressStepper.css'
 export interface ProgressStepperProps {
   totalSteps?: number
   currentStep?: number
+  /** Accessible name. Falls back to `Step {currentStep} of {totalSteps}` —
+   *  the dots are anonymous, so a bare role="progressbar" would have no name. */
+  ariaLabel?: string
 }
 
-export function ProgressStepper({ totalSteps = 7, currentStep = 1 }: ProgressStepperProps) {
+export function ProgressStepper({ totalSteps = 7, currentStep = 1, ariaLabel }: ProgressStepperProps) {
   return (
-    <div className="mn-progress-stepper" role="progressbar" aria-valuenow={currentStep} aria-valuemin={1} aria-valuemax={totalSteps}>
+    <div
+      className="mn-progress-stepper"
+      role="progressbar"
+      aria-valuenow={currentStep}
+      aria-valuemin={1}
+      aria-valuemax={totalSteps}
+      aria-label={ariaLabel ?? `Step ${currentStep} of ${totalSteps}`}
+    >
       {Array.from({ length: totalSteps }, (_, i) => (
         <span
           // Steps are anonymous positional dots — no data exists beyond their

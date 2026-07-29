@@ -28,7 +28,14 @@ export function CardGoals({
       {image && <div className="mn-card-goals__image">{image}</div>}
       <div className="mn-card-goals__content">
         <span className="mn-card-goals__title type-body-m-medium">{title}</span>
-        <ProgressBar value={percentage} current={current} total={total} />
+        <ProgressBar
+          value={percentage}
+          current={current}
+          total={total}
+          // Named from this card's own title — no new prop needed, and far more
+          // useful to AT than ProgressBar's generic percentage fallback.
+          ariaLabel={`${title} progress`}
+        />
       </div>
     </>
   )

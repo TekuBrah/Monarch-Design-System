@@ -694,6 +694,7 @@ A horizontal series of fixed-width pill bars showing progress through a numbered
 |---|---|---|---|
 | `totalSteps` | `number` | `7` | Number of bars to render |
 | `currentStep` | `number` | `1` | Steps 1 through `currentStep` render as active |
+| `ariaLabel` | `string` | `` `Step {currentStep} of {totalSteps}` `` | Accessible name for the `role="progressbar"`. The dots are anonymous, so without this the bar would have **no** accessible name — the generated fallback prevents that (audit F3). |
 
 ### State → token mapping
 
@@ -2284,6 +2285,7 @@ option-list menu, or use two separate `Menu` instances (each with its own
 | `searchPlaceholder` | `string` | `'Placeholder'` | Figma default value |
 | `searchValue` / `onSearchChange` | `string` / `(value: string) => void` | — | Controlled search input |
 | `searchAriaLabel` | `string` | `'Search'` | Forwarded to `Field`'s `ariaLabel` (no visible label on this field) |
+| `listAriaLabel` | `string` | — | Accessible name for the `role="listbox"` (rendered only when `isOptionList`). **Required in practice** — deliberately has *no* generated default, because a generic one would be a regression whenever several menus share a page. Omitting it leaves the listbox unnamed (audit F4). |
 | `slotContent` | `React.ReactNode` | — | App-provided option list — typically a stack of `MenuItem` rows, each composited with others of the same `type` |
 | `isOptionList` | `boolean` | `true` | Adds `role="listbox"` + arrow-key/roving-tabindex navigation across any `[role="option"]` descendants of `slotContent`. Set `false` when wrapping non-option content — e.g. `DatePicker`'s calendar grid, which also composes via `Menu` for its floating-panel chrome |
 | `id` | `string` | — | |
@@ -2494,7 +2496,7 @@ success green) are **not** exposed here (see inconsistencies).
 | `percentageLabel` | `string` | `` `${round(value)}%` `` | Overrides the left label |
 | `current` / `total` | `string` | — | Right-side readout; hidden if both omitted |
 | `id` / `className` | `string` | — | |
-| `ariaLabel` | `string` | — | Accessible name for the bar |
+| `ariaLabel` | `string` | percentage, plus `current`/`total` when present | Accessible name for the bar. Falls back to e.g. `"60%"`, or `"60%, 600 of 1,000"` when a readout is shown — the visual labels are not wired as the name, so without a fallback the bar had none (audit F3). Mirrors `ProgressRing`'s existing pattern. |
 
 ### State → token mapping
 
@@ -3059,6 +3061,7 @@ Two components: `HeaderBg` (mobile screen header, background-image slot) and `He
 | `hasSubtitle` | `boolean` | Default `true` |
 | `isProgressStepper` | `boolean` | Default `false`. Figma never combines this with `actionLabel` |
 | `currentStep` / `totalSteps` | `number` | Passed through to `ProgressStepper` |
+| `stepperAriaLabel` | `string` | Also passed through to `ProgressStepper` (as its `ariaLabel`), alongside `currentStep`/`totalSteps`. Omit to use its `Step X of Y` fallback (audit F3). |
 | `actionLabel` | `string` | Renders the trailing `Link` when set |
 | `onAction` | `() => void` | |
 | `onBack` | `() => void` | |

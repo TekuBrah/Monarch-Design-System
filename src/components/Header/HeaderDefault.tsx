@@ -10,6 +10,9 @@ export interface HeaderDefaultProps {
   isProgressStepper?: boolean
   currentStep?: number
   totalSteps?: number
+  /** Forwarded to the nested `ProgressStepper`, alongside `currentStep`/
+   *  `totalSteps`. Omit to use its `Step X of Y` fallback. */
+  stepperAriaLabel?: string
   actionLabel?: string
   onAction?: () => void
   onBack?: () => void
@@ -23,6 +26,7 @@ export function HeaderDefault({
   isProgressStepper = false,
   currentStep = 1,
   totalSteps = 7,
+  stepperAriaLabel,
   actionLabel,
   onAction,
   onBack,
@@ -47,7 +51,7 @@ export function HeaderDefault({
                 {subtitle}
               </span>
             )}
-            <ProgressStepper totalSteps={totalSteps} currentStep={currentStep} />
+            <ProgressStepper totalSteps={totalSteps} currentStep={currentStep} ariaLabel={stepperAriaLabel} />
           </>
         ) : (
           <>
