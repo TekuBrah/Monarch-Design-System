@@ -52,23 +52,23 @@ if one does need revisiting, note the reason and the date here.
 The framing: *Monarch is currently an app, not a package.* Nothing about it is consumable from a
 second codebase. That gap frames the whole audit.
 
-- [ ] **0.1 — Ground truth inventory.** `ls src/components/`, `git log --oneline -50`,
+- [x] **0.1 — Ground truth inventory.** `ls src/components/`, `git log --oneline -50`,
       `git status`. Reconcile on-disk components against `docs/component-tokens.md` and the
       handoff list. Output: definitive component roster. Everything downstream depends on this.
-- [ ] **0.2 — Public API surface sweep.** Prop naming consistency, size-scale vocabulary,
+- [x] **0.2 — Public API surface sweep.** Prop naming consistency, size-scale vocabulary,
       event-handler signatures, exported prop interfaces, `any` usage. Feeds Phase 1.
-- [ ] **0.3 — Token discipline sweep.** Grep for raw hex, raw px, `--alias-*` in interactive
+- [x] **0.3 — Token discipline sweep.** Grep for raw hex, raw px, `--alias-*` in interactive
       states, `--mapped-*` referenced but undefined in either theme block.
-- [ ] **0.4 — CSS isolation check.** Are class names globally scoped and generic enough to
+- [x] **0.4 — CSS isolation check.** Are class names globally scoped and generic enough to
       collide with a host app's CSS? Only becomes a hazard once consumed externally.
-- [ ] **0.5 — A11y regression sweep.** Roles, keyboard patterns, focus-visible in both themes,
+- [x] **0.5 — A11y regression sweep.** Roles, keyboard patterns, focus-visible in both themes,
       aria completeness. Confirm prior fixes landed (Tabs keyboard nav, ButtonGroup `role="group"`).
-- [ ] **0.6 — Packaging gap analysis.** What's missing to be a consumable package: barrel export,
+- [x] **0.6 — Packaging gap analysis.** What's missing to be a consumable package: barrel export,
       exports map, lib build config, `.d.ts` emission, peer deps, `sideEffects`. Feeds Phase 2.
-- [ ] **0.7 — Audit report + triage.** Single `AUDIT-07272026.md`. Every finding tagged
+- [x] **0.7 — Audit report + triage.** Single `AUDIT-07272026.md`. Every finding tagged
       **severity** + **blocks-MVP-consumption (Y/N)**. Triage into: fix in Phase 1, fix in
       Phase 2, or park. → **STOP.**
-- [ ] **0.8 — Deploy the current showcase to Vercel.** Before anything changes. Gives a permanent
+- [x] **0.8 — Deploy the current showcase to Vercel.** Before anything changes. Gives a permanent
       live URL of the known-good showcase, unaffected by whatever state local is in. ~15 minutes.
 
 **Acceptance:** audit report reviewed and triaged; current showcase live at a public URL.
@@ -85,16 +85,20 @@ sweep that benefits from holding the whole codebase in view.
 The sequencing logic: **the moment the MVP imports Monarch, every prop name becomes a breaking
 change.** These are free today and expensive in three weeks.
 
-- [ ] **1.1 — Size vocabulary normalization.** Collapse the 7 coexisting size scales into one.
+- [x] **1.1 — Size vocabulary normalization.** Collapse the 7 coexisting size scales into one.
       Decision in chat first, then execution.
-- [ ] **1.2 — `disabled` vs `isDisabled`.** Pick one, apply everywhere.
-- [ ] **1.3 — CSS class prefixing / scoping.** Only if 0.4 flagged collision risk.
+- [x] **1.2 — `disabled` vs `isDisabled`.** Pick one, apply everywhere.
+- [x] **1.3 — CSS class prefixing / scoping.** Only if 0.4 flagged collision risk.
       Prefix (`.mn-*`) or migrate to CSS Modules.
-- [ ] **1.4 — Remaining Y-flagged audit findings.** Whatever 0.7 marked as blocking.
-- [ ] **1.5 — Smoke test suite.** Vitest + Testing Library + jest-axe. One file per component:
+- [x] **1.4 — Remaining Y-flagged audit findings.** Whatever 0.7 marked as blocking.
+- [x] **1.5 — Smoke test suite.** Vitest + Testing Library + jest-axe. One file per component:
       renders, each variant renders, zero axe violations. Doubles as the safety net for 1.1–1.4.
 
 **Acceptance:** `npm run build` clean, all smoke tests pass, showcase renders as before.
+
+**Beyond the planned scope:** 5 additional defects surfaced during Phase 1 execution and were
+resolved — see `AUDIT-07272026.md` **Section F** (F1 a false positive; F2–F5 genuine ARIA fixes).
+Phase 1 was not purely the 5 steps above; check that file before assuming otherwise.
 
 **Note:** TypeScript will surface every broken call site during 1.1/1.2. Dev server may error
 mid-step; it comes back.
