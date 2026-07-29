@@ -6,7 +6,7 @@ export interface FilterChipProps {
   isSelected?: boolean
   iconLeft?: React.ReactNode
   iconRight?: React.ReactNode
-  onClick?: React.MouseEventHandler<HTMLButtonElement>
+  onClick?: () => void
   /** Showcase only — forces a visual state without interaction */
   previewState?: 'hover' | 'pressed' | 'focus'
 }

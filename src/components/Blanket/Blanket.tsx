@@ -1,8 +1,7 @@
-import React from 'react'
 import './Blanket.css'
 
 export interface BlanketProps {
-  onClick?: React.MouseEventHandler<HTMLDivElement>
+  onClick?: () => void
 }
 
 export function Blanket({ onClick }: BlanketProps) {

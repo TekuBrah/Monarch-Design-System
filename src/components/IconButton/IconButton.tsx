@@ -12,7 +12,7 @@ export interface IconButtonProps {
   icon?: React.ReactNode
   ariaLabel?: string
   isDisabled?: boolean
-  onClick?: React.MouseEventHandler<HTMLButtonElement>
+  onClick?: () => void
   /** Showcase only — forces a visual state without interaction */
   previewState?: 'hover' | 'pressed' | 'focus'
 }

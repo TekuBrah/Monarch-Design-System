@@ -80,7 +80,7 @@ showcase's dark panel, or `ToastMobile`'s action slot on its colored surface).
 | `leadingIcon` | `ReactNode` | — | Optional icon before label |
 | `trailingIcon` | `ReactNode` | — | Optional icon after label |
 | `isDisabled` | `boolean` | `false` | |
-| `onClick` | `MouseEventHandler` | — | |
+| `onClick` | `() => void` | — | |
 | `previewState` | `'hover' \| 'pressed' \| 'focus'` | — | Showcase-only: forces a visual state without interaction |
 
 ### Geometry tokens
@@ -252,7 +252,7 @@ An icon-only action trigger. Shares the full variant classes with Button — sam
 | `icon` | `ReactNode` | — | The icon content; wrapped in `ElementWrapper size="l"` (24px) |
 | `ariaLabel` | `string` | — | Accessible name — required in production for icon-only buttons |
 | `isDisabled` | `boolean` | `false` | |
-| `onClick` | `MouseEventHandler` | — | |
+| `onClick` | `() => void` | — | |
 | `previewState` | `'hover' \| 'pressed' \| 'focus'` | — | Showcase-only |
 
 ### Geometry tokens
@@ -476,7 +476,7 @@ Full-screen fixed overlay used to visually separate modal/drawer content from th
 
 | Prop | Type | Default | Notes |
 |---|---|---|---|
-| `onClick` | `MouseEventHandler<HTMLDivElement>` | — | Close handler for clicking outside the modal |
+| `onClick` | `() => void` | — | Close handler for clicking outside the modal |
 
 ### Token mapping
 
@@ -739,7 +739,7 @@ A filter/selection pill rendered as a `<button>`. Two appearances (default on wh
 | `isDisabled` | `boolean` | `false` | |
 | `iconBefore` | `ReactNode` | — | Leading icon slot |
 | `iconAfter` | `ReactNode` | — | Trailing icon slot |
-| `onClick` | `MouseEventHandler` | — | |
+| `onClick` | `() => void` | — | |
 
 ### Default appearance — state × token mapping
 
@@ -987,7 +987,7 @@ A single interactive tab unit. Intended to be composed inside a `Tabs` container
 |---|---|---|---|
 | `label` | `string` | `'Tab'` | Visible text |
 | `isSelected` | `boolean` | `false` | Controlled by parent Tabs |
-| `onClick` | `MouseEventHandler` | — | |
+| `onClick` | `() => void` | — | |
 | `previewState` | `'hover' \| 'pressed' \| 'focus'` | — | Showcase-only: forces a visual state |
 | `ariaControls` | `string` | — | ID of the controlled tab panel |
 | `id` | `string` | — | Forwarded to `<button>` |
@@ -1089,11 +1089,11 @@ A composite that pairs a leading "more actions" trigger with a row of primary ac
 | Prop | Type | Default | Notes |
 |---|---|---|---|
 | `buttons` | `ButtonGroupItem[]` | — | Array of `{ label, id?, onClick?, isDisabled? }` — one `Button` per item |
-| `onMoreClick` | `(e) => void` | — | Click handler for the leading `IconButton` trigger |
+| `onMoreClick` | `() => void` | — | Click handler for the leading `IconButton` trigger |
 | `moreAriaLabel` | `string` | `'More actions'` | `aria-label` on the leading `IconButton` |
 | `ariaLabel` | `string` | `'Button group'` | Accessible name for the wrapping `role="group"` |
 
-`ButtonGroupItem` type: `{ label: string; id?: string; onClick?: MouseEventHandler; isDisabled?: boolean }`
+`ButtonGroupItem` type: `{ label: string; id?: string; onClick?: () => void; isDisabled?: boolean }`
 
 The wrapper is a `role="group"` with `aria-label`. React keys use `item.id` when provided, falling back to `` `${label}-${index}` `` (labels alone aren't unique — the showcase intentionally repeats "Button"), so pass `id` for stable identity when items can reorder.
 
@@ -1137,7 +1137,7 @@ A single-selection toggle chip — button-like pill that flips between an unsele
 | `isSelected` | `boolean` | `false` | |
 | `iconLeft` | `ReactNode` | — | Swappable icon slot |
 | `iconRight` | `ReactNode` | — | Swappable icon slot |
-| `onClick` | `(e) => void` | — | |
+| `onClick` | `() => void` | — | |
 | `previewState` | `'hover' \| 'pressed' \| 'focus'` | — | Showcase only, forces a visual state |
 
 ### Variant × state → token mapping

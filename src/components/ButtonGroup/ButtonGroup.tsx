@@ -1,4 +1,3 @@
-import React from 'react'
 import { Button } from '../Button'
 import { IconButton } from '../IconButton'
 import { Icon } from '../Icon'
@@ -8,13 +7,13 @@ export interface ButtonGroupItem {
   label: string
   /** Stable identity for React keys; falls back to label+index if omitted. */
   id?: string
-  onClick?: React.MouseEventHandler<HTMLButtonElement>
+  onClick?: () => void
   isDisabled?: boolean
 }
 
 export interface ButtonGroupProps {
   buttons: ButtonGroupItem[]
-  onMoreClick?: React.MouseEventHandler<HTMLButtonElement>
+  onMoreClick?: () => void
   moreAriaLabel?: string
   /** Accessible name for the group (role="group"). */
   ariaLabel?: string

@@ -1,10 +1,9 @@
-import React from 'react'
 import './Tab.css'
 
 export interface TabProps {
   label?: string
   isSelected?: boolean
-  onClick?: React.MouseEventHandler<HTMLButtonElement>
+  onClick?: () => void
   previewState?: 'hover' | 'pressed' | 'focus'
   /** Only set when a real tabpanel exists to control; omit otherwise. */
   ariaControls?: string

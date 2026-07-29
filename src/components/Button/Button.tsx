@@ -11,7 +11,7 @@ export interface ButtonProps {
   leadingIcon?: React.ReactNode
   trailingIcon?: React.ReactNode
   isDisabled?: boolean
-  onClick?: React.MouseEventHandler<HTMLButtonElement>
+  onClick?: () => void
   /** Showcase only — forces a visual state without interaction */
   previewState?: 'hover' | 'pressed' | 'focus'
 }

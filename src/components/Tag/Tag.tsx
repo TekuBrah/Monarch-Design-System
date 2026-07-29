@@ -12,7 +12,7 @@ export interface TagProps {
   isDisabled?: boolean
   iconBefore?: React.ReactNode
   iconAfter?: React.ReactNode
-  onClick?: React.MouseEventHandler<HTMLButtonElement>
+  onClick?: () => void
 }
 
 export function Tag({
