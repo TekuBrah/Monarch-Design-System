@@ -16,7 +16,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "paths": {
+      "@monarch/design-system": ["./src/index.ts"],
+      "@monarch/design-system/styles.css": ["./src/styles/package.css"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "showcase"]
 }

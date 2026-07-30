@@ -1,0 +1,64 @@
+/* Source-level equivalent of the built dist/index.css + token CSS.
+   Vite's lib build (vite.config.lib.ts) aggregates every component's
+   companion CSS transitively through the src/index.ts import graph into
+   dist/index.css, but that aggregation only exists as a build artifact —
+   there is no single source file it corresponds to, and it never included
+   globals.css/typography.css (nothing in src/index.ts's tree imports them).
+   This file is that missing source-level equivalent, kept in sync by hand:
+   whenever a component gains/loses a CSS file, update this list to match. */
+
+@import './globals.css';
+@import './typography.css';
+
+@import '../components/Avatar/Avatar.css';
+@import '../components/Blanket/Blanket.css';
+@import '../components/Breadcrumbs/Breadcrumbs.css';
+@import '../components/Button/Button.css';
+@import '../components/ButtonGroup/ButtonGroup.css';
+@import '../components/Card/CardAction.css';
+@import '../components/Card/CardBalance.css';
+@import '../components/Card/CardDataDisplay.css';
+@import '../components/Card/CardFeaturesAndEducation.css';
+@import '../components/Card/CardGoals.css';
+@import '../components/Card/CardMonthlyBudget.css';
+@import '../components/Card/CardSmartInsights.css';
+@import '../components/Checkbox/Checkbox.css';
+@import '../components/Chips/Chips.css';
+@import '../components/DatePicker/DatePicker.css';
+@import '../components/Divider/Divider.css';
+@import '../components/Field/Field.css';
+@import '../components/FilterChip/FilterChip.css';
+@import '../components/Header/HeaderBg.css';
+@import '../components/Header/HeaderDefault.css';
+@import '../components/IconButton/IconButton.css';
+@import '../components/IconObject/IconObject.css';
+@import '../components/Item/ChartLegendItem.css';
+@import '../components/Item/ListItem.css';
+@import '../components/Item/SummaryItem.css';
+@import '../components/Label/Label.css';
+@import '../components/Link/Link.css';
+@import '../components/Loader/Loader.css';
+@import '../components/Logo/Logo.css';
+@import '../components/Menu/Menu.css';
+@import '../components/MenuItem/MenuItem.css';
+@import '../components/Modal/Modal.css';
+@import '../components/Navigation/BottomNavigation.css';
+@import '../components/Navigation/SideNavigation.css';
+@import '../components/ProgressBar/ProgressBar.css';
+@import '../components/ProgressRing/ProgressRing.css';
+@import '../components/ProgressStepper/ProgressStepper.css';
+@import '../components/Radio/Radio.css';
+@import '../components/RangeSlider/RangeSlider.css';
+@import '../components/Select/Select.css';
+@import '../components/SelectTransfer/SelectTransfer.css';
+@import '../components/SelectWalletAccount/SelectWalletAccount.css';
+@import '../components/Slider/Slider.css';
+@import '../components/StatusBar/StatusBar.css';
+@import '../components/Tab/Tab.css';
+@import '../components/Tabs/Tabs.css';
+@import '../components/Tag/Tag.css';
+@import '../components/TextArea/TextArea.css';
+@import '../components/TimePicker/TimePicker.css';
+@import '../components/Toast/Toast.css';
+@import '../components/ToastMobile/ToastMobile.css';
+@import '../components/Toggle/Toggle.css';
