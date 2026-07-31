@@ -1279,41 +1279,37 @@ export default function App() {
       {tab === 'foundations' && (
         <>
           {/* Brand primitives */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page-secondary, #f9f9f9)' , color: 'var(--mapped-text-default-default, #111)' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Brand Primitives
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              Brand/Value.json — {brandScales.length} color scales + foundations
-            </p>
+          <Section
+            title="Brand Primitives"
+            description={`Brand/Value.json — ${brandScales.length} color scales + foundations`}
+            background="page-secondary"
+          >
             {brandScales.map(([name, steps]) => (
               <BrandScaleRow key={name} name={name} steps={steps} />
             ))}
             <BrandScaleRow name="foundations" steps={brandFoundations} />
-          </div>
+          </Section>
 
           <hr style={HR} />
 
           {/* Alias / Semantic */}
-          <div style={{ padding: '0 2rem 2rem', background: 'var(--mapped-surface-page-secondary, #f9f9f9)' , color: 'var(--mapped-text-default-default, #111)' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Alias / Semantic
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              Alias/Alias.json — {aliasGroups.length} groups — alias → brand token
-            </p>
+          <Section
+            title="Alias / Semantic"
+            description={`Alias/Alias.json — ${aliasGroups.length} groups — alias → brand token`}
+            background="page-secondary"
+            noTopPadding
+          >
             {aliasGroups.map(([name, steps]) => (
               <AliasGroupRow key={name} name={name} steps={steps} />
             ))}
-          </div>
+          </Section>
 
           <hr style={HR} />
 
-          {/* Mapped / Semantic surfaces */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Mapped / Semantic surfaces
-            </h1>
+          {/* Mapped / Semantic surfaces — intro passed as children, not via the
+              `description` prop: two paragraphs with different styles, the first
+              on a non-canonical 0.5rem margin. See SectionProps.description. */}
+          <Section title="Mapped / Semantic surfaces" background="page">
             <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '0.5rem' }}>
               Mapped/Light.json + Dark.json — {MAPPED_TOTAL} tokens — toggle above to flip modes
             </p>
@@ -1321,76 +1317,68 @@ export default function App() {
               Current mode: <strong style={{ color: 'var(--mapped-text-primary-default)' }}>{dark ? 'dark' : 'light'}</strong>
             </p>
             {MAPPED_TREE.map(cat => <MappedCategorySection key={cat.name} {...cat} />)}
-          </div>
+          </Section>
 
           <hr style={HR} />
 
-          {/* Spacing scale */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page-secondary, #f9f9f9)' , color: 'var(--mapped-text-default-default, #111)' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Spacing scale
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              --spacing-* → var(--brand-scale-*) in px &nbsp;·&nbsp; {Object.keys(spacing).length} tokens
-            </p>
+          {/* Spacing scale — description built as a template string so the
+              non-breaking spaces survive; they were `&nbsp;` entities in JSX
+              text, which a string prop would render literally. */}
+          <Section
+            title="Spacing scale"
+            description={`--spacing-* → var(--brand-scale-*) in px \u00a0·\u00a0 ${Object.keys(spacing).length} tokens`}
+            background="page-secondary"
+          >
             <SpacingSection />
-          </div>
+          </Section>
 
           <hr style={HR} />
 
           {/* Responsive type */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page-secondary, #f9f9f9)' , color: 'var(--mapped-text-default-default, #111)' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Responsive type
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              Base values: mobile. Resize past 768px to see headings change (H1–H4 + body-sm grow).
-            </p>
+          <Section
+            title="Responsive type"
+            description="Base values: mobile. Resize past 768px to see headings change (H1–H4 + body-sm grow)."
+            background="page-secondary"
+          >
             <ResponsiveTypeSection />
-          </div>
+          </Section>
 
           <hr style={HR} />
 
           {/* Typography */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)' , color: 'var(--mapped-text-default-default, #111)' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Typography
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              22 composite styles — Poppins 400 / 500 / 600 — headings responsive at 768 px
-            </p>
+          <Section
+            title="Typography"
+            description="22 composite styles — Poppins 400 / 500 / 600 — headings responsive at 768 px"
+            background="page"
+          >
             <TypographySection />
-          </div>
+          </Section>
 
           <hr style={HR} />
 
           {/* Gradients */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-page-secondary, #f9f9f9)' , color: 'var(--mapped-text-default-default, #111)' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Gradients
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              Brand/Value.json → Gradient — {Object.keys(gradients).length} tokens — shown over light + dark backgrounds
-            </p>
+          <Section
+            title="Gradients"
+            description={`Brand/Value.json → Gradient — ${Object.keys(gradients).length} tokens — shown over light + dark backgrounds`}
+            background="page-secondary"
+          >
             {(Object.entries(gradients) as [string, { var: string; value: string; description: string }][]).map(
               ([name, token]) => <GradientCard key={name} name={name} token={token} />
             )}
-          </div>
+          </Section>
 
           <hr style={HR} />
 
           {/* Shadows / Effects */}
-          <div style={{ padding: '2rem', background: 'var(--mapped-surface-subtle-default, #f0f2f4)' , color: 'var(--mapped-text-default-default, #111)' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Shadows / Effects
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              Brand/Value.json → Dropshadow_* — {Object.keys(shadows).length} tokens — shown over light + dark surfaces
-            </p>
+          <Section
+            title="Shadows / Effects"
+            description={`Brand/Value.json → Dropshadow_* — ${Object.keys(shadows).length} tokens — shown over light + dark surfaces`}
+            background="subtle"
+          >
             {(Object.entries(shadows) as [string, ShadowToken][]).map(
               ([name, token]) => <ShadowCard key={name} name={name} token={token} />
             )}
-          </div>
+          </Section>
         </>
       )}
 

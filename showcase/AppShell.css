@@ -12,6 +12,15 @@ html, body {
      the system's own typeface rather than the browser default. Without this,
      body inherits Times New Roman and the shell chrome renders in system-ui. */
   font-family: var(--font-family-primary);
+  /* Body text colour was never wired to a token: it computed pure black in
+     BOTH themes, so anything relying on inheritance rendered black-on-black in
+     dark mode. Latent until now only because every descendant happened to set
+     its own colour — the Foundations wrappers each carried an explicit
+     `color`, which <Section> does not. Fixing it at the root here (rather than
+     re-adding per-wrapper colours) keeps the 22 Typography specimens and 10
+     Responsive-type specimens legible after migration; those deliberately
+     inherit, since a type specimen should not hardcode a colour. */
+  color: var(--mapped-text-default-default);
 }
 
 .app-topnav {

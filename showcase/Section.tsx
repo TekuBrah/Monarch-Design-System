@@ -26,9 +26,18 @@ export interface SectionProps {
    *  SIDEBAR_CATEGORIES slug: the scrollspy resolves these via getElementById. */
   id?: string
   title: string
-  /** Optional — Blanket has no description. */
+  /** Optional — Blanket has no description.
+   *  Deliberately kept as `string`, not ReactNode: the one section that needs
+   *  richer intro content ("Mapped / Semantic surfaces") has TWO paragraphs
+   *  with different styles, the first using a non-canonical 0.5rem margin.
+   *  Widening the type would let it typecheck while still collapsing both into
+   *  a single canonically-styled <p> — i.e. it would look like it fits while
+   *  changing the rendering. That section passes its intro as children instead. */
   description?: string
   background?: 'page' | 'page-secondary' | 'subtle'
+  /** Drops the top padding so a section reads as a continuation of the one
+   *  above it ("Alias / Semantic" does this). Orthogonal to `background`. */
+  noTopPadding?: boolean
   children: ReactNode
 }
 
@@ -38,11 +47,15 @@ const BACKGROUNDS: Record<NonNullable<SectionProps['background']>, string> = {
   'subtle': 'var(--mapped-surface-subtle-default, #f2f2f2)',
 }
 
-export function Section({ id, title, description, background = 'page', children }: SectionProps) {
+export function Section({ id, title, description, background = 'page', noTopPadding, children }: SectionProps) {
   return (
     <div
       id={id ? `section-${id}` : undefined}
-      style={{ padding: '2rem', background: BACKGROUNDS[background], transition: 'background 0.2s' }}
+      style={{
+        padding: noTopPadding ? '0 2rem 2rem' : '2rem',
+        background: BACKGROUNDS[background],
+        transition: 'background 0.2s',
+      }}
     >
       <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
         {title}
