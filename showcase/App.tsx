@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import './AppShell.css'
+import { Section } from './Section'
 import { brand, alias, mapped, spacing, gradients, shadows } from '@monarch/design-system'
 import { Badge } from '@monarch/design-system'
 import type { BadgeAppearance } from '@monarch/design-system'
@@ -1389,13 +1390,7 @@ export default function App() {
       {tab === 'components' && (
         <>
           {/* Button */}
-          <div id="section-button" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Button
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              3 variants × 3 sizes — tokens only — light + dark — states forced for preview
-            </p>
+          <Section id="button" title="Button" description="3 variants × 3 sizes — tokens only — light + dark — states forced for preview">
 
             {/* Default appearance — one table per size */}
             {(['s', 'm', 'l'] as const).map(size => (
@@ -1449,7 +1444,7 @@ export default function App() {
               </div>
             ))}
 
-          </div>
+          </Section>
         </>
       )}
 
@@ -1458,13 +1453,7 @@ export default function App() {
       {tab === 'components' && (
         <>
           {/* Icon Button */}
-          <div id="section-icon-button" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Icon Button
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              3 variants × 3 sizes — same token matrix as Button — light + dark — states forced for preview
-            </p>
+          <Section id="icon-button" title="Icon Button" description="3 variants × 3 sizes — same token matrix as Button — light + dark — states forced for preview">
 
             {/* Default appearance — table per size */}
             {(['s', 'm', 'l'] as IconButtonSize[]).map(size => (
@@ -1510,7 +1499,7 @@ export default function App() {
               </div>
             ))}
 
-          </div>
+          </Section>
         </>
       )}
 
@@ -1519,11 +1508,7 @@ export default function App() {
       {/* ── Button Group ───────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div id="section-button-group" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Button Group</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              Composite: leading IconButton (tertiary, more_horiz) + 2–N Button (primary, m) — data-driven via buttons prop
-            </p>
+          <Section id="button-group" title="Button Group" description="Composite: leading IconButton (tertiary, more_horiz) + 2–N Button (primary, m) — data-driven via buttons prop">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Count = 2</div>
@@ -1534,7 +1519,7 @@ export default function App() {
                 <ButtonGroup ariaLabel="Example actions (3)" buttons={[{ id: 'a', label: 'Button' }, { id: 'b', label: 'Button' }, { id: 'c', label: 'Button' }]} />
               </div>
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -1543,11 +1528,7 @@ export default function App() {
       {/* ── Link ───────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div id="section-link" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Link</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              3 appearances × 3 states × visited — Size=M renders smaller than Size=S (Figma source, not a bug) — leaf dependency for Breadcrumbs
-            </p>
+          <Section id="link" title="Link" description="3 appearances × 3 states × visited — Size=M renders smaller than Size=S (Figma source, not a bug) — leaf dependency for Breadcrumbs">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Default appearance — forced states</div>
@@ -1587,7 +1568,7 @@ export default function App() {
                 </div>
               </div>
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -1596,11 +1577,7 @@ export default function App() {
       {/* ── Checkbox ───────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div id="section-checkbox" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Checkbox</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-m / l × unchecked / checked / indeterminate × invalid × required × disabled
-            </p>
+          <Section id="checkbox" title="Checkbox" description="m / l × unchecked / checked / indeterminate × invalid × required × disabled">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {(['m', 'l'] as const).map(size => (
                 <div key={size} style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -1623,7 +1600,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 </span>
               </div>
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -1632,11 +1609,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {/* ── Radio ──────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div id="section-radio" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Radio</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              unchecked / checked / invalid / required / disabled states — 14×14px radio circle inside 24px wrap
-            </p>
+          <Section id="radio" title="Radio" description="unchecked / checked / invalid / required / disabled states — 14×14px radio circle inside 24px wrap">
             <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
               <Radio label="Unchecked" />
               <Radio label="Checked" isChecked />
@@ -1654,7 +1627,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 selected: <strong>{radioValue}</strong>
               </span>
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -1663,11 +1636,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {/* ── Toggle ─────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div id="section-toggle" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Toggle</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              2 sizes × checked/unchecked × disabled — tokens: --mapped-surface-primary-default, --mapped-icon-subtlest-subtlest
-            </p>
+          <Section id="toggle" title="Toggle" description="2 sizes × checked/unchecked × disabled — tokens: --mapped-surface-primary-default, --mapped-icon-subtlest-subtlest">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {(['m', 'l'] as const).map(size => (
                 <div key={size} style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
@@ -1690,7 +1659,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 </span>
               </div>
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -1699,11 +1668,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {/* ── Field ──────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div id="section-field" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Field</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              Text input — Standard/Subtle × label × states × invalid/disabled/compact. Focus = 2px blue border + faint outer glow ring, persists until blur (:focus-within)
-            </p>
+          <Section id="field" title="Field" description="Text input — Standard/Subtle × label × states × invalid/disabled/compact. Focus = 2px blue border + faint outer glow ring, persists until blur (:focus-within)">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
@@ -1731,7 +1696,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 </div>
               </div>
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -1740,11 +1705,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {/* ── Select ─────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div id="section-select" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Select</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              Searchable combobox trigger — Standard/Subtle × Default/Hover/Focus/Typing/Filled/Selected/Invalid/Disabled. Chevron built-in; the dropdown menu is an app-provided slot.
-            </p>
+          <Section id="select" title="Select" description="Searchable combobox trigger — Standard/Subtle × Default/Hover/Focus/Typing/Filled/Selected/Invalid/Disabled. Chevron built-in; the dropdown menu is an app-provided slot.">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
@@ -1769,7 +1730,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 <SelectDemo />
               </div>
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -1783,11 +1744,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
           </ElementWrapper>
         )
         return (
-          <div id="section-select-transfer" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Select / Transfer</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              Amount input + currency picker (flag = ElementWrapper slot). Standard/Subtle bordered box + Attention underline style. Dual dropdowns are app slots.
-            </p>
+          <Section id="select-transfer" title="Select / Transfer" description="Amount input + currency picker (flag = ElementWrapper slot). Standard/Subtle bordered box + Attention underline style. Dual dropdowns are app slots.">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
@@ -1828,7 +1785,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 </div>
               </div>
             </div>
-          </div>
+          </Section>
         )
       })()}
 
@@ -1836,11 +1793,11 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
 
       {/* ── Select / Wallet Account ────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-select-wallet-account" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Select / Wallet Account</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Button trigger for a wallet/account picker — the trigger itself never shows a logo (confirmed absent from all 14 variants); logos only appear per-row in the dropdown. Unlike Select/Select Transfer, the trigger never becomes an editable input — the dropdown's search field is an app-composed slot.
-          </p>
+        <Section
+          id="select-wallet-account"
+          title="Select / Wallet Account"
+          description="Button trigger for a wallet/account picker — the trigger itself never shows a logo (confirmed absent from all 14 variants); logos only appear per-row in the dropdown. Unlike Select/Select Transfer, the trigger never becomes an editable input — the dropdown's search field is an app-composed slot."
+        >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
@@ -1875,18 +1832,14 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               <SelectWalletAccountDemo />
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
 
       {/* ── Date Picker ────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-date-picker" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Date Picker</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            No label slot. Trailing icon swaps calendar_month ↔ cancel (clear) — has a value AND unfocused only. The calendar is an app-provided slot.
-          </p>
+        <Section id="date-picker" title="Date Picker" description="No label slot. Trailing icon swaps calendar_month ↔ cancel (clear) — has a value AND unfocused only. The calendar is an app-provided slot.">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
@@ -1921,18 +1874,14 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               <DatePickerDemo />
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
 
       {/* ── Time Picker ────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-time-picker" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Time Picker</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            No label slot. Single clear icon fades in only when filled AND unfocused (Hydrate keeps it hidden). Time list is an app-provided slot.
-          </p>
+        <Section id="time-picker" title="Time Picker" description="No label slot. Single clear icon fades in only when filled AND unfocused (Hydrate keeps it hidden). Time list is an app-provided slot.">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
@@ -1968,18 +1917,14 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               <TimePickerDemo />
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
 
       {/* ── Text area ──────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-text-area" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Text area</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Multi-line sibling of Field — same box tokens/states, no icon slots, real &lt;textarea&gt;.
-          </p>
+        <Section id="text-area" title="Text area" description="Multi-line sibling of Field — same box tokens/states, no icon slots, real &lt;textarea&gt;.">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
@@ -2011,7 +1956,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               <TextArea label="Message" placeholder="Type something…" ariaLabel="Interactive" />
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
@@ -2019,11 +1964,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {/* ── Filter Chip ───────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div id="section-filter-chip" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Filter Chip</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              2 states × 4 icon combos — selected bg via color-mix() (no opacity token in source) — hover/press on unselected only (deliberate addition, see docs)
-            </p>
+          <Section id="filter-chip" title="Filter Chip" description="2 states × 4 icon combos — selected bg via color-mix() (no opacity token in source) — hover/press on unselected only (deliberate addition, see docs)">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Default — icon combos</div>
@@ -2066,7 +2007,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 </div>
               </div>
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -2074,11 +2015,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
 
       {/* ── Slider ─────────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-slider" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Slider</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Single-thumb value slider — track + fill + white/blue thumb (0.25 halo on focus/drag). Drag, click, or arrow keys / Home / End.
-          </p>
+        <Section id="slider" title="Slider" description="Single-thumb value slider — track + fill + white/blue thumb (0.25 halo on focus/drag). Drag, click, or arrow keys / Home / End.">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '400px' }}>
             <div className="showcase-interactive">
               <div className="showcase-interactive__label">Interactive</div>
@@ -2091,18 +2028,14 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               </div>
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
 
       {/* ── Range Slider ───────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-range-slider" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Range Slider</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Two-thumb min/max range with a tooltip on the active thumb and two synced Field inputs (drag ↔ type). Thumbs can't cross.
-          </p>
+        <Section id="range-slider" title="Range Slider" description="Two-thumb min/max range with a tooltip on the active thumb and two synced Field inputs (drag ↔ type). Thumbs can't cross.">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '400px' }}>
             <div className="showcase-interactive">
               <div className="showcase-interactive__label">Interactive — drag a thumb (tooltip appears) or type in a field</div>
@@ -2115,7 +2048,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               </div>
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
@@ -2123,13 +2056,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {tab === 'components' && (
         <>
           {/* Badge */}
-          <div id="section-badge" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Badge
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              7 appearances × 2 types — tokens only — responds to light/dark toggle
-            </p>
+          <Section id="badge" title="Badge" description="7 appearances × 2 types — tokens only — responds to light/dark toggle">
             <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
               <thead>
                 <tr>
@@ -2148,7 +2075,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 ))}
               </tbody>
             </table>
-          </div>
+          </Section>
         </>
       )}
 
@@ -2157,13 +2084,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {tab === 'components' && (
         <>
           {/* Chips */}
-          <div id="section-chips" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Chips
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              6 appearances × 2 bold states — lozenge / status badge — always shows done icon
-            </p>
+          <Section id="chips" title="Chips" description="6 appearances × 2 bold states — lozenge / status badge — always shows done icon">
             <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
               <thead>
                 <tr>
@@ -2182,7 +2103,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 ))}
               </tbody>
             </table>
-          </div>
+          </Section>
         </>
       )}
 
@@ -2191,11 +2112,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {/* ── Tag ────────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div id="section-tag" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Tag</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              2 sizes × states (hover/active via pseudo-classes) + selected + disabled + interactive
-            </p>
+          <Section id="tag" title="Tag" description="2 sizes × states (hover/active via pseudo-classes) + selected + disabled + interactive">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', width: '80px', color: 'var(--mapped-text-subtle-default)' }}>static</span>
@@ -2221,7 +2138,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 </span>
               </div>
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -2230,16 +2147,12 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {/* ── Loader ─────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div id="section-loader" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Loader</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              First CSS @keyframes animation in this codebase — 32px container + color confirmed from source; stroke width and rotation speed are estimates (see docs)
-            </p>
+          <Section id="loader" title="Loader" description="First CSS @keyframes animation in this codebase — 32px container + color confirmed from source; stroke width and rotation speed are estimates (see docs)">
             <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
               <Loader />
               <Loader ariaLabel="Loading transactions" />
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -2247,11 +2160,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
 
       {/* ── Toast (desktop + mobile) ───────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-toast" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Toast</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            System message in 6 appearances (ai = gradient), auto icon per appearance, description + actions slots, role=status/alert live region. Two layouts: desktop (Link actions + dismiss) and mobile (compact, inverse-tertiary Button).
-          </p>
+        <Section id="toast" title="Toast" description="System message in 6 appearances (ai = gradient), auto icon per appearance, description + actions slots, role=status/alert live region. Two layouts: desktop (Link actions + dismiss) and mobile (compact, inverse-tertiary Button).">
           <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Toast — desktop</div>
@@ -2292,18 +2201,14 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               </div>
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
 
       {/* ── Progress Bar ───────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-progress-bar" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Progress Bar</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Horizontal track, fill = success surface. Two versions: percentage-only, and a stepper with the current/total readout. Sizes S (caption) / M (body). Drag the controls to drive it.
-          </p>
+        <Section id="progress-bar" title="Progress Bar" description="Horizontal track, fill = success surface. Two versions: percentage-only, and a stepper with the current/total readout. Sizes S (caption) / M (body). Drag the controls to drive it.">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '400px' }}>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Percentage only — sizes S &amp; M</div>
@@ -2314,20 +2219,16 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               <ProgressBarStepperDemo />
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
 
       {/* ── Progress Ring ──────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-progress-ring" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Progress Ring</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            270° gauge with a conic blue→purple→red fill over a gray track; centre caption + amount + Badge (dark) pill. Sizes medium (h5) / large (h4). Enter a budget and amount spent to drive the "left to spend" gauge.
-          </p>
+        <Section id="progress-ring" title="Progress Ring" description={"270° gauge with a conic blue→purple→red fill over a gray track; centre caption + amount + Badge (dark) pill. Sizes medium (h5) / large (h4). Enter a budget and amount spent to drive the \"left to spend\" gauge."}>
           <ProgressRingDemo />
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
@@ -2335,11 +2236,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {/* ── ProgressStepper ────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div id="section-progress-stepper" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Progress Stepper</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              7 steps, active bar = --mapped-icon-primary-default · inactive = --mapped-surface-default-default
-            </p>
+          <Section id="progress-stepper" title="Progress Stepper" description="7 steps, active bar = --mapped-icon-primary-default · inactive = --mapped-surface-default-default">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {[1, 3, 5, 7].map(step => (
                 <div key={step} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
@@ -2348,7 +2245,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 </div>
               ))}
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -2357,11 +2254,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {/* ── Tabs & Tab ─────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div id="section-tabs" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Tabs</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              Controlled Tabs wrapper composing Tab instances, plus the Tab state matrix — no container background
-            </p>
+          <Section id="tabs" title="Tabs" description="Controlled Tabs wrapper composing Tab instances, plus the Tab state matrix — no container background">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div className="showcase-interactive">
                 <div className="showcase-interactive__label">Interactive — click to switch</div>
@@ -2403,7 +2296,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 </div>
               </div>
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -2412,11 +2305,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {/* ── Breadcrumbs ────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div id="section-breadcrumbs" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Breadcrumbs</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              Composes Link (subtle) + Icon (chevron_right separator) — data-driven via items array — last item gets isCurrent (underline + aria-current)
-            </p>
+          <Section id="breadcrumbs" title="Breadcrumbs" description="Composes Link (subtle) + Icon (chevron_right separator) — data-driven via items array — last item gets isCurrent (underline + aria-current)">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>With leading home icon</div>
@@ -2438,7 +2327,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 />
               </div>
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -2446,11 +2335,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
 
       {/* ── Menu ───────────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-menu" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Menu</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Floating dropdown chrome that wraps MenuItem rows. searchBar can be hidden for a plain option-list menu; slotContent is an app-provided option list.
-          </p>
+        <Section id="menu" title="Menu" description="Floating dropdown chrome that wraps MenuItem rows. searchBar can be hidden for a plain option-list menu; slotContent is an app-provided option list.">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>With search bar (default)</div>
@@ -2486,18 +2371,14 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               <MenuDemo />
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
 
       {/* ── Menu Item ──────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-menu-item" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Menu Item</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Shared row atom for Select-family dropdowns — composes into optionsSlot/timesSlot content. Menu chrome itself remains an app-provided slot.
-          </p>
+        <Section id="menu-item" title="Menu Item" description="Shared row atom for Select-family dropdowns — composes into optionsSlot/timesSlot content. Menu chrome itself remains an app-provided slot.">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>type="default" — states</div>
@@ -2553,18 +2434,14 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               <MenuItemDemo />
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
 
       {/* ── Navigation ─────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-navigation" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Navigation</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            BottomNavigation (mobile tab bar) and SideNavigation (desktop sidebar, default + compact)
-          </p>
+        <Section id="navigation" title="Navigation" description="BottomNavigation (mobile tab bar) and SideNavigation (desktop sidebar, default + compact)">
           <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>BottomNavigation</div>
@@ -2609,7 +2486,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               </div>
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
@@ -2617,13 +2494,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {tab === 'components' && (
         <>
           {/* Avatar */}
-          <div id="section-avatar" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Avatar
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              3 states (photo / initials / placeholder) × 3 sizes — tokens only
-            </p>
+          <Section id="avatar" title="Avatar" description="3 states (photo / initials / placeholder) × 3 sizes — tokens only">
 
             {(['l', 'm', 's'] as AvatarSize[]).map(size => (
               <div key={size} style={{ marginBottom: '2rem' }}>
@@ -2650,7 +2521,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 </div>
               </div>
             ))}
-          </div>
+          </Section>
         </>
       )}
 
@@ -2658,11 +2529,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
 
       {/* ── Card ───────────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-card" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Card</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            7 card types — SmartInsights, Action, Balance, DataDisplay, MonthlyBudget (default / addNew), Goals, FeaturesAndEducation
-          </p>
+        <Section id="card" title="Card" description="7 card types — SmartInsights, Action, Balance, DataDisplay, MonthlyBudget (default / addNew), Goals, FeaturesAndEducation">
           <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>CardSmartInsights</div>
@@ -2737,7 +2604,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               </div>
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
@@ -2745,13 +2612,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {tab === 'components' && (
         <>
           {/* Label */}
-          <div id="section-label" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Label
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              2 sizes × optional required asterisk × optional leading/trailing icons
-            </p>
+          <Section id="label" title="Label" description="2 sizes × optional required asterisk × optional leading/trailing icons">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               {(['m', 's'] as const).map(size => (
                 <div key={size} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -2771,7 +2632,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 </div>
               ))}
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -2780,11 +2641,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {/* ── Icon Object ────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <div id="section-icon-object" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Icon Object</h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              13 colors × circle/square × 5 sizes — --brand-[color]-400 backgrounds, white icon via currentColor
-            </p>
+          <Section id="icon-object" title="Icon Object" description="13 colors × circle/square × 5 sizes — --brand-[color]-400 backgrounds, white icon via currentColor">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Colors (circle, xl)</div>
@@ -2807,7 +2664,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 </div>
               </div>
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -2816,13 +2673,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {tab === 'components' && (
         <>
           {/* Divider */}
-          <div id="section-divider" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Divider
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              2 weights × 2 orientations — token: --mapped-border-subtle-default
-            </p>
+          <Section id="divider" title="Divider" description="2 weights × 2 orientations — token: --mapped-border-subtle-default">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '400px' }}>
               <div>
                 <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>horizontal weight=1</span>
@@ -2843,7 +2694,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 </div>
               </div>
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -2851,11 +2702,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
 
       {/* ── Item ───────────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-item" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Item</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            ListItem (default / profile / crypto), SummaryItem, and ChartLegendItem (legend / contribution)
-          </p>
+        <Section id="item" title="Item" description="ListItem (default / profile / crypto), SummaryItem, and ChartLegendItem (legend / contribution)">
           <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>ListItem</div>
@@ -2918,7 +2765,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               </div>
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
@@ -2926,13 +2773,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {tab === 'components' && (
         <>
           {/* Element Wrapper */}
-          <div id="section-element-wrapper" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Element Wrapper
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              7 sizes — square centering shell for Icon / Avatar / Logo — tokens only
-            </p>
+          <Section id="element-wrapper" title="Element Wrapper" description="7 sizes — square centering shell for Icon / Avatar / Logo — tokens only">
             <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
               {(['xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl'] as ElementWrapperSize[]).map(size => (
                 <div key={size} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
@@ -2947,7 +2788,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 </div>
               ))}
             </div>
-          </div>
+          </Section>
         </>
       )}
 
@@ -2955,11 +2796,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
 
       {/* ── Modal ──────────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-modal" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Modal</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Generic dialog container over a Blanket scrim: title + close, a flexible content slot, and a footer that composes real Buttons. Portaled to body; dialog a11y (aria-modal, focus trap, Escape).
-          </p>
+        <Section id="modal" title="Modal" description="Generic dialog container over a Blanket scrim: title + close, a flexible content slot, and a footer that composes real Buttons. Portaled to body; dialog a11y (aria-modal, focus trap, Escape).">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
             <div className="showcase-interactive">
               <div className="showcase-interactive__label">
@@ -2968,7 +2805,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               <ModalDemo />
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
@@ -2976,12 +2813,9 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {tab === 'components' && (
         <>
           {/* Blanket */}
-          <div id="section-blanket" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Blanket
-            </h1>
+          <Section id="blanket" title="Blanket">
             <BlanketDemo />
-          </div>
+          </Section>
         </>
       )}
 
@@ -3016,13 +2850,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               </div>
             )
             return (
-              <div id="section-icon" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-                <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-                  Icon
-                </h1>
-                <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-                  94 icons (59 Material Round + 35 Custom) — sized via --brand-scale-* — inherits currentColor
-                </p>
+              <Section id="icon" title="Icon" description="94 icons (59 Material Round + 35 Custom) — sized via --brand-scale-* — inherits currentColor">
 
                 {GROUPS.map(({ label, names }) => (
                   <div key={label} style={{ marginBottom: '1.75rem' }}>
@@ -3103,7 +2931,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                     <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>success</span>
                   </div>
                 </div>
-              </div>
+              </Section>
             )
           })()}
         </>
@@ -3114,13 +2942,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
       {tab === 'components' && (
         <>
           {/* Logo */}
-          <div id="section-logo" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>
-              Logo
-            </h1>
-            <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-              30 logos auto-registered from Assets/logo/ — full color preserved — no token coloring
-            </p>
+          <Section id="logo" title="Logo" description="30 logos auto-registered from Assets/logo/ — full color preserved — no token coloring">
 
             {(['brand', 'crypto'] as const).map(category => (
               <div key={category} style={{ marginBottom: '2.5rem' }}>
@@ -3146,7 +2968,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
                 </div>
               </div>
             ))}
-          </div>
+          </Section>
         </>
       )}
 
@@ -3154,11 +2976,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
 
       {/* ── Header ─────────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-header" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>Header</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            HeaderBg (mobile screen header, swappable background slot) and HeaderDefault (function-flow header, 6 variants)
-          </p>
+        <Section id="header" title="Header" description="HeaderBg (mobile screen header, swappable background slot) and HeaderDefault (function-flow header, 6 variants)">
           <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>HeaderBg — default</div>
@@ -3201,18 +3019,14 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               <HeaderDefault title="Title" hasSubtitle={false} actionLabel="Action" />
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}
 
       {/* ── StatusBar ──────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <div id="section-status-bar" style={{ padding: '2rem', background: 'var(--mapped-surface-page, #fff)', transition: 'background 0.2s' }}>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #111)', marginBottom: '0.2rem' }}>StatusBar</h1>
-          <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '2rem' }}>
-            Fake OS-chrome status bar — Light/Dark modes are fixed per surface, not tied to the app theme
-          </p>
+        <Section id="status-bar" title="StatusBar" description="Fake OS-chrome status bar — Light/Dark modes are fixed per surface, not tied to the app theme">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '375px' }}>
             <div style={{ background: '#ffffff', border: '1px solid var(--mapped-border-subtlest-default, #ccc)' }}>
               <StatusBar mode="Light" />
@@ -3221,7 +3035,7 @@ m / l × unchecked / checked / indeterminate × invalid × required × disabled
               <StatusBar mode="Dark" />
             </div>
           </div>
-        </div>
+        </Section>
       )}
 
         </main>
