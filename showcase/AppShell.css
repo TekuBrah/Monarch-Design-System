@@ -255,18 +255,10 @@ html, body {
     background: var(--mapped-surface-page);
     transform: translateX(-100%);
     transition: transform 0.2s ease;
-    /* FAIL-LOUD: --shadow-subtle is the semantically correct token here
-       (its source description is literally "Side navigation / desktop", and
-       SideNavigation.css uses it). It currently resolves to NOTHING: the
-       --shadow-* custom properties were generated into globals.css at commit
-       b48231f but dropped at 142df40, when globals.css was regenerated
-       without running scripts/build-shadows.mjs (CLAUDE.md's documented run
-       order omits that script). 10+ component CSS files consume these dead
-       vars today. The literal below is the pre-existing hardcoded value,
-       retained ONLY as a var() fallback so this fix does not silently remove
-       the drawer's shadow; it disappears on its own once the shadows layer
-       is regenerated. Do not treat the literal as an approved token gap. */
-    box-shadow: var(--shadow-subtle, 2px 0 12px rgba(0, 0, 0, 0.15));
+    /* --shadow-subtle is the semantically correct token here: its source
+       description is literally "Side navigation / desktop", and
+       SideNavigation.css uses the same one. */
+    box-shadow: var(--shadow-subtle);
   }
 
   .app-sidebar--open {

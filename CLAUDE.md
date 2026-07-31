@@ -20,23 +20,43 @@ Figma Variables → Token Studio → `design-tokens/` JSON exports. Before expor
 | Layer | Source JSON | Build script | Outputs |
 |---|---|---|---|
 | Brand | `Brand/Value.json` | `build-brand-colors.mjs` | `brand.ts`, `:root` color + scale vars in `globals.css` |
-| Alias | `Alias/Alias.json` | `build-alias.mjs` | `alias.ts`, `/* === Alias === */` block in `globals.css` |
+| Alias | `Alias/Alias.json` | `build-alias-colors.mjs` | `alias.ts`, `/* === Alias === */` block in `globals.css` |
 | Mapped | `Mapped/Light.json` + `Dark.json` | `build-mapped.mjs` | `mapped.ts`, light/dark blocks in `globals.css` |
 | Responsive | `Responsive/Desktop.json` + `Mobile.json` | `build-responsive.mjs` | `responsive.ts`, spacing + font vars (+ `@media 768px`) in `globals.css` |
 | Typography | `Brand/Value.json` (composites) | `build-typography.mjs` | `typography.ts`, `typography.css` (22 `.type-*` classes) |
+| Gradients | `Brand/Value.json` (`Gradient_*`) | `build-gradients.mjs` | `gradients.ts`, `/* === Gradients === */` block in `globals.css` |
+| Shadows | `Brand/Value.json` (`Dropshadow_*`) | `build-shadows.mjs` | `shadows.ts`, `/* === Shadows === */` block in `globals.css` |
 
 ### Running the scripts
-Run in order (each layer reads what the previous wrote to `globals.css`):
+Run **all seven, in this exact order** (each layer reads what the previous wrote
+to `globals.css`):
 ```
 node scripts/build-brand-colors.mjs
-node scripts/build-alias.mjs
+node scripts/build-alias-colors.mjs
 node scripts/build-mapped.mjs
 node scripts/build-responsive.mjs
 node scripts/build-typography.mjs
+node scripts/build-gradients.mjs
+node scripts/build-shadows.mjs
 ```
 
+**Do not skip the last two.** This list previously stopped at typography, and
+following it verbatim regenerated a `globals.css` with no `--shadow-*` or
+`--gradient-*` declarations at all — while 10+ component CSS files
+(all four `Card` variants, both `Navigation` components, `Tab`) kept consuming
+`var(--shadow-*)`. Those silently resolved to nothing, so every card and nav
+rendered with no shadow and no build error. Regression introduced at `142df40`,
+found and repaired 2026-07-31.
+
+**`build-shadows.mjs` must run last.** Six of the seven scripts rewrite
+`src/tokens/index.ts` from their own hardcoded export list, so whichever runs
+last decides the final barrel. Only `build-shadows.mjs` writes the complete set
+(brand, alias, mapped, responsive, typography, gradients, shadows) —
+`build-gradients.mjs`, for instance, omits the `shadows` exports, so running it
+after shadows silently breaks `import { shadows }`.
+
 ### Generated outputs (never hand-edit)
-- `src/tokens/brand.ts` · `alias.ts` · `mapped.ts` · `responsive.ts` · `typography.ts` · `index.ts`
+- `src/tokens/brand.ts` · `alias.ts` · `mapped.ts` · `responsive.ts` · `typography.ts` · `gradients.ts` · `shadows.ts` · `index.ts`
 - `src/styles/globals.css` — all CSS custom properties (brand → alias → mapped → spacing → responsive font)
 - `src/styles/typography.css` — `--font-family-primary` + 22 `.type-*` classes
 
