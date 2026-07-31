@@ -38,8 +38,15 @@ html, body {
   flex-shrink: 0;
 }
 
-.app-topnav__left .logo {
-  height: 24px; /* scoped override — smaller than any Logo size token for this nav slot */
+/* Scoped override — smaller than any Logo size token for this nav slot, so the
+   mark sits at roughly the hamburger button's footprint (38x38 incl. padding);
+   24px height renders ~41x24 at the mark's 24:14 aspect ratio.
+   NOTE: this selector was `.logo` until now, which matched NOTHING — Logo's
+   root class became `.mn-logo` in the Phase 1.3 prefixing and this scoped
+   override was never updated, so the logo silently rendered at its natural
+   `size="s"` height (32px) instead. */
+.app-topnav__left .mn-logo {
+  height: 24px;
 }
 
 .app-topnav__menu-btn {
@@ -121,6 +128,15 @@ html, body {
   flex-shrink: 0;
   padding-right: 1rem;
   margin-bottom: 1rem;
+}
+
+/* Field carries a fixed `width: 240px` default (its standalone demo width),
+   which overflows this container's 228px content box and ate the intended
+   right padding down to 4px while the left stayed at 16px. Stretching it to
+   fill restores symmetry. Same scoped-override pattern SideNavigation already
+   uses for its own search Field. */
+.app-sidebar__search .mn-field {
+  width: 100%;
 }
 
 /* Only the component list scrolls. A themed thin scrollbar (both the

@@ -1282,7 +1282,7 @@ export default function App() {
           <Section
             title="Brand Primitives"
             description={`Brand/Value.json — ${brandScales.length} color scales + foundations`}
-            background="page-secondary"
+           
           >
             {brandScales.map(([name, steps]) => (
               <BrandScaleRow key={name} name={name} steps={steps} />
@@ -1296,7 +1296,7 @@ export default function App() {
           <Section
             title="Alias / Semantic"
             description={`Alias/Alias.json — ${aliasGroups.length} groups — alias → brand token`}
-            background="page-secondary"
+           
             noTopPadding
           >
             {aliasGroups.map(([name, steps]) => (
@@ -1309,7 +1309,7 @@ export default function App() {
           {/* Mapped / Semantic surfaces — intro passed as children, not via the
               `description` prop: two paragraphs with different styles, the first
               on a non-canonical 0.5rem margin. See SectionProps.description. */}
-          <Section title="Mapped / Semantic surfaces" background="page">
+          <Section title="Mapped / Semantic surfaces">
             <p style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginBottom: '0.5rem' }}>
               Mapped/Light.json + Dark.json — {MAPPED_TOTAL} tokens — toggle above to flip modes
             </p>
@@ -1327,7 +1327,7 @@ export default function App() {
           <Section
             title="Spacing scale"
             description={`--spacing-* → var(--brand-scale-*) in px \u00a0·\u00a0 ${Object.keys(spacing).length} tokens`}
-            background="page-secondary"
+           
           >
             <SpacingSection />
           </Section>
@@ -1338,7 +1338,7 @@ export default function App() {
           <Section
             title="Responsive type"
             description="Base values: mobile. Resize past 768px to see headings change (H1–H4 + body-sm grow)."
-            background="page-secondary"
+           
           >
             <ResponsiveTypeSection />
           </Section>
@@ -1349,7 +1349,7 @@ export default function App() {
           <Section
             title="Typography"
             description="22 composite styles — Poppins 400 / 500 / 600 — headings responsive at 768 px"
-            background="page"
+           
           >
             <TypographySection />
           </Section>
@@ -1360,7 +1360,7 @@ export default function App() {
           <Section
             title="Gradients"
             description={`Brand/Value.json → Gradient — ${Object.keys(gradients).length} tokens — shown over light + dark backgrounds`}
-            background="page-secondary"
+           
           >
             {(Object.entries(gradients) as [string, { var: string; value: string; description: string }][]).map(
               ([name, token]) => <GradientCard key={name} name={name} token={token} />
@@ -1373,7 +1373,7 @@ export default function App() {
           <Section
             title="Shadows / Effects"
             description={`Brand/Value.json → Dropshadow_* — ${Object.keys(shadows).length} tokens — shown over light + dark surfaces`}
-            background="subtle"
+           
           >
             {(Object.entries(shadows) as [string, ShadowToken][]).map(
               ([name, token]) => <ShadowCard key={name} name={name} token={token} />
@@ -1528,7 +1528,7 @@ export default function App() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Default appearance — forced states</div>
-                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '0.5rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                   <Link label="Default" />
                   <Link label="Hover" previewState="hover" />
                   <Link label="Pressed" previewState="pressed" />
@@ -1540,7 +1540,7 @@ export default function App() {
               </div>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Subtle appearance</div>
-                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '0.5rem', background: 'var(--mapped-surface-default-default)', borderRadius: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                   <Link label="Default" appearance="subtle" />
                   <Link label="Hover" appearance="subtle" previewState="hover" />
                   <Link label="Pressed" appearance="subtle" previewState="pressed" />
