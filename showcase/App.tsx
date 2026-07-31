@@ -1019,6 +1019,11 @@ const HR: React.CSSProperties = { border: 'none', borderTop: '2px solid rgba(128
 // Sidebar nav metadata — slugs must match the `id="section-<slug>"` on each
 // section wrapper below. Grouping/order approved 2026-07-24 (showcase redesign).
 type SidebarSection = { slug: string; label: string }
+// Tab/Tabs and Toast/ToastMobile are deliberately combined into a single entry
+// each, rather than listed as separate rows. This matches the existing family
+// convention already used for Card (×7), Header (×2), Item (×3) and
+// Navigation (×2) — one sidebar entry per Figma component set, not per exported
+// symbol. 45 component folders therefore map to 43 sidebar entries by design.
 const SIDEBAR_CATEGORIES: { name: string; items: SidebarSection[] }[] = [
   { name: 'Actions', items: [
     { slug: 'button', label: 'Button' },
@@ -1099,11 +1104,43 @@ export default function App() {
   const [sidebarSearch, setSidebarSearch] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeSlug, setActiveSlug] = useState<string | null>(null)
+  const [navH, setNavH] = useState(48)
 
   const scrollToSection = (slug: string) => {
     document.getElementById(`section-${slug}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     setSidebarOpen(false)
   }
+
+  // Measure the real top-nav height and publish it as --app-topnav-h.
+  // The nav is not a fixed height — it grows below the sidebar breakpoint when
+  // the hamburger appears (48px → 54px) — so anything positioned beneath it
+  // (sidebar sticky offset, scrollspy trigger band) has to follow the measured
+  // value rather than a hardcoded guess.
+  useEffect(() => {
+    const nav = document.querySelector('.app-topnav')
+    if (!nav) return
+    const apply = () => {
+      const h = Math.round(nav.getBoundingClientRect().height)
+      if (h > 0) {
+        setNavH(h)
+        document.documentElement.style.setProperty('--app-topnav-h', `${h}px`)
+      }
+    }
+    apply()
+    const ro = new ResizeObserver(apply)
+    ro.observe(nav)
+    return () => ro.disconnect()
+  }, [tab])
+
+  // Lock page scroll while the off-canvas drawer is open, so the content
+  // behind the scrim doesn't scroll with it. Restores the previous value on
+  // close rather than assuming '' , in case anything else set it.
+  useEffect(() => {
+    if (!sidebarOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [sidebarOpen])
 
   // Scrollspy — highlight whichever section is currently under the "trigger
   // zone" (just below the sticky top nav). rootMargin shrinks the observed
@@ -1126,11 +1163,13 @@ export default function App() {
         const match = els.find(s => s.el === top.target)
         if (match) setActiveSlug(match.slug)
       },
-      { rootMargin: '-49px 0px -70% 0px', threshold: 0 }
+      // Same measured nav height as the sidebar offset — this used to repeat
+      // the stale 49px literal independently.
+      { rootMargin: `-${navH}px 0px -70% 0px`, threshold: 0 }
     )
     els.forEach(s => observer.observe(s.el))
     return () => observer.disconnect()
-  }, [tab])
+  }, [tab, navH])
 
   const query = sidebarSearch.trim().toLowerCase()
   const filteredCategories = SIDEBAR_CATEGORIES
@@ -1139,7 +1178,10 @@ export default function App() {
   const hasResults = filteredCategories.length > 0
 
   return (
-    <div style={{ fontFamily: 'system-ui, sans-serif', minHeight: '100vh' }}>
+    // font-family intentionally not set here — it now cascades from body via
+    // --font-family-primary (AppShell.css), so the showcase renders in the
+    // design system's own typeface instead of hardcoded system-ui.
+    <div style={{ minHeight: '100vh' }}>
 
       {/* Top nav — logo left, Foundations/Components tabs center, theme toggle right */}
       <div className="app-topnav" style={{ position: 'sticky', top: 0, zIndex: 100, background: 'var(--mapped-surface-page, #fff)' }}>
@@ -1178,6 +1220,15 @@ export default function App() {
       </div>
 
       <div className="app-body">
+        {/* Drawer scrim — reuses the real Blanket component rather than a
+            bespoke overlay. Only rendered while the off-canvas drawer is open;
+            CSS hides it above the sidebar breakpoint, where the sidebar is
+            inline and needs no scrim. */}
+        {tab === 'components' && sidebarOpen && (
+          <div className="app-sidebar-scrim">
+            <Blanket onClick={() => setSidebarOpen(false)} />
+          </div>
+        )}
         {tab === 'components' && (
           <aside className={`app-sidebar${sidebarOpen ? ' app-sidebar--open' : ''}`}>
             <div className="app-sidebar__search">
