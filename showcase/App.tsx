@@ -1174,7 +1174,11 @@ export default function App() {
 
   const query = sidebarSearch.trim().toLowerCase()
   const filteredCategories = SIDEBAR_CATEGORIES
-    .map(cat => ({ ...cat, items: cat.items.filter(i => i.label.toLowerCase().includes(query)) }))
+    // Match the slug as well as the label: the slug is how a component is named
+    // on disk, in docs, and in the section anchor, so "status-bar" is a natural
+    // thing to type — it previously returned nothing because only "Status Bar"
+    // (the label) was searched.
+    .map(cat => ({ ...cat, items: cat.items.filter(i => i.label.toLowerCase().includes(query) || i.slug.toLowerCase().includes(query)) }))
     .filter(cat => cat.items.length > 0)
   const hasResults = filteredCategories.length > 0
 
@@ -1251,6 +1255,10 @@ export default function App() {
                         key={item.slug}
                         type="button"
                         className={`app-sidebar__item${activeSlug === item.slug ? ' app-sidebar__item--active' : ''}`}
+                        // "location", not "page": these are sections within one
+                        // page, not a set of pages. Undefined (not false) on
+                        // inactive items so the attribute is absent entirely.
+                        aria-current={activeSlug === item.slug ? 'location' : undefined}
                         onClick={() => scrollToSection(item.slug)}
                       >
                         {item.label}

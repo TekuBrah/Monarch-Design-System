@@ -75,6 +75,14 @@ html, body {
   max-width: 1100px;
   margin-left: auto;
   margin-right: auto;
+  /* Jump-to offset. scrollIntoView({block:'start'}) aligns a section to the
+     viewport top, where the sticky nav sits — without this the section's <h1>
+     lands *behind* the nav (measured: 48px occluded at 1280px, 54px at 900px).
+     Applied on this shared selector rather than inside Section.tsx so the 8
+     Foundations sections — which are direct children of .app-main but do not
+     use <Section> yet — get the same behaviour instead of an inconsistent gap.
+     Inert on <hr>, which is never a scroll target. */
+  scroll-margin-top: var(--app-topnav-h, 48px);
 }
 
 /* ── Sidebar ──────────────────────────────────────────────────────────── */
