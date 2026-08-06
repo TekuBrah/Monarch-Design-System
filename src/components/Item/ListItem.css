@@ -81,7 +81,13 @@ button.mn-list-item:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 0;
+  /* Floor, not `min-width: 0`. A size-agnostic chart in this slot has no
+     intrinsic width, so with `min-width: 0` a narrow row would squeeze it to
+     nothing and the chart would vanish with no error. Figma's sparkline is
+     80x40, i.e. 2:1 — the aspect ratio keeps the slot proportionate at
+     whatever width survives. */
+  min-width: var(--brand-scale-1400); /* 72px */
+  aspect-ratio: 2;
 }
 
 .mn-list-item__trailing {

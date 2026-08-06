@@ -3198,6 +3198,7 @@ are placeholder content per instance, not fixed requirements.
 |---|---|---|
 | `variant` | `'legend' \| 'contribution'` | Default `'legend'` |
 | `icon` | `ReactNode` | Default `<Icon name="question_mark" size="m" />` |
+| `iconColor` | `IconObjectColor` | Default `'gray'`. **Added Phase 5.4** — the badge was hardcoded `color="gray"`, which is why this component could never actually be a chart legend despite its name: it had no way to show which series a row belonged to. Non-breaking |
 | `hasIcon` | `boolean` | `contribution` only — `legend` always shows the icon |
 | `title` | `string` | Required |
 | `subtitle` | `string` | |
@@ -3209,7 +3210,7 @@ are placeholder content per instance, not fixed requirements.
 
 | Element / variant | Token |
 |---|---|
-| Icon badge | Reused `IconObject` (`color="gray" size="xl"`) |
+| Icon badge | Reused `IconObject` (`color={iconColor}` — default `"gray"`, `size="xl"`) |
 | Title, `legend` | `--mapped-text-default-default`, `.type-body-m-semibold` |
 | Title, `contribution` | `--mapped-text-subtle-default`, `.type-body-m-medium` |
 | Subtitle | `--mapped-text-subtle-default`, `.type-body-sm` |
@@ -3372,7 +3373,7 @@ uses `ProgressBar`; `CardBalance` uses `IconObject`.
 - **`icon_Spend` substitution**: Figma's `card/monthly budget` "Spent" row uses an icon (`icon_Spend`) not present in our registry and with no obvious Material equivalent. Substituted `icon_track_spending` per approval.
 - **Asymmetric card padding** (`CardMonthlyBudget`, `default` state): `16px` top/sides, `20px` bottom. Confirmed real (not a copy-paste error) from Figma's own generated code.
 - **`card/action`'s icon badge doesn't match any `IconObject` color**: Figma models it as bespoke inline markup (`--mapped-icon-primary-default` bg), not an `IconObject` instance — built inline rather than force-fitting the existing component's swatch palette.
-- **`CardFeaturesAndEducation`'s `outline` variant is 120px tall**, taller than the ~108-120px fill variants (which size to content). Both are real, independently-specified Figma heights.
+- **`CardFeaturesAndEducation`'s `outline` variant is 120px tall**, taller than the ~108-120px fill variants (which size to content). Both are real, independently-specified Figma heights. <!-- charts-anchor -->
 - **`CardFeaturesAndEducation` moved `-400` → `-500` (Phase 5.4).** Synced to Figma, which now binds `Blue/500` `#046eff`, `Orange/500` `#ff8a47`, `Green/500` `#38b860`, `Purple/500` `#5e4db2` — read per-variant from `324:335` / `324:344` / `324:351` / `324:358`. The `outline` variant (`324:372`) carries no brand colour and is unchanged. Backgrounds only; the icon and title tokens did not change.
 - **Icon slot corrected to the icon tier.** Was `--mapped-text-primary-on-color`, now `--mapped-icon-primary-on-color`, matching Figma's `icon/primary/on-color` binding. Both resolve `#ffffff` in both themes — verified before and after, computed value unchanged. A tier correction, not a visual one.
 
@@ -3431,6 +3432,204 @@ Before Phase 5.4 they did match, and the previous wording of this entry said so.
 Anyone reading either entry alone would reasonably assume they still do. **They do
 not.** Verified after the change: card blue `rgb(4,110,255)`, `IconObject` blue
 `rgb(54,139,255)`, in both themes.
+
+---
+
+## Charts — Donut Chart · Line Chart
+
+**Figma source: NONE for either. See the callout.**
+
+> ### ⚠️ DESIGNED ADDITIONS, not faithful builds
+>
+> **Every Figma source for these three shapes is FLATTENED OUTPUT.** The
+> rendering below is authored, not transcribed.
+>
+> | Gap | Node | What Figma actually contains |
+> |---|---|---|
+> | **G1** budget pie | `0:379` in `1266:14337` | 1 `ellipse` + 6 `boolean-operation` subtracts + a `vector` hole. In the code export **every segment is an `<img>`** — no fills recoverable |
+> | **G1** Assistant03 donut | `0:206`, 100×100 | 7 segments, visually confirmed. No inner radius recoverable |
+> | **G3** trend chart | `Frame 296` (`0:242`) | `Vector 1` (area) + `Vector 2` (line), **both flattened `<img>`**; gridlines and marker are divs |
+> | **C1** sparkline | `153:1943` | ONE `<vector>` named "Rectangle 5", 80×38, **shared byte-identically by all three crypto rows** |
+>
+> **What WAS sourced:** the donut's inner radius (`129.695` hole on a 200 outer
+> → `0.648`), the per-category hue assignment (read from the *legend* rows, not
+> the chart), the extent behaviour, and the chrome colours. **Everything else —
+> curve, point count, series values, segment order, stroke width — is authored.**
+
+### Why two components and not one or three
+
+A donut and a line chart share no math, no data shape and no accessibility
+model; merging them would be a god-component. G3 and C1 *do* share all three —
+a sparkline is the trend chart with chrome switched off — so they are one
+component, not two copies of one implementation.
+
+They share **internal** helpers only. No shared public API and no shared data
+shape, deliberately.
+
+### DonutChart
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `segments` | `DonutSegment[]` | — | `{ id, label, value, color }` |
+| `innerRadius` | `number` | `0.648` | Fraction of outer radius. `0` renders a pie |
+| `centreLabel` / `centreCaption` | `string` | — | |
+| `summary` | `string` | — | **Omitted → the chart is `aria-hidden`** |
+
+**`value` is the RAW amount, never a percentage.** Shares are derived from
+`sum(values)` inside the component — Figma's own budget percentages sum to
+100.01%, and a component that accepted percentages would reproduce that.
+
+**No default palette.** Every segment states its own hue, typed `ChartHue =
+Exclude<IconObjectColor, 'ai'>`. Shipping a default sequence would mean
+inventing a categorical scale the design system does not have. `'ai'` is
+excluded by type rather than by documentation, so passing it is a compile error
+instead of a segment that renders unpainted.
+
+### LineChart
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `points` | `number[]` | — | Ordered values |
+| `color` | `ChartHue \| 'onColor'` | `'blue'` | Line `-400`, area `-100` |
+| `domain` | `number` | `points.length` | Total x slots — see extent below |
+| `xLabels` | `string[]` | — | With `showAxis` |
+| `marker` | `{ index, label? }` | — | |
+| `showArea` / `showGridlines` / `showAxis` | `boolean` | `true` / `false` / `false` | **All chrome off = the sparkline** |
+| `chromeTone` | `'default' \| 'onColor'` | `'default'` | See below |
+| `summary` | `string` | — | Omitted → `aria-hidden` |
+
+**`chromeTone` is an API decision, not a Figma variant.** The only source that
+exists draws this chart on a coloured card, but the component also serves a
+sparkline in a list row on the page surface. Hardcoding either host assumption
+into a primitive is the thing to avoid, so the host declares it.
+
+| | `default` | `onColor` |
+|---|---|---|
+| Axis labels | `--mapped-text-subtle-default` | `--mapped-text-on-color-caption` |
+| Gridlines / marker rule | `--mapped-border-subtle-default` | `--mapped-border-on-color` |
+| Callout | `--mapped-text-default-default` | `--mapped-text-on-color-heading` |
+| Marker fill | `--mapped-surface-page` | `--mapped-text-on-color-heading` |
+
+### Data vs chrome — two colour systems, deliberately
+
+**Series colours are brand primitives and are byte-identical in both themes.**
+Verified, not assumed: all twelve segment fills, line strokes and area fills
+measured identical across light and dark. A category's identity must not change
+with the theme, or the chart and its legend would disagree about which colour
+means "Groceries".
+
+**Chrome is interface and uses the mapped tier**, so it dark-flips.
+
+**The area fill is the same hue at `-100`, not the line colour at reduced
+opacity.** That is the whole point: opacity has no backing token, so the
+conventional translucent-area recipe would have needed a `color-mix` approval. A
+real step on the same ramp reaches the same place with a token that exists.
+
+### Extent — the data may stop before the axis does
+
+`domain` defaults to `points.length` ("data fills the width"). Flow 7 needs
+otherwise, and the source is unambiguous:
+
+| Node | Position |
+|---|---|
+| Gridlines | `left-0 … w-[343px]` — **full width** |
+| Area + line | `left-0 w-[176px]` |
+| Marker | centre **x=176** · vertical rule `left-[177px]` · callout `left-[182px]` |
+| Axis labels | `01` at 16 · **`15` at 170** (centre 176) · `31` at 314 |
+
+The data ends exactly at the `15` tick while the axis spans the month — month-to-
+date, deliberate. A truncated export would not place the marker and callout at
+the cut.
+
+> **CORRECTION to the flow inventory (F7 A10).** The inventory flagged `Line 7` /
+> `Line 8` as suspicious at *"x=343 with width 343"*. Design context shows
+> `left-0 w-[343px]` — **correct full-width gridlines**. That was a
+> metadata-reading artifact, not a defect. **Flow 7 must not inherit it as a
+> known problem.**
+
+### Sizing
+
+Both are **size-agnostic**: the SVG fills its parent and the parent owns the box.
+Every size the sources use (201×200, 100×100, 343×157, 80×40) is off the
+`--brand-scale` ramp, so a `size` prop would need tokens the library does not
+have. This deliberately differs from `ProgressRing`, which hardcodes per-size px.
+
+`LineChart` renders **only the series as SVG; all chrome is positioned HTML**.
+The plot stretches with `preserveAspectRatio="none"`, which would distort a
+stroked gridline or a circular marker. Verified at 600×200, 100×200 and 343×157:
+`vector-effect: non-scaling-stroke` holds and the marker stays exactly square
+(13.2 × 13.2 at every box). This also mirrors the source, where Figma's own
+gridlines and marker are divs.
+
+### Accessibility
+
+Both default to **`aria-hidden`** and become `role="img"` only when given a
+`summary`.
+
+- **Donut:** the paired `ChartLegendItem` rows already state every label, share
+  and amount as real text. The legend is the accessible artifact; a composed
+  seven-segment label would announce the same data again, worse.
+- **Sparkline in `ListItem`:** passes no summary on purpose — the row already
+  announces the move via `TrendIndicator`. Labelling it would state the same
+  fact twice, the same redundancy stripped out of `TrendIndicator`'s own
+  announcement.
+
+### `ListItem`'s `miniChart` slot
+
+Fits with no API change. `.mn-list-item__chart` gained a floor —
+`min-width: var(--brand-scale-1400)` (72px) + `aspect-ratio: 2` — because a
+size-agnostic chart has no intrinsic width and the previous `min-width: 0` would
+have squeezed it to nothing with no error. Verified at host widths 320 / 240 /
+180: the slot clamps to 72×36 and never reaches zero.
+
+### Known issues / decisions
+
+- **`polar()` is duplicated between `ProgressRing` and `DonutChart`,
+  deliberately.** `ProgressRing` is a 270° single-value gauge that strokes a
+  masked path; `DonutChart` fills multi-segment wedges. Extracting twelve shared
+  lines would mean editing a shipped component that `CardMonthlyBudget` consumes
+  for no behavioural gain. **If you change the angle convention in one, check
+  the other.**
+- **⚠️ Adjacent segments are not reliably distinguishable.** Measured across
+  Figma's own seven-category budget sequence, identical in both themes:
+
+  | Adjacent pair | Contrast | RGB distance |
+  |---|---|---|
+  | red \| purple | 1.46 | 136 |
+  | purple \| blue | 1.25 | 99 |
+  | blue \| cyan | 1.64 | 95 |
+  | cyan \| lime | 1.35 | 172 |
+  | **lime \| yellow** | **1.07** | **66** |
+  | yellow \| orange | 1.41 | 78 |
+  | orange \| red (wrap) | 1.44 | 50 |
+
+  **Every pair is below 3:1**, and `lime | yellow` at 1.07 is essentially
+  indistinguishable by luminance. This is not a component defect — the component
+  paints what it is given — but it confirms that `IconObject`'s twelve hues are
+  an **icon-badge palette, not an adjacent-distinguishable categorical scale**.
+  A real chart palette would be a token decision. Recorded, not fixed.
+- **⚠️ The `onColor` series has NO area fill (E-4).** Tinting white needs an
+  opacity and no mapped alpha token can do it: the mapped alpha surfaces resolve
+  fully transparent in both themes, and the only other alpha family is alias
+  tier, unusable in a component. The `-100` ramp step that solves this for the
+  twelve hues has no white equivalent. **Flow 7's card has an area fill, so this
+  is a real shortfall against the design.**
+- **⚠️ `onColor` chrome is broken in dark mode (E-3).**
+  `--mapped-text-on-color-caption` resolves `rgb(231,234,237)` in light —
+  correct — and **`rgb(13,15,17)` in dark**, i.e. near-black on a card that does
+  not itself flip. Measured live. The component uses the semantically correct
+  token and does **not** work around the defect. See `CLAUDE.md`'s corrected
+  on-color audit entry.
+- **Opacity substitution, measured.** Figma composites `blue-50` at 70% over the
+  card blue → `rgb(162, 202, 255)`. The token used instead resolves
+  `rgb(231, 234, 237)` in light — an **RGB distance of 78**, visibly less blue.
+  Contrast against the card: Figma's recipe **2.66**, the token **3.72**. So the
+  token is *more legible* but *less tinted*. Recorded as a knowing divergence.
+- **A green test suite does not prove a consumable package.** `ChartHue` was
+  added to `DonutChart.tsx` but not to its `index.ts`; vitest resolves the module
+  directly and passed all 421 tests, while `tsc -b` — which follows the barrel —
+  failed the build. **`npm run build` is the gate that catches barrel omissions;
+  the suite structurally cannot.**
 
 ---
 

@@ -26,6 +26,7 @@
 @import '../components/Chips/Chips.css';
 @import '../components/DatePicker/DatePicker.css';
 @import '../components/Divider/Divider.css';
+@import '../components/DonutChart/DonutChart.css';
 @import '../components/Field/Field.css';
 @import '../components/FilterChip/FilterChip.css';
 @import '../components/Header/HeaderBg.css';
@@ -36,6 +37,7 @@
 @import '../components/Item/ListItem.css';
 @import '../components/Item/SummaryItem.css';
 @import '../components/Label/Label.css';
+@import '../components/LineChart/LineChart.css';
 @import '../components/Link/Link.css';
 @import '../components/Loader/Loader.css';
 @import '../components/Logo/Logo.css';

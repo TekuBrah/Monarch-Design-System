@@ -1,5 +1,6 @@
 import React from 'react'
 import { IconObject } from '../IconObject'
+import type { IconObjectColor } from '../IconObject'
 import { Icon } from '../Icon'
 import './ChartLegendItem.css'
 
@@ -10,6 +11,21 @@ export interface ChartLegendItemProps {
    *  `contribution` = "Recent contributions item" (medium weight, subtle title color). */
   variant?: ChartLegendItemVariant
   icon?: React.ReactNode
+  /**
+   * Colour of the leading `IconObject` badge — the SERIES colour when this row
+   * is used as a chart legend.
+   *
+   * Added Phase 5.4. Before this, the badge was hardcoded `color="gray"`, which
+   * is why the component could never actually be a chart legend despite its
+   * name: it had no way to show which series a row belonged to. Figma pairs
+   * these rows with the budget donut and assigns one hue per category
+   * (`red`/`purple`/`blue`/`cyan`/`lime`/`yellow`/`orange`), so the swatch has
+   * to be expressible.
+   *
+   * Defaults to `'gray'` — the previous hardcoded value — so every existing
+   * call site is unchanged.
+   */
+  iconColor?: IconObjectColor
   /** `contribution` only — toggles the leading icon. `legend` always shows it. */
   hasIcon?: boolean
   title: string
@@ -25,6 +41,7 @@ export interface ChartLegendItemProps {
 export function ChartLegendItem({
   variant = 'legend',
   icon = <Icon name="question_mark" size="m" />,
+  iconColor = 'gray',
   hasIcon = true,
   title,
   subtitle,
@@ -41,7 +58,7 @@ export function ChartLegendItem({
     <>
       <div className="mn-chart-legend-item__leading-group">
         {showIcon && (
-          <IconObject color="gray" size="xl">
+          <IconObject color={iconColor} size="xl">
             {icon}
           </IconObject>
         )}

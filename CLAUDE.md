@@ -110,9 +110,9 @@ src/
        also refactored to collapse the old `inverse` appearance into
        `[data-theme="dark"]` (no more `appearance` prop) — see
        `docs/component-tokens.md`'s Button entry.
-    2. A full dark-mode audit (read-only phase, then applied by explicit
+    2. A dark-mode audit (read-only phase, then applied by explicit
        cluster-by-cluster approval) found the same black-binding pattern
-       across the **entire** `on-color` family plus two more clusters: the
+       across **most of** the `on-color` family plus two more clusters: the
        neutral surface ramp (`subtlest`/`subtle`/`default`) resolving to
        *light* grays on a black page instead of dark ones, and
        `primary.default-subtle` hover/pressed/selected collapsing to
@@ -126,6 +126,26 @@ src/
   - Zero component-code changes were required for this repair — it was
     entirely a `Mapped/Dark.json` → regenerate fix, per the pipeline's
     light/dark block separation (see `build-mapped.mjs`).
+  - **⚠️ CORRECTION (2026-08-07): that audit was PARTIAL, not complete.**
+    This entry previously claimed the pattern was fixed across "the
+    **entire** `on-color` family". It was not. **Three members still
+    flip**, found while building `LineChart`'s `onColor` chrome:
+
+    | Token | light | dark |
+    |---|---|---|
+    | `--mapped-text-on-color-caption` | `neutral-100` `#e7eaed` | `neutral-950` `#0d0f11` |
+    | `--mapped-text-on-color-label` | `neutral-100` `#e7eaed` | `neutral-950` `#0d0f11` |
+    | `--mapped-text-on-color-placeholder` | `neutral-100` `#e7eaed` | `neutral-950` `#0d0f11` |
+
+    `--mapped-text-on-color-heading`, `--mapped-text-on-color-body` and
+    `--mapped-border-on-color` are correct (white in both).
+
+    These describe content on a *fixed* coloured surface that does not
+    flip with the theme, so a near-black dark binding is the same
+    semantic error the audit set out to fix. **Not fixed here** — logged
+    as **E-3** for the token-layer pass. The point of this correction is
+    that the file previously asserted they were fine, which is why nobody
+    looked again.
 
 ## Next
 Build the first component (e.g. Button) on top of the token foundation:

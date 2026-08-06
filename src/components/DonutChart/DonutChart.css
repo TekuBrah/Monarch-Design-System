@@ -1,0 +1,74 @@
+/* Size-agnostic: the SVG fills its parent and the parent owns the box. Every
+   size Figma uses (201x200 budget, 100x100 Assistant03) is off the
+   --brand-scale ramp, so a size prop would need tokens that do not exist. */
+.mn-donut {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.mn-donut__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* === DATA colours ==========================================================
+   Series colours are brand primitives and are byte-identical in both themes BY
+   DESIGN — a category's identity must not change when the theme does, or the
+   chart and its legend would disagree on which colour means "Groceries".
+
+   One declaration per hue drives both paint modes: paths take `fill:
+   currentColor`, and the single-segment ring takes `stroke="currentColor"`.
+
+   Class-per-hue rather than an interpolated var() name, matching IconObject —
+   audits grep component CSS for token violations, so every colour a component
+   can paint has to be visible in this file. */
+.mn-donut__segment {
+  fill: currentColor;
+}
+
+.mn-donut__segment--slate  { color: var(--brand-slate-400);  }
+.mn-donut__segment--blue   { color: var(--brand-blue-400);   }
+.mn-donut__segment--gray   { color: var(--brand-gray-400);   }
+.mn-donut__segment--red    { color: var(--brand-red-400);    }
+.mn-donut__segment--orange { color: var(--brand-orange-400); }
+.mn-donut__segment--green  { color: var(--brand-green-400);  }
+.mn-donut__segment--teal   { color: var(--brand-teal-400);   }
+.mn-donut__segment--purple { color: var(--brand-purple-400); }
+.mn-donut__segment--cyan   { color: var(--brand-cyan-400);   }
+.mn-donut__segment--yellow { color: var(--brand-yellow-400); }
+.mn-donut__segment--lime   { color: var(--brand-lime-400);   }
+.mn-donut__segment--violet { color: var(--brand-violet-400); }
+
+/* `ai` is a gradient in IconObject and has no flat equivalent; a segment
+   painted with it would need an SVG <linearGradient> per instance. Excluded
+   deliberately — it is not a categorical hue. */
+
+/* === CHROME ================================================================
+   The centre label is INTERFACE, not data, so unlike the segments above it
+   uses the mapped tier and dark-flips with the theme. */
+.mn-donut__centre {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--brand-scale-50);
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.mn-donut__centre-label {
+  color: var(--mapped-text-default-default);
+  white-space: nowrap;
+}
+
+.mn-donut__centre-caption {
+  color: var(--mapped-text-subtle-default);
+  white-space: nowrap;
+}

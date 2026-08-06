@@ -58,6 +58,8 @@ import { HeaderBg, HeaderDefault } from '@monarch/design-system'
 import { StatusBar } from '@monarch/design-system'
 import { ListItem, SummaryItem, ChartLegendItem } from '@monarch/design-system'
 import { TrendIndicator } from '@monarch/design-system'
+import { DonutChart, LineChart } from '@monarch/design-system'
+import type { DonutSegment } from '@monarch/design-system'
 import {
   CardSmartInsights,
   CardAction,
@@ -1018,6 +1020,31 @@ function RangeSliderDemo() {
 
 const HR: React.CSSProperties = { border: 'none', borderTop: '2px solid rgba(128,128,128,0.2)', margin: '2rem auto 2.5rem', maxWidth: '1200px' }
 
+// Chart demo data. The budget segments carry Figma's own category→hue
+// assignment, read from the legend rows beneath the budget pie (`0:379`):
+// Bills red · Groceries purple · Dining blue · Healthcare cyan · Transport lime
+// · Shopping yellow · Others orange. Values sum to RM 7,500 and the component
+// derives the shares — Figma's own printed percentages sum to 100.01%.
+const BUDGET_SEGMENTS: DonutSegment[] = [
+  { id: 'bills', label: 'Bills & Utilities', value: 2500, color: 'red' },
+  { id: 'groceries', label: 'Groceries', value: 1800, color: 'purple' },
+  { id: 'dining', label: 'Dining & Leisure', value: 1200, color: 'blue' },
+  { id: 'healthcare', label: 'Healthcare', value: 800, color: 'cyan' },
+  { id: 'transport', label: 'Transport', value: 500, color: 'lime' },
+  { id: 'shopping', label: 'Shopping', value: 350, color: 'yellow' },
+  { id: 'others', label: 'Others / Misc', value: 350, color: 'orange' },
+]
+
+// 15 points on a 31-slot domain — Flow 7's month-to-date shape, where the data
+// deliberately stops at the 15th while the axis spans the month. Values are
+// demo data: the Figma source is two flattened vectors with no series in them.
+const NETWORTH_SERIES = [
+  442190, 442800, 441950, 443600, 444100, 443200, 445300,
+  446100, 445700, 447200, 448050, 447600, 449100, 450200, 450958,
+]
+
+const SPARK_SERIES = [12, 15, 13, 18, 17, 22, 20, 26, 31]
+
 // Sidebar nav metadata — slugs must match the `id="section-<slug>"` on each
 // section wrapper below. Grouping/order approved 2026-07-24 (showcase redesign).
 type SidebarSection = { slug: string; label: string }
@@ -1025,7 +1052,7 @@ type SidebarSection = { slug: string; label: string }
 // each, rather than listed as separate rows. This matches the existing family
 // convention already used for Card (×7), Header (×2), Item (×3) and
 // Navigation (×2) — one sidebar entry per Figma component set, not per exported
-// symbol. 46 component folders therefore map to 44 sidebar entries by design.
+// symbol. 48 component folders therefore map to 46 sidebar entries by design.
 const SIDEBAR_CATEGORIES: { name: string; items: SidebarSection[] }[] = [
   { name: 'Actions', items: [
     { slug: 'button', label: 'Button' },
@@ -1074,6 +1101,8 @@ const SIDEBAR_CATEGORIES: { name: string; items: SidebarSection[] }[] = [
     { slug: 'label', label: 'Label' },
     { slug: 'icon-object', label: 'Icon Object' },
     { slug: 'divider', label: 'Divider' },
+    { slug: 'donut-chart', label: 'Donut Chart' },
+    { slug: 'line-chart', label: 'Line Chart' },
     { slug: 'item', label: 'Item' },
     { slug: 'element-wrapper', label: 'Element Wrapper' },
   ] },
@@ -2730,6 +2759,122 @@ export default function App() {
             </div>
           </Section>
         </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Donut Chart ────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <Section id="donut-chart" title="Donut Chart" description="Segmented donut / pie. Shares are DERIVED from raw values — the component never accepts a percentage. No default palette: every segment states its own hue.">
+          <div style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Budget — 7 categories, Figma&apos;s hue assignment</div>
+              <div style={{ width: '200px' }}>
+                <DonutChart segments={BUDGET_SEGMENTS} centreLabel="RM 7,500" centreCaption="Total budget" />
+              </div>
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>innerRadius=0 → pie</div>
+              <div style={{ width: '200px' }}>
+                <DonutChart segments={BUDGET_SEGMENTS} innerRadius={0} />
+              </div>
+            </div>
+
+            <div style={{ minWidth: '260px' }}>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Paired legend — ChartLegendItem, iconColor per series</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {BUDGET_SEGMENTS.map(s => (
+                  <ChartLegendItem
+                    key={s.id}
+                    variant="legend"
+                    iconColor={s.color}
+                    title={s.label}
+                    subtitle={`${((s.value / 7500) * 100).toFixed(2)}%`}
+                    amount={`RM ${s.value.toLocaleString('en-MY', { minimumFractionDigits: 2 })}`}
+                    hasChevron={false}
+                  />
+                ))}
+              </div>
+              <p style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.75rem' }}>
+                The chart is aria-hidden; this legend is the accessible artifact.
+              </p>
+            </div>
+          </div>
+        </Section>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Line Chart ─────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <Section id="line-chart" title="Line Chart" description="Line / area, and — with chrome off — the sparkline. Area is the same hue at -100, never the line colour at reduced opacity (no opacity token exists).">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>chromeTone=&quot;default&quot; — gridlines, axis, marker</div>
+              <div style={{ width: '343px', height: '157px' }}>
+                <LineChart
+                  points={NETWORTH_SERIES}
+                  domain={31}
+                  color="blue"
+                  showArea
+                  showGridlines
+                  showAxis
+                  xLabels={['01', '15', '31']}
+                  marker={{ index: NETWORTH_SERIES.length - 1, label: '+ RM 8,768.35' }}
+                  summary="Net worth, Sep 01 to Sep 31, up RM 8,768.35"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>chromeTone=&quot;onColor&quot; — on a coloured host card, as Flow 7 draws it</div>
+              <div style={{ width: '375px', padding: '1rem', borderRadius: '8px', background: 'var(--brand-blue-500)' }}>
+                <div style={{ color: 'var(--mapped-text-on-color-heading)', fontWeight: 600, marginBottom: '0.5rem' }}>RM 450,958.84</div>
+                <div style={{ height: '157px' }}>
+                  <LineChart
+                    points={NETWORTH_SERIES}
+                    domain={31}
+                    color="onColor"
+                    chromeTone="onColor"
+                    showArea
+                    showGridlines
+                    showAxis
+                    xLabels={['01', '15', '31']}
+                    marker={{ index: NETWORTH_SERIES.length - 1, label: '+ RM 8,768.35' }}
+                    summary="Net worth, Sep 01 to Sep 31, up RM 8,768.35"
+                  />
+                </div>
+              </div>
+              <p style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.5rem' }}>
+                No area fill on this series — see E-4. No token can tint white.
+              </p>
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Bare sparkline — all chrome off, 80×40, aria-hidden</div>
+              <div style={{ width: '80px', height: '40px' }}>
+                <LineChart points={SPARK_SERIES} color="green" showArea />
+              </div>
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Inside ListItem&apos;s miniChart slot</div>
+              <div style={{ width: '320px' }}>
+                <ListItem
+                  type="crypto"
+                  leading={<Logo name="solana" size="s" />}
+                  title="Solana"
+                  titleInfo="SOL"
+                  amount="RM 4,465.00"
+                  amountInfo="+250.68%"
+                  trendDirection="up"
+                  miniChart={<LineChart points={SPARK_SERIES} color="green" showArea />}
+                />
+              </div>
+            </div>
+          </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}

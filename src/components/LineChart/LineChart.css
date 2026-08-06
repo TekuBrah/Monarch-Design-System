@@ -1,0 +1,162 @@
+/* Size-agnostic, same as DonutChart: the parent owns the box. Every size the
+   source uses (343x157 trend card, 80x40 sparkline) is off the --brand-scale
+   ramp, so a size prop would need tokens the library does not have. */
+.mn-line-chart {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.mn-line-chart__plot {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.mn-line-chart__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mn-line-chart__line {
+  stroke-width: var(--brand-scale-50); /* 2px, unstretched via non-scaling-stroke */
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* === DATA colours ==========================================================
+   Series colours are brand primitives and are byte-identical in both themes BY
+   DESIGN — a series' identity must not change when the theme does.
+
+   The area is the SAME HUE at -100 rather than the line colour at reduced
+   opacity. That is the whole point: opacity has no backing token (the parked
+   motion/elevation layer), so the conventional translucent-area recipe would
+   have needed a color-mix approval. A real step on the same ramp reaches the
+   same place with a token that already exists.
+
+   Class-per-hue rather than an interpolated var() name, matching IconObject —
+   audits grep component CSS, so every paintable colour must be visible here. */
+.mn-line-chart--slate  .mn-line-chart__line { stroke: var(--brand-slate-400);  }
+.mn-line-chart--blue   .mn-line-chart__line { stroke: var(--brand-blue-400);   }
+.mn-line-chart--gray   .mn-line-chart__line { stroke: var(--brand-gray-400);   }
+.mn-line-chart--red    .mn-line-chart__line { stroke: var(--brand-red-400);    }
+.mn-line-chart--orange .mn-line-chart__line { stroke: var(--brand-orange-400); }
+.mn-line-chart--green  .mn-line-chart__line { stroke: var(--brand-green-400);  }
+.mn-line-chart--teal   .mn-line-chart__line { stroke: var(--brand-teal-400);   }
+.mn-line-chart--purple .mn-line-chart__line { stroke: var(--brand-purple-400); }
+.mn-line-chart--cyan   .mn-line-chart__line { stroke: var(--brand-cyan-400);   }
+.mn-line-chart--yellow .mn-line-chart__line { stroke: var(--brand-yellow-400); }
+.mn-line-chart--lime   .mn-line-chart__line { stroke: var(--brand-lime-400);   }
+.mn-line-chart--violet .mn-line-chart__line { stroke: var(--brand-violet-400); }
+
+.mn-line-chart--slate  .mn-line-chart__area { fill: var(--brand-slate-100);  }
+.mn-line-chart--blue   .mn-line-chart__area { fill: var(--brand-blue-100);   }
+.mn-line-chart--gray   .mn-line-chart__area { fill: var(--brand-gray-100);   }
+.mn-line-chart--red    .mn-line-chart__area { fill: var(--brand-red-100);    }
+.mn-line-chart--orange .mn-line-chart__area { fill: var(--brand-orange-100); }
+.mn-line-chart--green  .mn-line-chart__area { fill: var(--brand-green-100);  }
+.mn-line-chart--teal   .mn-line-chart__area { fill: var(--brand-teal-100);   }
+.mn-line-chart--purple .mn-line-chart__area { fill: var(--brand-purple-100); }
+.mn-line-chart--cyan   .mn-line-chart__area { fill: var(--brand-cyan-100);   }
+.mn-line-chart--yellow .mn-line-chart__area { fill: var(--brand-yellow-100); }
+.mn-line-chart--lime   .mn-line-chart__area { fill: var(--brand-lime-100);   }
+.mn-line-chart--violet .mn-line-chart__area { fill: var(--brand-violet-100); }
+
+/* `onColor` — a white line on a coloured host card (Flow 7's Total Networth).
+   White in BOTH themes, because the card it sits on does not flip either.
+
+   ITS AREA IS DELIBERATELY NOT PAINTED. Tinting white needs an opacity, and no
+   mapped alpha token can do it: the mapped alpha surfaces resolve fully
+   transparent in both themes, and the only other alpha family sits on the alias
+   tier, which never dark-flips and may not be used in a component. The -100 ramp
+   step that solves this for the twelve hues has no white equivalent. Recorded
+   as the one place the missing-opacity gap actually bites. */
+.mn-line-chart--onColor .mn-line-chart__line {
+  stroke: var(--mapped-text-on-color-heading);
+}
+
+.mn-line-chart--onColor .mn-line-chart__area {
+  display: none;
+}
+
+/* === CHROME ================================================================
+   Chrome is INTERFACE, not data, so unlike the series above it uses the mapped
+   tier and dark-flips with the theme. */
+.mn-line-chart__gridline {
+  position: absolute;
+  right: 0;
+  left: 0;
+  border-top: var(--brand-scale-25) solid var(--mapped-border-subtle-default);
+}
+
+.mn-line-chart__gridline--top {
+  top: 0;
+}
+
+.mn-line-chart__gridline--bottom {
+  bottom: 0;
+}
+
+.mn-line-chart__marker-rule {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: var(--brand-scale-25) solid var(--mapped-border-subtle-default);
+}
+
+.mn-line-chart__marker {
+  position: absolute;
+  width: var(--brand-scale-250); /* 10px — Figma's Ellipse 3 */
+  height: var(--brand-scale-250);
+  border-radius: var(--brand-scale-1800);
+  background: var(--mapped-surface-page);
+  border: var(--brand-scale-50) solid currentColor;
+  transform: translate(-50%, -50%);
+}
+
+.mn-line-chart__callout {
+  position: absolute;
+  top: 0;
+  color: var(--mapped-text-default-default);
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.mn-line-chart__axis {
+  display: flex;
+  justify-content: space-between;
+  padding-top: var(--brand-scale-100);
+}
+
+.mn-line-chart__axis-label {
+  color: var(--mapped-text-subtle-default);
+  white-space: nowrap;
+}
+
+/* onColor chrome — for a chart sitting on a coloured card rather than the page.
+
+   NOTE: the axis label uses --mapped-text-on-color-caption, which is the
+   semantically correct token (a de-emphasised label on a coloured surface) and
+   replaces Figma's blue/50 + opacity-70 recipe with the token that recipe was
+   reaching for. See the docs entry: that token currently dark-flips to
+   near-black, which is a token-layer defect recorded, not worked around here. */
+.mn-line-chart--chrome-onColor .mn-line-chart__gridline,
+.mn-line-chart--chrome-onColor .mn-line-chart__marker-rule {
+  border-color: var(--mapped-border-on-color);
+}
+
+.mn-line-chart--chrome-onColor .mn-line-chart__axis-label {
+  color: var(--mapped-text-on-color-caption);
+}
+
+.mn-line-chart--chrome-onColor .mn-line-chart__callout {
+  color: var(--mapped-text-on-color-heading);
+}
+
+.mn-line-chart--chrome-onColor .mn-line-chart__marker {
+  background: var(--mapped-text-on-color-heading);
+}
