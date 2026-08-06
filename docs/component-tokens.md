@@ -845,7 +845,9 @@ Container sets `color: var(--mapped-text-primary-on-color)` (resolves to `#fffff
 ### Known Figma inconsistencies
 
 - **No mapped token for brand-400 backgrounds**: The 12 solid colors use brand-layer tokens directly. No `--mapped-surface-[color]-default` equivalents exist in the mapped layer for these specific colors/levels.
-- **AI gradient**: Extracted from Figma as `linear-gradient(132.61deg, blue-400 → blue-500 → violet-500)`. Uses brand tokens, not alias or mapped.
+- **AI gradient**: Extracted from Figma as `linear-gradient(132.61deg, blue-400 → blue-500 → violet-500)`. Uses brand tokens, not alias or mapped. Its `blue-400` first stop **stays at `-400` by decision** (Phase 5.4) — decorative, no text sits on it, and Figma specifies `Blue/400` there.
+- **⚠️ `IconObject` no longer shares a palette level with `CardFeaturesAndEducation`.** As of Phase 5.4 the card moved to `-500` while `IconObject` stays on `-400`, so **blue, orange, green and purple resolve to different values in the two components**. This is deliberate, not drift: a card title is text (4.5:1) while an `IconObject` glyph is non-text (3:1), so the two were resolved separately. `IconObject`'s own level is **undecided and deliberately unchanged** — see the "Deliberate divergence" note under `Card`.
+- **⚠️ White glyphs on the `-400` swatches fail WCAG AA, in both themes.** Measured across all twelve hues: only `purple` (4.18) approaches 4.5:1, and **8 of 12 fall below even 3:1** for a non-text glyph (`yellow` 1.41, `lime` 1.50, `gray` 1.64, `orange` 1.99, `cyan` 2.03, `green` 2.12, `teal` 2.19, `slate` 2.36). The ratios are identical in light and dark because `--brand-*` never dark-flips — confirmed empirically, not assumed. **Open, not decided** — unlike the card, `IconObject` has had no ramp decision made. Grouped with the `Card` and `TrendIndicator` contrast findings as one token-layer item.
 
 ---
 
@@ -3358,8 +3360,8 @@ uses `ProgressBar`; `CardBalance` uses `IconObject`.
 | Element / variant | Token |
 |---|---|
 | Container (all variants) | Width `109px` (min `90px`, max `109px` — fixed Figma component sizing) |
-| `blue`/`orange`/`green`/`purple` bg | `--brand-blue-400` / `--brand-orange-400` / `--brand-green-400` / `--brand-purple-400` — same palette `IconObject` already uses |
-| Fill icon/title | `--mapped-text-primary-on-color` / `--mapped-text-on-color-heading` |
+| `blue`/`orange`/`green`/`purple` bg | `--brand-blue-500` / `--brand-orange-500` / `--brand-green-500` / `--brand-purple-500` (Phase 5.4). **NOT the same level as `IconObject`, which stays on `-400`** — see "Deliberate divergence" below |
+| Fill icon/title | `--mapped-icon-primary-on-color` / `--mapped-text-on-color-heading` |
 | `outline` | Border `--mapped-border-default`, explicit `120px` height (taller than fill variants — real Figma value) |
 | Outline icon/title | `--mapped-icon-default-default` / `--mapped-text-default-default` |
 
@@ -3371,6 +3373,64 @@ uses `ProgressBar`; `CardBalance` uses `IconObject`.
 - **Asymmetric card padding** (`CardMonthlyBudget`, `default` state): `16px` top/sides, `20px` bottom. Confirmed real (not a copy-paste error) from Figma's own generated code.
 - **`card/action`'s icon badge doesn't match any `IconObject` color**: Figma models it as bespoke inline markup (`--mapped-icon-primary-default` bg), not an `IconObject` instance — built inline rather than force-fitting the existing component's swatch palette.
 - **`CardFeaturesAndEducation`'s `outline` variant is 120px tall**, taller than the ~108-120px fill variants (which size to content). Both are real, independently-specified Figma heights.
+- **`CardFeaturesAndEducation` moved `-400` → `-500` (Phase 5.4).** Synced to Figma, which now binds `Blue/500` `#046eff`, `Orange/500` `#ff8a47`, `Green/500` `#38b860`, `Purple/500` `#5e4db2` — read per-variant from `324:335` / `324:344` / `324:351` / `324:358`. The `outline` variant (`324:372`) carries no brand colour and is unchanged. Backgrounds only; the icon and title tokens did not change.
+- **Icon slot corrected to the icon tier.** Was `--mapped-text-primary-on-color`, now `--mapped-icon-primary-on-color`, matching Figma's `icon/primary/on-color` binding. Both resolve `#ffffff` in both themes — verified before and after, computed value unchanged. A tier correction, not a visual one.
+
+### ⚠️ RECORDED ACCESSIBILITY GAP — decided, not open
+
+**White titles on the filled variants do not meet WCAG AA at `-500`.** Measured
+from rendered token values, identical in both themes (`--brand-*` never
+dark-flips):
+
+| Variant | White title on `-500` | vs 4.5:1 (text) | vs 3:1 (non-text) |
+|---|---|---|---|
+| `blue` | **4.49** | ✗ (by 0.01) | ✅ |
+| `orange` | **2.34** | ✗ | ✗ |
+| `green` | **2.56** | ✗ | ✗ |
+| `purple` | **6.60** | ✅ | ✅ |
+
+The title is `.type-body-caption-medium` (12px), so 4.5:1 applies — not the
+large-text allowance. Orange and green fall below even the non-text bar.
+
+**DECISION (Teku, Phase 5.4): ship `-500` regardless.** The full ramp was walked
+first — `400`/`500`/`600`/`700`/`800` for all twelve hues — and per-hue darker
+steps (blue 600, orange 700, green 700, purple 500) were costed and **declined**,
+on the grounds that darkening further costs the hues their brand identity. Dark
+text on orange and green was offered and also declined. Figma is the source and
+Figma specifies `-500`.
+
+**This is therefore a known, accepted gap, not an oversight.** No substitute
+token, no `token-exempt` marker, and no CSS workaround was introduced — the
+component uses exactly what Figma binds.
+
+**Associated with the status-token contrast finding** recorded under
+`TrendIndicator` (`--mapped-text-success-default` 2.56:1 light,
+`--mapped-text-error-default` 3.64:1 light / 3.93:1 dark). Same class of finding
+— a semantic colour that cannot carry white or coloured text at AA — and the
+same shape of decision. Both are token-layer items awaiting a Figma-side change,
+and neither is fixable in component CSS.
+
+### Deliberate divergence — `CardFeaturesAndEducation` vs `IconObject`
+
+**These two components hold DIFFERENT values for the same colour name. That is
+intended.**
+
+| Colour | `CardFeaturesAndEducation` | `IconObject` |
+|---|---|---|
+| blue | `--brand-blue-500` `#046eff` | `--brand-blue-400` `#368bff` |
+| orange | `--brand-orange-500` `#ff8a47` | `--brand-orange-400` `#ffa16c` |
+| green | `--brand-green-500` `#38b860` | `--brand-green-400` `#60c680` |
+| purple | `--brand-purple-500` `#5e4db2` | `--brand-purple-400` `#7e71c1` |
+
+They diverge because **they carry different accessibility bars**: a card title is
+**text** (4.5:1), an `IconObject` glyph is **non-text** (3:1). The two were
+therefore resolved separately rather than kept in lockstep — the card synced to
+Figma's `-500`, `IconObject` deliberately left on `-400` pending its own decision.
+
+Before Phase 5.4 they did match, and the previous wording of this entry said so.
+Anyone reading either entry alone would reasonably assume they still do. **They do
+not.** Verified after the change: card blue `rgb(4,110,255)`, `IconObject` blue
+`rgb(54,139,255)`, in both themes.
 
 ---
 

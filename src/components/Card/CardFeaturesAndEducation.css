@@ -35,24 +35,34 @@ button.mn-card-features:focus-visible {
   padding: var(--brand-scale-100) 0;
 }
 
+/* -500, per Figma's `card/features and education` (324:336), read per-variant:
+   Blue/500 #046eff · Orange/500 #ff8a47 · Green/500 #38b860 · Purple/500 #5e4db2.
+
+   NOTE: this level deliberately DIVERGES from IconObject, which stays on -400.
+   The two components carry different accessibility bars — a card title is text
+   (4.5:1), an IconObject glyph is non-text (3:1) — so they were resolved
+   separately rather than kept in lockstep. See docs/component-tokens.md. */
 .mn-card-features--blue {
-  background: var(--brand-blue-400);
+  background: var(--brand-blue-500);
 }
 .mn-card-features--orange {
-  background: var(--brand-orange-400);
+  background: var(--brand-orange-500);
 }
 .mn-card-features--green {
-  background: var(--brand-green-400);
+  background: var(--brand-green-500);
 }
 .mn-card-features--purple {
-  background: var(--brand-purple-400);
+  background: var(--brand-purple-500);
 }
 
+/* Icon tier, not text tier — Figma binds this slot to `icon/primary/on-color`.
+   Was --mapped-text-primary-on-color; both resolve #ffffff in both themes, so
+   this corrects the tier without changing a rendered value. */
 .mn-card-features--blue .mn-card-features__icon,
 .mn-card-features--orange .mn-card-features__icon,
 .mn-card-features--green .mn-card-features__icon,
 .mn-card-features--purple .mn-card-features__icon {
-  color: var(--mapped-text-primary-on-color);
+  color: var(--mapped-icon-primary-on-color);
 }
 
 .mn-card-features--blue .mn-card-features__title,
