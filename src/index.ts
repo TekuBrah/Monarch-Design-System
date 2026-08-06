@@ -45,5 +45,6 @@ export * from './components/TimePicker'
 export * from './components/Toast'
 export * from './components/ToastMobile'
 export * from './components/Toggle'
+export * from './components/TrendIndicator'
 
 export * from './tokens'

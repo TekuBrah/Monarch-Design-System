@@ -3156,6 +3156,7 @@ are placeholder content per instance, not fixed requirements.
 | `amountInfo` | `string` | `default`: caption under amount. `crypto`: trend caption |
 | `hasReceiptIcon` | `boolean` | `default` only |
 | `hasChevron` | `boolean` | `profile` only |
+| `trendDirection` | `'up' \| 'down' \| 'flat'` | `crypto` only — default `'up'`. Added Phase 5.4; see `TrendIndicator` |
 | `miniChart` | `ReactNode` | `crypto` only — sparkline slot |
 | `onClick` | `() => void` | Renders as `<button>` when set, else a plain `<div>` |
 | `className` | `string` | |
@@ -3170,7 +3171,7 @@ are placeholder content per instance, not fixed requirements.
 | Amount | `--mapped-text-default-default`, `.type-body-m-semibold` |
 | Amount info | `--mapped-text-subtle-default`, `.type-body-caption` |
 | Receipt icon | `--mapped-icon-default-default` |
-| Trend triangle | `--mapped-icon-success-default` (green) |
+| Trend group (`crypto`) | Composes the real `TrendIndicator` — see its own entry. Rendered **only when `amountInfo` is present**. |
 | Chevron (profile) | `--mapped-icon-subtle-default` |
 | Focus ring | `--mapped-border-primary-default` outline, `--brand-scale-50` (Tab.css pattern) |
 
@@ -3222,6 +3223,8 @@ are placeholder content per instance, not fixed requirements.
 - **Crypto sparkline positioning**: Figma absolutely-positions the mini chart at `left: calc(50%+6px)`, tied to the item's fixed 300px width. Since `ListItem` is fluid-width, `miniChart` is a normal in-flow flex slot between the text and amount instead — same visual result, doesn't break at other widths.
 - **Crypto leading-mark radius**: Figma specifies `rounded-[32px]` (not full round) on a 40px box — visually indistinguishable from a true circle since 32px > half the box size. Unified to `--brand-scale-1800` (full round) for consistency with the `default`/`profile` leading marks, same token, cleaner intent.
 - **New icons added**: `receipt_long`, `question_mark` — same mechanical addition (already available in `@material-design-icons/svg/round`) as `wifi`/`signal_cellular_alt` earlier. `Icon` also gained an `xs` (12px) size, mapping to `ElementWrapper`'s existing `xs` token — needed for the crypto trend triangle, which Figma specifies at 12px (below the previous smallest `s`=16px).
+- **Phase 5.4 — the crypto trend was direction-blind.** `ListItem` hardcoded `<Icon name="icon_triangle_up">` inside a `.mn-list-item__trend` wrapper pinned to `--mapped-icon-success-default`, so a decline rendered as a green rise. Verified in the MVP's live DOM: Bitcoin (+10.2%) and Ethereum (−2.49%) both computed `rgb(56,184,96)`, up. Figma's own `Homepage_Crypto` draws `icon_triangle down` for Ethereum, so the design used a state the component could not express. Replaced by the real `TrendIndicator`; `.mn-list-item__trend` deleted.
+- **The label is now status-coloured, which diverges from the base Figma component.** `Item/list` Type=Crypto gives its `Amount info` text `text/subtle/default` (gray), while `Homepage_Crypto` overrides that same node (`…;708:3624;153:1851`) to `text/error/default` for the decline and `text/success/default` for every rise. Adopted the screen's treatment, by decision — the base component's gray default is what the screen is correcting, and a trend whose number is gray is the weaker design.
 
 ---
 
@@ -3368,3 +3371,131 @@ uses `ProgressBar`; `CardBalance` uses `IconObject`.
 - **Asymmetric card padding** (`CardMonthlyBudget`, `default` state): `16px` top/sides, `20px` bottom. Confirmed real (not a copy-paste error) from Figma's own generated code.
 - **`card/action`'s icon badge doesn't match any `IconObject` color**: Figma models it as bespoke inline markup (`--mapped-icon-primary-default` bg), not an `IconObject` instance — built inline rather than force-fitting the existing component's swatch palette.
 - **`CardFeaturesAndEducation`'s `outline` variant is 120px tall**, taller than the ~108-120px fill variants (which size to content). Both are real, independently-specified Figma heights.
+
+---
+
+## Trend Indicator
+
+**Figma source:** none — see below. Geometry derived from `Frame 440` (`153:1850`) inside `Item/list` Type=Crypto (`153:1842`).
+
+> ### ⚠️ DESIGNED ADDITION, not a faithful build
+>
+> **There is no trend component in Figma.** `Item/list` (`153:1841`) ships exactly
+> three symbols — `Type=Default`, `Type=Profile`, `Type=Crypto` — with **no
+> direction axis**, and the Item Parts frame (`136:2764`) contains only List item,
+> Summary item, Chart legend item and Recent contributions item.
+>
+> Direction is expressed in Figma by **swapping an icon instance**: the trend glyph
+> inside `Type=Crypto` is a 12px `<element>` instance (`153:1891`), and
+> `Homepage_Crypto` swaps it to `icon_triangle down` for Ethereum while overriding
+> that instance's label colour to `text/error/default`. Real design intent, with no
+> component to carry it — which is the gap this component closes.
+>
+> **`flat` goes further and exists in no Figma source at all.** It is an approved
+> addition (a stablecoin at 0.00% must not render a green up-arrow, and forcing the
+> caller to pick a lying direction is the defect being fixed). It is being added to
+> Figma so the two do not diverge. Recorded here as a deliberate addition beyond
+> source, per CLAUDE.md's inferred-states rule — **not** as something read from the
+> file.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `direction` | `'up' \| 'down' \| 'flat'` | — | **Required, deliberately.** A defaulted direction is the exact defect this component fixes |
+| `label` | `string` | — | Already-formatted value. This component never formats — see below |
+| `ariaLabel` | `string` | composed | Overrides the announcement |
+| `className` | `string` | — | |
+
+**No `previewState`, and no hover/pressed/focus.** Figma defines no interaction
+states for this and it is not interactive; none were invented.
+
+**It takes a formatted string rather than a number**, matching every other amount
+in the library (`ListItem.amount`, `CardBalance.amount`, `SummaryItem.amount`,
+`ChartLegendItem.amount`). The library has no locale layer, and a trend is not
+always a percentage — `+RM 3,609.78` is a real case from the MVP's wallet card.
+
+### Direction → token mapping
+
+The glyph and the label are coloured from **different tiers**, named separately.
+Both resolve identically today, but they are distinct tokens.
+
+| Direction | Glyph | Glyph token (root, via `currentColor`) | Label token |
+|---|---|---|---|
+| `up` | `icon_triangle_up` | `--mapped-icon-success-default` | `--mapped-text-success-default` |
+| `down` | `icon_triangle_down` | `--mapped-icon-error-default` | `--mapped-text-error-default` |
+| `flat` | `remove` | `--mapped-icon-subtle-default` | `--mapped-text-subtle-default` |
+
+Mapped tier only; zero alias-tier references (audit grep returns 0).
+
+### Geometry — measured, not declared
+
+Verified in the browser against `Frame 440` (`153:1850`, 90×16):
+
+| Property | Figma | Measured | |
+|---|---|---|---|
+| Glyph box | 12×12 | 12×12 | ✅ |
+| Glyph offset from left | 0 | 0 | ✅ |
+| Label offset from left | 16 | 16 | ✅ |
+| Gap | 4 (`--brand-scale-100`) | 4 | ✅ |
+| Row height | 16 | 16 | ✅ |
+| Glyph vertical centring | centred | offset 0.00 | ✅ |
+
+Label typography: `.type-body-caption` (12/16).
+
+### Accessibility
+
+`role="img"` + a composed `aria-label` on the root — the `IconObject` / `Field`
+precedent. **Direction reaches assistive technology as a word**, never as colour
+or glyph shape alone. The subtree is children-presentational, so the visible
+label is not announced a second time; the `<Icon>` carries `aria-hidden="true"`
+and there is no second name source inside (verified: 0 descendants with
+`aria-label`, `role="img"`, or `alt`).
+
+**A leading sign is stripped when composing the announcement**, because a signed
+label would otherwise be stated twice — `-2.49%` is voiced "minus two point four
+nine percent", making "Decrease, -2.49%" redundant. The **visible label always
+keeps its sign**. Verified live:
+
+| `label` | announced |
+|---|---|
+| `+10.2%` | `Increase, 10.2%` |
+| `-2.49%` | `Decrease, 2.49%` |
+| `0.00%` | `No change, 0.00%` |
+| `+RM 3,609.78` | `Increase, RM 3,609.78` |
+| `-RM 250.75` | `Decrease, RM 250.75` |
+
+The announcement words — "Increase" / "Decrease" / "No change" — are **new
+user-facing copy, not from Figma**. Precedent: `ProgressStepper`'s `Step X of Y`
+fallback.
+
+### Known Figma inconsistencies / decisions
+
+- **No Figma source for the component itself.** See the callout above. The down
+  state is an ad-hoc per-instance override on one screen; `flat` is an approved
+  addition being backfilled into Figma.
+- **`inline-flex`, not `flex` — a real behavioural difference from the rule it
+  replaced.** `.mn-list-item__trend` was `display: flex` (always block-level).
+  `.mn-trend` is `inline-flex`, which **only blockifies when its parent is a flex
+  or grid container**. Measured: both current consumers (`.mn-list-item__trailing`,
+  `display:flex column`, and the showcase row) do blockify it to `flex`, and
+  geometry is byte-identical to the table above. In a **non-flex** parent it stays
+  inline-level and sits on the text baseline (measured: `display: inline-flex`,
+  `vertical-align: baseline`, 3.6px offset within the line box) — internal
+  geometry unaffected. This is the better default for a small inline indicator,
+  but it is a difference, and it is recorded rather than assumed away.
+- **⚠️ The status tokens fail WCAG AA as text, in both themes.** The label is 12px
+  (`.type-body-caption`), so 4.5:1 applies. Measured against the page surface:
+  `--mapped-text-success-default` = **2.56:1** light / 5.39:1 dark;
+  `--mapped-text-error-default` = **3.64:1** light / **3.93:1** dark. Three of four
+  combinations fail. **Pre-existing and not specific to this component** — it
+  affects every success/error text consumer, and dark mode maps these to the
+  *darker* `-600` step, which is the wrong direction on a black page. Tracked as a
+  token-layer item; the component uses the correct semantic tokens and no
+  substitute or exemption was introduced.
+- **Figma's Success value has drifted from the pipeline.** Figma reports
+  `icon/Success/default` and `text/Success/default` as `#4ecd76`; the pipeline
+  resolves both to `#38b860` (`Success.500` → `brand-green-500`). Error matches
+  exactly on both sides (`#eb4f52`). Note the direction: `#4ecd76` is **lighter**,
+  so a straight Token Studio re-export would make light-mode contrast *worse* — it
+  is not a fix for the item above, and the two may pull against each other.

@@ -57,6 +57,7 @@ import type { SideNavItem } from '@monarch/design-system'
 import { HeaderBg, HeaderDefault } from '@monarch/design-system'
 import { StatusBar } from '@monarch/design-system'
 import { ListItem, SummaryItem, ChartLegendItem } from '@monarch/design-system'
+import { TrendIndicator } from '@monarch/design-system'
 import {
   CardSmartInsights,
   CardAction,
@@ -1024,7 +1025,7 @@ type SidebarSection = { slug: string; label: string }
 // each, rather than listed as separate rows. This matches the existing family
 // convention already used for Card (×7), Header (×2), Item (×3) and
 // Navigation (×2) — one sidebar entry per Figma component set, not per exported
-// symbol. 45 component folders therefore map to 43 sidebar entries by design.
+// symbol. 46 component folders therefore map to 44 sidebar entries by design.
 const SIDEBAR_CATEGORIES: { name: string; items: SidebarSection[] }[] = [
   { name: 'Actions', items: [
     { slug: 'button', label: 'Button' },
@@ -1058,6 +1059,7 @@ const SIDEBAR_CATEGORIES: { name: string; items: SidebarSection[] }[] = [
     { slug: 'progress-bar', label: 'Progress Bar' },
     { slug: 'progress-ring', label: 'Progress Ring' },
     { slug: 'progress-stepper', label: 'Progress Stepper' },
+    { slug: 'trend-indicator', label: 'Trend Indicator' },
   ] },
   { name: 'Navigation', items: [
     { slug: 'tabs', label: 'Tabs & Tab' },
@@ -2247,6 +2249,42 @@ export default function App() {
 
       {tab === 'components' && <hr style={HR} />}
 
+      {/* ── Trend Indicator ────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <Section id="trend-indicator" title="Trend Indicator" description="Directional change indicator — up / down / flat. Direction reaches assistive tech as a word, never as colour or glyph alone.">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Directions</div>
+              <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <TrendIndicator direction="up" label="+10.2%" />
+                <TrendIndicator direction="down" label="-2.49%" />
+                <TrendIndicator direction="flat" label="0.00%" />
+              </div>
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Not only percentages — the label is any pre-formatted string</div>
+              <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <TrendIndicator direction="up" label="+RM 3,609.78" />
+                <TrendIndicator direction="down" label="-RM 250.75" />
+                <TrendIndicator direction="flat" label="RM 0.00" />
+              </div>
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Announced strings — the sign is stripped so it is not stated twice</div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                <span>label "-2.49%" → aria-label "Decrease, 2.49%"</span>
+                <span>label "+10.2%" → aria-label "Increase, 10.2%"</span>
+                <span>label "0.00%" → aria-label "No change, 0.00%"</span>
+              </div>
+            </div>
+          </div>
+        </Section>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
       {/* ── Tabs & Tab ─────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
@@ -2743,6 +2781,29 @@ export default function App() {
                     </svg>
                   }
                   onClick={() => setLastItemClicked('crypto')}
+                />
+                {/* Phase 5.4 — the wiring, made visible. Before TrendIndicator
+                    existed this row drew a green up-triangle unconditionally,
+                    so a decline rendered as a rise. */}
+                <ListItem
+                  type="crypto"
+                  leading={<Logo name="ethereum" size="s" />}
+                  title="Ethereum"
+                  titleInfo="ETH"
+                  amount="RM 25,588.51"
+                  amountInfo="-2.49%"
+                  trendDirection="down"
+                  onClick={() => setLastItemClicked('crypto (down)')}
+                />
+                {/* amountInfo omitted — renders no indicator at all, rather
+                    than a lone arrow with no number. */}
+                <ListItem
+                  type="crypto"
+                  leading={<Logo name="tether" size="s" />}
+                  title="Tether"
+                  titleInfo="USDT"
+                  amount="RM 15,353.10"
+                  onClick={() => setLastItemClicked('crypto (no trend)')}
                 />
               </div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.75rem' }}>

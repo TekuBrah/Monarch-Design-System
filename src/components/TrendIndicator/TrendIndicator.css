@@ -1,0 +1,45 @@
+/* Geometry from Figma's `Frame 440` (`153:1850`, 90x16) inside `Item/list`
+   Type=Crypto: a 12px glyph at x=0 with the value text at x=16, i.e. a 4px gap. */
+.mn-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--brand-scale-100); /* 4px */
+}
+
+.mn-trend__label {
+  white-space: nowrap;
+}
+
+/* Direction -> semantic status tokens.
+
+   The root's `color` drives the glyph through `currentColor` (Icon renders
+   `fill="currentColor"`); the label names the text tier explicitly. The two
+   tiers resolve to the same value today but are semantically distinct, and
+   ListItem already used the icon tier for this glyph.
+
+   Mapped tier only. The alias tier never dark-flips, so it may never appear
+   here — and it is not named literally above, because the mandated audit grep
+   for that prefix is specified to return zero on every component CSS file. */
+.mn-trend--up {
+  color: var(--mapped-icon-success-default);
+}
+
+.mn-trend--down {
+  color: var(--mapped-icon-error-default);
+}
+
+.mn-trend--flat {
+  color: var(--mapped-icon-subtle-default);
+}
+
+.mn-trend--up .mn-trend__label {
+  color: var(--mapped-text-success-default);
+}
+
+.mn-trend--down .mn-trend__label {
+  color: var(--mapped-text-error-default);
+}
+
+.mn-trend--flat .mn-trend__label {
+  color: var(--mapped-text-subtle-default);
+}

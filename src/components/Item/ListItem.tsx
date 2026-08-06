@@ -1,5 +1,7 @@
 import React from 'react'
 import { Icon } from '../Icon'
+import { TrendIndicator } from '../TrendIndicator'
+import type { TrendDirection } from '../TrendIndicator'
 import './ListItem.css'
 
 export type ListItemType = 'default' | 'profile' | 'crypto'
@@ -21,6 +23,17 @@ export interface ListItemProps {
   hasReceiptIcon?: boolean
   /** `profile` only — trailing chevron. */
   hasChevron?: boolean
+  /**
+   * `crypto` only — which way `amountInfo` moved.
+   *
+   * Optional with a default of `'up'` because `ListItemProps` is a flat
+   * interface, not a discriminated union on `type` (no props type in this
+   * library is), so it cannot be made required on the crypto branch alone
+   * without making it required for `default` and `profile` too. `'up'` is
+   * exactly what this row rendered unconditionally before the prop existed,
+   * so every existing call site is unaffected.
+   */
+  trendDirection?: TrendDirection
   /** `crypto` only — sparkline slot. */
   miniChart?: React.ReactNode
   onClick?: () => void
@@ -37,6 +50,7 @@ export function ListItem({
   amountInfo,
   hasReceiptIcon = true,
   hasChevron = true,
+  trendDirection = 'up',
   miniChart,
   onClick,
   className,
@@ -80,10 +94,12 @@ export function ListItem({
       {isCrypto && (
         <div className="mn-list-item__trailing">
           <span className="mn-list-item__amount type-body-m-semibold">{amount}</span>
-          <div className="mn-list-item__trend">
-            <Icon name="icon_triangle_up" size="xs" />
-            <span className="mn-list-item__amount-info type-body-caption">{amountInfo}</span>
-          </div>
+          {/* Only when there is a value. A lone arrow with no number states
+              nothing — this row used to render one whenever `amountInfo` was
+              omitted. */}
+          {amountInfo && (
+            <TrendIndicator direction={trendDirection} label={amountInfo} />
+          )}
         </div>
       )}
 

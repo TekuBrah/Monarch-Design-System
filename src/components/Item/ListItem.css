@@ -109,9 +109,7 @@ button.mn-list-item:focus-visible {
   white-space: nowrap;
 }
 
-.mn-list-item__trend {
-  display: flex;
-  align-items: center;
-  gap: var(--brand-scale-100); /* 4px */
-  color: var(--mapped-icon-success-default);
-}
+/* `.mn-list-item__trend` is gone: the crypto row now composes the real
+   `TrendIndicator`, which owns that layout and its direction colours. It used
+   to hardcode `--mapped-icon-success-default` here, which is why a decline
+   rendered green and pointing up. */
