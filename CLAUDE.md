@@ -68,18 +68,37 @@ after shadows silently breaks `import { shadows }`.
 Never flatten alias chains to hardcoded values. Always emit `var(--x)` references.
 
 ## Structure
+
+Verified against disk 2026-08-07. **The showcase moved out of `src/` during
+Phase 2** — `src/main.tsx` and `src/App.tsx` no longer exist, and looking for
+them has already cost a fresh session a failed read.
+
 ```
 design-tokens/          # JSON exports from Token Studio (source of truth)
 scripts/                # one build script per token layer
+docs/
+  component-tokens.md   # the per-component token record
+showcase/               # the showcase app — NOT part of the published package
+  main.tsx              # entry — imports fonts + typography.css + App
+  App.tsx               # Foundations + Components tabs, SIDEBAR_CATEGORIES
+  AppShell.css          # shell chrome (.app-main > div supplies the width cap)
+  Section.tsx           # the section wrapper all Components entries use
 src/
+  index.ts              # the PACKAGE BARREL — every public export
   tokens/               # generated .ts files + index.ts
   styles/
     globals.css         # all CSS vars (brand, alias, mapped, spacing, responsive)
     typography.css      # font-family var + 22 .type-* composite classes
-  components/<Name>/    # components (not yet built — see Next)
-  main.tsx              # entry — imports fonts + typography.css + App
-  App.tsx               # showcase page (all token layers previewed)
+    package.css         # source-level equivalent of dist/index.css —
+                        #   HAND-MAINTAINED, one @import per component CSS file
+  components/<Name>/    # 48 component folders
+  test/                 # vitest setup + type shims (setup.ts, *.d.ts)
 ```
+
+Two of these bite silently if forgotten when adding a component:
+**`src/index.ts`** (omit it and the package has no export — `tsc -b` catches it,
+the test suite does not) and **`src/styles/package.css`** (omit it and the
+component ships with no CSS, with no error at all).
 
 ## Commands
 - `npm run dev` — local dev server
@@ -147,11 +166,23 @@ src/
     that the file previously asserted they were fine, which is why nobody
     looked again.
 
-## Next
-Build the first component (e.g. Button) on top of the token foundation:
-- One component at a time, in `src/components/<Name>/`.
-- Consume only CSS vars (`--mapped-*`, `--spacing-*`, `.type-*` classes).
-- No hardcoded colors, spacing, or font sizes anywhere in component code.
+## Component roster — current state
+
+**48 components are built** (`ls src/components/` — verified 2026-08-07), with
+**58 test files / 421 tests** and 46 showcase sections. The library is well past
+"build the first component", which is what this section used to say.
+
+Direction for what comes next lives in `MONARCH-BUILD-ROADMAP.md`, not here —
+this file holds rules, that one holds the plan.
+
+When a new component is added, the same three things are true every time:
+- One component per folder, `src/components/<Name>/<Name>.tsx` + `index.ts`
+  (families may share a folder — see Component rules).
+- Consume only CSS vars (`--mapped-*`, `--spacing-*`, `--brand-scale-*`,
+  `.type-*` classes). No hardcoded colors, spacing, or font sizes.
+- Register it in **both** `src/index.ts` and `src/styles/package.css`. Missing
+  the barrel fails `npm run build`; missing `package.css` fails nothing at all
+  and ships the component with no CSS.
 
 ## Component rules
 - Components consume our existing token CSS variables ONLY — never hardcode
@@ -307,9 +338,23 @@ This applies even mid-batch — "resume the batch" does not mean skip the
 per-component stops for the next one.
 
 ## Git workflow
-- You may stage and commit locally with clear messages.
-- Do NOT push to the remote, and do NOT create pull requests. I handle all
-  pushes manually via Sourcetree. Never run git push or /create-pr.
+
+**Branch creation is Claude Code's, when a step calls for it** — e.g.
+`git checkout -b phase/5.4-gap-resolution`, created off `main` as the first
+action of the step.
+
+**Staging, committing, pushing and tagging are Teku's alone, via Sourcetree.**
+Not "pushing only" — *all of them*. Claude Code leaves the working tree dirty at
+the end of a step so the diff can be reviewed whole, and Teku decides how to
+split it into commits.
+
+**Never push, never open PRs, never touch remotes.**
+
+Branch creation is therefore the only git write Claude Code makes. This
+supersedes the earlier "you may stage and commit locally", which contradicted
+the roadmap's own standing rule ("Claude Code never pushes. No commits, no PRs,
+no remotes"). The MVP repo's `CLAUDE.md` carries the same rule, deliberately —
+the two repos agree.
 
 ## Working conventions
 - Incremental. One layer/component at a time. Verify before proceeding.

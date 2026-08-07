@@ -2909,6 +2909,9 @@ export default function App() {
                   titleInfo="BTC"
                   amount="$0.00"
                   amountInfo="0%"
+                  // 0% is exactly what `flat` exists for — a green up-arrow on
+                  // no movement is the defect TrendIndicator was built to fix.
+                  trendDirection="flat"
                   miniChart={
                     <svg width="80" height="40" viewBox="0 0 80 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path

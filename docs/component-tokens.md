@@ -8,7 +8,7 @@ faithfully from Figma; inconsistencies in the source design are preserved as-is.
 ## Badge
 
 **Figma node:** 108:315  
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 108:199  
+**Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `108:199`  
 **Reference:** https://atlassian.design/components/badge/usage
 
 A visual indicator for numeric values (tallies, counts, scores).
@@ -195,7 +195,7 @@ The alpha wash tokens are `--mapped-surface-alpha-hover` = `Alpha */100` and
 ## Element Wrapper
 
 **Figma node:** 46:920  
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 46:920  
+**Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `46:920`  
 
 A square flex container that standardises size and alignment for swappable content (Icon, Avatar, Logo). Has no background, border, or border-radius — it is purely a sizing and centering shell.
 
@@ -239,7 +239,7 @@ None. `children` is a free slot — no sub-component dependency required before 
 ## Icon Button
 
 **Figma node:** 140:6651 (component set), 140:6652 (M/Primary/Default instance)  
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 148:986 (Buttons frame)
+**Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `148:986` (Buttons frame)
 
 An icon-only action trigger. Shares the full variant classes with Button — same `variant × state` mapping, and the same `[data-theme="dark"]` re-mapping (no `appearance` prop). Differs only in geometry (square padding, no label) and contains a single icon slot wrapped in `ElementWrapper size="l"`.
 
@@ -626,7 +626,7 @@ Form field label with optional required indicator and leading/trailing icon slot
 ## Toggle
 
 **Figma node:** 59:2721  
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 59:2721
+**Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `59:2721`
 
 A binary on/off control rendered as a sliding pill track. Uses a hidden native `<input type="checkbox" role="switch">` for semantics; all visual state is driven via CSS sibling combinators.
 
@@ -684,7 +684,7 @@ A binary on/off control rendered as a sliding pill track. Uses a hidden native `
 ## Progress Stepper
 
 **Figma node:** 275:4076 (Parts), 275:3988 (component)  
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST`
+**Source file:** `xhA5ARVgSeD3gA41lYDqST`
 
 A horizontal series of fixed-width pill bars showing progress through a numbered sequence. Active bars (steps completed + current) render in primary blue; future bars render in neutral gray.
 
@@ -725,7 +725,7 @@ None recorded.
 ## Tag
 
 **Figma node:** 105:690  
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST`
+**Source file:** `xhA5ARVgSeD3gA41lYDqST`
 
 A filter/selection pill rendered as a `<button>`. Two appearances (default on white; overlay on dark surfaces) × two sizes. The "selected" state maps to Figma's "Focus" visual (blue fill).
 
@@ -789,7 +789,7 @@ A filter/selection pill rendered as a `<button>`. Two appearances (default on wh
 ## Icon Object
 
 **Figma node:** 221:20  
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST`
+**Source file:** `xhA5ARVgSeD3gA41lYDqST`
 
 A container that pairs a colored background (circle or square) with an icon child. All 12 solid colors use their brand-400 level; the AI color uses a three-stop gradient.
 
@@ -854,7 +854,7 @@ Container sets `color: var(--mapped-text-primary-on-color)` (resolves to `#fffff
 ## Checkbox
 
 **Figma node:** 148:2139 (component set), 148:2110 (Parts)  
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST`
+**Source file:** `xhA5ARVgSeD3gA41lYDqST`
 
 A form control with three selection states (unchecked/checked/indeterminate) and error/required/disabled modifiers. Indeterminate state is set via `inputRef.current.indeterminate` in a `useEffect` — HTML does not support a declarative `indeterminate` attribute.
 
@@ -917,7 +917,7 @@ Label: `type-body-sm` (14px regular). Required asterisk: `type-body-caption-semi
 ## Radio
 
 **Figma node:** 149:9752 (component set), 149:9736 (Parts)  
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST`
+**Source file:** `xhA5ARVgSeD3gA41lYDqST`
 
 A single radio button. Intended to be used in groups via shared `name` attribute on the native `<input>`. Visual structure: hidden native input → 24px icon-wrap → 14×14px circle → 6px inner dot (when checked).
 
@@ -980,7 +980,7 @@ Label: `type-body-sm` (14px regular). Required asterisk: `type-body-caption-semi
 ## Tab
 
 **Figma node:** 67:1987 (`Code parts / <Tab>`)
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 149:9246 (Parts documentation frame)
+**Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `149:9246` (Parts documentation frame)
 
 A single interactive tab unit. Intended to be composed inside a `Tabs` container with `role="tablist"`. Draws its label text directly — does not compose the Label component. No Icon or Badge instances.
 
@@ -1038,7 +1038,7 @@ tab's own 8px corners + the 2px offset, concentric, no separate radius override 
 ## Tabs
 
 **Figma node:** 70:1995 (`Tabs`)
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 149:9124 (Components documentation frame)
+**Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `149:9124` (Components documentation frame)
 
 A controlled wrapper that composes multiple `Tab` instances inside a `role="tablist"` container. All visual tokens live in the child `Tab` component — `Tabs` itself has no surface, border, shadow, or typography tokens of its own.
 
@@ -1083,7 +1083,7 @@ All token usage is delegated to `Tab`.
 ## Button Group
 
 **Figma node:** 70:2317 (`Button group`)
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 148:1570 (Components documentation frame)
+**Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `148:1570` (Components documentation frame)
 
 A composite that pairs a leading "more actions" trigger with a row of primary action buttons. Figma models this as a `count` variant (`"2"` | `"3"`) with a fixed number of hardcoded `Button` children; the code version is data-driven via a `buttons` array so it supports any count ≥ 2, matching the pattern used for `Tabs`.
 
@@ -1126,7 +1126,7 @@ All surface/border/text/focus tokens are inherited unchanged from `IconButton` a
 ## Filter Chip
 
 **Figma node:** 12:137 (`filter/chips/toggle`, labeled "Toggle chip")
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 148:2290 (Components documentation frame)
+**Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `148:2290` (Components documentation frame)
 
 A single-selection toggle chip — button-like pill that flips between an unselected outline state and a selected primary-tinted state. Component: `FilterChip` (singular), folder `src/components/FilterChip/`.
 
@@ -1196,7 +1196,7 @@ The 16%/24% steps are not Figma-sourced (Figma has no selected-hover/press varia
 ## Link
 
 **Figma node:** 73:128 (`❖ Link`)
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 73:123 (Components documentation frame)
+**Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `73:123` (Components documentation frame)
 
 A leaf hyperlink component — renders a real `<a>` tag. Built as a dependency for Breadcrumbs. No nested component instances (icons come through the `iconBefore`/`iconAfter` slots below, and a hidden non-visual Figma artifact is excluded from the build — see inconsistencies below).
 
@@ -1259,7 +1259,7 @@ Icons inherit color via `currentColor` from the label — no separate icon-color
 ## Breadcrumbs
 
 **Figma node:** 102:2959 (`Breadcrumbs`)
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 88:243 (Components documentation frame)
+**Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `88:243` (Components documentation frame)
 
 A composite that renders a sequence of `Link` instances (`appearance="subtle"`) separated by `chevron_right` icons, with an optional leading icon (e.g. `home`) on any item. No variants in source — a single fixed 3-item example instance.
 
@@ -1301,7 +1301,7 @@ The last breadcrumb in the Figma source (102:2959) renders with underline presen
 ## Loader
 
 **Figma node:** 108:131 (`.animation`, internally labeled "Progress bar")
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 107:2970 (Components documentation frame)
+**Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `107:2970` (Components documentation frame)
 
 A rotating spinner. No nested component instances.
 
@@ -1352,7 +1352,7 @@ Standard border-trick spinner: a transparent circle with one edge colored, rotat
 ## Field
 
 **Figma node:** 39:1367 (`Field` component set)
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 149:2515 (Components documentation frame)
+**Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `149:2515` (Components documentation frame)
 
 A text input. Bordered box → leading icon · [optional floating label + input] ·
 trailing icon. Re-read per-variant via `get_design_context` (all values below
@@ -1449,7 +1449,7 @@ Label: `.type-body-caption` (12px). Input/placeholder: `.type-body-m` (16px).
 ## Select
 
 **Figma node:** 42:949 (`Select` component set)
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 149:4539 (Components documentation frame)
+**Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `149:4539` (Components documentation frame)
 
 The base of the input/select family — a **searchable combobox** trigger. Same
 box as `Field` plus a built-in trailing chevron (`icon_chevron_expand_more`).
@@ -1542,7 +1542,7 @@ navigation belongs to the app-provided menu.
 ## Select / Transfer
 
 **Figma node:** 189:2229 (`Select / Transfer`)
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 149:4539 (Components documentation frame)
+**Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `149:4539` (Components documentation frame)
 
 Amount input + currency picker, used for currency/crypto transfers. Extends
 `Select`'s combobox model: two independent slot-driven dropdowns (amount
@@ -1782,7 +1782,7 @@ handles both the visual and interactive disabled state natively.
 ## Text area
 
 **Figma node:** 53:2473 (`Text area` component set)
-**Source frame:** `xhA5ARVgSeD3gA41lYDqST` node 149:7117 (Components documentation frame)
+**Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `149:7117` (Components documentation frame)
 
 A multi-line sibling of `Field` — same box tokens and state behavior, no icon
 slots, real `<textarea>` instead of `<input>`. All 14 variants (2 appearances
@@ -2864,11 +2864,17 @@ a `:focus-visible` outline in the on-color text colour.
   export), while the paired **text** on-color token correctly stayed white —
   so in dark mode the title was white but icons were black on the coloured
   banner. Fixed at the token layer (dark-mode repair, see CLAUDE.md's known
-  items): the whole `on-color` family (`text.*.on-color`, `icon.*.on-color`,
-  `border.on-color`, `Blanket.on-color`) now uses each token's own light
-  value in dark, since this content sits on a *fixed* colored surface that
-  doesn't invert with the app theme. No component change needed — `Toast`
-  already referenced the correct token names.
+  items): **most of** the `on-color` family (`text.*.on-color`,
+  `icon.*.on-color`, `border.on-color`, `Blanket.on-color`) now uses each
+  token's own light value in dark, since this content sits on a *fixed* colored
+  surface that doesn't invert with the app theme. No component change needed —
+  `Toast` already referenced the correct token names.
+  **⚠️ CORRECTION (2026-08-07): that repair was PARTIAL.** This entry
+  previously said "the whole `on-color` family". Three members still flip to
+  near-black in dark — `--mapped-text-on-color-caption`, `-label` and
+  `-placeholder` (`neutral-100` `#e7eaed` → `neutral-950` `#0d0f11`). The
+  tokens `Toast` itself uses are among the correct ones, so `Toast` is
+  unaffected; `LineChart`'s `onColor` chrome is not. Logged as **E-3**.
 - **Two components** (per decision): `Toast` (desktop) + `ToastMobile`
   (compact), matching Figma's two symbols, rather than one component with a
   `layout` prop.
@@ -2876,6 +2882,16 @@ a `:focus-visible` outline in the on-color text colour.
   `Link`/`Button` instances, but the paragraph is explicitly a replaceable
   slot, so both are exposed as app-composed `ReactNode`s (reusing the real
   `Link`/`Button` components).
+- **`#0caaff` — DECIDED: no new token. Figma changes, the design system does
+  not.** Building the MVP's Homepage (Flow 1) found a detached copy of
+  `❖ System message` painted with a two-stop gradient whose second stop is
+  `#0caaff`. That value has **no backing token anywhere in the ramp**; the
+  nearest step is `--brand-teal-500` (`#00ace5`).
+  **Decision (Teku): teal 500 stays and Figma gets updated to match** — the
+  library does not gain a token for a one-off value.
+  ⚠️ **The Figma edit is Teku's and has NOT happened yet.** Until it does,
+  Figma and the code disagree by design. Recorded here so that divergence is
+  not later mistaken for an oversight and "corrected" back into a literal.
 
 ## Toast Mobile
 
@@ -3138,8 +3154,9 @@ available") into one component with a `variant` prop, rather than building it tw
 
 | Instance | Role |
 |---|---|
-| `Icon` | `receipt_long` (new), `icon_triangle_up` (new `xs`=12px size), `icon_chevron_expand_more`, `question_mark` (new) — all reused, none reimplemented |
-| `IconObject` | Leading badge in `SummaryItem` (`color="slate" size="l"`) and `ChartLegendItem` (`color="gray" size="xl"`) |
+| `Icon` | `receipt_long` (new), `icon_chevron_expand_more`, `question_mark` (new) — all reused, none reimplemented |
+| `TrendIndicator` | `ListItem`'s `crypto` trend group, from Phase 5.4. **`ListItem` no longer renders `icon_triangle_up` itself** — `TrendIndicator` owns the glyph, its direction and its colour |
+| `IconObject` | Leading badge in `SummaryItem` (`color="slate" size="l"`) and `ChartLegendItem` (`color={iconColor}`, default `"gray"`, `size="xl"`) |
 
 `ListItem`'s leading visual (company logo / `Avatar` photo / crypto mark, depending on `type`) is a
 `ReactNode` slot — Figma's specific demo assets (`logo/aeon`, `logo/bitcoin`, a named avatar photo)
