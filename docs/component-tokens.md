@@ -1050,6 +1050,7 @@ A controlled wrapper that composes multiple `Tab` instances inside a `role="tabl
 | `selectedId` | `string` | — | Controlled selected tab ID |
 | `onChange` | `(id: string) => void` | — | Called on tab click |
 | `ariaLabel` | `string` | — | `aria-label` on the `role="tablist"` div |
+| `isScrollable` | `boolean` | `false` | Overflow horizontally instead of shrinking. Scrollbar indicator hidden, scrolling preserved. |
 
 `TabItem` type: `{ id: string; label: string }`
 
@@ -1061,17 +1062,26 @@ A controlled wrapper that composes multiple `Tab` instances inside a `role="tabl
 
 - **Roving tabindex**: exactly one tab is in the tab order (`tabIndex=0`) — the selected tab, or the first tab if selection is absent/unmatched; all others are `tabIndex=-1`, per the WAI-ARIA tablist pattern.
 - **Arrow keys**: `ArrowRight`/`ArrowLeft` move selection (automatic activation) to the next/previous tab, wrapping at the ends, and move focus to that tab.
+- **Scroll-into-view (`isScrollable` only)**: arrow-key navigation past the visible edge calls `scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' })` on the newly selected tab. This lives in `Tabs` rather than a consumer wrapper because only `Tabs` knows which tab selection moved to. Called optionally (`?.`) — jsdom does not implement `scrollIntoView`.
 - **`aria-controls` removed**: the earlier build wired `aria-controls="panel-<id>"` to tabpanels that don't exist (Tabs renders no panels). The dangling reference was removed rather than pointing at absent elements. `Tab` retains an optional `ariaControls` prop for callers who *do* render real panels.
 
 ### Token mapping
 
-No tokens consumed at the Tabs level. Container CSS:
+No colour, typography or shadow tokens at the Tabs level — all delegated to `Tab`. Container CSS:
 
 ```css
-.tabs { display: flex; align-items: center; }
+.mn-tabs { display: flex; align-items: center; }
 ```
 
-All token usage is delegated to `Tab`.
+The scrollable variant consumes one spacing token:
+
+| Element | Token |
+|---|---|
+| `.mn-tabs--is-scrollable` padding / negative margin | `--brand-scale-100` (4px) |
+
+**Why the padding exists.** `overflow-x: auto` promotes `overflow-y` from `visible` to `auto` (CSS Overflow §3 — a non-`visible` value on one axis forces the other), which turns the bar into a scrollport that clips on *all four* edges. That would cut off `Tab`'s focus ring (`--brand-scale-50` outline + `--brand-scale-50` offset = 4px of outset) and the selected tab's `--shadow-subtlest`. The variant pads by exactly that 4px and pulls the same amount back off the margin, so the outer footprint and left edge are identical to the non-scrollable bar. Verified in-browser: ring clearance `0px` in both themes — the padding matches the ring outset exactly, with nothing to spare. **If `Tab`'s focus outline or offset ever grows, this padding must grow with it** or the ring starts clipping again.
+
+Scrollbar indicator suppression is `scrollbar-width: none` / `-ms-overflow-style: none` / `::-webkit-scrollbar { display: none }`. `overflow-x: auto` is retained — only the indicator is hidden, never the scroll behavior (verified: `scrollLeft` reaches `scrollWidth - clientWidth`, indicator height `0`).
 
 ### Known Figma inconsistencies
 
@@ -3301,11 +3311,17 @@ uses `ProgressBar`; `CardBalance` uses `IconObject`.
 |---|---|---|
 | `icon` | `ReactNode` | Inside the reused `IconObject` |
 | `type` / `name` / `amount` | `string` | Required |
+| `onClick` | `() => void` | Renders as `<button>` when set — same precedent as `CardAction` / `CardGoals` / `CardFeaturesAndEducation` |
 | `className` | `string` | |
+
+**`onClick` is additive.** Omitted, the card renders exactly as before: a non-interactive `<div>`, no button semantics, nothing in the tab order, no focus ring. Keyboard activation (`Enter`/`Space`) comes from the native `<button>` element, not a key handler.
+
+The base class carries UA button resets (`border: none`, `margin: 0`, `cursor: default`, `font-family: inherit`, `text-align: left`) that the original `<div>`-only version did not need. Without them the `<button>` render would pick up the UA border and centred text. All five are inert on the `<div>` path — they restate inherited defaults — which is what keeps the omitted-`onClick` render byte-identical. Verified in-browser: the `<button>` and `<div>` renders are computed-style identical across 14 box/type/surface properties in both themes, differing only in `cursor`.
 
 | Element | Token |
 |---|---|
 | Container | `--mapped-surface-elevation-default`, `--shadow-subtlest`, width 161px (min 128 / max 172) |
+| Focus ring (`button.mn-card-balance:focus-visible`) | `--brand-scale-50` outline + offset, `--mapped-border-primary-default` |
 | Padding | `--brand-scale-200` (8px) — same 10px→8px rounding as `CardSmartInsights` |
 | Icon | Reused `IconObject` (`color="slate" size="l"`) |
 | Type label | `--mapped-text-subtle-default`, `.type-body-caption` |

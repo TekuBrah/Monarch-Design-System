@@ -57,4 +57,43 @@ describe('Tabs', () => {
     const { container } = render(<Tabs tabs={TABS} ariaLabel="Account sections" />)
     expect(await axe(container)).toHaveNoViolations()
   })
+
+  // Scrollable is opt-in — the default bar must be unchanged.
+  describe('isScrollable', () => {
+    it('is off by default', () => {
+      const { container } = render(<Tabs tabs={TABS} ariaLabel="Account sections" />)
+      expect(container.firstChild).not.toHaveClass('mn-tabs--is-scrollable')
+    })
+
+    it('applies the scrollable modifier when set', () => {
+      const { container } = render(<Tabs tabs={TABS} isScrollable ariaLabel="Account sections" />)
+      expect(container.firstChild).toHaveClass('mn-tabs', 'mn-tabs--is-scrollable')
+    })
+
+    // The reason the fix lives in Tabs rather than a consumer wrapper: only
+    // Tabs knows which tab selection moved to.
+    it('scrolls the newly selected tab into view on arrow navigation', () => {
+      const scrollIntoView = vi.fn()
+      // jsdom does not implement scrollIntoView — define it for this assertion.
+      Element.prototype.scrollIntoView = scrollIntoView
+      render(<Tabs tabs={TABS} selectedId="overview" isScrollable ariaLabel="Account sections" />)
+      fireEvent.keyDown(screen.getByRole('tablist'), { key: 'ArrowRight' })
+      expect(scrollIntoView).toHaveBeenCalledWith(
+        expect.objectContaining({ behavior: 'smooth', inline: 'nearest' }),
+      )
+    })
+
+    it('does not scroll when not scrollable', () => {
+      const scrollIntoView = vi.fn()
+      Element.prototype.scrollIntoView = scrollIntoView
+      render(<Tabs tabs={TABS} selectedId="overview" ariaLabel="Account sections" />)
+      fireEvent.keyDown(screen.getByRole('tablist'), { key: 'ArrowRight' })
+      expect(scrollIntoView).not.toHaveBeenCalled()
+    })
+
+    it('has no axe violations when scrollable', async () => {
+      const { container } = render(<Tabs tabs={TABS} isScrollable ariaLabel="Account sections" />)
+      expect(await axe(container)).toHaveNoViolations()
+    })
+  })
 })

@@ -1122,6 +1122,8 @@ export default function App() {
   const { dark, toggle } = useTheme()
   const [tab, setTab] = useState<'foundations' | 'components'>('components')
   const [tabsSelected, setTabsSelected] = useState('overview')
+  const [scrollableTabsSelected, setScrollableTabsSelected] = useState('overview')
+  const [balanceClicks, setBalanceClicks] = useState(0)
   const [filterChipsSelected, setFilterChipsSelected] = useState<Record<string, boolean>>({ chip2: true })
   const [bottomNavSelected, setBottomNavSelected] = useState('home')
   const [sideNavSelected, setSideNavSelected] = useState('home')
@@ -2338,6 +2340,27 @@ export default function App() {
                   Selected: <strong>{tabsSelected}</strong>
                 </div>
               </div>
+              <div className="showcase-interactive">
+                <div className="showcase-interactive__label">isScrollable — 5 tabs in a 343px mobile frame; drag, wheel or arrow-key past the edge</div>
+                <div style={{ width: '343px', maxWidth: '100%' }}>
+                  <Tabs
+                    tabs={[
+                      { id: 'overview', label: 'Overview' },
+                      { id: 'transactions', label: 'Transactions' },
+                      { id: 'budget', label: 'Budget' },
+                      { id: 'plans', label: 'Plans' },
+                      { id: 'receipts', label: 'Receipts' },
+                    ]}
+                    selectedId={scrollableTabsSelected}
+                    onChange={setScrollableTabsSelected}
+                    ariaLabel="Account sections"
+                    isScrollable
+                  />
+                </div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.5rem' }}>
+                  Selected: <strong>{scrollableTabsSelected}</strong>
+                </div>
+              </div>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Tab — state matrix</div>
                 <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center', flexWrap: 'wrap', width: 'fit-content' }}>
@@ -2617,12 +2640,24 @@ export default function App() {
 
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>CardBalance</div>
-              <CardBalance
-                icon={<Icon name="question_mark" size="m" />}
-                type="Wallet"
-                name="Main Account"
-                amount="RM 1,204.50"
-              />
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                <CardBalance
+                  icon={<Icon name="question_mark" size="m" />}
+                  type="Wallet"
+                  name="Main Account"
+                  amount="RM 1,204.50"
+                />
+                <CardBalance
+                  icon={<Icon name="question_mark" size="m" />}
+                  type="Wallet"
+                  name="Tappable"
+                  amount="RM 1,204.50"
+                  onClick={() => setBalanceClicks(c => c + 1)}
+                />
+              </div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.5rem' }}>
+                Left: no <code>onClick</code> — plain div, not focusable. Right: <code>onClick</code> — real button, tab to it and press Enter. Clicks: <strong>{balanceClicks}</strong>
+              </div>
             </div>
 
             <div>

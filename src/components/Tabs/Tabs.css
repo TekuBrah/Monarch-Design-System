@@ -2,3 +2,28 @@
   display: flex;
   align-items: center;
 }
+
+/* === Scrollable === */
+/* Opt-in horizontal overflow for tab bars wider than their container.
+   The scrollbar INDICATOR is hidden; the scroll behavior is not. */
+.mn-tabs--is-scrollable {
+  overflow-x: auto;
+  scrollbar-width: none;              /* Firefox */
+  -ms-overflow-style: none;           /* legacy Edge */
+  /* overflow-x: auto promotes overflow-y from visible to auto, which clips
+     .mn-tab's 2px focus ring (+2px offset) and the selected tab's box-shadow
+     on every edge. Pad by exactly ring+offset and pull the same amount back
+     off the margin, so outer alignment is identical to the non-scrollable bar. */
+  padding: var(--brand-scale-100);    /* 4px = 2px outline + 2px offset */
+  margin: calc(var(--brand-scale-100) * -1);
+}
+
+.mn-tabs--is-scrollable::-webkit-scrollbar {
+  display: none;                      /* Chrome, Safari */
+}
+
+/* Tabs keep their natural width instead of shrinking to min-content. Scoped to
+   the scrollable variant so non-scrollable bars are untouched. */
+.mn-tabs--is-scrollable > * {
+  flex-shrink: 0;
+}

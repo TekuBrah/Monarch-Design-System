@@ -36,10 +36,48 @@ let css = readFileSync(resolve(root, 'src/styles/globals.css'), 'utf8')
 const cutAt = css.indexOf(SENTINEL)
 if (cutAt !== -1) css = css.slice(0, cutAt).trimEnd() + '\n'
 
+// ── Derive the theme-aware mapped pair ────────────────────────────────────────
+// The static --gradient-* pair above is hardcoded to #ffffff stops, so it fades
+// to white on a dark page. --mapped-gradient-* restates the same alpha shape
+// against var(--mapped-surface-page), which already flips per theme in the
+// mapped layer — so ONE :root declaration is correct in both themes and there
+// is no [data-theme="dark"] block to drift out of sync.
+//
+// Emitted here rather than by build-mapped.mjs on purpose: that script's
+// resolveValue() accepts only #hex or {Group.Step} and hard-exits on anything
+// else, and there is no Gradient group in Mapped/Light.json / Dark.json to
+// carry these. Deriving from the same `entries` keeps the two pairs in step.
+
+// Rewrites a #ffffff / #ffffffAA stop to the equivalent surface-page stop.
+// Approved token-source-gap pattern (a): no token exists for a partial-alpha
+// surface, so color-mix supplies it at Figma's actual percentage.
+function toMappedStop(hex) {
+  const alpha = hex.length === 9 ? parseInt(hex.slice(7, 9), 16) / 255 : 1
+  if (alpha === 1) return 'var(--mapped-surface-page)'
+  // Zero-alpha stops render identically regardless of hue (gradient
+  // interpolation is premultiplied), so plain `transparent` is exact.
+  if (alpha === 0) return 'transparent'
+  const pct = Math.round(alpha * 100)
+  return `color-mix(in srgb, var(--mapped-surface-page) ${pct}%, transparent)`
+}
+
+const mappedEntries = entries.map(({ name, value }) => {
+  const mappedValue = value.replace(/#[0-9a-fA-F]{6}(?:[0-9a-fA-F]{2})?/g, toMappedStop)
+  if (mappedValue.includes('#')) {
+    console.error(`ERROR: Gradient.${name} — unconverted hex stop remains after mapping:\n  "${mappedValue}"`)
+    process.exit(1)
+  }
+  return { name, value: mappedValue }
+})
+
 const gradientBlock = [
   `\n${SENTINEL}`,
   ':root {',
   ...entries.map(({ name, value }) => `  --gradient-${name}: ${value};`),
+  '',
+  '  /* Theme-aware equivalents — fade into the page surface, not into white.',
+  '     Flip automatically via --mapped-surface-page; no dark block needed. */',
+  ...mappedEntries.map(({ name, value }) => `  --mapped-gradient-${name}: ${value};`),
   '}',
   '',
 ].join('\n')
@@ -49,11 +87,15 @@ console.log('✓ src/styles/globals.css (gradients appended)')
 
 // ── src/tokens/gradients.ts ───────────────────────────────────────────────────
 
+const mappedByName = new Map(mappedEntries.map(e => [e.name, e.value]))
+
 const tsLines = ['export const gradients = {']
 for (const { name, value, description } of entries) {
   tsLines.push(`  '${name}': {`)
   tsLines.push(`    var: '--gradient-${name}',`)
   tsLines.push(`    value: '${value}',`)
+  tsLines.push(`    mappedVar: '--mapped-gradient-${name}',`)
+  tsLines.push(`    mappedValue: '${mappedByName.get(name)}',`)
   tsLines.push(`    description: '${description}',`)
   tsLines.push(`  },`)
 }

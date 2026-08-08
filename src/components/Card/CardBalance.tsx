@@ -7,12 +7,14 @@ export interface CardBalanceProps {
   type: string
   name: string
   amount: string
+  onClick?: () => void
   className?: string
 }
 
-export function CardBalance({ icon, type, name, amount, className }: CardBalanceProps) {
-  return (
-    <div className={['mn-card-balance', className].filter(Boolean).join(' ')}>
+export function CardBalance({ icon, type, name, amount, onClick, className }: CardBalanceProps) {
+  const classes = ['mn-card-balance', className].filter(Boolean).join(' ')
+  const content = (
+    <>
       <div className="mn-card-balance__header">
         <IconObject color="slate" size="l">
           {icon}
@@ -23,6 +25,16 @@ export function CardBalance({ icon, type, name, amount, className }: CardBalance
         </div>
       </div>
       <span className="mn-card-balance__amount type-body-m-semibold">{amount}</span>
-    </div>
+    </>
   )
+
+  if (onClick) {
+    return (
+      <button type="button" className={classes} onClick={onClick}>
+        {content}
+      </button>
+    )
+  }
+
+  return <div className={classes}>{content}</div>
 }

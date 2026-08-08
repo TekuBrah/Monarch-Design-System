@@ -12,9 +12,12 @@ export interface TabsProps {
   selectedId?: string
   onChange?: (id: string) => void
   ariaLabel?: string
+  /** Overflow horizontally instead of shrinking, for bars wider than their
+   *  container. The scrollbar indicator is hidden; scrolling still works. */
+  isScrollable?: boolean
 }
 
-export function Tabs({ tabs, selectedId, onChange, ariaLabel }: TabsProps) {
+export function Tabs({ tabs, selectedId, onChange, ariaLabel, isScrollable = false }: TabsProps) {
   const listRef = useRef<HTMLDivElement>(null)
 
   // The single tabbable tab (roving tabindex): the selected one, or the first
@@ -22,9 +25,12 @@ export function Tabs({ tabs, selectedId, onChange, ariaLabel }: TabsProps) {
   const activeId = tabs.some(t => t.id === selectedId) ? selectedId : tabs[0]?.id
 
   const focusTab = (id: string) => {
-    listRef.current
-      ?.querySelector<HTMLButtonElement>(`#tab-${id}`)
-      ?.focus()
+    const el = listRef.current?.querySelector<HTMLButtonElement>(`#tab-${id}`)
+    el?.focus()
+    // Only Tabs knows which tab is selected, so keeping it on screen belongs
+    // here rather than in a consumer wrapper. Optional call: jsdom does not
+    // implement scrollIntoView.
+    if (isScrollable) el?.scrollIntoView?.({ behavior: 'smooth', inline: 'nearest', block: 'nearest' })
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -39,7 +45,7 @@ export function Tabs({ tabs, selectedId, onChange, ariaLabel }: TabsProps) {
 
   return (
     <div
-      className="mn-tabs"
+      className={['mn-tabs', isScrollable && 'mn-tabs--is-scrollable'].filter(Boolean).join(' ')}
       role="tablist"
       aria-label={ariaLabel}
       ref={listRef}

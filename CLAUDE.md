@@ -65,6 +65,27 @@ after shadows silently breaks `import { shadows }`.
 `--brand-scale-*` (px steps) → `--spacing-*` → consumed by components
 `--responsive-font-*` (mobile base + `@media 768px` overrides) → consumed by `.type-*` classes
 
+**Gradients are the one layer with two tiers in the same block.** `build-gradients.mjs`
+emits both:
+- `--gradient-default` / `--gradient-subtle` — the literal Figma values, hardcoded
+  `#ffffff` stops. Static and theme-blind by design; fine as a constant over a
+  known-white surface, wrong as a scrim on a themed page.
+- `--mapped-gradient-default` / `--mapped-gradient-subtle` — the same alpha shape
+  restated against `var(--mapped-surface-page)`, derived from the same source
+  entries so the pairs can't drift. **Use these for anything over page surface.**
+
+These are declared once in `:root` with no `[data-theme="dark"]` block, which looks
+like the dark-mode omission this file warns about elsewhere but isn't:
+`--mapped-surface-page` already flips in the mapped layer, so the gradient
+re-resolves per theme automatically. A second block would be a redundant place to
+drift. Verified: white→white·0.5 in light, black→black·0.5 in dark.
+
+They are emitted by `build-gradients.mjs` rather than `build-mapped.mjs` because
+that script's `resolveValue()` accepts only `#hex` or `{Group.Step}` and hard-exits
+on anything else — and there is no `Gradient` group in `Mapped/Light.json` /
+`Dark.json` to carry them. Adding one would mean inventing mapped-JSON entries that
+mirror no Figma variable.
+
 Never flatten alias chains to hardcoded values. Always emit `var(--x)` references.
 
 ## Structure
@@ -301,6 +322,17 @@ retroactively conformed to this once already.
     (a new node has no transition to run). Untransitioned/structural
     properties (padding, radius, `tabIndex`, `aria-*`, selector matching
     via `Element.matches()`) are unaffected.
+  - **Same trap, different API: `scrollIntoView({ behavior: 'smooth' })` does
+    nothing while the preview pane is hidden.** Smooth scrolling is driven by
+    animation frames, which are suspended when `document.hidden === true` —
+    so `scrollLeft` stays at its starting value indefinitely and the feature
+    looks broken. `requestAnimationFrame` never firing in a hidden pane also
+    hangs any verification script that awaits it (a 30s tool timeout, not an
+    error). To verify scroll behavior, re-run the same call with
+    `behavior: 'instant'` and compare: if instant moves the scrollport and
+    smooth doesn't, the code is correct and the pane is the problem. Check
+    `document.hidden` before concluding anything about scroll position.
+    Found while verifying `Tabs`' `isScrollable` (2026-08-08).
   - This produced a **false-positive bug report** once: `Field` was logged
     as "background doesn't flip in dark mode" (audit F1) purely because the
     theme-flip transition was frozen mid-flight. The token, `Field.css`, and

@@ -787,6 +787,11 @@
 :root {
   --gradient-subtle: linear-gradient(0deg, #ffffff 0%, #ffffff00 100%);
   --gradient-default: linear-gradient(0deg, #ffffff 10%, #ffffff80 100%);
+
+  /* Theme-aware equivalents — fade into the page surface, not into white.
+     Flip automatically via --mapped-surface-page; no dark block needed. */
+  --mapped-gradient-subtle: linear-gradient(0deg, var(--mapped-surface-page) 0%, transparent 100%);
+  --mapped-gradient-default: linear-gradient(0deg, var(--mapped-surface-page) 10%, color-mix(in srgb, var(--mapped-surface-page) 50%, transparent) 100%);
 }
 
 /* === Shadows === */

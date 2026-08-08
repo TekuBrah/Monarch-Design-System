@@ -15,6 +15,23 @@
   background: var(--mapped-surface-elevation-default);
   border-radius: var(--brand-scale-200); /* 8px */
   box-shadow: var(--shadow-subtlest);
+  /* UA button resets — inert on the non-interactive <div> render (they restate
+     inherited defaults), required so the <button> render is visually identical.
+     Same precedent as CardAction / CardGoals / CardFeaturesAndEducation. */
+  border: none;
+  margin: 0;
+  cursor: default;
+  font-family: inherit;
+  text-align: left;
+}
+
+button.mn-card-balance {
+  cursor: pointer;
+}
+
+button.mn-card-balance:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+  outline-offset: var(--brand-scale-50);
 }
 
 .mn-card-balance__header {
