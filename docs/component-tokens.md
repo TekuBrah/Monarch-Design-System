@@ -3791,3 +3791,304 @@ fallback.
   exactly on both sides (`#eb4f52`). Note the direction: `#4ecd76` is **lighter**,
   so a straight Token Studio re-export would make light-mode contrast *worse* — it
   is not a fix for the item above, and the two may pull against each other.
+
+---
+
+## Sheet
+
+**Figma node:** `159:1856` (`Bottom Sheet`, `Monarch-design-system`
+`xhA5ARVgSeD3gA41lYDqST`)
+
+A **bottom-anchored, full-width** dialog over a `Blanket` scrim — a separate
+primitive from `Modal`, not a variant of it. `Modal.css` is hard-centred
+(`align-items: center; justify-content: center`), so a `position` prop would
+have invalidated its header props half the time. Rendered via `createPortal`
+to `document.body` (the correct overlay pattern, and required because
+`Blanket` is `position: fixed`).
+
+`159:1856` is a **standalone component (symbol), not a variant set** — the
+name is `Bottom Sheet`, not `Type=…`. **One variant, zero states.** No hover,
+pressed, focus or disabled is authored anywhere in the tree, and none was
+added.
+
+Four stacked regions, of which **only `content` is always present**:
+
+```
+Blanket  (scrim)
+panel
+├── header             optional — title / iconLeft / action, any combination
+├── content            ALWAYS present, and the ONLY scrolling region
+├── actions            optional — app composes real Buttons
+└── home indicator     optional (showHomeIndicator, default true)
+```
+
+### Nested components (all reused as real instances — none re-implemented)
+
+| Instance | Role | Notes |
+|---|---|---|
+| `Blanket` | Scrim | `onClick` → `onClose` when `closeOnScrimClick` (default true) |
+| `IconButton` (tertiary, `s`) + `Icon name="close"` `l` | Close ✕ | Figma draws a bare `<element>`; upgraded to a real `IconButton` for a11y, exactly as `Modal` did |
+| `Button` ×N | Action region | App-composed via the `actions` slot, like `Modal`'s `footer` |
+
+Figma's `Slot` ×3 (`159:1852`/`1995`/`2001`) are 🎰 placeholder markers, not a
+component — they are `children`.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `isOpen` | `boolean` | — | Controlled open state |
+| `onClose` | `() => void` | — | Fired by ✕, Escape, or scrim click |
+| `title` | `string` | — | Figma's `{Header}` text prop, **left-aligned**; wired to `aria-labelledby` |
+| `headerIconLeft` | `ReactNode` | — | Slot before the title |
+| `headerAction` | `ReactNode` | — | Slot on the right, **before** the ✕ |
+| `children` | `ReactNode` | — | The content region — the only thing that scrolls |
+| `actions` | `ReactNode` | — | Pinned full-width vertical stack |
+| `showHomeIndicator` | `boolean` | `true` | iOS system chrome |
+| `showCloseButton` | `boolean` | `true` | The header ✕ |
+| `closeOnScrimClick` | `boolean` | `true` | |
+| `ariaLabel` | `string` | — | Accessible name when there is no visible `title` — see below |
+| `id`, `className` | `string` | — | |
+
+**The dialog must have an accessible name**, measured not assumed — without
+one it fails axe's `aria-dialog-name`. This is enforced by a **dev-only
+fail-loud on the COMPUTED name** (`title?.trim()` non-empty **or** `ariaLabel`
+present), stripped from the library build.
+
+A discriminated union (`{title: string} | {ariaLabel: string}`) was built for
+this and **removed**. It guarantees a *prop*, not a *name*: `title=""` is a
+valid string, satisfies the union, and was verified to still fail
+`aria-dialog-name` — in fact it renders no header at all, since `""` is falsy.
+The runtime check catches that case and whitespace-only values, so it is
+strictly more capable than the type was. Two further reasons: a union breaks
+narrowing for composition wrappers spreading `{...props}` where `title` is
+`string | undefined` (the MVP's rule-4 pattern), and it would have been the
+only union in a 40-component API whose sibling overlay, `Modal`, does not use
+one.
+
+Note a header built from only `headerIconLeft`/`headerAction` renders no
+`<h2>` and therefore still needs `ariaLabel`.
+
+**Region presence is derived from the region's own slots, never from one
+child.** The header renders iff `title || headerIconLeft || headerAction`.
+Coupling it to `title` alone would have made `headerIconLeft` a silent no-op
+and reproduced `Modal`'s G8 defect inverted.
+
+No `previewState` — a Sheet has no forced visual sub-states; its state is
+open/closed, driven by `isOpen`.
+
+### State → token mapping
+
+| Element | Property | Token | Px |
+|---|---|---|---|
+| Root | anchor | `position: fixed`, `justify-content: flex-end` | — |
+| Panel | max-height | `calc(100dvh - var(--brand-scale-1100))` | 100dvh−48 |
+| Panel | background | `--mapped-surface-elevation-default` | — |
+| Panel | radius (top only) | `--brand-scale-200` / `0` | 8 / 0 |
+| Panel | width | `100%` (no max-width) | — |
+| Header | padding T/X/B | `--brand-scale-600` / `-400` / `-400` | 24/16/16 |
+| Header | lead + trail gap | `--brand-scale-100` | 4 |
+| Title | colour | `--mapped-text-default-default` | — |
+| Title | type | `.type-body-m-semibold` | 16/24 |
+| Content | padding X | `--brand-scale-400` | 16 |
+| Content | padding-bottom (affordance) | `--brand-scale-400` | 16 |
+| Content | padding-top when `:first-child` | `--brand-scale-400` | 16 |
+| Content | gap | `--brand-scale-400` | 16 |
+| Actions | padding T/X/B | `--brand-scale-400` / `-400` / `0` | 16/16/0 |
+| Actions | gap | `--brand-scale-400` | 16 |
+| Home-ind. frame | padding T/X/B | `--brand-scale-600` / `-400` / `0` | 24/16/0 |
+| Home indicator | margin | `--brand-scale-250` | 10 |
+| Home indicator | radius | `--brand-scale-1800` | 512 |
+| Home indicator | fill | `--mapped-border-subtlest-default` | — |
+| Bottom-most region | padding-bottom | `--brand-scale-600` | 24 |
+| Scrim | — | `Blanket` (`--mapped-blanket-default-default`) owns its token | — |
+
+Zero `--alias-*` references (grep-confirmed). Interactive states use
+`--mapped-*` only.
+
+### Geometry
+
+| Property | Token | Px |
+|---|---|---|
+| Panel max-height | `calc(100dvh - var(--brand-scale-1100))` | viewport − 48 |
+| Panel width | — | 100% (full-bleed; **no** `max-width`) |
+| Panel radius | `--brand-scale-200`, top corners only | 8 |
+| Home indicator bar | — | 134 × 5 (literals — see divergences) |
+
+The panel is **hug-height and grows with its content**, capping at the
+max-height. It does *not* open at the cap regardless of content: measured at
+**201px** for short content and **764px** capped (with `100dvh` = 812).
+`overflow: clip` on the panel; **no drop shadow** — Figma's sheet has none and
+the `Blanket` provides the depth, same as `Modal`.
+
+### Region combination matrix (all 8 measured)
+
+`content` always present; header / actions / home indicator vary. **Every
+edge-to-edge inter-region gap measures 0** — all spacing lives inside each
+region's own padding, with no margins, so an absent region leaves no residual
+space.
+
+| Case | Bottom-most region | Its `padding-bottom` |
+|---|---|---|
+| `HAI` · `H-I` · `-AI` · `--I` | home indicator | 0 (+10px indicator margin = Figma exact) |
+| `HA-` · `-A-` | actions | 24 |
+| `H--` · `---` | content | 24 |
+
+When the **content region is bottom-most and scrolling**, the 16px affordance
+padding and the 24px `:last-child` padding are both `padding-bottom` on the
+same element. **They do not sum — `:last-child` wins on specificity**
+(0,2,0 vs 0,1,0, so file order cannot flip it) and the computed value is
+**24px**. The affordance still holds because 24 > 16. Measured `scrollHeight`
+of 2024 (= 2000 + 24) confirms the padding sits *inside* the scroll area and
+is reachable at the end of the scroll rather than being clipped.
+
+### Scrolling
+
+`overflow-y: auto` with the bar hidden three ways (`scrollbar-width: none`,
+`-ms-overflow-style: none`, `::-webkit-scrollbar { display: none }`) —
+**hide the bar, never the scrolling**. Measured after hiding: scrollbar gutter
+**0px**, `scrollHeight` 2024 vs `clientHeight` 764, `scrollTop` moves.
+
+`.mn-sheet__content > * { flex-shrink: 0 }` is **load-bearing, not cosmetic**.
+Flex items default to `flex-shrink: 1`, so in a column flex scroll region they
+silently *compress* to the available height instead of overflowing it: the
+container then reports `scrollHeight === clientHeight` and nothing ever
+scrolls. Measured — a 2000px child collapsed to 614px before this rule
+existed, while all tests still passed.
+
+Overflow is detected in a `useLayoutEffect` keyed on `isOpen`/`children`,
+**not** a `ResizeObserver`. Both were built; RO was removed. Not because RO is
+broken — it is correct in any real browser, and nothing here should be read as
+a caution against RO in the DS generally — but because its callbacks are
+delivered with the frame-rendering steps, which the preview pane suspends
+(`document.hidden: true`; a bare control probe fired **zero** callbacks, not
+even the guaranteed initial one). `useLayoutEffect` runs synchronously after
+DOM mutation and before paint, so it fires and is measurable here, keeping the
+behaviour inside this project's verification standard.
+
+**Accepted limitation, stated rather than hidden:** keyed on
+`isOpen`/`children`, the check does **not** re-run when already-mounted
+content changes size without the `children` reference changing — an image
+loading in, a collapsible expanding, a font swapping, or a viewport resize.
+In those cases a region that has become scrollable keeps its pre-change
+attributes until the next open or `children` change, so the keyboard route
+can be briefly absent. This is the cost of not using a `ResizeObserver`; if it
+ever bites in practice, the fix is RO plus a way to verify it, not a wider
+dependency array.
+
+### Accessibility
+
+`role="dialog"` + `aria-modal="true"`. `aria-labelledby` points at the title
+**only when a title was actually rendered** — a header built from just the
+icon/action slots renders no `<h2>`, and pointing at a missing id is a
+dangling reference. Escape closes; focus moves into the dialog on open and is
+restored to the previously-focused element on close; Tab is trapped
+(Shift+Tab wraps at the first focusable, Tab at the last). Close button
+carries `aria-label="Close"`.
+
+The scrolling content region takes `tabIndex={0}`, `role="group"` and an
+accessible name **only while it actually overflows** — hiding the scrollbar
+removes the only pointer affordance, and a keyboard user must still reach it
+(axe `scrollable-region-focusable`; the `.mvp-home__carousel` cautionary
+case). A short sheet gets no spurious tab stop and announces no group.
+Initial focus explicitly **skips** this container so it does not steal focus
+from the first real control, matching `Modal`.
+
+### DELIBERATE DIVERGENCES from Figma
+
+Each is a departure from what `159:1856` draws, recorded as such.
+
+1. **`headerAction` slot, and its 4px trail gap.** Figma authors no
+   right-side header action, so it specifies no gap for one. The slot was
+   added so header presence derives from the region rather than from `title`
+   alone. The gap **mirrors the lead group's `--brand-scale-100`** rather than
+   inventing a value. `gap` emits nothing at 0 or 1 children, so an empty slot
+   leaves no residual space — measured: with only an action, the lead group is
+   **0px wide** and the ✕ still ends exactly 16px from the edge.
+2. **`tabIndex` / `role="group"` on the scrolling content region.** An
+   accessibility addition, not an inferred Figma state. Required because the
+   scrollbar is hidden by a standing rule; see Accessibility above.
+3. **Headerless top inset — `--brand-scale-400` (16px) via
+   `.mn-sheet__content--headerless`.** Figma draws **no headerless bottom
+   sheet**, so there is no source value. With the header absent its 24px
+   `padding-top` disappears with it and content would sit flush under the 8px
+   rounded corner. 16px is the smallest on-ramp value that clears it and is
+   symmetric with the affordance padding at the other end. Zero when a header
+   renders (measured in all four headerless combinations and the header
+   control).
+   Driven by the component's `hasHeader` boolean, **not** a `:first-child`
+   selector. Position-dependent selectors describe where an element sits, not
+   what state it is in — a `:first-child` rule would silently lose this inset
+   the moment anything were inserted above the content region (a drag handle,
+   the parked scroll shadow), with no error and no failing test. The
+   `:last-child` rule that supplies the bottom padding is deliberately *not*
+   converted: there "whichever region renders last owns the bottom space" is
+   genuinely what the rule means, so position is the correct trigger.
+8. **`showCloseButton` (default `true`).** Figma always draws the ✕, so
+   suppressing it is beyond source. Added because a back chevron in
+   `headerIconLeft` would otherwise render alongside the ✕, giving two
+   dismissal affordances. Explicit, mirroring `showHomeIndicator` — the ✕ is
+   **never auto-suppressed** when `headerIconLeft` is set, since keying one
+   control's presence off an unrelated prop is silent behaviour. With nothing
+   left for it to hold, the trail group is not rendered at all rather than
+   rendered empty.
+4. **`align-items: stretch`, not Figma's `items-start`.** Figma sets
+   `items-start` on the content region but marks **every child `w-full`**, so
+   stretch is what actually renders. Also matches `Modal`'s content region.
+5. **Home indicator `134px` / `5px` literals.** Fixed decorative pull-bar
+   dimensions, not scale-derived. **5px is genuinely off-ramp**: the
+   `--brand-scale` ramp steps **4 → 8** (verified in `globals.css` *and* in
+   `design-tokens/Brand/Value.json`, whose `Scale` group has no `125` or
+   `150` key), and no token resolves to 5px. This is the **second** location
+   carrying these literals — `BottomNavigation.css` has the same pair, because
+   Figma's `Navbar/home indicator` (`158:468`) is one component instanced in
+   both places while code has it twice, privately. Duplicated per approval;
+   keep the two copies in step until a shared `HomeIndicator` absorbs them.
+6. **Max-height and top inset are not authored in Figma at all.** `159:1856`
+   draws a hug-height sheet with no cap. The capped behaviour is an instructed
+   addition. The 48px inset clears the status bar: `StatusBar` (`125:294`)
+   measures **44px**, which is off the ramp (`-1000` = 40, `-1100` = 48), and
+   was rounded **up** to `--brand-scale-1100` per approval — a 4px overshoot —
+   matching the `BottomNavigation` 62→64 and `StatusBar` 5→4 precedents,
+   rather than adding a third permanent literal for a value that will never be
+   tokenised. `Sheet` is the **first component in the codebase to use a
+   viewport unit or a `max-height`**. `dvh` over `vh` because mobile browser
+   chrome collapses and `vh` would let the sheet run under the URL bar.
+7. **Unconditional 16px content affordance padding.** Content must never end
+   flush with the clip boundary — a row sliced mid-element is what signals
+   there is more below, and a cap landing cleanly between rows would look
+   finished. Accepted cost: on a sheet short enough not to scroll this stacks
+   with the actions region's 16px `padding-top`, widening Figma's 16px
+   content→actions gap to **32px**. See Scrolling for why the conditional
+   version was removed.
+
+### Known Figma inconsistencies
+
+- **Panel fill bound to a raw primitive, normalized.** Figma binds the sheet
+  fill to `Neutral01` (#ffffff), a brand primitive that would not dark-flip,
+  leaving the sheet white on a dark page. Normalized to
+  `--mapped-surface-elevation-default` per approval — the identical finding
+  already approved and documented for `Modal`'s card. This is a **seventh
+  member of the foreign-variable family** recorded in the MVP gap register
+  §4a: `figma-defect`, zero DS action beyond the normalization.
+- **No drag handle is drawn.** The only pill in the tree is the iOS home
+  indicator at the bottom. Dismissal is the header ✕ plus the scrim; **no
+  swipe-down is authored**, and none was added.
+- **The header is a separate Figma component** (`158:3301`, `Type=Default`)
+  that does not exist in code. Built as internal markup per approval, matching
+  the `Modal` precedent — `Modal` faced the same header (same `{Header}` text
+  prop, same 24/16/16 padding, same 24px close glyph) and also built it
+  inline. It differs only in alignment: `Modal` centres the title via a
+  spacer, the Sheet left-aligns it with `justify-between`.
+
+### Logged for a later session (not built here)
+
+- **`getFocusable` is duplicated from `Modal.tsx`** — an identical 6-line
+  helper. Extracting a shared overlay focus utility means editing a shipped
+  component. Keep the copies in step.
+- **`HomeIndicator` extraction** — would close divergence 5 and the
+  `BottomNavigation` duplication together.
+- **A scroll-position shadow under the header** (a subtle divider appearing
+  once content has scrolled). Real UX value on a tall sheet, but Figma
+  authors no such state and inferred states are never added silently. A design
+  question, not a defect.
