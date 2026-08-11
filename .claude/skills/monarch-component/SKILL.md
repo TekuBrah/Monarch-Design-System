@@ -15,7 +15,11 @@ Procedure for building any Monarch component. The user names a component and has
 - **STOP here.** Wait for confirmation before writing code.
 
 ## 2. Build
-- React + TypeScript. One folder: src/components/<Name>/<Name>.tsx + index.ts. Typed props per variant.
+- React + TypeScript. One folder: src/components/<Name>/ containing <Name>.tsx, <Name>.css and index.ts. Typed props per variant. Styling lives in the companion .css file — never an inline style={{}} object, because CSS audits work by grepping each component's .css and an inline object is a permanent blind spot.
+- **Then register the component in BOTH places. Neither is optional, and they fail very differently:**
+  - `src/index.ts` (the package barrel) — omit it and `npm run build` FAILS, loudly. You will not miss this one.
+  - `src/styles/package.css` (hand-maintained, one @import per component CSS file) — omit it and NOTHING fails. Tests pass, both builds pass, the showcase looks fine because the .tsx imports its own CSS. The component then ships to the consumer's app with no styles at all and no error anywhere.
+  - **`ElementWrapper` is the case.** Found this session with no .css file at all AND absent from `package.css` — it had been styled with an inline object instead. A component built by following this step as it previously read reproduces that exactly.
 - TOKENS ONLY — never hardcode color/spacing/radius/shadow/type:
   - surface/text/border/color -> var(--mapped-*). Interactive states (hover/pressed/selected/focus) use --mapped-* ONLY — --alias-* never dark-flips.
   - Figma value with no matching token (missing opacity/tint, or an off-ramp px value)? STOP and ask — follow CLAUDE.md's token-source gap protocol. Never self-approve a color-mix() or a literal.
@@ -30,13 +34,13 @@ Procedure for building any Monarch component. The user names a component and has
 - If any value has no matching token, a slug collides, or a ref doesn't resolve: STOP and name it. Never invent a fallback or hardcode without explicit approval per the gap protocol.
 - Grep the component's CSS for `--alias-`. Report zero matches — any hit must be fixed before moving on.
 - Report the exact variant->token mapping as implemented.
-- **STOP here.** Wait for approval before touching docs or App.tsx.
+- **STOP here.** Wait for approval before touching docs or showcase/App.tsx.
 
 ## 4. Document
 Append a "## <Name>" section to docs/component-tokens.md matching existing entries: props table, variant×state -> token table, geometry table, and "Known Figma inconsistencies" (record source quirks faithfully; mark confirmed vs inferred).
 
 ## 5. Showcase
-Add a <Name> section under the Components tab in src/App.tsx using the EXACT wrapper pattern in CLAUDE.md's "Showcase section pattern" — never invent new section styling. Every variant/state, a row per state. Keep the global light/dark toggle working.
+Add a <Name> section under the Components tab in showcase/App.tsx using the EXACT wrapper pattern in CLAUDE.md's "Showcase section pattern" — never invent new section styling. Every variant/state, a row per state. Keep the global light/dark toggle working.
 
 ## 6. Verify
 Check computed styles (`getComputedStyle`) in BOTH light and dark mode — not the screenshot tool, which is unreliable. Confirm zero console errors. Confirm current build/component state from disk/git (ls, git log), not session memory.
