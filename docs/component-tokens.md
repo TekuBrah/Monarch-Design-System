@@ -531,7 +531,8 @@ A visual separator line. Figma specifies a vertical orientation only; horizontal
 **Figma node:** 105:321–105:347  
 **Source frame:** node 105:101
 
-Status lozenge (Atlassian Lozenge pattern). Always shows a `done` checkmark icon; icon inherits `currentColor` from the container.
+Status lozenge (Atlassian Lozenge pattern). The leading glyph inherits
+`currentColor` from the container.
 
 ### Props
 
@@ -540,6 +541,18 @@ Status lozenge (Atlassian Lozenge pattern). Always shows a `done` checkmark icon
 | `appearance` | `ChipsAppearance` | `'default'` | See table below |
 | `isBold` | `boolean` | `false` | `false` = subtle tinted fill; `true` = solid saturated fill with white text |
 | `label` | `string` | `'LABEL'` | Visible text |
+| `icon` | `ReactNode` | `<Icon name="done" size="s" />` | Leading glyph. **Omitting it renders the same checkmark as before**, so no existing call site changes |
+
+**`icon` (added v1.3.0).** The `done` checkmark was previously rendered
+**unconditionally**, so a `removed` or `moved` chip still displayed a tick —
+harmless for the demand met so far, wrong in general. Exposed as a real
+`ReactNode` slot rather than a boolean or an icon-name string, per the rule
+the `Link` regression established: a slot hard-coded to one icon behind a flag
+is not swappable. In-repo precedent is `SummaryItem`'s `icon` default.
+
+Because a React default applies only to `undefined`, **`icon={null}` renders no
+glyph at all** — the escape hatch a `removed` chip needs, at no extra API cost.
+Verified: omitted → checkmark present; `null` → no `svg`, label intact.
 
 ### Appearance × Bold → token mapping
 
@@ -572,7 +585,7 @@ Status lozenge (Atlassian Lozenge pattern). Always shows a `done` checkmark icon
 
 ### Known Figma inconsistencies
 
-- **Subtle background tokens at alias layer only**: `--alias-surface-100`, `--alias-neutral-800`, `--alias-primary-100`, `--alias-warning-100`, `--alias-interactive-100`, `--alias-error-100`, `--alias-success-100` are alias-layer tokens with no mapped equivalent and **no dark-mode flip**. These will render the same color in both themes. (Confirmed from Figma source — only light-mode values specified.)
+- **Subtle background tokens at alias layer only**: `--alias-surface-100`, `--alias-neutral-800`, `--alias-primary-100`, `--alias-warning-100`, `--alias-interactive-100`, `--alias-error-100`, `--alias-success-100` are alias-layer tokens with no mapped equivalent and **no dark-mode flip**. These will render the same color in both themes. (Confirmed from Figma source — only light-mode values specified.) **Measured live 2026-08-11**, all six appearances: byte-identical in both themes (`default` `rgb(242,242,242)`, `inprogress` `rgb(205,226,255)`, `moved` `rgb(255,232,218)`, `new` `rgb(223,219,240)`, `removed` `rgb(251,220,220)`, `success` `rgb(215,241,223)`) — pale tints that stay pale on a black page. Note these are **static appearance backgrounds, not interactive states**: `Chips.css` contains no `:hover`/`:active`/`:focus`/`--selected`/`--pressed` selector at all, so this is not the alias-in-interactive-state bug `CLAUDE.md` bans. Still open as a token-layer question; deliberately not changed in the v1.3.0 prop batch, since it would be a visual change.
 - **success bold uses green/400**: Figma maps success bold background to `--green/400` (`--alias-success-400`), not green/500. Only level in the system that uses a 400 shade for a bold background. Preserved as-is.
 - Figma component description says `🧬 <Lozenge appearance="default">Label</Lozenge>` — named "Chips" in our system to match the Figma frame name.
 
@@ -799,7 +812,7 @@ A container that pairs a colored background (circle or square) with an icon chil
 |---|---|---|---|
 | `color` | `IconObjectColor` | `'gray'` | 12 solid + `'ai'` gradient — see table |
 | `shape` | `IconObjectShape` | `'circle'` | `'circle'` \| `'square'` |
-| `size` | `IconObjectSize` | `'xl'` | `'s'` \| `'m'` \| `'l'` \| `'xl'` \| `'xxl'` |
+| `size` | `IconObjectSize` | `'xl'` | `'xs'` \| `'s'` \| `'m'` \| `'l'` \| `'xl'` \| `'xxl'` |
 | `children` | `ReactNode` | — | Icon slot; container sets `color: var(--mapped-text-primary-on-color)` so icons inherit white via `currentColor` |
 | `ariaLabel` | `string` | — | When provided, renders `role="img"` |
 
@@ -825,11 +838,18 @@ A container that pairs a colored background (circle or square) with an icon chil
 
 | size | token | resolved px |
 |---|---|---|
+| `xs` | `--brand-scale-400` | 16px |
 | `s` | `--brand-scale-500` | 20px |
 | `m` | `--brand-scale-600` | 24px |
 | `l` | `--brand-scale-800` | 32px |
 | `xl` | `--brand-scale-1000` | 40px |
 | `xxl` | `--brand-scale-1200` | 56px |
+
+**`xs` (added v1.3.0)** extends the existing ratio scale downward using
+`--brand-scale-400`, a token that **already existed** — no new token was
+introduced and the ramp's shape is unchanged. Demand: Flow 11's `education`
+checklist renders the badge at 16×16 six times. The default (`xl`) is
+untouched, so no existing call site changes. Verified 16px in both themes.
 
 ### Shape → border-radius
 
@@ -1171,7 +1191,7 @@ Icons are caller-supplied `ReactNode` slots (e.g. `<Icon name="..." />`), colori
 | Vertical padding (all variants) | `--brand-scale-300` | 12px |
 | Horizontal padding, no icons | `--brand-scale-400` both sides | 16px / 16px |
 | Horizontal padding, one icon | `--brand-scale-300` (icon side) / `--brand-scale-400` (opposite side) | 12px / 16px |
-| Horizontal padding, both icons | literal `10px` both sides (see inconsistency note) | 10px / 10px |
+| Horizontal padding, both icons | `--brand-scale-250` both sides | 10px / 10px |
 | Icon↔label gap (icon present) | `--brand-scale-200` | 8px |
 | Icon size | `--brand-scale-400` | 16px |
 | Focus outline width/offset | `--brand-scale-50` | 2px |
@@ -1198,7 +1218,7 @@ The 16%/24% steps are not Figma-sourced (Figma has no selected-hover/press varia
 
 - **Figma node 148:2290 is a Components documentation frame** containing two unrelated components ("Toggle chip" / `filter/chips/toggle` and "Chip" / `Field`) plus section-header/label scaffolding. Only `filter/chips/toggle` (12:137) is in scope here.
 - **Property value typos in the component set itself**: `iconLeft`/`iconRight` Figma variant values are inconsistently named `"True"` / `"False"` / `"Fals"` (typo) across different variant combinations — a source-side naming defect, not a code issue. Normalized to booleans in the React API.
-- **Both-icons horizontal padding is a literal `10px`** in the Figma-generated code, not a value on our `--brand-scale` ramp (nearest: `--brand-scale-200`=8px, `--brand-scale-300`=12px). No token matches. Recorded as a literal per design source rather than a derived `calc()` — a prior draft used `calc((--brand-scale-200 + --brand-scale-300) / 2)` to reverse-engineer 10px, which was rejected as dishonest curve-fitting (implies a token relationship that doesn't exist). Flag for a future Figma Variables fix to align this value to the scale.
+- **RESOLVED v1.3.0 — the both-icons `10px` was never off-ramp.** This entry previously read: *"not a value on our `--brand-scale` ramp (nearest: `--brand-scale-200`=8px, `--brand-scale-300`=12px). No token matches."* **That claim was wrong when written, not merely stale.** `--brand-scale-250` sits between 200 and 300 and is exactly `10px` — present in `globals.css` and in `design-tokens/Brand/Value.json` (`Scale.250 = 10`), and already consumed for 10px in ten places across the DS at the time, **including `Field.css:12` for padding**. The FAIL-LOUD literal and its comment have been replaced with `var(--brand-scale-250)`. **Pure substitution — computed padding measured `10px` in both themes before and after, unchanged.** No Figma Variables fix is needed; there was never a gap. (The rejection of the `calc()` curve-fit still stands on its own merits — averaging two unrelated steps to manufacture a number remains banned.)
 - **Selected-state background has no matching opacity/tint token**: Figma uses `rgba(4,110,255,0.1)` (10%-opacity primary blue), and no rgba/opacity token exists anywhere in the token source. Resolved with `color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent)` — derived from a real mapped token (dark-mode safe) rather than a hardcoded rgba(). **First use of `color-mix()` in this codebase** — accepted as the standard pattern for future missing-opacity-token cases. Flag for a future Figma Variables addition of a proper tint/overlay token.
 
 ---
@@ -1939,6 +1959,7 @@ family's pattern.
 | Prop | Type | Default | Notes |
 |---|---|---|---|
 | `appearance` | `'standard' \| 'subtle'` | `'standard'` | |
+| `label` | `string` | — | Visible label inside the control, above the date. **Omitting it renders exactly what it did before** — no label element, no `--labeled` class |
 | `placeholder` | `string` | `'mm/dd/yyyy'` | |
 | `value` / `defaultValue` | `string` | — | Controlled / uncontrolled |
 | `onChange` | `(value: string) => void` | — | Passes the new string |
@@ -1948,12 +1969,58 @@ family's pattern.
 | `isDisabled` / `isInvalid` | `boolean` | `false` | |
 | `id` | `string` | — | Forwarded to `<input>`; auto-generated via `useId()` if omitted |
 | `name` | `string` | — | Forwarded to `<input>` |
-| `ariaLabel` | `string` | — | This component has no visible label |
+| `ariaLabel` | `string` | — | Accessible name **when there is no visible `label`** |
 | `previewState` | `'hover' \| 'focus'` | — | Showcase only |
 
 No `isRequired`, no `iconLeft` slot — neither exists in Figma's source. The
 left icon toggle (`iconLeft`) is `false` in every one of the 14 variants,
 mirroring the dormant `iconLeft` finding on `SelectWalletAccount`.
+
+### `label` (added v1.3.0) — and the correction it carries
+
+⚠️ **This entry previously stated "this component has no visible label."** That
+was true of the component and read as if it were true of the demand. It was
+not. Four instances across Flows 10–12 (`1321:8566`, `1321:8583`,
+`1321:11429`, `1321:15497`) all render a **titled** date field — `{Title}` (16
+tall) above `mm/dd/yyyy` (24 tall) plus a trailing icon, 56 tall, **and no
+calendar surface on any of them**.
+
+Read carefully, that demand is *not* a `Field` usage, despite the shapes being
+near-identical: Flow 12's DOB field renders the **filled state with the clear
+✕**, which is this component's `showClearIcon = (hasValue && !isFocused) ||
+isInvalid` rule — behaviour `Field`'s static `trailingIcon` cannot express —
+and `1321:8583` carries a caret and a focus ring, so it is a real text-entry
+control. Hence a `label` prop here rather than a swap to `Field`.
+
+**Implementation mirrors `Field` exactly** — same markup shape
+(`<label htmlFor>` above the input inside the stack), same tokens
+(`--mapped-text-subtle-default`, `.type-body-caption`, 2px stack gap), same
+association. One labelling convention in the DS, not two.
+
+**Accessible-name rule** (identical to `Field.tsx`):
+`aria-label={label ? undefined : ariaLabel}`. Verified as a *computed* name,
+all three cases:
+
+| Supplied | Computed accessible name | `aria-label` emitted |
+|---|---|---|
+| `label` only | the label | no |
+| `ariaLabel` only | the ariaLabel | yes |
+| **both** | **the label wins** | no |
+
+### DELIBERATE DIVERGENCE — 60px against Figma's 56
+
+**Measured, not estimated:** a labelled `DatePicker` renders **60px**, exactly
+matching a labelled `Field` (measured: both 60, label colour and 2px stack gap
+identical in both themes). Figma's `Date range picker` is **56**.
+
+Figma reaches 56 with **6px vertical padding and a 4px label→value gap**. 6px
+is off the `--brand-scale` ramp (4/8), and a 4px gap would fork the DS's
+labelling convention away from `Field`'s 2px. **Mirroring `Field` was chosen
+over matching the height** — one convention, every value on-ramp, no literal.
+
+**2px of the 4px gap is inherited, not introduced:** `Field` itself renders 60
+against its own Figma node's 58. Recorded so the delta isn't later
+misattributed to this change.
 
 ### State → token mapping (Standard, confirmed)
 
@@ -2409,6 +2476,7 @@ artifact, not a bottom-sheet behavior.
 | `isOpen` | `boolean` | — | Controlled open state |
 | `onClose` | `() => void` | — | Fired by ✕, Escape, or scrim click |
 | `title` | `string` | — | Header title (Figma `{Header}` text prop); wired to `aria-labelledby` |
+| `headerIconLeft` | `React.ReactNode` | — | Leading node inside the **centred** header group, before the title. Omitting it renders byte-identically to before — verified |
 | `children` | `React.ReactNode` | — | Flexible content slot (the generic-container middle region) |
 | `footer` | `React.ReactNode` | — | Full-width vertical button stack; app composes real `Button`s |
 | `closeOnScrimClick` | `boolean` | `true` | Scrim click calls `onClose` |
@@ -2438,6 +2506,36 @@ No `previewState` — a Modal has no forced visual sub-states to preview; its
 The title is **centered** via a 3-column grid (`1fr auto 1fr`) — the empty
 left cell mirrors the close control on the right, matching Figma's own
 spacer-based centering.
+
+### `headerIconLeft` (added v1.3.0, filed as G12)
+
+**Demand:** Flow 11's smart-insight modal (`1266:14341`, Modal `1321:12705`,
+header `1321:12708`) carries a 24×24 icon beside the title (`1321:12721`).
+`Modal` had no leading slot, so the sparkle could not be expressed.
+
+**Same prop name and same `ReactNode` shape as `Sheet`'s** — two sibling
+overlays must not carry two names for one slot.
+
+⚠️ **DELIBERATE DIVERGENCE from `Sheet`: position.** `Sheet` left-aligns its
+header, so its slot sits in a left-aligned lead group. `Modal` centres, so the
+icon goes **inside grid-column 2 with the title**, in a
+`.mn-modal__title-group` flex row (gap `--brand-scale-100` = 4px — Figma has
+the icon at local x=0, 24 wide, title at x=28).
+
+This is a read, not a preference: **Figma centres icon+title as one unit.** In
+header `1321:12708` (343 wide) the group measures 147 wide at x=98 — 98 left,
+343 − (98+147) = **98 right**. Placing the icon in the empty left track would
+have left-aligned it and mismatched the source. Centring is structurally
+preserved because both side tracks remain `1fr`, so they stay equal width
+regardless of the icon.
+
+**Blast radius, measured.** The wrapper is new DOM for *every existing call
+site*. The no-icon render was compared against a faithful reconstruction of
+the pre-change DOM (h2 as a direct grid child with the old `grid-column: 2`),
+in both themes: title left `120.11`, right `120.12`, width `134.76`, height
+`24`, top `28.8`, header height `73.6`, plus colour, font-size, weight,
+line-height, text-align and margin — **every value identical, sub-pixel. The
+title did not move.**
 
 ### Geometry (confirmed)
 
@@ -3209,13 +3307,34 @@ are placeholder content per instance, not fixed requirements.
 | Prop | Type | Notes |
 |---|---|---|
 | `icon` | `ReactNode` | Default `<Icon name="question_mark" size="m" />` |
+| `iconColor` | `IconObjectColor` | Default `'slate'`. **Added v1.3.0** — see the reference-defect note below |
+| `iconSize` | `IconObjectSize` | Default `'l'`. **Added v1.3.0** |
+| `shape` | `IconObjectShape` | Default `'circle'`. **Added v1.3.0** — was `IconObject`'s implicit default, never exposed |
+| `iconAriaLabel` | `string` | Default `undefined`. **Added v1.3.0** — badge stays decorative and unnamed when omitted |
 | `amount` | `string` | Required |
 | `type` | `string` | Required — label under the amount |
 | `className` | `string` | |
 
+Types are imported from `IconObject`'s own barrel, not redeclared locally, so
+the ramps cannot drift apart.
+
+**The reference defect, second copy.** `SummaryItem.tsx:22` hard-coded
+`<IconObject color="slate" size="l">`, character-identical to
+`CardBalance.tsx:19` — logged as **G4** to that component's **G3**, and the
+same class as `ChartLegendItem`'s hardcoded `color="gray"` fixed in Phase 5.4.
+Demand: Flow 10's `card/monthly budget` needs per-category tints on its
+`item/summary` rows.
+
+**No-change proof.** With all four omitted the badge renders
+`mn-icon-object--slate mn-icon-object--circle mn-icon-object--l`, background
+`rgb(158,170,185)`, **no `role`, no `aria-label`** — exactly the pre-change
+output. Note `iconAriaLabel` closes a *usability* gap, not an axe violation:
+the badge is a `<div>` with no role, so it was correctly decorative by default
+and jest-axe passed both before and after.
+
 | Element | Token |
 |---|---|
-| Icon badge | Reused `IconObject` (`color="slate" size="l"`) |
+| Icon badge | Reused `IconObject` (defaults `color="slate" size="l" shape="circle"`, all now overridable) |
 | Amount | `--mapped-text-default-default` (Accent02 gap — see below), `.type-body-m-semibold` |
 | Type label | `--mapped-text-subtle-default`, `.type-body-caption` |
 
@@ -3310,6 +3429,10 @@ uses `ProgressBar`; `CardBalance` uses `IconObject`.
 | Prop | Type | Notes |
 |---|---|---|
 | `icon` | `ReactNode` | Inside the reused `IconObject` |
+| `iconColor` | `IconObjectColor` | Default `'slate'`. **Added v1.3.0** — closes G3, the Flow 7 STOP-class finding |
+| `iconSize` | `IconObjectSize` | Default `'l'`. **Added v1.3.0** |
+| `shape` | `IconObjectShape` | Default `'circle'`. **Added v1.3.0** — was `IconObject`'s implicit default, never exposed |
+| `iconAriaLabel` | `string` | Default `undefined`. **Added v1.3.0** — badge stays decorative and unnamed when omitted |
 | `type` / `name` / `amount` | `string` | Required |
 | `onClick` | `() => void` | Renders as `<button>` when set — same precedent as `CardAction` / `CardGoals` / `CardFeaturesAndEducation` |
 | `className` | `string` | |
@@ -3322,11 +3445,52 @@ The base class carries UA button resets (`border: none`, `margin: 0`, `cursor: d
 |---|---|
 | Container | `--mapped-surface-elevation-default`, `--shadow-subtlest`, width 161px (min 128 / max 172) |
 | Focus ring (`button.mn-card-balance:focus-visible`) | `--brand-scale-50` outline + offset, `--mapped-border-primary-default` |
-| Padding | `--brand-scale-200` (8px) — same 10px→8px rounding as `CardSmartInsights` |
-| Icon | Reused `IconObject` (`color="slate" size="l"`) |
+| Padding | `--brand-scale-250` (10px) — **corrected v1.3.0, see below** |
+| Icon | Reused `IconObject` (defaults `color="slate" size="l" shape="circle"`, all now overridable) |
 | Type label | `--mapped-text-subtle-default`, `.type-body-caption` |
 | Name | `--mapped-text-primary-default` (blue), `.type-body-caption-semibold` |
 | Amount | `--mapped-text-default-default`, `.type-body-m-semibold` |
+
+### Padding corrected 8px → 10px (v1.3.0) — a bug fix, not a redesign
+
+⚠️ **The previous comment claiming no token matched 10px was WRONG WHEN
+WRITTEN, not merely stale.** It read *"Figma specifies 10px, off the
+brand-scale ramp (8/12) — rounded to the nearer step per approval"*, and the
+8px existed **only** because of that claim.
+
+`--brand-scale-250` **is** 10px. It was in `globals.css` and in
+`design-tokens/Brand/Value.json` (`Scale.250 = 10`) the whole time; **line 40
+of this same file already used it** for the header gap, and `Field.css:12`
+uses it for padding. The file contradicted itself four lines apart. The
+justification is disproved, so the value was a bug — corrected to Figma's
+10px rather than preserved as a design decision.
+
+**This is the one v1.3.0 change that deliberately alters rendered output**, so
+it carries a before/after rather than a no-change proof. Measured on the real
+component in both themes:
+
+| | before | after | delta |
+|---|---|---|---|
+| padding | `8px` | **`10px`** | +2 |
+| card height | 80 | **84** | +4 (2 top + 2 bottom) |
+| card width | 161 | 161 | **0** — fixed width, `border-box` |
+| badge offset | 8, 8 | 10, 10 | +2, +2 |
+| text offset x | 50 | 52 | +2 |
+| amount offset | 8, 48 | 10, 50 | +2, +2 |
+| badge size · header gap · radius | 32×32 · 10px · 512px | unchanged | — |
+
+**Every movement equals the padding delta exactly; nothing shifted beyond the
+padding box**, and both themes are identical.
+
+⚠️ **A third instance exists, verified but deliberately NOT changed here.**
+This entry previously cited *"the same 10px→8px rounding as
+`CardSmartInsights`"*. Checked: `CardSmartInsights.css:8-10` carries the
+**identical** comment (*"Figma specifies 10px, off the brand-scale ramp
+(8/12)"*) and the identical `padding: var(--brand-scale-200)`. Same disproved
+reasoning, same bug. Out of scope for the v1.3.0 prop batch because correcting
+it is a visual change on a component that batch never opened — **it needs its
+own approval, exactly as this one did.** Logged here so it is fixed
+deliberately rather than inherited silently.
 
 ### CardDataDisplay
 

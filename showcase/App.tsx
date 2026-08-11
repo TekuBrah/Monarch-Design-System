@@ -957,9 +957,39 @@ function ProgressRingDemo() {
 
 function ModalDemo() {
   const [open, setOpen] = useState(false)
+  const [insightOpen, setInsightOpen] = useState(false)
   return (
     <>
-      <Button variant="primary" size="m" label="Open modal" onClick={() => setOpen(true)} />
+      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <Button variant="primary" size="m" label="Open modal" onClick={() => setOpen(true)} />
+        <Button
+          variant="secondary"
+          size="m"
+          label="Open modal with header icon"
+          onClick={() => setInsightOpen(true)}
+        />
+      </div>
+
+      {/* v1.3.0 / G12 — headerIconLeft sits INSIDE the centred cell, so the
+          icon and title centre as one unit, matching Figma header 1321:12708. */}
+      <Modal
+        isOpen={insightOpen}
+        onClose={() => setInsightOpen(false)}
+        title="Smart insights"
+        headerIconLeft={<Icon name="icon_aiinsights" size="l" />}
+        footer={
+          <>
+            <Button variant="primary" size="l" label="View promotion" onClick={() => setInsightOpen(false)} />
+            <Button variant="secondary" size="l" label="Remind me later" onClick={() => setInsightOpen(false)} />
+          </>
+        }
+      >
+        <p className="type-body-m" style={{ margin: 0, color: 'var(--mapped-text-default-default)' }}>
+          The leading icon shares the centred grid cell with the title, so the pair centres
+          together rather than the icon pinning to the left edge.
+        </p>
+      </Modal>
+
       <Modal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -1958,8 +1988,21 @@ export default function App() {
 
       {/* ── Date Picker ────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <Section id="date-picker" title="Date Picker" description="No label slot. Trailing icon swaps calendar_month ↔ cancel (clear) — has a value AND unfocused only. The calendar is an app-provided slot.">
+        <Section id="date-picker" title="Date Picker" description="Optional visible label (v1.3.0), mirroring Field's convention. Trailing icon swaps calendar_month ↔ cancel (clear) — has a value AND unfocused only. The calendar is an app-provided slot.">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                Labelled vs unlabelled (v1.3.0)
+              </div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                <DatePicker label="Date (From)" />
+                <DatePicker label="Date (To)" defaultValue="12/25/2022" />
+                <DatePicker ariaLabel="Start date, no visible label" />
+              </div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.5rem' }}>
+                <code>label</code> names the input via <code>htmlFor</code> and suppresses <code>aria-label</code>; <code>ariaLabel</code> is the fallback when there's no visible label. Same rule as <code>Field</code>.
+              </div>
+            </div>
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>Standard — states</div>
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
@@ -2203,7 +2246,7 @@ export default function App() {
       {tab === 'components' && (
         <>
           {/* Chips */}
-          <Section id="chips" title="Chips" description="6 appearances × 2 bold states — lozenge / status badge — always shows done icon">
+          <Section id="chips" title="Chips" description="6 appearances × 2 bold states — lozenge / status badge. The leading glyph is a swappable slot as of v1.3.0 (was an unconditional done checkmark).">
             <table style={{ borderCollapse: 'collapse', fontSize: '0.7rem', fontFamily: 'monospace' }}>
               <thead>
                 <tr>
@@ -2222,6 +2265,17 @@ export default function App() {
                 ))}
               </tbody>
             </table>
+            <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', margin: '1.5rem 0 0.75rem' }}>
+              icon slot (v1.3.0)
+            </div>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <Chips appearance="success" label="Linked" />
+              <Chips appearance="removed" label="Removed" icon={<Icon name="close" size="s" />} />
+              <Chips appearance="removed" label="No glyph" icon={null} />
+            </div>
+            <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.5rem' }}>
+              Omitted → the <code>done</code> checkmark, unchanged. A node → that glyph. <code>icon={null}</code> → no glyph at all, which is what a <code>removed</code> chip needs (it used to show a tick).
+            </div>
           </Section>
         </>
       )}
@@ -2748,6 +2802,41 @@ export default function App() {
               <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.5rem' }}>
                 Left: no <code>onClick</code> — plain div, not focusable. Right: <code>onClick</code> — real button, tab to it and press Enter. Clicks: <strong>{balanceClicks}</strong>
               </div>
+
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', margin: '1.5rem 0 0.75rem' }}>
+                CardBalance — per-category iconColor (v1.3.0, closes G3)
+              </div>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                <CardBalance
+                  icon={<Icon name="icon_grocery" size="m" />}
+                  iconColor="teal"
+                  iconAriaLabel="Groceries category"
+                  type="Budget"
+                  name="Groceries"
+                  amount="RM 320.00"
+                />
+                <CardBalance
+                  icon={<Icon name="icon_car" size="m" />}
+                  iconColor="orange"
+                  shape="square"
+                  iconAriaLabel="Transport category"
+                  type="Budget"
+                  name="Transport"
+                  amount="RM 180.00"
+                />
+                <CardBalance
+                  icon={<Icon name="icon_healthcare" size="s" />}
+                  iconColor="green"
+                  iconSize="xs"
+                  iconAriaLabel="Healthcare category"
+                  type="Budget"
+                  name="Healthcare"
+                  amount="RM 95.00"
+                />
+              </div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.5rem' }}>
+                Badge was hard-coded <code>color="slate" size="l"</code>. Now <code>iconColor</code> / <code>iconSize</code> / <code>shape</code> / <code>iconAriaLabel</code>; omit them all and the render is unchanged (first two cards above).
+              </div>
             </div>
 
             <div>
@@ -2829,7 +2918,7 @@ export default function App() {
       {/* ── Icon Object ────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <Section id="icon-object" title="Icon Object" description="13 colors × circle/square × 5 sizes — --brand-[color]-400 backgrounds, white icon via currentColor">
+          <Section id="icon-object" title="Icon Object" description="13 colors × circle/square × 6 sizes — --brand-[color]-400 backgrounds, white icon via currentColor. xs (16px) added in v1.3.0 using the existing --brand-scale-400.">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Colors (circle, xl)</div>
@@ -2842,10 +2931,10 @@ export default function App() {
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Sizes × shapes (blue)</div>
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                  {(['s', 'm', 'l', 'xl', 'xxl'] as IconObjectSize[]).map(sz => (
+                  {(['xs', 's', 'm', 'l', 'xl', 'xxl'] as IconObjectSize[]).map(sz => (
                     <div key={sz} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
-                      <IconObject color="blue" shape="circle" size={sz}><Icon name="person" size={sz === 's' ? 's' : sz === 'm' ? 's' : sz === 'l' ? 'm' : 'l'} /></IconObject>
-                      <IconObject color="blue" shape="square" size={sz}><Icon name="person" size={sz === 's' ? 's' : sz === 'm' ? 's' : sz === 'l' ? 'm' : 'l'} /></IconObject>
+                      <IconObject color="blue" shape="circle" size={sz}><Icon name="person" size={sz === 'xs' || sz === 's' || sz === 'm' ? 's' : sz === 'l' ? 'm' : 'l'} /></IconObject>
+                      <IconObject color="blue" shape="square" size={sz}><Icon name="person" size={sz === 'xs' || sz === 's' || sz === 'm' ? 's' : sz === 'l' ? 'm' : 'l'} /></IconObject>
                       <span style={{ fontFamily: 'monospace', fontSize: '0.6rem' }}>{sz}</span>
                     </div>
                   ))}
@@ -3085,6 +3174,30 @@ export default function App() {
 
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', margin: '1.5rem 0 0.75rem' }}>SummaryItem</div>
               <SummaryItem amount="RM 0,00" type="Income" />
+
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', margin: '1.5rem 0 0.75rem' }}>
+                SummaryItem — per-category iconColor (v1.3.0, closes G4)
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <SummaryItem
+                  icon={<Icon name="icon_wallet" size="m" />}
+                  iconColor="teal"
+                  iconAriaLabel="Available balance"
+                  amount="RM 1,240.00"
+                  type="Available"
+                />
+                <SummaryItem
+                  icon={<Icon name="icon_spending_alert" size="m" />}
+                  iconColor="yellow"
+                  shape="square"
+                  iconAriaLabel="Amount spent"
+                  amount="RM 860.00"
+                  type="Spent"
+                />
+              </div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.5rem' }}>
+                Same hard-coded badge as CardBalance, character-identical — G4 to its G3. Top row omits every new prop and renders unchanged.
+              </div>
             </div>
 
             <div>
@@ -3126,13 +3239,16 @@ export default function App() {
 
       {/* ── Modal ──────────────────────────────────────────────────── */}
       {tab === 'components' && (
-        <Section id="modal" title="Modal" description="Generic dialog container over a Blanket scrim: title + close, a flexible content slot, and a footer that composes real Buttons. Portaled to body; dialog a11y (aria-modal, focus trap, Escape).">
+        <Section id="modal" title="Modal" description="Generic dialog container over a Blanket scrim: optional leading header icon + title + close, a flexible content slot, and a footer that composes real Buttons. Portaled to body; dialog a11y (aria-modal, focus trap, Escape).">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
             <div className="showcase-interactive">
               <div className="showcase-interactive__label">
                 Interactive — opens a real overlay; ✕ / Escape / scrim click all close
               </div>
               <ModalDemo />
+              <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.75rem' }}>
+                Left: no <code>headerIconLeft</code> — the title renders exactly as it always has (verified sub-pixel identical). Right: <code>headerIconLeft</code> shares the centred cell, so icon+title centre as one unit.
+              </div>
             </div>
           </div>
         </Section>
