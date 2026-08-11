@@ -28,20 +28,26 @@ describe('Icon', () => {
     expect(container.querySelector('svg')).not.toBeNull()
   })
 
-  it.each(SIZES)('renders size %s with a dimension applied', size => {
+  // Icon composes ElementWrapper, so size is asserted through the wrapper's
+  // modifier class. These previously read `wrapper.style.width`, which only
+  // worked because ElementWrapper styled itself with an inline style={{}}
+  // object — the CLAUDE.md violation removed by carried-forward item I6.
+  // Icon's own size names map 1:1 onto ElementWrapper's (xs/s/m/l).
+  it.each(SIZES)('renders size %s through ElementWrapper', size => {
     const { container } = render(<Icon name="add" size={size} />)
     const wrapper = container.firstChild as HTMLElement
-    expect(wrapper.style.width).not.toBe('')
-    expect(wrapper.style.height).toBe(wrapper.style.width)
+    expect(wrapper).toHaveClass('mn-element-wrapper')
+    expect(wrapper).toHaveClass(`mn-element-wrapper--${size}`)
+    expect(wrapper.getAttribute('style')).toBeNull()
   })
 
-  it('renders visibly different dimensions for different sizes', () => {
+  it('renders a distinct wrapper size for different sizes', () => {
     const a = render(<Icon name="add" size="xs" />)
-    const xs = (a.container.firstChild as HTMLElement).style.width
+    const xs = (a.container.firstChild as HTMLElement).className
     a.unmount()
 
     const b = render(<Icon name="add" size="l" />)
-    const l = (b.container.firstChild as HTMLElement).style.width
+    const l = (b.container.firstChild as HTMLElement).className
 
     expect(xs).not.toBe(l)
   })

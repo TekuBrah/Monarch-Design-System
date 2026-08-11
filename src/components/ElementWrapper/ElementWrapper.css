@@ -1,0 +1,21 @@
+/* Converted from an inline style={{}} object (carried-forward item I6).
+   The ban exists because CSS audits work by grepping each component's .css
+   file — an inline object is invisible to that process and becomes a permanent
+   blind spot. Every value here was already token-backed and static per size,
+   and the seven sizes are a finite set, so they express as modifier classes.
+   Same resolution already applied to Avatar and Logo for the same reason. */
+.mn-element-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* === Sizes (square) === */
+.mn-element-wrapper--xs   { width: var(--brand-scale-300);  height: var(--brand-scale-300);  } /* 12px */
+.mn-element-wrapper--s    { width: var(--brand-scale-400);  height: var(--brand-scale-400);  } /* 16px */
+.mn-element-wrapper--m    { width: var(--brand-scale-500);  height: var(--brand-scale-500);  } /* 20px */
+.mn-element-wrapper--l    { width: var(--brand-scale-600);  height: var(--brand-scale-600);  } /* 24px */
+.mn-element-wrapper--xl   { width: var(--brand-scale-800);  height: var(--brand-scale-800);  } /* 32px */
+.mn-element-wrapper--xxl  { width: var(--brand-scale-1000); height: var(--brand-scale-1000); } /* 40px */
+.mn-element-wrapper--xxxl { width: var(--brand-scale-1200); height: var(--brand-scale-1200); } /* 56px */

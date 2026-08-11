@@ -27,6 +27,7 @@
 @import '../components/DatePicker/DatePicker.css';
 @import '../components/Divider/Divider.css';
 @import '../components/DonutChart/DonutChart.css';
+@import '../components/ElementWrapper/ElementWrapper.css';
 @import '../components/Field/Field.css';
 @import '../components/FilterChip/FilterChip.css';
 @import '../components/Header/HeaderBg.css';

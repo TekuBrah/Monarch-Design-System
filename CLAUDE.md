@@ -88,6 +88,40 @@ mirror no Figma variable.
 
 Never flatten alias chains to hardcoded values. Always emit `var(--x)` references.
 
+## Session start — non-negotiables
+
+Four rules that nothing in the tooling enforces. Each was learned the
+expensive way; the cost is recorded so none of them reads as ceremony.
+
+1. **Read the newest `MONARCH-CHAT-HANDOFF-MMDDYYYY.md` before doing anything
+   else.** There are 12+ at repo root and the filename gives no ordering hint
+   — `MMDDYYYY` does not sort chronologically, so "last alphabetically" is the
+   wrong file. Sort by date *content*, not by name.
+
+2. **No visible scrollbars anywhere, ever — hide the bar, never the
+   scrolling.** `scrollbar-width: none` + `-ms-overflow-style: none` +
+   `::-webkit-scrollbar { display: none }`, with `overflow-y: auto` retained.
+   Keyboard access must survive the bar being hidden and must be *verified*
+   after it is (axe's `scrollable-region-focusable`). `.mvp-home__carousel` is
+   the cautionary case: hiding the affordance left a region no keyboard user
+   could reach.
+
+3. **The local Figma MCP reads ONLY the active desktop tab.** A `whoami`
+   round-trip proves the *connection*, **not the document**. Proven both
+   directions this week: with the DS file active, `159:1856` resolved and the
+   flows node returned "no node could be found"; after Teku switched tabs, the
+   flows node resolved and the DS node did not. Before trusting any read,
+   confirm which document is active — `get_metadata` with no `nodeId` returns
+   the page list, which identifies the file.
+
+4. **Re-verify HEAD after any git action Teku takes during a live session.**
+   A Sourcetree merge or checkout moves this working directory mid-session.
+   Session-start verification is not enough. This week an entire built batch
+   was found sitting uncommitted on `main` — discovered only because a test
+   count was arithmetically impossible (456 against a 431 baseline reconciles
+   only if `Sheet` is in the tree, which it could not be on a branch cut
+   before the merge). In Sourcetree it looked completely normal.
+
 ## Structure
 
 Verified against disk 2026-08-07. **The showcase moved out of `src/` during
@@ -112,7 +146,7 @@ src/
     typography.css      # font-family var + 22 .type-* composite classes
     package.css         # source-level equivalent of dist/index.css —
                         #   HAND-MAINTAINED, one @import per component CSS file
-  components/<Name>/    # 48 component folders
+  components/<Name>/    # 49 component folders
   test/                 # vitest setup + type shims (setup.ts, *.d.ts)
 ```
 
@@ -189,8 +223,8 @@ component ships with no CSS, with no error at all).
 
 ## Component roster — current state
 
-**48 components are built** (`ls src/components/` — verified 2026-08-07), with
-**58 test files / 421 tests** and 46 showcase sections. The library is well past
+**49 components are built** (`ls src/components/` — verified 2026-08-11), with
+**59 test files / 472 tests** and 47 showcase sections. The library is well past
 "build the first component", which is what this section used to say.
 
 Direction for what comes next lives in `MONARCH-BUILD-ROADMAP.md`, not here —
@@ -284,7 +318,7 @@ done:
   real target or don't reference it.
 
 ## Showcase section pattern
-Every component's showcase entry in `src/App.tsx` (Components tab) must match
+Every component's showcase entry in `showcase/App.tsx` (Components tab) must match
 the existing wrapper exactly — this is the only pattern in use, do not invent
 variants of it:
 ```jsx
