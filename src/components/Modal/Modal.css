@@ -32,8 +32,21 @@
   padding: var(--brand-scale-600) var(--brand-scale-400) var(--brand-scale-400); /* 24 / 16 / 16 */
 }
 
-.mn-modal__title {
+/* The centred cell holds the optional leading icon AND the title, so the pair
+   centres as one unit. Measured from Figma (header 1321:12708, 343 wide): the
+   icon+title group is 147 wide at x=98, leaving 98 on both sides. Putting the
+   icon in the empty left track instead would have left-aligned it and broken
+   that. Both side tracks stay 1fr, so centring holds regardless of the icon. */
+.mn-modal__title-group {
   grid-column: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--brand-scale-100); /* 4px — Figma: icon at x=0 (24 wide), title at x=28 */
+  min-width: 0;
+}
+
+.mn-modal__title {
   margin: 0;
   text-align: center;
   color: var(--mapped-text-default-default);

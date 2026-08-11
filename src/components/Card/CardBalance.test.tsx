@@ -64,4 +64,34 @@ describe('CardBalance', () => {
       expect(await axe(container)).toHaveNoViolations()
     })
   })
+
+  describe('badge props', () => {
+    // NO-CHANGE PROOF: the four new props must reproduce exactly what was
+    // hard-coded before them — color="slate" size="l", circle, unnamed.
+    it('defaults the badge to the previously hard-coded values', () => {
+      const { container } = render(<CardBalance {...props} />)
+      const badge = container.querySelector('.mn-icon-object')!
+      expect(badge).toHaveClass('mn-icon-object--slate')
+      expect(badge).toHaveClass('mn-icon-object--l')
+      expect(badge).toHaveClass('mn-icon-object--circle')
+      expect(badge).not.toHaveAttribute('role')
+      expect(badge).not.toHaveAttribute('aria-label')
+    })
+
+    it('forwards each badge prop to IconObject', () => {
+      const { container } = render(
+        <CardBalance {...props} iconColor="green" iconSize="xs" shape="square" iconAriaLabel="Savings" />,
+      )
+      const badge = container.querySelector('.mn-icon-object')!
+      expect(badge).toHaveClass('mn-icon-object--green')
+      expect(badge).toHaveClass('mn-icon-object--xs')
+      expect(badge).toHaveClass('mn-icon-object--square')
+      expect(screen.getByRole('img', { name: 'Savings' })).toBeInTheDocument()
+    })
+
+    it('has no axe violations with a named badge', async () => {
+      const { container } = render(<CardBalance {...props} iconAriaLabel="Savings" />)
+      expect(await axe(container)).toHaveNoViolations()
+    })
+  })
 })

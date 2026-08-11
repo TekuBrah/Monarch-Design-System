@@ -1,9 +1,20 @@
 import React from 'react'
 import { IconObject } from '../IconObject'
+import type { IconObjectColor, IconObjectShape, IconObjectSize } from '../IconObject'
 import './CardBalance.css'
 
 export interface CardBalanceProps {
+  /** Icon shown inside the leading IconObject badge. */
   icon?: React.ReactNode
+  /** Badge tint — per-category colour. Defaults to the previously hard-coded `slate`. */
+  iconColor?: IconObjectColor
+  /** Badge size. Defaults to the previously hard-coded `l`. */
+  iconSize?: IconObjectSize
+  /** Badge shape. Defaults to `circle`, which was IconObject's implicit default here. */
+  shape?: IconObjectShape
+  /** Accessible name for the badge. Omitted, the badge stays decorative and
+   *  unnamed — which is what it was before this prop existed. */
+  iconAriaLabel?: string
   type: string
   name: string
   amount: string
@@ -11,12 +22,23 @@ export interface CardBalanceProps {
   className?: string
 }
 
-export function CardBalance({ icon, type, name, amount, onClick, className }: CardBalanceProps) {
+export function CardBalance({
+  icon,
+  iconColor = 'slate',
+  iconSize = 'l',
+  shape = 'circle',
+  iconAriaLabel,
+  type,
+  name,
+  amount,
+  onClick,
+  className,
+}: CardBalanceProps) {
   const classes = ['mn-card-balance', className].filter(Boolean).join(' ')
   const content = (
     <>
       <div className="mn-card-balance__header">
-        <IconObject color="slate" size="l">
+        <IconObject color={iconColor} size={iconSize} shape={shape} ariaLabel={iconAriaLabel}>
           {icon}
         </IconObject>
         <div className="mn-card-balance__text">

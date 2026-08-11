@@ -32,6 +32,25 @@
   display: flex;
   flex: 1 1 auto;
   min-width: 0;
+  /* Mirrors Field's .mn-field__stack exactly. Column + gap are inert with a
+     single child, so the unlabeled render is unchanged. */
+  flex-direction: column;
+  gap: var(--brand-scale-50); /* 2px label→input */
+}
+
+/* Mirrors .mn-field__label — same token, same type class, same cursor.
+   DELIBERATE DIVERGENCE, measured not estimated: this yields a 60px control,
+   exactly matching a labeled Field (measured: both 60), and 4px taller than
+   Figma's `Date range picker` (56). Figma gets 56 from 6px vertical padding
+   and a 4px label→value gap; 6px is off the --brand-scale ramp (4/8), and a
+   4px gap would fork the DS's labelling convention away from Field's 2px.
+   Matching Field was chosen over matching the height — one convention, all
+   tokens on-ramp, no literal.
+   Note the 4px is not all ours: Field itself renders 60 against its own Figma
+   node's 58, a pre-existing 2px delta this inherits rather than introduces. */
+.mn-datepicker__label {
+  color: var(--mapped-text-subtle-default);
+  cursor: text;
 }
 .mn-datepicker__input {
   width: 100%;
@@ -116,6 +135,9 @@
 .mn-datepicker--disabled .mn-datepicker__control {
   cursor: not-allowed;
 }
+/* Label follows the input's disabled colour per appearance, exactly as
+   Field.css does for .mn-field__label. */
+.mn-datepicker--disabled.mn-datepicker--standard .mn-datepicker__label,
 .mn-datepicker--disabled.mn-datepicker--standard .mn-datepicker__input {
   color: var(--mapped-text-disabled-on-color);
 }
@@ -125,6 +147,7 @@
 .mn-datepicker--disabled.mn-datepicker--standard .mn-datepicker__icon {
   color: var(--mapped-icon-disabled-on-color);
 }
+.mn-datepicker--disabled.mn-datepicker--subtle .mn-datepicker__label,
 .mn-datepicker--disabled.mn-datepicker--subtle .mn-datepicker__input {
   color: var(--mapped-text-disabled-default);
 }

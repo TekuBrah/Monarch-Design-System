@@ -6,6 +6,9 @@ export type DatePickerAppearance = 'standard' | 'subtle'
 
 export interface DatePickerProps {
   appearance?: DatePickerAppearance
+  /** Visible label inside the control, above the date. Mirrors `Field`'s
+   *  `label` exactly — same markup shape, same tokens, same association. */
+  label?: string
   placeholder?: string
   value?: string
   defaultValue?: string
@@ -22,7 +25,9 @@ export interface DatePickerProps {
   isInvalid?: boolean
   id?: string
   name?: string
-  /** Accessible name — this component has no visible label. */
+  /** Accessible name when no visible `label` is provided. When `label` is set
+   *  it names the input via `htmlFor` and this is not emitted — the same rule
+   *  `Field` uses, so the DS has one labelling convention rather than two. */
   ariaLabel?: string
   /** Showcase only — forces a visual state without interaction. */
   previewState?: 'hover' | 'focus'
@@ -30,6 +35,7 @@ export interface DatePickerProps {
 
 export function DatePicker({
   appearance = 'standard',
+  label,
   placeholder = 'mm/dd/yyyy',
   value,
   defaultValue,
@@ -68,6 +74,7 @@ export function DatePicker({
   const className = [
     'mn-datepicker',
     `mn-datepicker--${appearance}`,
+    label && 'mn-datepicker--labeled',
     isDisabled && 'mn-datepicker--disabled',
     isInvalid && 'mn-datepicker--invalid',
     previewState && `mn-datepicker--${previewState}`,
@@ -96,6 +103,11 @@ export function DatePicker({
         }}
       >
         <span className="mn-datepicker__stack">
+          {label && (
+            <label htmlFor={inputId} className="mn-datepicker__label type-body-caption">
+              {label}
+            </label>
+          )}
           <input
             ref={inputRef}
             id={inputId}
@@ -110,7 +122,7 @@ export function DatePicker({
             aria-expanded={open}
             aria-controls={showCalendar ? menuId : undefined}
             aria-invalid={isInvalid || undefined}
-            aria-label={ariaLabel}
+            aria-label={label ? undefined : ariaLabel}
             onChange={e => {
               if (value === undefined) setUncontrolledValue(e.target.value)
               onChange?.(e.target.value)

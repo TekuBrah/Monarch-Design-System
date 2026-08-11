@@ -9,7 +9,7 @@ const COLORS: IconObjectColor[] = [
   'gray', 'red', 'purple', 'slate', 'violet', 'ai',
 ]
 const SHAPES: IconObjectShape[] = ['circle', 'square']
-const SIZES: IconObjectSize[] = ['s', 'm', 'l', 'xl', 'xxl']
+const SIZES: IconObjectSize[] = ['xs', 's', 'm', 'l', 'xl', 'xxl']
 
 describe('IconObject', () => {
   it('renders without crashing', () => {

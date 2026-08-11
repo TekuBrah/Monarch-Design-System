@@ -18,8 +18,36 @@ describe('SummaryItem', () => {
     expect(screen.getByText('Available')).toBeInTheDocument()
   })
 
+  // NO-CHANGE PROOF: the four new badge props must reproduce exactly what was
+  // hard-coded before they existed — color="slate" size="l", circle, unnamed.
+  it('defaults the badge to the previously hard-coded values', () => {
+    const { container } = render(<SummaryItem {...props} />)
+    const badge = container.querySelector('.mn-icon-object')!
+    expect(badge).toHaveClass('mn-icon-object--slate')
+    expect(badge).toHaveClass('mn-icon-object--l')
+    expect(badge).toHaveClass('mn-icon-object--circle')
+    expect(badge).not.toHaveAttribute('role')
+    expect(badge).not.toHaveAttribute('aria-label')
+  })
+
+  it('forwards each badge prop to IconObject', () => {
+    const { container } = render(
+      <SummaryItem {...props} iconColor="teal" iconSize="xs" shape="square" iconAriaLabel="Wallet" />,
+    )
+    const badge = container.querySelector('.mn-icon-object')!
+    expect(badge).toHaveClass('mn-icon-object--teal')
+    expect(badge).toHaveClass('mn-icon-object--xs')
+    expect(badge).toHaveClass('mn-icon-object--square')
+    expect(screen.getByRole('img', { name: 'Wallet' })).toBeInTheDocument()
+  })
+
   it('has no axe violations in its default state', async () => {
     const { container } = render(<SummaryItem {...props} />)
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('has no axe violations with a named badge', async () => {
+    const { container } = render(<SummaryItem {...props} iconAriaLabel="Wallet" />)
     expect(await axe(container)).toHaveNoViolations()
   })
 })

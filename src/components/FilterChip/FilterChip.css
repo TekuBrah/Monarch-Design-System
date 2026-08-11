@@ -38,12 +38,12 @@
   gap: var(--brand-scale-200);
 }
 .mn-filter-chip[data-icon-left="true"][data-icon-right="true"] {
-  /* FAIL LOUD: Figma source specifies 10px here — not on our --brand-scale
-     ramp (nearest: --brand-scale-200=8px, --brand-scale-300=12px). No token
-     matches. Recorded as a literal per design source; needs a Figma
-     Variables fix to align to the scale, not a code-side derivation. */
-  padding-left: 10px;
-  padding-right: 10px;
+  /* Figma specifies 10px = --brand-scale-250. The previous FAIL-LOUD comment
+     here claimed no token matched, listing only 200 (8px) and 300 (12px) as
+     nearest — it skipped 250, which sits between them and is exactly 10px.
+     Pure substitution: the computed value is unchanged. */
+  padding-left: var(--brand-scale-250);
+  padding-right: var(--brand-scale-250);
   gap: var(--brand-scale-200);
 }
 

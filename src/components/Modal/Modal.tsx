@@ -12,6 +12,11 @@ export interface ModalProps {
   onClose: () => void
   /** Header title (Figma models this as the `{Header}` text prop). */
   title?: string
+  /** Optional node before the title, inside the centred group — same name and
+   *  same `ReactNode` shape as `Sheet`'s, so the two overlays don't carry two
+   *  names for one slot. Positioned differently because the headers differ:
+   *  Modal centres icon+title as a unit, Sheet left-aligns them. */
+  headerIconLeft?: React.ReactNode
   /** Main content — any app-provided nodes. This is the flexible middle slot:
    *  the Modal is a generic container, so whatever a feature needs goes here. */
   children?: React.ReactNode
@@ -37,6 +42,7 @@ export function Modal({
   isOpen,
   onClose,
   title,
+  headerIconLeft,
   children,
   footer,
   closeOnScrimClick = true,
@@ -108,13 +114,16 @@ export function Modal({
       >
         <div className="mn-modal__header">
           <span className="mn-modal__header-side" aria-hidden="true" />
-          {title ? (
-            <h2 id={titleId} className="mn-modal__title type-body-m-semibold">
-              {title}
-            </h2>
-          ) : (
-            <span className="mn-modal__title" aria-hidden="true" />
-          )}
+          <div className="mn-modal__title-group">
+            {headerIconLeft}
+            {title ? (
+              <h2 id={titleId} className="mn-modal__title type-body-m-semibold">
+                {title}
+              </h2>
+            ) : (
+              <span className="mn-modal__title" aria-hidden="true" />
+            )}
+          </div>
           <span className="mn-modal__header-side mn-modal__header-side--end">
             <IconButton
               variant="tertiary"

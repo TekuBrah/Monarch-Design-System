@@ -17,7 +17,7 @@ export type IconObjectColor =
   | 'ai'
 
 export type IconObjectShape = 'circle' | 'square'
-export type IconObjectSize = 's' | 'm' | 'l' | 'xl' | 'xxl'
+export type IconObjectSize = 'xs' | 's' | 'm' | 'l' | 'xl' | 'xxl'
 
 export interface IconObjectProps {
   color?: IconObjectColor

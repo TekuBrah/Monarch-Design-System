@@ -9,9 +9,11 @@
   min-width: 128px;
   max-width: 172px;
   box-sizing: border-box;
-  /* Figma specifies 10px, off the brand-scale ramp (8/12) — rounded to the
-     nearer step per approval. */
-  padding: var(--brand-scale-200);
+  /* Figma specifies 10px = --brand-scale-250. This previously read 8px behind
+     a comment claiming 10px was off the ramp; that claim was wrong — 250 sits
+     between 200 and 300 and is exactly 10px, line 40 below already used it for
+     the header gap, and Field.css uses it for padding. Corrected per approval. */
+  padding: var(--brand-scale-250);
   background: var(--mapped-surface-elevation-default);
   border-radius: var(--brand-scale-200); /* 8px */
   box-shadow: var(--shadow-subtlest);

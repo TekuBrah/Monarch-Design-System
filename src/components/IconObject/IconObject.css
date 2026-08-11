@@ -18,6 +18,9 @@
 }
 
 /* === Sizes (outer container) === */
+/* xs extends the existing ratio scale downward with a token that already
+   exists (--brand-scale-400 = 16px). No new token was introduced. */
+.mn-icon-object--xs  { width: var(--brand-scale-400);  height: var(--brand-scale-400);  } /* 16px */
 .mn-icon-object--s   { width: var(--brand-scale-500);  height: var(--brand-scale-500);  } /* 20px */
 .mn-icon-object--m   { width: var(--brand-scale-600);  height: var(--brand-scale-600);  } /* 24px */
 .mn-icon-object--l   { width: var(--brand-scale-800);  height: var(--brand-scale-800);  } /* 32px */
