@@ -1,0 +1,195 @@
+/* Bottom Sheet — Figma main component 159:1856 (Monarch-design-system).
+   Bottom-anchored, full-width, hug-height. No max-width: the panel spans the
+   viewport. (A desktop cap is a parked design question, not decided here.) */
+.mn-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Figma root: justify-end — sheet sits on the bottom edge */
+  box-sizing: border-box;
+  /* No padding, unlike Modal — the sheet is flush to the viewport edges. */
+}
+
+/* Blanket (rendered as a child) is position:fixed z-index:100 via its own CSS;
+   the panel sits above it in this stacking context. */
+.mn-sheet__panel {
+  position: relative;
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  /* MAX-HEIGHT AND TOP INSET ARE NOT AUTHORED IN FIGMA. 159:1856 draws a
+     hug-height sheet with no cap; this behaviour is an instructed addition,
+     recorded here so it is never mistaken for a Figma specification.
+     The inset clears the status bar: StatusBar (125:294) measures 44px, which
+     is off the --brand-scale ramp (1000=40 / 1100=48). Rounded UP to
+     --brand-scale-1100 (48px) per approval — a 4px overshoot — matching the
+     BottomNavigation 62→64 and StatusBar 5→4 precedents, rather than adding a
+     third permanent literal for a value that will never be tokenised.
+     Sheet is the FIRST component in this codebase to use a viewport unit or a
+     max-height. dvh, not vh: mobile browser chrome collapses, and vh would let
+     the sheet run under the URL bar. The calc() is a layout expression
+     (viewport minus one inset, each token at its own value), not the banned
+     curve-fit between unrelated scale steps. */
+  max-height: calc(100dvh - var(--brand-scale-1100));
+  background: var(--mapped-surface-elevation-default);
+  /* Figma binds the fill to Neutral01 (#ffffff), a raw brand primitive that
+     would not dark-flip. Normalized to the semantic surface token per approval
+     — the same already-approved normalization applied to Modal's card. */
+  border-radius: var(--brand-scale-200) var(--brand-scale-200) 0 0; /* Border Radius/md top only, none at the bottom */
+  overflow: clip;
+  /* No drop shadow — Figma's sheet has none; the Blanket scrim provides depth. */
+}
+
+/* --- Header (optional region) ------------------------------------------- */
+/* Left-aligned title + close, unlike Modal's spacer-centred title. */
+.mn-sheet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  padding: var(--brand-scale-600) var(--brand-scale-400) var(--brand-scale-400); /* 24 / 16 / 16 */
+}
+
+.mn-sheet__header-lead,
+.mn-sheet__header-trail {
+  display: flex;
+  align-items: center;
+  /* Figma authors no right-side action slot, so it specifies no gap for one.
+     Mirrors the lead group's 4px rather than inventing a value. `gap` collapses
+     to nothing when a slot is empty — no residual space. */
+  gap: var(--brand-scale-100); /* 4px */
+  min-width: 0;
+}
+
+.mn-sheet__header-trail {
+  flex-shrink: 0;
+}
+
+.mn-sheet__title {
+  margin: 0;
+  color: var(--mapped-text-default-default);
+}
+
+/* --- Content (always present, the sole scrolling region) ----------------- */
+.mn-sheet__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--brand-scale-400); /* 16px */
+  /* Shrink-only: the sheet hugs its content and grows with it, capping at the
+     panel max-height. It never opens at the cap regardless of content. */
+  flex: 0 1 auto;
+  min-height: 0;
+  box-sizing: border-box;
+  width: 100%;
+  /* Sides, plus a bottom affordance. Content must never end flush with the
+     clip boundary: a row sliced mid-element is what tells the reader there is
+     more below, and a cap landing cleanly between rows would otherwise look
+     finished.
+     UNCONDITIONAL, and the 16px cost is accepted deliberately. On a sheet
+     short enough not to scroll this stacks with the actions region's 16px
+     padding-top, widening Figma's 16px content→actions gap to 32px.
+     A ResizeObserver-driven conditional was built and removed. NOT because RO
+     is broken — it works correctly in any real browser, and nothing here
+     should be read as a caution against RO in the DS generally. The reason is
+     that it cannot be VERIFIED here: this project's standard is getComputedStyle
+     in both themes, and RO callbacks are delivered with the frame-rendering
+     steps, which the preview pane suspends. Behaviour that this environment can
+     never check should not ship in a library component, so the visible 16px
+     blemish is preferred over a correctness claim nobody can test. */
+  padding: 0 var(--brand-scale-400) var(--brand-scale-400);
+  overflow-y: auto;
+  /* No visible scrollbar, anywhere — hide the bar, never the scrolling.
+     overflow-y stays `auto`, so wheel and keyboard access survive. */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge */
+}
+
+.mn-sheet__content::-webkit-scrollbar {
+  display: none; /* Chrome / Safari */
+}
+
+/* Children must not shrink to fit the capped container. Flex items default to
+   flex-shrink: 1, so in a column flex scroll region they silently COMPRESS to
+   the available height instead of overflowing it — the container then reports
+   scrollHeight === clientHeight and nothing ever scrolls. Measured, not
+   assumed: a 2000px child inside the capped panel collapsed to 614px before
+   this rule existed. */
+.mn-sheet__content > * {
+  flex-shrink: 0;
+}
+
+/* DELIBERATE DIVERGENCE — no Figma source. Figma draws no headerless bottom
+   sheet, so it specifies no top inset for one. With the header absent, its
+   24px padding-top disappears with it and content would sit flush under the
+   8px rounded top corner. 16px is the smallest on-ramp value that clears it,
+   and is symmetric with the affordance padding already on the other end of
+   this region.
+   Driven by the component's own `hasHeader` boolean, NOT by `:first-child`.
+   Position-dependent selectors describe where an element sits, not what state
+   it is in: a `:first-child` rule would silently lose this inset the moment
+   anything is inserted above the content region (a drag handle, the parked
+   scroll shadow), with no error and no failing test. */
+.mn-sheet__content--headerless {
+  padding-top: var(--brand-scale-400); /* 16px */
+}
+
+/* --- Actions (optional region) ------------------------------------------- */
+.mn-sheet__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--brand-scale-400); /* 16px */
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--brand-scale-400) var(--brand-scale-400) 0; /* 16 / 16 / 0 — the region below supplies the bottom space */
+}
+
+/* Figma's action region is a full-width vertical button stack. */
+.mn-sheet__actions > * {
+  width: 100%;
+}
+
+/* --- Home indicator (optional region) ------------------------------------ */
+.mn-sheet__home-indicator-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--brand-scale-600) var(--brand-scale-400) 0; /* 24 / 16 / 0 */
+}
+
+/* The iOS home indicator — system chrome the phone draws over every app, NOT
+   BottomNavigation. Figma authors it as one component (`Navbar/home indicator`,
+   158:468) instanced in both `Bottom Sheet` and `BottomNavigation`; in code it
+   is duplicated here from .mn-bottom-nav__home-indicator, deliberately and per
+   approval. Extracting a shared HomeIndicator component is logged for a later
+   session — keep the two copies in step until then. */
+.mn-sheet__home-indicator {
+  /* Figma: fixed decorative pull-bar dimensions, not scale-derived. */
+  width: 134px;
+  height: 5px;
+  margin: var(--brand-scale-250) 0; /* 10px */
+  border-radius: var(--brand-scale-1800);
+  background: var(--mapped-border-subtlest-default);
+}
+
+/* --- Bottom-most region ---------------------------------------------------
+   Every region below the content is optional, so whichever renders last has to
+   supply the sheet's bottom space itself. 24px matches both Figma's own pt-24
+   above the home indicator and Modal's footer bottom padding.
+   When the content region is bottom-most, this and the 16px affordance padding
+   are both `padding-bottom` on the SAME element — they do not sum. This wins,
+   on specificity (0,2,0 vs 0,1,0), not on source order, so the computed value
+   is 24px and the affordance is still satisfied because 24 > 16. */
+.mn-sheet__actions:last-child,
+.mn-sheet__content:last-child {
+  padding-bottom: var(--brand-scale-600); /* 24px */
+}

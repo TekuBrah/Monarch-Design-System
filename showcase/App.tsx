@@ -45,6 +45,7 @@ import { TimePicker } from '@monarch/design-system'
 import { MenuItem } from '@monarch/design-system'
 import { Menu } from '@monarch/design-system'
 import { Modal } from '@monarch/design-system'
+import { Sheet } from '@monarch/design-system'
 import { ProgressBar } from '@monarch/design-system'
 import { ProgressRing } from '@monarch/design-system'
 import { Slider } from '@monarch/design-system'
@@ -982,6 +983,94 @@ function ModalDemo() {
   )
 }
 
+// ── Sheet interactive demos ──
+
+type SheetVariant = 'full' | 'headerless' | 'no-actions' | 'tall' | 'back-chevron'
+
+const SHEET_VARIANTS: { key: SheetVariant; label: string; note: string }[] = [
+  { key: 'full', label: 'Full', note: 'header + content + actions + home indicator' },
+  { key: 'headerless', label: 'Headerless', note: 'no header region at all — what G2’s action sheet composes over' },
+  { key: 'no-actions', label: 'No actions', note: 'field lives inside the scrolling content instead' },
+  { key: 'tall', label: 'Tall / scrolling', note: 'capped at the viewport; content scrolls, no visible scrollbar' },
+  { key: 'back-chevron', label: 'Back chevron', note: 'showCloseButton={false} — one dismissal affordance, not two' },
+]
+
+function SheetDemo() {
+  const [open, setOpen] = useState<SheetVariant | null>(null)
+  const close = () => setOpen(null)
+
+  const body = (
+    <p className="type-body-m" style={{ margin: 0, color: 'var(--mapped-text-default-default)' }}>
+      The content region is the only part that scrolls — header, actions and the home indicator stay
+      fixed.
+    </p>
+  )
+
+  return (
+    <>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+        {SHEET_VARIANTS.map(v => (
+          <Button key={v.key} variant="secondary" size="m" label={v.label} onClick={() => setOpen(v.key)} />
+        ))}
+      </div>
+
+      <Sheet
+        isOpen={open === 'full'}
+        onClose={close}
+        title="Filter transactions"
+        headerAction={<Link label="Reset" appearance="default" size="m" iconBefore={null} iconAfter={null} onClick={e => e.preventDefault()} />}
+        actions={
+          <>
+            <Button variant="primary" size="l" label="Apply" onClick={close} />
+            <Button variant="secondary" size="l" label="Cancel" onClick={close} />
+          </>
+        }
+      >
+        {body}
+      </Sheet>
+
+      <Sheet isOpen={open === 'headerless'} onClose={close} ariaLabel="Choose a source"
+        actions={<Button variant="secondary" size="l" label="Cancel" onClick={close} />}>
+        <p className="type-body-m" style={{ margin: 0, color: 'var(--mapped-text-default-default)' }}>
+          No header region is rendered — not an empty one. The content region supplies its own top
+          inset so nothing sits flush under the rounded corner.
+        </p>
+      </Sheet>
+
+      <Sheet isOpen={open === 'no-actions'} onClose={close} title="Add a note">
+        <Field label="Note" placeholder="What was this for?" />
+        {body}
+      </Sheet>
+
+      <Sheet
+        isOpen={open === 'back-chevron'}
+        onClose={close}
+        title="Receipt options"
+        headerIconLeft={
+          <IconButton variant="tertiary" size="s" ariaLabel="Back" icon={<Icon name="arrow_back" size="l" />} onClick={close} />
+        }
+        showCloseButton={false}
+      >
+        <p className="type-body-m" style={{ margin: 0, color: 'var(--mapped-text-default-default)' }}>
+          The ✕ is suppressed explicitly — it is never auto-hidden just because a leading slot was
+          filled.
+        </p>
+      </Sheet>
+
+      <Sheet isOpen={open === 'tall'} onClose={close} title="Transaction detail">
+        {Array.from({ length: 24 }, (_, i) => (
+          <ListItem
+            key={`sheet-row-${i}`}
+            title={`Merchant ${i + 1}`}
+            titleInfo="12 Aug 2026"
+            amount={`−RM ${(i + 1) * 12}.40`}
+          />
+        ))}
+      </Sheet>
+    </>
+  )
+}
+
 // ── Slider interactive demo (single thumb) ──
 
 function SliderDemo() {
@@ -1108,6 +1197,7 @@ const SIDEBAR_CATEGORIES: { name: string; items: SidebarSection[] }[] = [
   ] },
   { name: 'Overlays', items: [
     { slug: 'modal', label: 'Modal' },
+    { slug: 'sheet', label: 'Sheet' },
     { slug: 'blanket', label: 'Blanket' },
   ] },
   { name: 'Media & Branding', items: [
@@ -3044,6 +3134,29 @@ export default function App() {
               </div>
               <ModalDemo />
             </div>
+          </div>
+        </Section>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Sheet ──────────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <Section id="sheet" title="Sheet" description="Bottom-anchored, full-width dialog over a Blanket scrim. Every region except the content is optional; the content is the only thing that scrolls, capped at the viewport with no visible scrollbar.">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
+            <div className="showcase-interactive">
+              <div className="showcase-interactive__label">
+                Interactive — opens a real overlay; ✕ / Escape / scrim click all close
+              </div>
+              <SheetDemo />
+            </div>
+            <ul style={{ margin: 0, paddingLeft: '1.1rem', color: 'var(--mapped-text-subtle-default)', fontSize: '0.8rem', lineHeight: 1.7 }}>
+              {SHEET_VARIANTS.map(v => (
+                <li key={v.key}>
+                  <strong style={{ color: 'var(--mapped-text-default-default)' }}>{v.label}</strong> — {v.note}
+                </li>
+              ))}
+            </ul>
           </div>
         </Section>
       )}
