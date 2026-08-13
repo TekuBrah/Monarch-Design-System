@@ -87,6 +87,17 @@ button.mn-list-item:focus-visible {
      80x40, i.e. 2:1 — the aspect ratio keeps the slot proportionate at
      whatever width survives. */
   min-width: var(--brand-scale-1400); /* 72px */
+  /* Ceiling as well as floor. Without it `flex: 1 1 auto` let the slot absorb
+     every pixel of leftover row width, and `aspect-ratio: 2` turned that width
+     into height — inflating chart rows to 56-83px (measured) against 44px for
+     chartless rows. Pinning both bounds to 72px gives Figma's 2:1 sparkline at
+     72x36 and restores 44px row parity.
+     72px because the ramp has no 80px step (--brand-scale-1400 is 72,
+     1500 is 96) — a Figma Variables gap, not a curve-fit.
+     `flex` is deliberately left at `1 1 auto`: measured A/B, max-width alone is
+     load-bearing and `flex: 0 1 auto` changes no computed value once both
+     bounds are pinned. */
+  max-width: var(--brand-scale-1400); /* 72px */
   aspect-ratio: 2;
 }
 

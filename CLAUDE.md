@@ -224,7 +224,17 @@ component ships with no CSS, with no error at all).
 ## Component roster — current state
 
 **49 components are built** (`ls src/components/` — verified 2026-08-11), with
-**59 test files / 472 tests** and 47 showcase sections. The library is well past
+**59 test files / 487 tests** and 47 showcase sections.
+
+> **Test count history.** This line read *472 tests* and was stale by one: it was
+> recorded on 2026-08-11 *before* commit `6bacfe8` landed later the same day,
+> which added `it('defaults to size l')` to `ElementWrapper.test.tsx` (it also
+> renamed two tests, netting zero). The v1.3.0 baseline is therefore **473**.
+> The v1.4.0 gap batch added **14** tests — `Label.tone` (4), `Link.weight` (6:
+> a 2×2 `it.each` matrix plus a default-preservation and an `m`-invariance case),
+> `Icon` `logo_monarch` + size `xl` (2), and `ListItem` chart-slot gating (2) —
+> for a current total of **487**, with the file count unchanged at 59 (all
+> additive: no new test files, no existing test modified). The library is well past
 "build the first component", which is what this section used to say.
 
 Direction for what comes next lives in `MONARCH-BUILD-ROADMAP.md`, not here —

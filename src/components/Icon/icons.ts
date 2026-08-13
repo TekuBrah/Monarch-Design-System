@@ -89,6 +89,15 @@ import CIconHealthcare from '../../../Assets/icons-custom/icon_healthcare.svg?re
 import CIconHealthcare1 from '../../../Assets/icons-custom/icon_healthcare_1.svg?react'
 import CIconHome from '../../../Assets/icons-custom/icon_home.svg?react'
 import CIconMonarchacademy from '../../../Assets/icons-custom/icon_monarchacademy.svg?react'
+/* logo_monarch is the Monarch brand mark, which Figma models as a Logo, not an
+   Icon (it lives on the "Logos ( currency, flag etc )" page — the Icon set has
+   zero logo-class glyphs across 10,655 symbols). Registering it here crosses
+   that boundary DELIBERATELY: `Icon` tints via currentColor and `Logo` does
+   not, and the AI FAB needs the mark white on a blue-violet gradient.
+   Hand-authored from Figma's served Thick geometry (node 461:105), rescaled
+   0.75 onto the house 0 0 24 24 viewBox with the 24x14 artwork at y 5..19.
+   NOT produced by scripts/normalize-custom-icons.mjs — see docs. */
+import CLogoMonarch from '../../../Assets/icons-custom/logo_monarch.svg?react'
 import CIconMore from '../../../Assets/icons-custom/icon_more.svg?react'
 import CIconPdf from '../../../Assets/icons-custom/icon_pdf.svg?react'
 import CIconReceive from '../../../Assets/icons-custom/icon_receive.svg?react'
@@ -219,4 +228,5 @@ export const ICONS = {
   // Custom — Other
   icon_pdf:               CIconPdf,
   icon_monarchacademy:    CIconMonarchacademy,
+  logo_monarch:           CLogoMonarch,
 } as const

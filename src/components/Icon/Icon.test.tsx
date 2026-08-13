@@ -52,6 +52,25 @@ describe('Icon', () => {
     expect(xs).not.toBe(l)
   })
 
+  // logo_monarch is the Monarch brand mark, registered as an Icon rather than a
+  // Logo on purpose — Icon tints via currentColor, Logo does not, and the AI FAB
+  // needs it white on a gradient. See docs/component-tokens.md.
+  it('renders the logo_monarch brand mark', () => {
+    const { container } = render(<Icon name="logo_monarch" />)
+    expect(container.querySelector('svg')).not.toBeNull()
+  })
+
+  // 'xl' (32px) is deliberately excluded from SIZES above so that list stays as
+  // it was; it is asserted here instead. It exists for the FAB's 32x32 glyph,
+  // which is unreachable at 'l' (24px).
+  it('renders size xl through ElementWrapper', () => {
+    const { container } = render(<Icon name="logo_monarch" size="xl" />)
+    const wrapper = container.firstChild as HTMLElement
+    expect(wrapper).toHaveClass('mn-element-wrapper')
+    expect(wrapper).toHaveClass('mn-element-wrapper--xl')
+    expect(wrapper.getAttribute('style')).toBeNull()
+  })
+
   it('has no axe violations in its default state', async () => {
     const { container } = render(<Icon name="add" />)
     expect(await axe(container)).toHaveNoViolations()

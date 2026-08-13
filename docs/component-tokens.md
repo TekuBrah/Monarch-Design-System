@@ -300,7 +300,7 @@ A sized, colour-inheriting wrapper around a single Material Round SVG. Renders `
 | Prop | Type | Default | Notes |
 |---|---|---|---|
 | `name` | `IconName` | — | Required. Key of the bundled icon registry |
-| `size` | `IconSize` | `'m'` | `'xs'` \| `'s'` \| `'m'` \| `'l'` |
+| `size` | `IconSize` | `'m'` | `'xs'` \| `'s'` \| `'m'` \| `'l'` \| `'xl'` |
 
 ### Size → token mapping
 
@@ -310,14 +310,17 @@ A sized, colour-inheriting wrapper around a single Material Round SVG. Renders `
 | `s` | 16px | `s` | `--brand-scale-400` |
 | `m` | 20px | `m` | `--brand-scale-500` |
 | `l` | 24px | `l` | `--brand-scale-600` |
+| `xl` | 32px | `xl` | `--brand-scale-800` |
+
+**`xl` added in v1.4.0.** It exposes a step `ElementWrapper` already implemented and that Figma already models (`<element>` variant `Size=XL 32`, node `49:10056`) — no new token, no new CSS. It exists because the AI FAB's interior glyph is 32×32, which is unreachable at `l` (24px). `Icon.test.tsx`'s `SIZES` array is a hardcoded literal, not derived from `IconSize`, so widening the union left it valid and untouched; `xl` is covered by its own test.
 
 ### Bundled set
 
-**101 icons total** — 66 Material Round + 35 Custom. All keys are in `IconName` (derived from `keyof typeof ICONS`). (Icons are added on-demand as components need them, not front-loaded — this list grows across sessions; verify against `icons.ts` directly rather than trusting a stale count here if it's been a while.)
+**102 icons total** — 66 Material Round + 36 Custom. All keys are in `IconName` (derived from `keyof typeof ICONS`). (Icons are added on-demand as components need them, not front-loaded — this list grows across sessions; verify against `icons.ts` directly rather than trusting a stale count here if it's been a while.)
 
 **Material Round (66):** `add`, `remove`, `close`, `check`, `edit`, `delete`, `content_copy`, `refresh`, `share`, `send`, `download`, `upload`, `open_in_new`, `attach_file`, `home`, `menu`, `arrow_back`, `arrow_forward`, `arrow_upward`, `arrow_downward`, `chevron_left`, `chevron_right`, `expand_more`, `expand_less`, `unfold_more`, `search`, `filter_list`, `sort`, `settings`, `tune`, `more_vert`, `more_horiz`, `info`, `warning`, `error`, `check_circle`, `done`, `cancel`, `remove_circle`, `help_outline`, `visibility`, `visibility_off`, `person`, `account_circle`, `group`, `login`, `logout`, `notifications`, `mail`, `dashboard`, `calendar_today`, `calendar_month`, `schedule`, `link`, `star`, `star_border`, `favorite`, `favorite_border`, `radio_button_unchecked`, `radio_button_checked`, `check_box`, `check_box_outline_blank`, `signal_cellular_alt`, `wifi`, `receipt_long`, `question_mark`
 
-**Custom (35):** `icon_finance`, `icon_bank`, `icon_wallet`, `icon_stocks`, `icon_crypto`, `icon_gold`, `icon_battery_horizontal`, `icon_transfer`, `icon_receive`, `icon_buy_and_sell_crypto`, `icon_crypto_transfers`, `icon_grocery`, `icon_grocery_1`, `icon_food`, `icon_car`, `icon_healthcare`, `icon_healthcare_1`, `icon_shopping`, `icon_bills`, `icon_budget`, `icon_duration`, `icon_aiinsights`, `icon_aimage`, `icon_track_spending`, `icon_spending_alert`, `icon_scheduled_payments`, `icon_automatic_savings`, `icon_home`, `icon_more`, `icon_chevron_expand_less`, `icon_chevron_expand_more`, `icon_triangle_up`, `icon_triangle_down`, `icon_pdf`, `icon_monarchacademy`
+**Custom (36):** `icon_finance`, `icon_bank`, `icon_wallet`, `icon_stocks`, `icon_crypto`, `icon_gold`, `icon_battery_horizontal`, `icon_transfer`, `icon_receive`, `icon_buy_and_sell_crypto`, `icon_crypto_transfers`, `icon_grocery`, `icon_grocery_1`, `icon_food`, `icon_car`, `icon_healthcare`, `icon_healthcare_1`, `icon_shopping`, `icon_bills`, `icon_budget`, `icon_duration`, `icon_aiinsights`, `icon_aimage`, `icon_track_spending`, `icon_spending_alert`, `icon_scheduled_payments`, `icon_automatic_savings`, `icon_home`, `icon_more`, `icon_chevron_expand_less`, `icon_chevron_expand_more`, `icon_triangle_up`, `icon_triangle_down`, `icon_pdf`, `icon_monarchacademy`, `logo_monarch`
 
 Add new icons by importing in `src/components/Icon/icons.ts` and adding an entry to the `ICONS` const.
 
@@ -329,6 +332,49 @@ Source SVGs in `Assets/icons-custom/` had hardcoded `fill="black"` on their path
 - Files renamed to `lowercase_underscore.svg` convention (spaces and hyphens → `_`) so they can be used as static ES module imports
 
 The `fill="none"` on each SVG's root element is intentionally left untouched. Logo SVGs in `Assets/logo/` were **not touched** — they keep their original fills because logos are full-colour brand assets, not recolourable icons.
+
+**`logo_monarch.svg` is NOT owned by this script.** It was produced by a one-off coordinate transform of Figma's served geometry (documented below) — outside the icon pipeline, not by any script in `scripts/` — and already ships `fill="currentColor"`. The script only rewrites `fill="#000000"` / `#000` / `black`, so re-running it would be a no-op on this file — but nobody should assume the script produced it or would regenerate it. It has **no stroke handling at all**, which matters because the Figma source variant this mark came from exists in two forms, one of which carries a stroke.
+
+### Brand mark: `logo_monarch` (a Figma **Logo** registered as a DS **Icon**)
+
+**Figma source:** `logo_monarch / Style=Thick`, vector node `461:105`, on the DS library's `↳ Logos ( currency, flag etc )` page.
+
+**This deliberately crosses a Figma modelling boundary.** In Figma the Monarch mark is a **Logo**, not an Icon — the Icon component set contains **zero** logo-class glyphs (verified exhaustively: 10,655 symbols on the Icon page, no name matching `monarch` or `logo`). It is registered here as an Icon anyway because:
+
+- **`Icon` tints via `currentColor`; `Logo` does not.** `Logo` renders brand assets at their authored colours by design (see the Logo entry's "Critical rule: no colour tokens").
+- **The AI FAB needs the mark white on a blue-violet gradient.** `IconObject.css` sets `color: var(--mapped-text-primary-on-color)` for exactly this, and only a `currentColor` child can inherit it. The previous `<Logo name="monarch_logo_style_thick">` ignored that and rendered `#046EFF` blue on a blue-violet gradient.
+
+The record should say this was a considered crossing, not an oversight.
+
+**Which variant, and why it matters.** `logo_monarch` has two Figma variants that are the *same drawing anamorphically rescaled* — `Style=Thick` is `Style=Default` scaled ×1.2000 in x and ×1.2727 in y (verified coordinate-by-coordinate; not a crop, not a redraw). They project differently into a 32px slot:
+
+| variant | glyph in a 32px slot |
+|---|---|
+| `Style=Default` | 26.67 × 14.97 |
+| **`Style=Thick`** (used) | **32.0 × 18.667** |
+
+Settled by measuring the FAB's own vector in `casestudy_02`: **32 × 18.66666603088379**, corroborated by node identity (`461:105` = Thick; Default's is `461:103`) and by path-data scaling.
+
+**Authoring transform** — from Figma's *served* geometry (`viewBox 0 0 32 18.6667`, `fill="white"`, **no stroke, no clip-path**), scaled ×0.75 onto the house viewBox and translated so the 24×14 artwork is vertically centred:
+
+| stage | first path `d` |
+|---|---|
+| served (32 × 18.6667) | `M0.000642333 0.571493L3.37158 3.61919L6.22358 18.6662H3.4303…` |
+| ×0.75 (24 × 14, y 0..14) | `M0.00048 0.42862L2.52868 2.71439L4.66769 13.99965H2.57273…` |
+| `translate(0,+5)` (y 5..19) | `M0.00048 5.42862L2.52868 7.71439L4.66769 18.99965H2.57273…` |
+
+Final extents **x 0..24, y 5..19** on `viewBox="0 0 24 24"` — the house convention, unanimous across all other icons.
+
+**Deliberately NOT sourced from `Assets/logo/brand/Monarch logo, Style = Thick.svg`.** That export carries `stroke="#046EFF" stroke-width="0.4"` plus a `<g clip-path>` wrapper that Figma's own serve does not, and **zero other custom icons in this repo use stroke**. Its path `d` data is identical to the served geometry (matching to five decimals after the ×0.75), so the two agree on the drawing and differ only in the wrapper. For the record, `clip0_532_67` is `<rect width="24" height="14"/>` — exactly the artwork bounding box, so it is a **no-op for the fills** and bites only the stroke's 0.2px overhang. Dropping both was safe.
+
+**Rendered geometry, measured** (`Icon size="xl"` inside `IconObject size="xxl"`, identical in light and dark):
+
+| | glyph W × H | left | right | top | bottom | computed colour |
+|---|---|---|---|---|---|---|
+| Figma target | 32 × 18.667 | 12 | 12 | 18.667 | 18.667 | white |
+| **Implementation** | **32 × 18.667** | **12** | **12** | **18.667** | **18.667** | `rgb(255,255,255)` |
+
+No `hasPadding`, no custom sizing — `IconObject`'s existing flex centring places it exactly. (A 4px padding was measured against this and changes nothing; see the Icon Object entry.)
 
 ### Color inheritance
 
@@ -604,17 +650,36 @@ Form field label with optional required indicator and leading/trailing icon slot
 |---|---|---|---|
 | `label` | `string` | `'Label'` | Visible text |
 | `size` | `'m' \| 's'` | `'s'` | m = 16px / s = 14px body |
+| `tone` | `'default' \| 'subtle'` | `'default'` | Governs **both** the text and the icon slots — added v1.4.0 |
 | `isRequired` | `boolean` | `false` | Shows `*` in error color after label text |
 | `iconBefore` | `ReactNode` | — | Leading icon slot (Figma uses `help_outline`) |
 | `iconAfter` | `ReactNode` | — | Trailing icon slot (Figma uses `help_outline`) |
 
 ### Token mapping
 
-| Element | Token |
-|---|---|
-| Label text | `--mapped-text-default-default` |
-| Required `*` | `--mapped-text-error-default` |
-| Icon color | `--mapped-icon-default-default` |
+| Element | `tone="default"` | `tone="subtle"` |
+|---|---|---|
+| Label text | `--mapped-text-default-default` | `--mapped-text-subtle-default` |
+| Icon color | `--mapped-icon-default-default` | `--mapped-icon-subtle-default` |
+| Required `*` | `--mapped-text-error-default` | `--mapped-text-error-default` (**untoned**) |
+
+### Tone (v1.4.0)
+
+`tone` exists because Figma's section-header `Label` binds `text/subtle/default` on the text node **and** `icon/subtle/default` on the leading `<element>` slot — both `#6b7786` — while the component hardcoded the `default` pair. One prop drives both halves because the source binds them together; the consumer wanted both, not an app-side icon wrapper.
+
+**`default` emits no modifier class**, so the pre-v1.4.0 output is byte-identical: React renders exactly `class="mn-label"` whether `tone` is omitted or set to `'default'`.
+
+The icon rule reaches the slot **only by inherited `color`** — consumers pass a rendered `<Icon>`, whose `<svg>` carries `fill="currentColor"`, and `ElementWrapper` sets no colour of its own. Measured on the rendered `<svg>` element itself:
+
+| | light default | light subtle | dark default | dark subtle |
+|---|---|---|---|---|
+| `.mn-label__text` | `rgb(54,60,67)` | `rgb(107,119,134)` | `rgb(207,213,220)` | `rgb(134,149,167)` |
+| `<svg>` element | `rgb(54,60,67)` | **`rgb(107,119,134)`** | `rgb(207,213,220)` | **`rgb(134,149,167)`** |
+| `.mn-label__required` | `rgb(235,79,82)` | `rgb(235,79,82)` | `rgb(188,63,66)` | `rgb(188,63,66)` |
+
+Light subtle resolves to **`#6b7786`**, matching Figma's binding exactly. The dark value is the DS token's own mapping — **Figma binds only the light value**, so dark is not Figma-verified.
+
+**The section-header glyph is a bare 16×16 icon, not an `IconObject` badge.** Figma's `Label` leading slot is a plain `<element>` with a single bound variable (`icon/subtle/default`) and no fill, background or corner radius — an `IconObject` would bring all three. Recorded because an early triage described it as a badge, which would have been a much larger change.
 
 ### Typography
 
@@ -1240,6 +1305,7 @@ A leaf hyperlink component — renders a real `<a>` tag. Built as a dependency f
 | `href` | `string` | `'#'` | |
 | `appearance` | `'default' \| 'subtle' \| 'inverse'` | `'default'` | |
 | `size` | `'s' \| 'm'` | `'s'` | See size-inversion note below |
+| `weight` | `'regular' \| 'semibold'` | `'regular'` | Only differs at `size='s'` — added v1.4.0 |
 | `hasVisited` | `boolean` | `false` | Only meaningful for `default`/`subtle`; `inverse` has no visited variants in source |
 | `isCurrent` | `boolean` | `false` | Forces underline without a color/interaction change — sets `aria-current="page"`. Added for Breadcrumbs' terminal item. |
 | `iconBefore` / `iconAfter` | `React.ReactNode` | `<Icon name="open_in_new" size="s" />` for both | Pass `null` to render no icon |
@@ -1276,6 +1342,36 @@ Icons inherit color via `currentColor` from the label — no separate icon-color
 | Focus outline width/offset | `--brand-scale-50` | 2px |
 | Typography, Size=S | `.type-body-sm` | 14px / 20px, regular |
 | Typography, Size=M | `.type-body-caption` | 12px / 16px, regular |
+
+### Weight (v1.4.0) — size × weight matrix
+
+| size | `weight="regular"` | `weight="semibold"` |
+|---|---|---|
+| `s` | `.type-body-sm` (400 / 14px) | `.type-body-sm-semibold` (600 / 14px) |
+| `m` | `.type-body-caption` (400 / 12px) | `.type-body-caption` — **weight-invariant** |
+
+`weight` exists because Figma's section-header "See all" binds the `body/sm-semibold` composite (600 / 14 / 20) and the component had no route to weight 600 — `size='s'` produced weight 400 only. Verified on three separate `❖ Link` instances in `casestudy_02` (`1307:19423`, `1344:9703`, `1344:9793`), all binding `body/sm-semibold` + `text/primary/default` `#046eff`. Real callers: `SectionHeader.tsx` in the MVP, reached from four "See all" headers.
+
+**`m` is weight-invariant BY SOURCE, not by omission.** Figma models the 12px link only as `body/caption` (400 / 12 / 16) — node `1344:9986`, the System-message inline link, which also binds `text/primary/on-color` white. There is no semibold caption link to map, so inventing one would be fabricating source.
+
+`Link.css` declares **no `font-weight` of its own** — the typography class swap is the only mechanism.
+
+**Line-height parity across the responsive breakpoint** — `.type-body-sm` and `.type-body-sm-semibold` reference the *same* `var(--responsive-font-copy-body-sm-line-height)`, so semibold tracks regular exactly and introduces no new inconsistency:
+
+| viewport | `.type-body-sm` | `.type-body-sm-semibold` |
+|---|---|---|
+| ≥ 768px | 20px | 20px |
+| < 768px | 16px | 16px |
+
+### `LinkSize` naming quirk — mapping is CORRECT, names are inverted
+
+**`'s'` renders 14px and `'m'` renders 12px.** The option named "m" is *smaller* than the one named "s", which reads backwards.
+
+**This is a naming inversion over a correct mapping, not a rendering defect.** Figma genuinely has two link treatments — `body/sm` (14px) and `body/caption` (12px) — and the two sizes map onto them correctly, confirmed against live nodes in both directions. An earlier triage logged this as a rendering bug; that was wrong and is retracted here.
+
+**Not being renamed.** A rename is breaking for every existing consumer and buys nothing but intuition. If it is ever revisited it belongs in a major release, alongside filling in `m`'s semibold column (which would need a Figma source that does not currently exist).
+
+**Watch out when reading `get_variable_defs` on a `❖ Link`.** Every instance returns `Link/fontSize: 14`, `Link/fontWeight: "Regular"`, `Link/lineHeight: 20`, `color/link/default: #0c66e4`. **These do not describe the visible label.** They belong to a hidden `0.01px`, `opacity-0` "URL (Hidden)" placeholder inside the component (its text is the literal string "Eurorack"). The proof is invariance: those values are byte-identical across `1344:9703` (visible 600 / 14) and `1344:9986` (visible 400 / 12) — a variable set that stays constant while the visible typography changes cannot be describing it.
 
 ### Known Figma inconsistencies
 
@@ -3778,6 +3874,39 @@ Fits with no API change. `.mn-list-item__chart` gained a floor —
 size-agnostic chart has no intrinsic width and the previous `min-width: 0` would
 have squeezed it to nothing with no error. Verified at host widths 320 / 240 /
 180: the slot clamps to 72×36 and never reaches zero.
+
+**v1.4.0 — the floor needed a matching ceiling.** The floor alone left `flex: 1 1 auto`
+free to absorb *all* leftover row width, and `aspect-ratio: 2` turned that width into
+height, inflating chart rows well past the 44px that chartless rows render at. Figma's
+sparkline is 80×40, but that is a spec the CSS never enforced. Fixed by adding
+`max-width: var(--brand-scale-1400)` — pinning both bounds to 72px, giving 72×36.
+
+72px because **the ramp has no 80px step** (`--brand-scale-1400` is 72, `1500` is 96).
+That is a Figma Variables gap, recorded rather than curve-fitted — no `calc()` between
+unrelated scale steps, and no new token minted for one component.
+
+**`flex` was deliberately left at `1 1 auto`.** An A/B/C/D matrix showed `max-width` is
+the entire fix and `flex: 0 1 auto` changes no computed value once both bounds are
+pinned — so it was dropped from the change rather than shipped as inert noise:
+
+| config | row @343px | row @320px | chartless rows |
+|---|---|---|---|
+| pre-fix | **67.64** / 94.78 | 56.14 / 83.28 | 44 / 44 |
+| **shipped** (`max-width` only) | **44** (72×36) | **44** (72×36) | 44 / 44 |
+| `max-width` + `flex: 0 1 auto` | 44 — *identical to shipped* | 44 | 44 / 44 |
+| `flex: 0 1 auto` alone | 67.64 — **no fix** | 56.14 | 44 / 44 |
+
+Measured in both themes at both widths. **Chartless rows read 44 → 44 in every
+configuration** — the change cannot touch a row that has no chart. The text column's
+computed width is byte-identical across all four configs (56.67 / 55.81 / 78.85 /
+52.23px) with no title overflow, so the slot takes its width back from flex free
+space, not from the text.
+
+The slot is emitted from exactly one line — `ListItem.tsx`'s
+`{isCrypto && miniChart && <div className="mn-list-item__chart">…}` — so the blast
+radius is crypto rows with a sparkline and nothing else. jsdom applies no CSS and does
+no layout, so the tests assert that gate rather than the width; the width proof is the
+table above.
 
 ### Known issues / decisions
 

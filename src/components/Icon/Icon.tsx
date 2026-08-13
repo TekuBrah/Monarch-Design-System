@@ -3,7 +3,7 @@ import type { ElementWrapperSize } from '../ElementWrapper'
 import { ICONS } from './icons'
 
 export type IconName = keyof typeof ICONS
-export type IconSize = 'xs' | 's' | 'm' | 'l'
+export type IconSize = 'xs' | 's' | 'm' | 'l' | 'xl'
 
 export interface IconProps {
   name: IconName
@@ -15,6 +15,10 @@ const SIZE_MAP: Record<IconSize, ElementWrapperSize> = {
   s: 's',  // 16px  --brand-scale-400
   m: 'm',  // 20px  --brand-scale-500
   l: 'l',  // 24px  --brand-scale-600
+  // 32px --brand-scale-800. Exposes a step ElementWrapper already implements
+  // (Figma has it too: <element> variant `Size=XL 32`, node 49:10056).
+  // Required by the AI FAB, whose interior glyph is 32x32 — unreachable at 'l'.
+  xl: 'xl',
 }
 
 export function Icon({ name, size = 'm' }: IconProps) {

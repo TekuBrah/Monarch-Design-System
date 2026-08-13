@@ -41,6 +41,39 @@ describe('Link', () => {
     expect(screen.getByRole('link', { name: 'Open' })).toHaveAttribute('rel', 'noopener noreferrer')
   })
 
+  // size × weight, the full 2x2. `m` is weight-INVARIANT by source, not by
+  // omission: Figma models the 12px link only as body/caption (400/12) —
+  // casestudy_02 node 1344:9986 — so there is no semibold caption to map.
+  // `s` + semibold is the section-header "See all" (body/sm-semibold, 600/14).
+  it.each([
+    ['s', 'regular', 'type-body-sm'],
+    ['s', 'semibold', 'type-body-sm-semibold'],
+    ['m', 'regular', 'type-body-caption'],
+    ['m', 'semibold', 'type-body-caption'],
+  ] as const)('size %s + weight %s renders %s', (size, weight, cls) => {
+    render(<Link label="Open" size={size} weight={weight} />)
+    expect(screen.getByText('Open')).toHaveClass(cls)
+  })
+
+  it('defaults to regular — omitting weight matches weight="regular"', () => {
+    const { unmount } = render(<Link label="Open" size="s" />)
+    const unset = screen.getByText('Open').className
+    unmount()
+
+    render(<Link label="Open" size="s" weight="regular" />)
+    expect(screen.getByText('Open').className).toBe(unset)
+    expect(unset).toBe('type-body-sm')
+  })
+
+  it('keeps size m weight-invariant across both weights', () => {
+    const { unmount } = render(<Link label="Open" size="m" weight="regular" />)
+    const regular = screen.getByText('Open').className
+    unmount()
+
+    render(<Link label="Open" size="m" weight="semibold" />)
+    expect(screen.getByText('Open').className).toBe(regular)
+  })
+
   it('has no axe violations in its default state', async () => {
     const { container } = render(<Link label="Open" />)
     expect(await axe(container)).toHaveNoViolations()

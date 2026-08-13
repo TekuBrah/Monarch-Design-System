@@ -21,3 +21,21 @@
   justify-content: center;
   color: var(--mapped-icon-default-default);
 }
+
+/* === Tone === */
+/* `default` is the base pair above — no modifier class is emitted for it, so
+   the default path is byte-identical to pre-v1.4.0 output.
+   `subtle` re-points BOTH halves together because Figma binds them together on
+   the section-header Label: text/subtle/default on the text node and
+   icon/subtle/default on the leading <element> slot (both #6b7786).
+   The icon rule reaches an `iconBefore`/`iconAfter` slot only by inherited
+   `color` — consumers pass a rendered <Icon>, whose <svg> takes fill="currentColor".
+   `.mn-label__required` is deliberately NOT toned: Figma keeps the asterisk on
+   text/error/default in both tones. */
+.mn-label--subtle .mn-label__text {
+  color: var(--mapped-text-subtle-default);
+}
+
+.mn-label--subtle .mn-label__icon {
+  color: var(--mapped-icon-subtle-default);
+}

@@ -68,5 +68,28 @@ describe('ListItem', () => {
       expect(container.querySelector('.mn-trend')).toBeNull()
       expect(screen.queryByRole('img')).toBeNull()
     })
+
+    // The chart slot is width-pinned in CSS (min-width AND max-width both
+    // --brand-scale-1400 / 72px) so `aspect-ratio: 2` cannot inflate the row.
+    // jsdom applies no CSS and does no layout, so width itself is unassertable
+    // here — the 67.64px -> 44px measurement lives in docs/component-tokens.md.
+    // What IS assertable is the gate that decides whether the slot exists.
+    it('renders the chart slot only for a crypto row that has a miniChart', () => {
+      const { container, unmount } = render(<ListItem {...crypto} />)
+      expect(container.querySelector('.mn-list-item__chart')).toBeNull()
+      unmount()
+
+      const { container: withChart } = render(
+        <ListItem {...crypto} miniChart={<svg data-testid="spark" />} />,
+      )
+      expect(withChart.querySelector('.mn-list-item__chart')).not.toBeNull()
+    })
+
+    it('does not render the chart slot for non-crypto rows', () => {
+      const { container } = render(
+        <ListItem {...props} type="default" miniChart={<svg />} />,
+      )
+      expect(container.querySelector('.mn-list-item__chart')).toBeNull()
+    })
   })
 })

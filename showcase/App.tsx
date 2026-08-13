@@ -1677,8 +1677,19 @@ export default function App() {
       {/* ── Link ───────────────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <Section id="link" title="Link" description="3 appearances × 3 states × visited — Size=M renders smaller than Size=S (Figma source, not a bug) — leaf dependency for Breadcrumbs">
+          <Section id="link" title="Link" description="3 appearances × 3 states × visited × 2 weights — Size=M renders smaller than Size=S (Figma source, a naming inversion over a correct mapping, not a bug) — leaf dependency for Breadcrumbs">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>
+                  weight (v1.4.0) — semibold only differs at size=s; size=m is weight-invariant by Figma source
+                </div>
+                <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <Link label="s / regular" size="s" iconBefore={null} iconAfter={null} />
+                  <Link label="s / semibold" size="s" weight="semibold" iconBefore={null} iconAfter={null} />
+                  <Link label="m / regular" size="m" iconBefore={null} iconAfter={null} />
+                  <Link label="m / semibold" size="m" weight="semibold" iconBefore={null} iconAfter={null} />
+                </div>
+              </div>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Default appearance — forced states</div>
                 <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
@@ -2889,8 +2900,20 @@ export default function App() {
       {tab === 'components' && (
         <>
           {/* Label */}
-          <Section id="label" title="Label" description="2 sizes × optional required asterisk × optional leading/trailing icons">
+          <Section id="label" title="Label" description="2 sizes × 2 tones × optional required asterisk × optional leading/trailing icons. tone governs BOTH text and icon — Figma binds text/subtle/default and icon/subtle/default together (v1.4.0).">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              {(['default', 'subtle'] as const).map(tone => (
+                <div key={tone} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>tone={tone}</span>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'center' }}>
+                    <Label label="Text only" tone={tone} />
+                    <Label label="With icon" tone={tone} iconBefore={<Icon name="help_outline" size="s" />} />
+                    <Label label="Required" tone={tone} isRequired iconBefore={<Icon name="help_outline" size="s" />} />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1.5rem' }}>
               {(['m', 's'] as const).map(size => (
                 <div key={size} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>size={size}</span>
@@ -3319,7 +3342,28 @@ export default function App() {
               </div>
             )
             return (
-              <Section id="icon" title="Icon" description="94 icons (59 Material Round + 35 Custom) — sized via --brand-scale-* — inherits currentColor">
+              <Section id="icon" title="Icon" description="102 icons (66 Material Round + 36 Custom) — sized via --brand-scale-* (xs/s/m/l/xl) — inherits currentColor">
+
+                {/* v1.4.0: the brand mark + the 32px size step it needs */}
+                <div style={{ marginBottom: '1.75rem' }}>
+                  <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                    v1.4.0 — logo_monarch · size xl (32px)
+                  </p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'flex-end' }}>
+                    {(['xs', 's', 'm', 'l', 'xl'] as const).map(size => (
+                      <div key={size} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem', color: 'var(--mapped-icon-default-default)' }}>
+                        <Icon name="logo_monarch" size={size} />
+                        <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>{size}</span>
+                      </div>
+                    ))}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                      <IconObject color="ai" shape="circle" size="xxl" ariaLabel="Monarch AI">
+                        <Icon name="logo_monarch" size="xl" />
+                      </IconObject>
+                      <span style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtlest-subtlest)' }}>AI FAB</span>
+                    </div>
+                  </div>
+                </div>
 
                 {GROUPS.map(({ label, names }) => (
                   <div key={label} style={{ marginBottom: '1.75rem' }}>
