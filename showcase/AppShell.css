@@ -2,6 +2,20 @@
    Not a design-system component; this is the showcase harness itself.
    Individual component demos inside <main> are untouched by this file. */
 
+/* Reserve the classic scrollbar's gutter permanently on the viewport.
+   Opening the off-canvas drawer sets `document.body.style.overflow = 'hidden'`
+   (App.tsx), which propagates to the viewport and removes the scrollbar — so
+   documentElement.clientWidth grew 1004 -> 1019 and the top nav's centered tab
+   group slid right by exactly half the reclaimed 15px (405.42 -> 412.92).
+   Reserving the gutter unconditionally keeps clientWidth constant across the
+   lock, so nothing re-centers. Declared on `html` ONLY, never on `body`: body
+   is not a scroll container today, but the scroll lock makes it one, and a
+   gutter reserved there would inset the content by the same 15px this is
+   meant to prevent. */
+html {
+  scrollbar-gutter: stable;
+}
+
 html, body {
   background: var(--mapped-surface-page);
   /* Reset the UA's default 8px body margin — without this the shell is inset
@@ -28,6 +42,20 @@ html, body {
   align-items: center;
   gap: 1rem;
   padding: 0.5rem 1.5rem;
+  /* Pin the header to the height it already has above the sidebar breakpoint
+     (48px = --brand-scale-1100), instead of letting the tallest child decide.
+     Without this the nav was 32px of content + 16px padding = 48px on desktop,
+     but the hamburger revealed at <=1023px is a 38px IconButton (size="m"),
+     which grew the row to 54px — and `align-items: center` then re-centered the
+     24px logo in the taller row, dropping it 3px (y 12 -> 15) at the breakpoint.
+     A 38px item still fits inside the 48px border box (it overflows the 32px
+     content line 3px into the 8px padding, and nothing here clips), so the
+     hamburger renders in full while the header, the logo and everything
+     measured off --app-topnav-h stay put.
+     `height` rather than `min-height`: a floor would not stop the taller child
+     from growing the row, which is the whole defect. */
+  height: var(--brand-scale-1100);
+  box-sizing: border-box;
   /* No border — seamless nav-to-content feel (Astryx reference); spacing
      alone separates the nav from the page below it. */
 }
