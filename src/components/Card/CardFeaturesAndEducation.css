@@ -26,6 +26,24 @@ button.mn-card-features:focus-visible {
   outline-offset: var(--brand-scale-50);
 }
 
+/* sizing='fill' — the parent's flex track decides the width instead of the
+   109px Figma cap. Declared after the base rule on purpose: both selectors are
+   single-class (equal specificity), so source order is what lets this win.
+
+   `flex: 1 1 0` is load-bearing and goes beyond merely dropping the cap.
+   Dropping width/max-width alone leaves the default `flex: 0 1 auto`, which
+   sizes the tile to its CONTENT (~57px) — narrower than 'fixed', not wider.
+   That would satisfy a "must differ from default" check while doing the
+   opposite of filling. Measured both ways; see docs/component-tokens.md.
+
+   min-width: 90px comes from the base rule and is deliberately NOT reset, so
+   the Figma floor holds in both modes. */
+.mn-card-features--fill {
+  width: auto;
+  max-width: none;
+  flex: 1 1 0;
+}
+
 .mn-card-features__icon {
   display: flex;
   align-items: center;

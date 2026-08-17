@@ -13,12 +13,29 @@ export interface BottomNavigationProps {
   items: BottomNavItem[]
   onSelect?: (id: string) => void
   className?: string
+  /** 'hug' (default) keeps today's content-width pill. 'fill' stretches the
+      bar to the container width, letting the consumer own the gutter.
+      `className` lands on the root, which is why the bar needs its own prop. */
+  barWidth?: 'hug' | 'fill'
 }
 
-export function BottomNavigation({ items, onSelect, className }: BottomNavigationProps) {
+export function BottomNavigation({
+  items,
+  onSelect,
+  className,
+  barWidth = 'hug',
+}: BottomNavigationProps) {
   return (
     <div className={['mn-bottom-nav', className].filter(Boolean).join(' ')}>
-      <nav className="mn-bottom-nav__bar" aria-label="Primary">
+      <nav
+        className={[
+          'mn-bottom-nav__bar',
+          barWidth === 'fill' && 'mn-bottom-nav__bar--fill',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        aria-label="Primary"
+      >
         {items.map(item => (
           <button
             key={item.id}

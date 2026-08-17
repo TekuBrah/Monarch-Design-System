@@ -19,6 +19,35 @@
   box-shadow: var(--shadow-medium);
 }
 
+/* barWidth='fill' — the bar spans the root's width instead of hugging its items.
+   `align-self: stretch` is what does the widening: it overrides the root's
+   `align-items: center`, which is what pins the bar to content width in 'hug'.
+
+   The extra width goes to the ITEMS, not to the gaps between them. A tab bar
+   that fills its container should grow its touch targets — that is what platform
+   tab bars do, and it stays bounded at every viewport width. An earlier revision
+   used `justify-content: space-between` here; measured, that left the items at
+   64px and inflated the designed 16px gap to 315px against a 1233px container,
+   converting the extra width into untappable void that grew without limit.
+   Rejected on that measurement, not on taste.
+
+   FIGMA DIVERGENCE, deliberate: Figma models the item at a fixed 62px (rounded
+   to the 64px ramp step — see .mn-bottom-nav__item below) and has no fill
+   variant at all, so it seeds the hug case only. In fill mode the item is no
+   longer 64px wide; it takes an equal share of the bar. Item HEIGHT stays 64px
+   and 'hug' is byte-identical to before this prop existed. */
+.mn-bottom-nav__bar--fill {
+  align-self: stretch;
+}
+
+/* Items divide the filled bar evenly. `flex: 1 1 0` overrides the item's
+   main-axis `width: 64px` — in a flex row flex-basis wins over width — so the
+   items grow from zero in equal shares while the 16px `gap` on the bar stays
+   fixed. Scoped inside the fill modifier so 'hug' never sees it. */
+.mn-bottom-nav__bar--fill .mn-bottom-nav__item {
+  flex: 1 1 0;
+}
+
 .mn-bottom-nav__item {
   display: flex;
   flex-direction: column;

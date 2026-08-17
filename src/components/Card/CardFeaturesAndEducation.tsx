@@ -9,6 +9,10 @@ export interface CardFeaturesAndEducationProps {
   title: string
   onClick?: () => void
   className?: string
+  /** 'fixed' (default) keeps the 109px Figma cap. 'fill' drops width and
+      max-width so the parent's flex track decides. `min-width: 90px` is
+      retained in BOTH modes. */
+  sizing?: 'fixed' | 'fill'
 }
 
 export function CardFeaturesAndEducation({
@@ -17,10 +21,12 @@ export function CardFeaturesAndEducation({
   title,
   onClick,
   className,
+  sizing = 'fixed',
 }: CardFeaturesAndEducationProps) {
   const classes = [
     'mn-card-features',
     `mn-card-features--${variant}`,
+    sizing === 'fill' && 'mn-card-features--fill',
     className,
   ]
     .filter(Boolean)
