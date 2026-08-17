@@ -2699,6 +2699,40 @@ export default function App() {
               </div>
             </div>
             <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>BottomNavigation — barWidth</div>
+              <p style={{ color: 'var(--mapped-text-subtle-default)', fontSize: '0.75rem', margin: '0 0 0.75rem', maxWidth: '480px' }}>
+                Both at <strong>480px</strong>. At 375px the two differ by only 7px (343 vs 336) and the
+                prop looks inert, so a wider container is what makes it legible. In <code>fill</code> the
+                extra width goes to the items (100px each here — 480 − 32 padding − 48 gaps, ÷ 4 — up
+                from 64px) while the 16px gaps hold.
+              </p>
+              <div style={{ width: '480px', maxWidth: '100%', marginBottom: '1rem' }}>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>barWidth="hug" (default)</div>
+                <BottomNavigation
+                  items={[
+                    { id: 'home', icon: 'icon_home', label: 'Home', isSelected: bottomNavSelected === 'home' },
+                    { id: 'transfer', icon: 'icon_transfer', label: 'Transfer', isSelected: bottomNavSelected === 'transfer' },
+                    { id: 'finance', icon: 'icon_finance', label: 'Finance', isSelected: bottomNavSelected === 'finance' },
+                    { id: 'more', icon: 'icon_more', label: 'More', isSelected: bottomNavSelected === 'more' },
+                  ]}
+                  onSelect={setBottomNavSelected}
+                />
+              </div>
+              <div style={{ width: '480px', maxWidth: '100%' }}>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>barWidth="fill"</div>
+                <BottomNavigation
+                  barWidth="fill"
+                  items={[
+                    { id: 'home', icon: 'icon_home', label: 'Home', isSelected: bottomNavSelected === 'home' },
+                    { id: 'transfer', icon: 'icon_transfer', label: 'Transfer', isSelected: bottomNavSelected === 'transfer' },
+                    { id: 'finance', icon: 'icon_finance', label: 'Finance', isSelected: bottomNavSelected === 'finance' },
+                    { id: 'more', icon: 'icon_more', label: 'More', isSelected: bottomNavSelected === 'more' },
+                  ]}
+                  onSelect={setBottomNavSelected}
+                />
+              </div>
+            </div>
+            <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>SideNavigation</div>
                 <label style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)', display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer' }}>
@@ -2889,6 +2923,29 @@ export default function App() {
                 <CardFeaturesAndEducation variant="green" icon={<Icon name="icon_budget" size="l" />} title="Budget" />
                 <CardFeaturesAndEducation variant="purple" icon={<Icon name="icon_aiinsights" size="l" />} title="Insights" />
                 <CardFeaturesAndEducation variant="outline" icon={<Icon name="icon_transfer" size="l" />} title="Transfer" />
+              </div>
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>CardFeaturesAndEducation — sizing</div>
+              <p style={{ color: 'var(--mapped-text-subtle-default)', fontSize: '0.75rem', margin: '0 0 0.75rem', maxWidth: '480px' }}>
+                Both rows are <strong>480px</strong> wide. This width is deliberate: at 375px three tiles
+                fill exactly by coincidence (3 × 109 + 2 × 8 = 343 = 375 − 32), so <code>fill</code> and
+                <code>fixed</code> would render identically and demonstrate nothing.
+              </p>
+              <div style={{ width: '480px', maxWidth: '100%' }}>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.35rem' }}>sizing="fixed" (default) — 109px cap, leaves a gap</div>
+                <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem' }}>
+                  <CardFeaturesAndEducation variant="blue" icon={<Icon name="icon_transfer" size="l" />} title="Transfer" />
+                  <CardFeaturesAndEducation variant="orange" icon={<Icon name="icon_bills" size="l" />} title="Bills" />
+                  <CardFeaturesAndEducation variant="green" icon={<Icon name="icon_budget" size="l" />} title="Budget" />
+                </div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.35rem' }}>sizing="fill" — divides the row, min-width 90px still applies</div>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <CardFeaturesAndEducation sizing="fill" variant="blue" icon={<Icon name="icon_transfer" size="l" />} title="Transfer" />
+                  <CardFeaturesAndEducation sizing="fill" variant="orange" icon={<Icon name="icon_bills" size="l" />} title="Bills" />
+                  <CardFeaturesAndEducation sizing="fill" variant="green" icon={<Icon name="icon_budget" size="l" />} title="Budget" />
+                </div>
               </div>
             </div>
           </div>

@@ -384,6 +384,28 @@ retroactively conformed to this once already.
     only defect was the measurement. Confirm a suspected styling bug with
     `getAnimations()` (a stuck `CSSTransition` at `currentTime: 0`) or a
     `transition: none` override **before** logging it or attempting a fix.
+- **Vite HMR does NOT apply edits to component CSS reached through
+  `src/styles/package.css`'s `@import` chain.** After editing any component
+  `.css`, do a full reload and then confirm via CSSOM that the rule is actually
+  loaded *before* trusting any geometry:
+  ```js
+  [...document.styleSheets].flatMap(s => { try { return [...s.cssRules] } catch { return [] } })
+    .filter(r => r.selectorText?.includes('your-new-class')).map(r => r.cssText)
+  ```
+  Found the expensive way in v1.5.0 Gate 2: both new props (`barWidth`, `sizing`)
+  measured **byte-identical to their defaults** and were about to be reported as
+  no-ops and deleted. They were correct the whole time — the stylesheet was stale.
+  The tell was in the declarations, not the pixels: `alignSelf: "auto"` where the
+  rule says `stretch`, `flex-grow: "0"` where it says `1`. This is the same class
+  of trap as the frozen-transition false positive above, and the same discipline
+  defeats it — **read the declaration, not the rendering.**
+- **`clientWidth` is harness-dependent; key to it and say which harness.** At a
+  1280 viewport the MVP's Playwright harness reports `clientWidth` **1280**, while
+  this dev browser pane reports **1265** (a 15px scrollbar gutter). Neither figure
+  corrects the other. Always key widths to
+  `document.documentElement.clientWidth` — never `window.innerWidth`, which reads
+  2px high in the pane — and record which harness produced a measurement before
+  comparing it to one from the other.
 - Before reporting on "what's built" or "what's left," check disk and git
   (`ls src/components/`, `git log --oneline`) — never rely on running session
   memory, which has drifted from actual repo state before.

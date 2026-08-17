@@ -5,6 +5,151 @@ faithfully from Figma; inconsistencies in the source design are preserved as-is.
 
 ---
 
+## v1.5.0 — dark-mode token layer corrections
+
+**40 mapped colour tokens changed, all dark-theme only except 2.** Nothing here
+is a component change: the fix layer was `design-tokens/Mapped/Dark.json` plus one
+line of `design-tokens/Alias/Alias.json`, then regenerate. `build-mapped.mjs`
+applies **no value transform** — it only rewrites `{Group.Step}` to
+`var(--alias-<group>-<step>)` — so a wrong dark value is always a source-data
+defect, never a generator defect.
+
+Contrast measured against `--mapped-surface-page` (`#ffffff` light, `#000000`
+dark). Darker in-theme surfaces move these figures by under 0.2 CR.
+
+### Cluster 1 — pressed states that never flipped (18 tokens)
+
+Every `-pressed` accent token authored step `700` in **both** themes, so it never
+flipped at all. On white that is CR 5.8–11.9; on black it collapsed. Dark steps
+were chosen by contrast measurement, not by symmetry with the light value. All 18
+now clear AA 4.5.
+
+| Family | dark before | dark after | CR |
+|---|---|---|---|
+| Interactive | `700 #382e6b` | `200 #bfb8e0` | **1.77 → 11.15** |
+| Primary | `700 #024299` | `300 #68a8ff` | **2.24 → 8.63** |
+| Error | `700 #8d2f31` | `400 #ef7275` | **2.58 → 7.33** |
+| Information | `700 #006789` | `400 #33bdea` | **3.30 → 9.61** |
+| Success | `700 #226e3a` | `400 #60c680` | **3.36 → 9.89** |
+| Warning | `700 #99532b` | `400 #ffa16c` | **3.63 → 10.57** |
+
+× `text` / `icon` / `border`. `--mapped-text-interactive-default-pressed` at CR
+1.77 was effectively invisible.
+
+**The 6 `surface-*-default-pressed` tokens also never flip and were deliberately
+left alone.** On a filled surface the press state going darker is coherent in
+both themes, and its `on-color` white text sits at CR 9.37. Not a defect.
+
+### Cluster 2 — Primary and Interactive default/hover (12 tokens)
+
+The `500 → 600` dark swap darkens an already-dark blue and purple.
+
+| Token | dark before | dark after | CR |
+|---|---|---|---|
+| `{text,icon,border}-primary-default` | `600 #0358cc` | `500 #046eff` | 3.27 → **4.68** |
+| `{text,icon,border}-primary-default-hover` | `500 #046eff` | `400 #368bff` | 4.68 → **6.29** |
+| `{text,icon,border}-interactive-default` | `600 #4b3e8e` | `400 #7e71c1` | 2.38 → **5.02** |
+| `{text,icon,border}-interactive-default-hover` | `500 #5e4db2` | `300 #9e94d1` | 3.18 → **7.61** |
+
+Primary pivots on 500. Interactive needed an extra step because the Purple ramp is
+darker at equal steps — 500 reaches only 3.18.
+
+### ⚠️ Success, Warning, Information and Error default/hover were DELIBERATELY NOT CHANGED
+
+They use the same `500 → 600` dark swap, and it **improves** contrast for those
+hues, because they are bright at 500 and the black page gives them room:
+
+| Token | light CR | dark CR |
+|---|---|---|
+| `--mapped-icon-warning-default` | 2.34 | **5.86** |
+| `--mapped-icon-success-default` | 2.56 | **5.39** |
+| `--mapped-icon-information-default` | 2.61 | **5.32** |
+| `--mapped-icon-error-default` | 3.64 | **3.93** |
+
+"Correcting" these to lighter steps would **regress** contrast. This exclusion is
+intentional. Do not undo it.
+
+A consequence worth naming: the original defect report claimed `TrendIndicator`
+tokens flip the wrong way. They do not — `TrendIndicator` has no tokens of its
+own, consumes `--mapped-{icon,text}-{success,error,subtle}-default`, has no
+pressed state, and therefore **measures better in dark than in light**.
+
+### Cluster 3a — one alias misbinding, four collapses (4 tokens)
+
+`Alias.json` bound `Surface.500 → {Gray.400}`, the same brand step as
+`Surface.400`, leaving `Gray.500` (`#bdbdbd`) unreferenced. Now `{Gray.500}`.
+Reach was **wider than the two border tokens the defect was reported against** —
+it also touched a surface token, in light mode:
+
+| Token | theme | before | after |
+|---|---|---|---|
+| `--mapped-surface-default-pressed` | light | `#cacaca` | `#bdbdbd` |
+| `--mapped-border-subtle-default` | dark | `#cacaca` | `#bdbdbd` |
+| `--mapped-border-subtlest-default` | dark | `#cacaca` | `#bdbdbd` |
+| `--mapped-border-subtlest-hover` | light | `#cacaca` | `#bdbdbd` |
+
+All four were **collapsed sibling states with no visible feedback**, now distinct:
+
+| Family / theme | before | after |
+|---|---|---|
+| `border-subtlest` light (default/hover) | `#cacaca` = `#cacaca` | `#cacaca` / `#bdbdbd` |
+| `border-subtlest` dark | `#cacaca` = `#cacaca` | `#bdbdbd` / `#cacaca` |
+| `border-subtle` dark | `#cacaca` = `#cacaca` | `#bdbdbd` / `#cacaca` |
+| `surface-default` light (hover/pressed) | `#cacaca` = `#cacaca` | `#cacaca` / `#bdbdbd` |
+
+These are the only two tokens in the release that change in **light** theme.
+
+### Cluster 3b — subtle/subtlest tier collapse in dark (6 tokens)
+
+The entire `subtle` and `subtlest` ladders were byte-identical in dark at all
+three states, for both text and icon — 12 tokens resolving to 3 values. Fixed by
+shifting `subtlest` one step darker at each state; `subtle` untouched.
+
+| State | subtle (dark) | subtlest before | subtlest after |
+|---|---|---|---|
+| default | `#8695a7` 6.87 | `#8695a7` 6.87 | **`#6b7786` 4.61** |
+| hover | `#9eaab9` 8.90 | `#9eaab9` 8.90 | **`#8695a7` 6.87** |
+| pressed | `#cfd5dc` 14.20 | `#cfd5dc` 14.20 | **`#b6bfca` 11.29** |
+
+Hierarchy now correct at every state (subtle out-contrasts subtlest), all six
+values ≥ AA 4.5.
+
+**Source inconsistency recorded rather than rationalised.** The reported
+rationale was that `subtlest` darkening from light→dark is a typo, since every
+sibling Neutral token lightens. That observation is factually correct but leads to
+the wrong fix: lightening `subtlest` past `subtle` inverts the tier hierarchy and
+makes the lowest-emphasis tier the most prominent. On a black page a *darker*
+slate is *lower* contrast, so the lowest-emphasis tier legitimately moves opposite
+to its siblings. The hierarchy binds over ramp symmetry.
+
+### `--gradient-surface` — the mapped gradient pair is now surface-parameterised
+
+`--mapped-gradient-subtle` / `-default` previously pinned their stops to
+`--mapped-surface-page`, leaving a measurable seam over any other surface
+(Δ6/channel light, Δ19/channel dark over `--mapped-surface-subtlest-default`).
+They now resolve through a new indirection token:
+
+```css
+--gradient-surface: var(--mapped-surface-page);   /* default */
+```
+
+Set `--gradient-surface` on any scoping element and the scrim fades into that
+surface instead. With no override the pair resolves **character-identically** to
+its previous emitted values, verified in both themes.
+
+**The pair is declared on `*`, not on `:root`, and that is load-bearing.** A
+custom property that references another custom property is substituted where it is
+**declared**, not where it is used. Declared on `:root` it baked in `:root`'s
+`--gradient-surface` and descendants inherited the already-resolved string, so
+overriding lower down did nothing — measured, both themes, the `:root` form did
+not respond at all. Two costs, accepted and documented rather than fixed:
+
+1. The pair recomputes per element.
+2. `--mapped-gradient-*` can **no longer** be overridden at an ancestor and
+   inherited down. `--gradient-surface` is the supported override point.
+
+---
+
 ## Badge
 
 **Figma node:** 108:315  
@@ -3171,7 +3316,52 @@ new control, not an inferred state on an existing one.
 |---|---|---|
 | `items` | `BottomNavItem[]` | `{ id, icon, label, isSelected? }` |
 | `onSelect` | `(id: string) => void` | |
-| `className` | `string` | |
+| `className` | `string` | Lands on the **root**, not the bar — which is why `barWidth` exists |
+| `barWidth` | `'hug' \| 'fill'` | Default `'hug'`. **Added v1.5.0** — see below |
+
+### `barWidth` (added v1.5.0)
+
+`'hug'` is today's behaviour, unchanged: the bar is a content-hugged flex row,
+pinned to content width by the root's `align-items: center`. It measures **336px
+at every viewport** (`32` bar padding + `4×64` items + `3×16` gaps) — the width
+does not respond to the container, which is what `'fill'` exists to fix.
+
+`'fill'` applies `align-self: stretch` to the bar, overriding that
+`align-items: center`. There was no existing prop path to the bar: `className`
+lands on the root.
+
+**The extra width goes to the items, not the gaps.** `.mn-bottom-nav__bar--fill
+.mn-bottom-nav__item { flex: 1 1 0 }` — `flex-basis` beats `width` on the main
+axis, so the declared `width: 64px` is overridden while `height: 64px` (cross
+axis) survives. No wrapper element was needed.
+
+**`justify-content: space-between` was proposed and rejected on measurement.**
+It left items at 64px and inflated the designed 16px gap instead:
+
+| container | gap with `space-between` | gap with `flex: 1 1 0` | item width |
+|---|---|---|---|
+| 343 | 18.3px | **16px** | 65.8px |
+| 358 | 23.3px | **16px** | 69.5px |
+| 1233 | **315px** | **16px** | 288.3px |
+
+315px of untappable void at a wide container, growing without bound. A tab bar
+that fills its container should give that width to the touch targets.
+
+**Uncovered bar width is ~80px in both modes** (`32` padding + `48` gaps) — the
+designed values, deliberately preserved. What `fill` changes is that this figure
+is now **invariant** across viewport width; under `space-between` it ran 87 → 102
+→ 977.
+
+**FIGMA DIVERGENCE, deliberate.** Figma models the item at a fixed 62px (rounded
+to the 64px ramp step) and has **no fill variant at all** — it seeds the hug case
+only. In `fill` the item is no longer 64px wide. Height is unchanged.
+
+**Known, logged, not fixed — `hug` label overflow.** In `hug` the `"Transfer"`
+label measures **48.9px** against a 48px item content box (`64 − 16` padding): a
+0.9px overflow, at every viewport and in both themes. Visually harmless — nothing
+sets `overflow` on the item, so nothing clips — and `fill` resolves it (content
+box ≥ 49.75px). Not fixed because changing item padding would move every `hug`
+baseline downstream for no visible gain.
 
 ### BottomNavigation — variant → token mapping
 
@@ -3650,14 +3840,46 @@ deliberately rather than inherited silently.
 | `title` | `string` | Required |
 | `onClick` | `() => void` | Renders as `<button>` when set |
 | `className` | `string` | |
+| `sizing` | `'fixed' \| 'fill'` | Default `'fixed'`. **Added v1.5.0** — see below |
 
 | Element / variant | Token |
 |---|---|
-| Container (all variants) | Width `109px` (min `90px`, max `109px` — fixed Figma component sizing) |
+| Container (all variants) | Width `109px` (min `90px`, max `109px` — fixed Figma component sizing). `sizing='fill'` drops width/max-width; **min-width `90px` applies in BOTH modes** |
 | `blue`/`orange`/`green`/`purple` bg | `--brand-blue-500` / `--brand-orange-500` / `--brand-green-500` / `--brand-purple-500` (Phase 5.4). **NOT the same level as `IconObject`, which stays on `-400`** — see "Deliberate divergence" below |
 | Fill icon/title | `--mapped-icon-primary-on-color` / `--mapped-text-on-color-heading` |
 | `outline` | Border `--mapped-border-default`, explicit `120px` height (taller than fill variants — real Figma value) |
 | Outline icon/title | `--mapped-icon-default-default` / `--mapped-text-default-default` |
+
+### `sizing` (added v1.5.0)
+
+`'fixed'` is today's behaviour: the 109px Figma cap, unchanged.
+
+`'fill'` drops `width` and `max-width` so the parent's flex track decides.
+`min-width: 90px` is inherited from the base rule and deliberately **not** reset,
+so the Figma floor holds in both modes. The modifier is declared **after** the
+base rule on purpose — both selectors are single-class, so source order is what
+lets it win.
+
+**`flex: 1 1 0` is load-bearing and goes beyond "drop the cap".** Dropping
+width/max-width alone leaves the default `flex: 0 1 auto`, which sizes the tile to
+its content and then floors it at `min-width`. Measured, 3-tile row:
+
+| container | `fixed` | `fill` | `fill` without `flex` |
+|---|---|---|---|
+| 343 | 109px, span 343 | 109px, span 343 | 90px, span 286 |
+| 358 | 109px, span **343** | **114px, span 358** | 90px, span 286 |
+| 1233 | 109px, span **343** | **405.7px, span 1233** | 90px, span 286 |
+
+Without `flex`, `fill` is **narrower** than `fixed` — the opposite of filling —
+while still passing a naive "differs from default" check.
+
+**⚠️ THE 375px COINCIDENCE.** At a 343px container three tiles fill exactly:
+`3 × 109 + 2 × 8 = 343 = 375 − 32`. So at a 375px viewport `fill` and `fixed`
+measure **byte-identical**, and any verification done only at 375 will conclude
+the prop does nothing. It is not inert — the declarations differ
+(`max-width: none` vs `109px`, `flex-grow: 1` vs `0`, `flex-basis: 0px` vs
+`auto`). Verify at 390 or wider. The showcase renders this at 480px for exactly
+this reason.
 
 ### Known Figma inconsistencies
 
