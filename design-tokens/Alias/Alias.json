@@ -445,7 +445,7 @@
       }
     },
     "500": {
-      "value": "{Gray.400}",
+      "value": "{Gray.500}",
       "type": "color",
       "$extensions": {
         "com.figma.hiddenFromPublishing": false

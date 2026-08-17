@@ -72,7 +72,7 @@ export const alias = {
     200: '--brand-gray-200',
     300: '--brand-gray-300',
     400: '--brand-gray-400',
-    500: '--brand-gray-400',
+    500: '--brand-gray-500',
     600: '--brand-gray-600',
     700: '--brand-gray-700',
     800: '--brand-gray-800',

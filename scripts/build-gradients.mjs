@@ -48,17 +48,27 @@ if (cutAt !== -1) css = css.slice(0, cutAt).trimEnd() + '\n'
 // else, and there is no Gradient group in Mapped/Light.json / Dark.json to
 // carry these. Deriving from the same `entries` keeps the two pairs in step.
 
-// Rewrites a #ffffff / #ffffffAA stop to the equivalent surface-page stop.
+// The stops resolve through --gradient-surface rather than naming
+// --mapped-surface-page directly. That indirection is what makes the pair
+// surface-parameterised: --gradient-surface DEFAULTS to --mapped-surface-page
+// (declared once in the block below), so with no override these gradients emit
+// and resolve exactly as they always have. A consumer painting a non-page
+// surface sets `--gradient-surface: var(--mapped-surface-<that surface>)` on the
+// scoping element and the scrim fades into that surface instead — no seam.
+// Custom properties inherit and are substituted at use site, which is why one
+// declaration covers every descendant and both themes.
+
+// Rewrites a #ffffff / #ffffffAA stop to the equivalent gradient-surface stop.
 // Approved token-source-gap pattern (a): no token exists for a partial-alpha
 // surface, so color-mix supplies it at Figma's actual percentage.
 function toMappedStop(hex) {
   const alpha = hex.length === 9 ? parseInt(hex.slice(7, 9), 16) / 255 : 1
-  if (alpha === 1) return 'var(--mapped-surface-page)'
+  if (alpha === 1) return 'var(--gradient-surface)'
   // Zero-alpha stops render identically regardless of hue (gradient
   // interpolation is premultiplied), so plain `transparent` is exact.
   if (alpha === 0) return 'transparent'
   const pct = Math.round(alpha * 100)
-  return `color-mix(in srgb, var(--mapped-surface-page) ${pct}%, transparent)`
+  return `color-mix(in srgb, var(--gradient-surface) ${pct}%, transparent)`
 }
 
 const mappedEntries = entries.map(({ name, value }) => {
@@ -75,8 +85,26 @@ const gradientBlock = [
   ':root {',
   ...entries.map(({ name, value }) => `  --gradient-${name}: ${value};`),
   '',
-  '  /* Theme-aware equivalents — fade into the page surface, not into white.',
-  '     Flip automatically via --mapped-surface-page; no dark block needed. */',
+  '  /* The surface the mapped gradients fade into. Defaults to the page surface;',
+  '     override on any scoping element to fade into that surface instead',
+  '     (e.g. --gradient-surface: var(--mapped-surface-subtlest-default)). */',
+  '  --gradient-surface: var(--mapped-surface-page);',
+  '}',
+  '',
+  '/* Theme-aware equivalents — fade into --gradient-surface, not into white.',
+  '   Flip automatically via --mapped-surface-page; no dark block needed.',
+  '',
+  '   Declared on `*`, NOT on :root, and that is load-bearing. A custom property',
+  '   that references another custom property is substituted where it is',
+  '   DECLARED, not where it is used — so a :root declaration bakes in :root\'s',
+  '   --gradient-surface (the page surface) and descendants inherit the',
+  '   already-resolved string. Overriding --gradient-surface further down then',
+  '   has no effect. Measured, both themes: the :root form did not respond to an',
+  '   override; this form responds on the element itself and via an ancestor.',
+  '   Cost of `*`: the pair is recomputed per element, and --mapped-gradient-*',
+  '   can no longer be overridden directly at an ancestor and inherited down —',
+  '   --gradient-surface is the supported override point. */',
+  '* {',
   ...mappedEntries.map(({ name, value }) => `  --mapped-gradient-${name}: ${value};`),
   '}',
   '',
