@@ -256,11 +256,31 @@ When a new component is added, the same three things are true every time:
 - Map interaction states to tokens: default/hover/pressed/subtle → the matching
   --mapped-surface-* / --mapped-text-* tokens (that's why they exist).
   **`--alias-*` never dark-flips** (the `[data-theme="dark"]` block only redefines
-  `--mapped-*`) — an alias token in a hover/pressed/selected/focus rule is a bug,
-  found and fixed twice (Toggle/Checkbox/Radio, then Tag). After building or
-  editing any component, grep its CSS for `--alias-` — any hit in an interactive
-  state must be replaced with a mapped token or the color-mix pattern below.
-  This grep is a required verification step, not optional.
+  `--mapped-*`).
+
+  **THE RULE (rewritten v1.6.0): an alias token may not supply one half of a
+  colour pair whose other half is a mapped token.** A "colour pair" is any
+  background/foreground combination that must stay legible together —
+  `background` + `color` on one rule, or a border against the surface it sits on.
+  Mix the layers and the mapped half flips while the alias half does not, so the
+  pair drifts apart in exactly one theme. Both halves alias is fine (theme-
+  invariant by construction). Both halves mapped is fine (they flip together).
+
+  After building or editing any component, grep its CSS for `--alias-`. **Every
+  hit must be checked against its partner declaration**, not just the ones in
+  interactive states. This grep is a required verification step, not optional.
+
+  *Why it was rewritten.* The rule previously read: "an alias token in a
+  hover/pressed/selected/focus rule is a bug … any hit in an interactive state
+  must be replaced". That scoping was wrong, and the narrowness was the whole
+  problem. Eight alias hits in `Chips.css` sat in **static variant** rules
+  (`.mn-chips--removed.mn-chips--subtle`), passed the letter of the old rule at
+  every audit, and were still broken: a static `--alias-error-100` background
+  paired with a flipping `--mapped-text-error-default-hover` measured CR 4.17 in
+  light and **2.84 in dark**. `Badge` carried the identical defect (`added` 1.77,
+  `removed` 2.23 in dark) plus a raw `--brand-slate-600` — and was invisible to
+  the grep entirely, because it had no `.css` file at all. Fixed in v1.6.0.
+  The pairing test catches all of these; the interactive-state test caught none.
 - **Token-source gap protocol** — when Figma specifies a value with no
   corresponding token (missing opacity/tint, or a px value off the
   `--brand-scale` ramp), do not invent a fallback silently. Get explicit

@@ -6,10 +6,26 @@
   border-radius: var(--brand-scale-200);
 }
 
+/* Chips --subtle: the background tints are --alias-<hue>-100, declared only in
+   :root, so they do NOT dark-flip. The paired text is therefore also a static
+   --alias-<hue>-700, making each subtle pair theme-invariant BY CONSTRUCTION
+   rather than by coincidence. Binding either half to a --mapped-* token
+   reintroduces the v1.5.0 defect: the text flips, the tint does not, and the
+   pair drifts (measured: removed 4.17 light / 2.84 dark; inprogress 4.87/2.53).
+
+   The mapped-layer fix was evaluated and REJECTED on measurement, not taste:
+   there is no per-hue subtle SURFACE token (the mapped layer has
+   --mapped-surface-<hue>-default/-hover/-pressed, all saturated 500/600/700,
+   and only hue-less --mapped-surface-subtle-*). Routing the six through the
+   hue-less --mapped-surface-subtle-default left three of six below AA
+   (default 4.07, moved 3.20, success 3.48 in light) AND discarded the hue
+   tint that distinguishes the variants. Logged as a token-layer gap:
+   --mapped-surface-<hue>-subtle does not exist. */
+
 /* ── default ────────────────────────────────────────────── */
 .mn-chips--default.mn-chips--subtle {
   background: var(--alias-surface-100);
-  color: var(--mapped-text-subtle-default);
+  color: var(--alias-neutral-700);
 }
 .mn-chips--default.mn-chips--bold {
   background: var(--alias-neutral-800);
@@ -19,7 +35,7 @@
 /* ── inprogress (blue/primary) ──────────────────────────── */
 .mn-chips--inprogress.mn-chips--subtle {
   background: var(--alias-primary-100);
-  color: var(--mapped-text-primary-default-hover);
+  color: var(--alias-primary-700);
 }
 .mn-chips--inprogress.mn-chips--bold {
   background: var(--mapped-surface-primary-default);
@@ -29,7 +45,7 @@
 /* ── moved (orange/warning) ─────────────────────────────── */
 .mn-chips--moved.mn-chips--subtle {
   background: var(--alias-warning-100);
-  color: var(--mapped-text-warning-default-hover);
+  color: var(--alias-warning-700);
 }
 .mn-chips--moved.mn-chips--bold {
   background: var(--mapped-surface-warning-default);
@@ -39,7 +55,7 @@
 /* ── new (purple/interactive) ───────────────────────────── */
 .mn-chips--new.mn-chips--subtle {
   background: var(--alias-interactive-100);
-  color: var(--mapped-text-interactive-default-hover);
+  color: var(--alias-interactive-700);
 }
 .mn-chips--new.mn-chips--bold {
   background: var(--mapped-surface-interactive-default);
@@ -49,7 +65,7 @@
 /* ── removed (red/error) ────────────────────────────────── */
 .mn-chips--removed.mn-chips--subtle {
   background: var(--alias-error-100);
-  color: var(--mapped-text-error-default-hover);
+  color: var(--alias-error-700);
 }
 .mn-chips--removed.mn-chips--bold {
   background: var(--mapped-surface-error-default);
@@ -59,7 +75,7 @@
 /* ── success (green) ────────────────────────────────────── */
 .mn-chips--success.mn-chips--subtle {
   background: var(--alias-success-100);
-  color: var(--mapped-text-success-default-hover);
+  color: var(--alias-success-700);
 }
 .mn-chips--success.mn-chips--bold {
   background: var(--alias-success-400);
