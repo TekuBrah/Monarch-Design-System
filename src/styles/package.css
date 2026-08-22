@@ -1,16 +1,28 @@
-/* Source-level equivalent of the built dist/index.css + token CSS.
-   Vite's lib build (vite.config.lib.ts) aggregates every component's
-   companion CSS transitively through the src/index.ts import graph into
-   dist/index.css, but that aggregation only exists as a build artifact —
-   there is no single source file it corresponds to, and it never included
-   globals.css/typography.css (nothing in src/index.ts's tree imports them).
-   This file is that missing source-level equivalent, kept in sync by hand:
-   whenever a component gains/loses a CSS file, update this list to match. */
+/* THE source of dist/index.css. Not merely a source-level "equivalent" of it.
+
+   src/index.ts line 1 is `import './styles/package.css'`, so this file is the
+   single root of the lib build's CSS graph: Vite (vite.config.lib.ts) follows
+   these @imports and aggregates everything below into dist/index.css, which
+   package.json exposes to consumers as `./styles.css`. globals.css and
+   typography.css are the first two entries, so every token custom property and
+   all 22 .type-* classes DO reach consumers.
+
+   Corrected in v1.6.0. This header previously claimed the aggregation "never
+   included globals.css/typography.css (nothing in src/index.ts's tree imports
+   them)". That was true when written (0d01759, 2026-07-30) and stopped being
+   true one day later (a2b9bbf, 2026-07-31), when src/index.ts gained the import
+   above. It had been describing the wrong build for four releases.
+
+   Kept in sync BY HAND: whenever a component gains or loses a CSS file, update
+   this list to match. Nothing enforces it. A component missing from this list
+   compiles, tests green, and looks correct in the showcase (its .tsx imports its
+   own CSS) — then ships to the consumer with no styles and no error anywhere. */
 
 @import './globals.css';
 @import './typography.css';
 
 @import '../components/Avatar/Avatar.css';
+@import '../components/Badge/Badge.css';
 @import '../components/Blanket/Blanket.css';
 @import '../components/Breadcrumbs/Breadcrumbs.css';
 @import '../components/Button/Button.css';
