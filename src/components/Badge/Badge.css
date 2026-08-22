@@ -1,0 +1,84 @@
+/* Badge — moved out of two inline style={{}} objects in Badge.tsx (v1.6.0).
+
+   The inline objects were not merely a style-preference violation: CSS audits in
+   this repo work by grepping src/components/<Name>/*.css, so a component with no
+   .css file is a permanent blind spot. Badge reproduced ElementWrapper's failure
+   mode exactly — no companion CSS, absent from package.css, styled inline — and
+   that is why it carried an --alias-* pair and a raw --brand-* primitive
+   unchallenged through four releases.
+
+   Token corrections made in the same pass:
+     - `dark` background was var(--brand-slate-600), a BRAND PRIMITIVE consumed
+       directly in a component, two layers below what the cascade contract allows.
+       Now --alias-neutral-600, which resolves to the identical #6b7786.
+       ZERO colour change; this is a layering fix, not a visual one.
+     - `added` / `removed` backgrounds are static --alias-<hue>-100 tints with no
+       dark-mode counterpart, but their text was --mapped-text-*-default-press(ed),
+       which DOES flip. The pair drifted apart in dark: added measured CR 1.77 and
+       removed 2.23 on their own backgrounds. Text is now the static
+       --alias-<hue>-700, making both pairs theme-invariant by construction —
+       the same shape applied to Chips --subtle in this release. */
+
+.mn-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--brand-scale-200);
+  padding-inline: var(--brand-scale-200);
+  padding-block: 0;
+  white-space: nowrap;
+}
+
+/* Only the +/− appearances carry a prefix glyph, and only they need the gap. */
+.mn-badge--with-prefix {
+  gap: var(--brand-scale-25);
+}
+
+.mn-badge--dot {
+  display: inline-block;
+  width: var(--brand-scale-300);
+  height: var(--brand-scale-300);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── appearances ─────────────────────────────────────────────
+   Shared by both the pill (.mn-badge) and the dot (.mn-badge--dot);
+   the dot renders background only and ignores `color`. */
+
+.mn-badge--default {
+  background: var(--mapped-surface-subtle-default);
+  color: var(--mapped-text-default-default);
+}
+
+.mn-badge--primary {
+  background: var(--mapped-surface-primary-default);
+  color: var(--mapped-text-on-color-heading);
+}
+
+.mn-badge--inverted {
+  background: var(--mapped-surface-page);
+  color: var(--mapped-text-primary-default);
+}
+
+.mn-badge--important {
+  background: var(--mapped-surface-error-default);
+  color: var(--mapped-text-on-color-heading);
+}
+
+/* added / removed — static tint + static text, see header note. */
+.mn-badge--added {
+  background: var(--alias-success-100);
+  color: var(--alias-success-700);
+}
+
+.mn-badge--removed {
+  background: var(--alias-error-100);
+  color: var(--alias-error-700);
+}
+
+/* dark — a deliberately fixed dark chip that does not flip with the theme.
+   --alias-neutral-600 is the same #6b7786 the raw primitive resolved to. */
+.mn-badge--dark {
+  background: var(--alias-neutral-600);
+  color: var(--mapped-text-on-color-heading);
+}

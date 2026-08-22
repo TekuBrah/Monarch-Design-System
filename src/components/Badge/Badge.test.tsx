@@ -9,34 +9,34 @@ const APPEARANCES: BadgeAppearance[] = [
 ]
 const TYPES: BadgeType[] = ['default', 'dot']
 
-// Deviation from the Button pattern: Badge has no ARIA role and no root class
-// (it is one of the documented inline-style components), so assertions go
-// through its rendered text instead of getByRole/toHaveClass.
+// Badge has no ARIA role, so text/class assertions stand in for getByRole.
+// As of v1.6.0 it DOES have a root class and a companion Badge.css — it was
+// previously styled through two inline style={{}} objects, and these assertions
+// were rewritten from `.style.background` to the modifier class when those moved.
 describe('Badge', () => {
   it('renders without crashing', () => {
     render(<Badge label="25" />)
     expect(screen.getByText('25')).toBeInTheDocument()
   })
 
-  // Badge styles appearance through inline background (no modifier classes), so
-  // assert the prop actually reaches the DOM. Deliberately checks "a background
-  // is set" rather than exact token names — exact tokens are the docs' contract,
-  // and hardcoding them here would make a token rename fail this smoke test for
-  // a non-defect reason.
-  it.each(APPEARANCES)('renders the %s appearance with a background applied', appearance => {
+  // Assert the prop actually reaches the DOM as a modifier class. Deliberately
+  // checks "the appearance is expressed" rather than resolved colour — the token
+  // mapping is the docs' contract, and jsdom does not resolve var() chains, so a
+  // colour assertion here would be meaningless as well as brittle.
+  it.each(APPEARANCES)('renders the %s appearance with a modifier class', appearance => {
     const { container } = render(<Badge appearance={appearance} label="25" />)
-    expect((container.firstChild as HTMLElement).style.background).not.toBe('')
+    expect(container.firstChild).toHaveClass(`mn-badge--${appearance}`)
   })
 
-  it('renders visibly different backgrounds for different appearances', () => {
+  it('renders visibly different appearances with different modifier classes', () => {
     const a = render(<Badge appearance="primary" label="25" />)
-    const primaryBg = (a.container.firstChild as HTMLElement).style.background
+    const primaryClass = (a.container.firstChild as HTMLElement).className
     a.unmount()
 
     const b = render(<Badge appearance="important" label="25" />)
-    const importantBg = (b.container.firstChild as HTMLElement).style.background
+    const importantClass = (b.container.firstChild as HTMLElement).className
 
-    expect(primaryBg).not.toBe(importantBg)
+    expect(primaryClass).not.toBe(importantClass)
   })
 
   it.each(TYPES)('renders type %s', type => {

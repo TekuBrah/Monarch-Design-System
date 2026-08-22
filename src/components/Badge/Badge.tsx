@@ -1,3 +1,4 @@
+import './Badge.css'
 
 export type BadgeAppearance =
   | 'default'
@@ -16,26 +17,6 @@ export interface BadgeProps {
   label?: string
 }
 
-const BG: Record<BadgeAppearance, string> = {
-  default:   'var(--mapped-surface-subtle-default)',
-  primary:   'var(--mapped-surface-primary-default)',
-  inverted:  'var(--mapped-surface-page)',
-  important: 'var(--mapped-surface-error-default)',
-  added:     'var(--alias-success-100)',
-  removed:   'var(--alias-error-100)',
-  dark:      'var(--brand-slate-600)',
-}
-
-const COLOR: Record<BadgeAppearance, string> = {
-  default:   'var(--mapped-text-default-default)',
-  primary:   'var(--mapped-text-on-color-heading)',
-  inverted:  'var(--mapped-text-primary-default)',
-  important: 'var(--mapped-text-on-color-heading)',
-  added:     'var(--mapped-text-success-default-pressed)',
-  removed:   'var(--mapped-text-error-default-press)',
-  dark:      'var(--mapped-text-on-color-heading)',
-}
-
 const PREFIX: Partial<Record<BadgeAppearance, string>> = {
   added:   '+',
   removed: '−',
@@ -50,35 +31,24 @@ export function Badge({
     return (
       <span
         aria-hidden="true"
-        style={{
-          display: 'inline-block',
-          width: 'var(--brand-scale-300)',
-          height: 'var(--brand-scale-300)',
-          borderRadius: '50%',
-          background: BG[appearance],
-          flexShrink: 0,
-        }}
+        className={`mn-badge--dot mn-badge--${appearance}`}
       />
     )
   }
 
   const prefix = PREFIX[appearance]
 
+  const classes = [
+    'mn-badge',
+    `mn-badge--${appearance}`,
+    prefix && 'mn-badge--with-prefix',
+    'type-body-sm',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
-    <span
-      className="type-body-sm"
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: prefix ? 'var(--brand-scale-25)' : undefined,
-        background: BG[appearance],
-        color: COLOR[appearance],
-        borderRadius: 'var(--brand-scale-200)',
-        paddingInline: 'var(--brand-scale-200)',
-        paddingBlock: '0',
-        whiteSpace: 'nowrap',
-      }}
-    >
+    <span className={classes}>
       {prefix && <span aria-hidden="true">{prefix}</span>}
       {label}
     </span>
