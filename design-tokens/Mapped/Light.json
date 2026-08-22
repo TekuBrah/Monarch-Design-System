@@ -136,7 +136,7 @@
     },
     "error": {
       "default": {
-        "value": "{Error.500}",
+        "value": "{Error.600}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -146,7 +146,7 @@
         }
       },
       "default-hover": {
-        "value": "{Error.600}",
+        "value": "{Error.700}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -176,7 +176,7 @@
         }
       },
       "default-press": {
-        "value": "{Error.700}",
+        "value": "{Error.800}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [

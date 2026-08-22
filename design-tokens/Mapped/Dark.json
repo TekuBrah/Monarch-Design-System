@@ -22,7 +22,7 @@
         }
       },
       "caption": {
-        "value": "{Neutral.950}",
+        "value": "{Neutral.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -32,7 +32,7 @@
         }
       },
       "placeholder": {
-        "value": "{Neutral.950}",
+        "value": "{Neutral.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -42,7 +42,7 @@
         }
       },
       "Label": {
-        "value": "{Neutral.950}",
+        "value": "{Neutral.100}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -52,7 +52,7 @@
         }
       },
       "Label-hover": {
-        "value": "{Neutral.800}",
+        "value": "{Neutral.200}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -62,7 +62,7 @@
         }
       },
       "Label-pressed": {
-        "value": "{Neutral.700}",
+        "value": "{Neutral.300}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -136,7 +136,7 @@
     },
     "error": {
       "default": {
-        "value": "{Error.600}",
+        "value": "{Error.500}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -146,7 +146,7 @@
         }
       },
       "default-hover": {
-        "value": "{Error.500}",
+        "value": "{Error.400}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -176,7 +176,7 @@
         }
       },
       "default-press": {
-        "value": "{Error.400}",
+        "value": "{Error.300}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
