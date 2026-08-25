@@ -28,32 +28,94 @@ Figma Variables → Token Studio → `design-tokens/` JSON exports. Before expor
 | Shadows | `Brand/Value.json` (`Dropshadow_*`) | `build-shadows.mjs` | `shadows.ts`, `/* === Shadows === */` block in `globals.css` |
 
 ### Running the scripts
-Run **all seven, in this exact order** (each layer reads what the previous wrote
-to `globals.css`):
+One command runs all seven layers, in order:
 ```
-node scripts/build-brand-colors.mjs
-node scripts/build-alias-colors.mjs
-node scripts/build-mapped.mjs
-node scripts/build-responsive.mjs
-node scripts/build-typography.mjs
-node scripts/build-gradients.mjs
-node scripts/build-shadows.mjs
+npm run build:tokens
 ```
 
-**Do not skip the last two.** This list previously stopped at typography, and
-following it verbatim regenerated a `globals.css` with no `--shadow-*` or
-`--gradient-*` declarations at all — while 10+ component CSS files
-(all four `Card` variants, both `Navigation` components, `Tab`) kept consuming
-`var(--shadow-*)`. Those silently resolved to nothing, so every card and nav
-rendered with no shadow and no build error. Regression introduced at `142df40`,
-found and repaired 2026-07-31.
+**The order lives in exactly one place — the `build:tokens` script in
+`package.json`. Do not restate it in prose.** Every prose copy is another thing
+that can drift out of step with the pipeline, and no gate would catch it. This
+section used to hold such a copy; that is what this note replaces.
 
-**`build-shadows.mjs` must run last.** Six of the seven scripts rewrite
-`src/tokens/index.ts` from their own hardcoded export list, so whichever runs
-last decides the final barrel. Only `build-shadows.mjs` writes the complete set
-(brand, alias, mapped, responsive, typography, gradients, shadows) —
-`build-gradients.mjs`, for instance, omits the `shadows` exports, so running it
-after shadows silently breaks `import { shadows }`.
+**Do not run the seven scripts by hand.** Two distinct failures have already
+been paid for, and both are failures of invoking them individually:
+
+1. *Stopping early.* This section once listed the seven invocations and the list
+   stopped at typography. Following it verbatim regenerated a `globals.css` with
+   no `--shadow-*` or `--gradient-*` declarations at all — while 10+ component
+   CSS files (all four `Card` variants, both `Navigation` components, `Tab`)
+   kept consuming `var(--shadow-*)`. Those silently resolved to nothing, so
+   every card and nav rendered with no shadow and no build error. Regression
+   introduced at `142df40`, found and repaired 2026-07-31.
+2. *Ending on gradients.* `build-gradients.mjs` emits a barrel that omits the
+   `shadows` exports, so if it is the last script to run, `import { shadows }`
+   silently breaks — see the barrel table below.
+
+`npm run build:tokens` removes both failure modes at once: it cannot stop early
+and it cannot end on the wrong script. That is the reason to prefer it.
+
+**Gradients must not run last.** Six of the seven scripts rewrite
+`src/tokens/index.ts` from their own hardcoded export list — `build-brand-colors.mjs`
+is the one exception, it never touches the barrel — so whichever script runs
+last decides the final barrel. Re-derived from the six write sites, 2026-08-25:
+
+| Script | Barrel it writes |
+|---|---|
+| `build-brand-colors.mjs` | *(does not write the barrel)* |
+| `build-alias-colors.mjs` | brand, alias |
+| `build-mapped.mjs` | + mapped |
+| `build-responsive.mjs` | + responsive |
+| `build-typography.mjs` | **all seven** |
+| `build-gradients.mjs` | six — **omits `shadows`** |
+| `build-shadows.mjs` | **all seven** |
+
+This corrects what this file previously recorded: *"Only `build-shadows.mjs`
+writes the complete set."* It does not. `build-typography.mjs` writes the
+identical seven-export barrel, so completeness is not unique to shadows. Four
+scripts emit an incomplete barrel (alias, mapped, responsive, gradients), but
+the first three run *before* `build-typography.mjs`, which restores the full
+set — **`build-gradients.mjs` is the only incomplete emitter that runs after a
+complete one**, and therefore the only one whose partial barrel can survive to
+the end of a full run.
+
+The operative constraint is *gradients must not run last*, not *shadows must run
+last*. The current order satisfies both statements, so nothing is broken today:
+the recorded reason was wrong, not the behaviour.
+
+### The CI drift gate, and the scope it covers
+
+`.github/workflows/ci.yml` runs `npm run build:tokens` and then asserts twice
+that the tree still matches what the pipeline produced:
+
+1. `git diff --exit-code` — catches a hand-edit to a generated file that the
+   next pipeline run would silently revert (the light/dark mapped blocks in
+   `globals.css` are the usual victim).
+2. `git status --porcelain -- src/tokens src/styles` — catches a *new*
+   generated file that no one committed. The diff check is blind to untracked
+   files, so without this the gate passes on a tree that does not match.
+
+**The second assertion is scoped to `src/tokens` and `src/styles`, and that
+scope must widen if any build script write surface ever widens.** The scope is
+correct today because every write site in all seven scripts resolves under one
+of those two directories — verified by grepping every `writeFileSync` target in
+`scripts/`. Add a script that writes anywhere else and the assertion will not
+see it. Unscoped is not the fix: unscoped, the assertion fails on any stray
+untracked file anywhere in the repo, which makes it unverifiable on a working
+tree that is legitimately dirty.
+
+**Assertion 2 reads red locally on Windows and green in CI — this is expected,
+not a broken gate.** With `core.autocrlf=true` set globally and no
+`.gitattributes`, git smudges LF blobs to CRLF on checkout; the build scripts
+then rewrite those files as LF, and `git status` flags them as modified even
+though they are byte-identical to the committed blob. Measured, all three
+states reproducible on demand: after a pipeline run the files are LF and
+status shows `M`; after `git checkout --` they are CRLF and status is clean;
+after another pipeline run they are LF and `M` again. **The pipeline itself is
+content-idempotent** — every generated file compares byte-identical to its
+index blob after a run, and `git diff --exit-code` returns 0 throughout. On a
+Linux runner `actions/checkout` does not smudge, so neither assertion sees any
+of this.
 
 ### Generated outputs (never hand-edit)
 - `src/tokens/brand.ts` · `alias.ts` · `mapped.ts` · `responsive.ts` · `typography.ts` · `gradients.ts` · `shadows.ts` · `index.ts`
@@ -419,6 +481,20 @@ retroactively conformed to this once already.
   rule says `stretch`, `flex-grow: "0"` where it says `1`. This is the same class
   of trap as the frozen-transition false positive above, and the same discipline
   defeats it — **read the declaration, not the rendering.**
+- **Screenshot capture mode changes the contrast answer — state which mode you
+  measured.** `page.screenshot({ fullPage: true })` and a clipped in-viewport
+  capture return **different** contrast figures for the same element.
+  `fullPage` samples the element at its **at-rest scroll position**, where a
+  fixed scrim/overlay still sits over it; `scrollIntoView` + a `clip` capture
+  samples it **clear** of that scrim. Same element, same page, two answers.
+  - A 100dvh layout-shift explanation was tested and **REFUTED**: fullPage and
+    viewport captures agree **pixel-for-pixel at the same document
+    coordinates**. The variable is *scroll state*, not viewport height and not
+    a dynamic-viewport reflow.
+  - Therefore: any contrast measurement is incomplete unless it says which of
+    the two captures produced it. A figure quoted without its capture mode is
+    not comparable to one taken the other way, and re-measuring the other way
+    is not a contradiction of it.
 - **`clientWidth` is harness-dependent; key to it and say which harness.** At a
   1280 viewport the MVP's Playwright harness reports `clientWidth` **1280**, while
   this dev browser pane reports **1265** (a 15px scrollbar gutter). Neither figure

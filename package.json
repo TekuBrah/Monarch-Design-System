@@ -20,6 +20,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:lib": "vite build --config vite.config.lib.ts",
+    "build:tokens": "node scripts/build-brand-colors.mjs && node scripts/build-alias-colors.mjs && node scripts/build-mapped.mjs && node scripts/build-responsive.mjs && node scripts/build-typography.mjs && node scripts/build-gradients.mjs && node scripts/build-shadows.mjs",
     "prepare": "npm run build:lib",
     "preview": "vite preview",
     "test": "vitest run",

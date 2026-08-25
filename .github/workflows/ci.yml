@@ -1,0 +1,119 @@
+name: CI
+
+on:
+  # Push only, unfiltered — and no `pull_request:` trigger, deliberately.
+  #
+  # This repo's flow is: push a phase/* branch, then fast-forward merge to main
+  # in Sourcetree. No PR is opened. The conventional shape for this file would
+  # be `push: branches: [main]` alongside `pull_request:`, but that assumes a
+  # PR-based flow: with no PR ever opened, CI would first run only after the
+  # merge to main had already happened, which is the wrong moment for a gate.
+  #
+  # Unfiltered push runs exactly once per commit on every branch, phase/* work
+  # included — which is where the signal is wanted. Adding `pull_request:` back
+  # on top of an unfiltered `push:` would run this whole job TWICE for a single
+  # commit on any branch that did have an open PR.
+  #
+  # If PRs are ever adopted: restore `pull_request:` and add a branch filter to
+  # `push:` in the same edit. The two changes are not independent.
+  push:
+
+jobs:
+  verify:
+    name: Tokens, types, tests
+    runs-on: ubuntu-latest
+
+    # Least privilege. This job only reads the tree: checkout, install, build,
+    # diff, typecheck, test. Nothing writes back to the repo or the API, so the
+    # default write-capable GITHUB_TOKEN is more than this job needs.
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # No engines field, .nvmrc, or packageManager field exists in this repo.
+      # 24 is pinned to match the machine that generates the committed token
+      # files (node v24.17.0). The pipeline-drift check below compares generated
+      # output byte-for-byte, so CI must run the same major that produced it.
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      # npm ci also runs the prepare script, which is "npm run build:lib" — so a
+      # vite-plugin-dts failure surfaces HERE, as an install failure, rather than
+      # as a build failure. Kept deliberately: this is the only step exercising
+      # the path a consumer hits installing this package from a git tag.
+      - name: Install dependencies
+        run: npm ci
+
+      # The seven build scripts, in order. That order is load-bearing: each layer
+      # reads what the previous wrote to src/styles/globals.css, and build-shadows
+      # must run after build-gradients, because build-gradients rewrites
+      # src/tokens/index.ts without the shadows exports.
+      #
+      # The order now lives in exactly ONE place: the build:tokens script in
+      # package.json. Do not restate it here.
+      - name: Run the token pipeline
+        run: npm run build:tokens
+
+      - name: Check generated token files match the pipeline
+        run: |
+          if ! git diff --exit-code; then
+            echo ""
+            echo "::error::Generated token files on disk do not match what the token pipeline produces."
+            echo ""
+            echo "The files listed above are GENERATED. Re-running the pipeline changed them,"
+            echo "which means the committed version was not produced by the pipeline."
+            echo ""
+            echo "The usual cause is a hand-edit to a generated file — most often to the"
+            echo "light/dark mapped blocks in src/styles/globals.css. Such an edit works"
+            echo "locally and is then silently reverted by the next pipeline run, so the fix"
+            echo "disappears without any error. That is the failure this check exists to catch."
+            echo ""
+            echo "To fix: revert the hand-edit, and make the change in design-tokens/*.json"
+            echo "instead (the source of truth), then re-run \"npm run build:tokens\" and"
+            echo "commit the regenerated output."
+            echo ""
+            echo "Never hand-edit: src/tokens/*.ts, src/styles/globals.css,"
+            echo "src/styles/typography.css."
+            exit 1
+          fi
+
+          # The check above covers TRACKED modifications only. A build script that
+          # begins emitting a NEW generated file would leave that file untracked,
+          # and the diff would pass while the gate premise — generated output on
+          # disk equals what the pipeline produces — is already broken.
+          #
+          # Scoped to src/tokens and src/styles because every write site in all
+          # seven build scripts resolves under one of those two directories.
+          # WIDEN THIS SCOPE if any script write surface ever widens.
+          UNTRACKED="$(git status --porcelain -- src/tokens src/styles)"
+          if [ -n "$UNTRACKED" ]; then
+            echo "$UNTRACKED"
+            echo ""
+            echo "::error::The token pipeline produced generated files that are not committed."
+            echo ""
+            echo "The paths listed above turned up under src/tokens or src/styles after"
+            echo "the pipeline ran, but are not tracked by git. A generated file nobody"
+            echo "has committed is invisible to the diff check above, so without this"
+            echo "assertion the gate would report success on a tree that does not in"
+            echo "fact match the pipeline output."
+            echo ""
+            echo "To fix: commit the new generated file, and register it wherever the"
+            echo "project expects generated output to be registered (src/index.ts and"
+            echo "src/styles/package.css for components; src/tokens/index.ts for tokens)."
+            exit 1
+          fi
+
+      # build:lib is "vite build --config vite.config.lib.ts" — no tsc. It is what
+      # the prepare script runs on a consumer's machine, so nothing in the publish
+      # path typechecks. This step is that missing typecheck.
+      - name: Typecheck
+        run: npx tsc -b
+
+      - name: Test
+        run: npm test
