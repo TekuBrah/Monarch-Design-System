@@ -1,7 +1,7 @@
 import React from 'react'
 import './ToastMobile.css'
 import { Icon } from '../Icon'
-import { TOAST_BG, TOAST_DEFAULT_ICON } from '../Toast'
+import { TOAST_DEFAULT_ICON } from '../Toast'
 import type { ToastAppearance } from '../Toast'
 
 export interface ToastMobileProps {
@@ -39,7 +39,6 @@ export function ToastMobile({
     <div
       id={id}
       className={['mn-toast-mobile', `mn-toast-mobile--${appearance}`, className].filter(Boolean).join(' ')}
-      style={{ background: TOAST_BG[appearance] }}
       role={role}
       aria-live={role === 'alert' ? 'assertive' : 'polite'}
     >

@@ -3179,6 +3179,44 @@ description and actions are app-provided slots (Figma marks the paragraph
 | discovery | `--mapped-surface-interactive-default` |
 | **ai** | `linear-gradient(90deg, --brand-blue-500, --brand-violet-500)` |
 
+**These live in `Toast.css` / `ToastMobile.css` as `.mn-toast--<appearance>` /
+`.mn-toast-mobile--<appearance>` rules (v1.7.0 Part 2).** They were a JS map,
+`TOAST_BG`, exported from `Toast.tsx` and applied as `style={{ background }}` on
+both components. That put six token bindings where the component-CSS audit grep
+cannot see them — the blind spot inline styles create, which is why `CLAUDE.md`
+bans them for static token-driven values. Nothing in the map was runtime-selected:
+`appearance` is a closed union of six, so six classes express it exactly. The
+export is gone; `TOAST_DEFAULT_ICON` stays, because an icon **name** is not a
+style and cannot be a CSS declaration. No rendered value changed — same tokens,
+same variants, just reachable by the sweep.
+
+`TOAST_BG`'s own doc comment said "all mapped surfaces dark-flip". The opposite is
+true and is what makes the component safe: v1.7.0 Part 1 ruled every hue surface
+theme-invariant, and that invariance is what lets an on-color foreground pair with
+them. Measured against `--mapped-text-primary-on-color` (`#ffffff`, invariant),
+identical in both themes: information **6.42**, discovery **6.60**, success
+**6.25**, warning **5.79**, error **5.35**. All five clear AA at every size.
+
+**`ai` is the exception and is an open gap.** Its violet stop
+(`--brand-violet-500` `#df5af6`) measures **3.03** against the white title —
+below the 4.5:1 the other five meet, and below even 3:1 for non-text at the
+lighter end of the sweep. Not fixable in component CSS: it needs different stops,
+which is a token/design decision. Same class as the `CardFeaturesAndEducation`
+and `TrendIndicator` findings. **Logged in Part 2, not worked around.**
+
+**Two deliberate name mismatches, both inherited from Figma's fills rather than
+from the appearance names.** `information` draws the **primary** surface, not
+`--mapped-surface-information-default`; `discovery` draws the **interactive** one.
+The `discovery` case is what proves the pattern: there is no
+`--mapped-surface-discovery-*` family at all, so these bindings cannot have been
+derived by name-matching. Consequence, confirmed in Part 2:
+`--mapped-surface-information-default` (`#006789`, invariant, 6.36 vs white) has
+**zero component consumers** — its one consumer anywhere is
+`--mapped-gradient-primary-default`'s 100% stop, in the token layer. Re-pointing
+`information` at it would turn the toast from blue to teal: a visual redesign,
+not a token repair, and not a call to make without the Figma source. **Reported,
+not changed.**
+
 Auto icons: `info` / `check_circle` / `warning` / `error` / `help_outline` /
 `icon_aiinsights`. The filled-circle glyphs in white produce the "badge" look
 with no separate component.
@@ -3918,6 +3956,19 @@ Figma specifies `-500`.
 **This is therefore a known, accepted gap, not an oversight.** No substitute
 token, no `token-exempt` marker, and no CSS workaround was introduced — the
 component uses exactly what Figma binds.
+
+**Re-confirmed and re-declined in v1.7.0 Part 2.** Part 1 made the mapped hue
+surfaces theme-invariant and AA against on-color white, which makes rebinding
+these four backgrounds to the mapped layer look like a new, purely-architectural
+fix. It is not. `--mapped-surface-primary-default` is `#0358cc` (blue 600),
+`-warning-default` is `#99532b` (orange 700), `-success-default` is `#226e3a`
+(green 700), `-interactive-default` is `#5e4db2` (purple 500) — **the exact four
+steps declined above**, reached by a different route. The rebind was written in
+Part 2, measured (4.49→6.42, 2.34→5.79, 2.56→6.25, 6.60→6.60), then **reverted
+on finding this entry**, because shipping it would have overridden a recorded
+decision under cover of a layer correction. Purple is a no-op either way. The
+falsified 4.5:1 reading in `CardFeaturesAndEducation.css`'s comment was corrected
+in place instead, with a pointer here.
 
 **Associated with the status-token contrast finding** recorded under
 `TrendIndicator` (`--mapped-text-success-default` 2.56:1 light,

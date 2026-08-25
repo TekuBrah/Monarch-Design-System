@@ -50,10 +50,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # The seven build scripts, in order. That order is load-bearing: each layer
-      # reads what the previous wrote to src/styles/globals.css, and build-shadows
-      # must run after build-gradients, because build-gradients rewrites
-      # src/tokens/index.ts without the shadows exports.
+      # The seven build scripts, in order. That order is load-bearing for VALUE
+      # RESOLUTION: each layer reads what the previous one wrote to
+      # src/styles/globals.css.
+      #
+      # It is NO LONGER load-bearing for barrel completeness. This comment used
+      # to give that as the reason build-shadows must run after build-gradients:
+      # build-gradients rewrote src/tokens/index.ts from a hardcoded list that
+      # omitted the shadows exports, so if it ran last, "import { shadows }"
+      # silently broke. That was true, and it is why the constraint existed.
+      # v1.7.0 fixed it at the source — build-gradients now emits all seven
+      # exports, the same list build-typography and build-shadows write — so the
+      # hazard is gone rather than merely ordered around. Regenerating produced
+      # no diff at all on src/tokens/index.ts. The ordering itself is KEPT.
       #
       # The order now lives in exactly ONE place: the build:tokens script in
       # package.json. Do not restate it here.

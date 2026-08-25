@@ -59,7 +59,29 @@ button.mn-card-features:focus-visible {
    NOTE: this level deliberately DIVERGES from IconObject, which stays on -400.
    The two components carry different accessibility bars — a card title is text
    (4.5:1), an IconObject glyph is non-text (3:1) — so they were resolved
-   separately rather than kept in lockstep. See docs/component-tokens.md. */
+   separately rather than kept in lockstep. See docs/component-tokens.md.
+
+   READ THE NEXT PARAGRAPH BEFORE ACTING ON THE ONE ABOVE. Naming the 4.5:1 bar
+   here, next to the level that was picked, reads as a claim that -500 MEETS it.
+   It does not. Re-derived v1.7.0 Part 2 from the generated CSS against
+   --mapped-text-on-color-heading (#ffffff, invariant in both themes), WCAG 2.x
+   relative luminance: blue 4.49, orange 2.34, green 2.56, purple 6.60. Only
+   purple passes; blue misses by 0.01; orange and green fall below even the 3:1
+   non-text bar. Identical in both themes, because --brand-* never dark-flips.
+   4.5:1 is the bar this component OWES, not the bar it clears.
+
+   THIS IS A DECIDED GAP, NOT AN OPEN ONE — do not "fix" it here. Teku walked the
+   full ramp in Phase 5.4 and declined the darker steps by name: blue 600,
+   orange 700, green 700, purple 500. Those are exactly the values v1.7.0's
+   invariant mapped hue surfaces resolve to (--mapped-surface-primary-default
+   #0358cc 6.42, -warning-default #99532b 5.79, -success-default #226e3a 6.25,
+   -interactive-default #5e4db2 6.60), so rebinding these four backgrounds to the
+   mapped layer is not a new option — it is the declined one, reached by another
+   route. It was proposed and reverted in v1.7.0 Part 2 for that reason. Dark
+   text on orange and green was offered and declined too. The ground is that
+   darkening costs the hues their brand identity, and that Figma is the source
+   and Figma specifies -500. The fix belongs in Figma Variables.
+   See docs/component-tokens.md, "RECORDED ACCESSIBILITY GAP — decided, not open". */
 .mn-card-features--blue {
   background: var(--brand-blue-500);
 }

@@ -5,16 +5,16 @@ import type { IconName } from '../Icon/Icon'
 
 export type ToastAppearance = 'information' | 'success' | 'warning' | 'error' | 'discovery' | 'ai'
 
-/** Appearance → background. All mapped surfaces dark-flip; `ai` is a fixed
- *  brand-primitive gradient (no mapped gradient token — approved, like ProgressRing). */
-export const TOAST_BG: Record<ToastAppearance, string> = {
-  information: 'var(--mapped-surface-primary-default)',
-  success: 'var(--mapped-surface-success-default)',
-  warning: 'var(--mapped-surface-warning-default)',
-  error: 'var(--mapped-surface-error-default)',
-  discovery: 'var(--mapped-surface-interactive-default)',
-  ai: 'linear-gradient(90deg, var(--brand-blue-500), var(--brand-violet-500))',
-}
+/* The appearance -> background map that used to live here (`TOAST_BG`) now lives
+   in Toast.css / ToastMobile.css as `.mn-toast--<appearance>` rules. It was
+   applied as an inline `style={{ background }}`, which hid six token bindings
+   from the component-CSS audit grep. Its doc comment also claimed "all mapped
+   surfaces dark-flip" — the opposite of what they do; v1.7.0 made every hue
+   surface theme-invariant, and that invariance is what lets the on-color
+   foreground pair with them safely.
+
+   TOAST_DEFAULT_ICON stays: an icon NAME is not a style, cannot be expressed as
+   a CSS declaration, and is genuinely runtime-selected. */
 
 export const TOAST_DEFAULT_ICON: Record<ToastAppearance, IconName> = {
   information: 'info',
@@ -59,7 +59,6 @@ export function Toast({
     <div
       id={id}
       className={['mn-toast', `mn-toast--${appearance}`, className].filter(Boolean).join(' ')}
-      style={{ background: TOAST_BG[appearance] }}
       role={role}
       aria-live={role === 'alert' ? 'assertive' : 'polite'}
     >

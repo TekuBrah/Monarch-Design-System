@@ -10,10 +10,45 @@
   color: var(--mapped-text-primary-on-color); /* white — title/description inherit */
 }
 
+/* Appearance -> background. Was a JS map (`TOAST_BG`) applied as an inline
+   `style={{ background }}`, which put six token bindings somewhere the
+   component-CSS audit grep cannot see — the standing blind spot inline styles
+   create. Nothing here is runtime-selected: the appearance is a closed union of
+   six, so six classes express it exactly and the sweep can read them.
+
+   All five mapped surfaces are theme-invariant and clear 4.5:1 against
+   --mapped-text-primary-on-color (#ffffff, invariant): information 6.42,
+   success 6.25, warning 5.79, error 5.35, discovery 6.60.
+
+   Deliberate name mismatches, both inherited from Figma's own fills rather than
+   from the appearance names: `information` draws the PRIMARY surface (not
+   --mapped-surface-information-default), and `discovery` draws the INTERACTIVE
+   one. Binding either by name would be a visual redesign, not a token fix. */
+.mn-toast--information { background: var(--mapped-surface-primary-default); }
+.mn-toast--success     { background: var(--mapped-surface-success-default); }
+.mn-toast--warning     { background: var(--mapped-surface-warning-default); }
+.mn-toast--error       { background: var(--mapped-surface-error-default); }
+.mn-toast--discovery   { background: var(--mapped-surface-interactive-default); }
+
+/* `ai` is a fixed brand-primitive gradient — no mapped gradient token covers it;
+   the same approved treatment as ProgressRing. It does not dark-flip.
+   NOT --mapped-gradient-primary-default: that band is a different pair of stops
+   and has no consumer yet by design.
+   CONTRAST GAP, unresolved here: the violet stop (--brand-violet-500 #df5af6)
+   measures 3.03 against the white title, below the 4.5:1 this component's other
+   five appearances meet. Fixing it means changing the gradient's stops, which is
+   a token/design decision. Logged, not worked around. */
+.mn-toast--ai {
+  background: linear-gradient(90deg, var(--brand-blue-500), var(--brand-violet-500));
+}
+
 .mn-toast__icon {
   display: flex;
   flex-shrink: 0;
-  /* Figma binds icons to icon/primary/on-color (dark-flips to black — accepted). */
+  /* Figma binds icons to icon/primary/on-color. The note that used to sit here
+     said this token "dark-flips to black — accepted"; that was true of the
+     original Mapped/Dark.json export and is why the caveat existed, but the
+     dark-mode repair rebound it and it now resolves #ffffff in BOTH themes. */
   color: var(--mapped-icon-primary-on-color);
 }
 

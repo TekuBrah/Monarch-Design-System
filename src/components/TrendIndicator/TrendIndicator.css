@@ -17,9 +17,36 @@
    tiers resolve to the same value today but are semantically distinct, and
    ListItem already used the icon tier for this glyph.
 
-   Mapped tier only. The alias tier never dark-flips, so it may never appear
-   here — and it is not named literally above, because the mandated audit grep
-   for that prefix is specified to return zero on every component CSS file. */
+   Mapped tier only, on BOTH halves of every pair. This component renders on
+   whatever surface its parent supplies, and in every code path that is the page
+   surface: ListItem sets `background: none` in its base rule and adds no
+   background in any state, and the showcase places it directly on
+   --mapped-surface-page. So the surface flips, these foregrounds flip, and they
+   flip together — which is what makes the pair legal under the v1.6.0 rule.
+
+   That also rules the obvious "fix" OUT. Rebinding these to the on-color tier
+   would pin white foregrounds onto a surface that turns white in light mode.
+   The layer violation Part 1 fixed was static-on-flipping; this is not its
+   mirror, it is the correct case.
+
+   The line that used to end this comment claimed the --alias- audit grep "is
+   specified to return zero on every component CSS file". It is not, and does
+   not: Badge, Chips, HeaderBg and StatusBar all carry deliberate alias/alias
+   pairs, which v1.6.0 made explicitly legal (both halves alias = theme-invariant
+   by construction). The grep's contract is that every hit be CHECKED against its
+   partner declaration, not that there be no hits. Recorded because that wording
+   would send the next audit looking for a violation that isn't there.
+
+   Measured, WCAG 2.x relative luminance off the generated CSS, against
+   --mapped-surface-page (#ffffff light / #000000 dark):
+     up    #38b860 / #2d934d -> 2.56 light, 5.39 dark
+     down  #eb4f52 (icon) #bc3f42 (text) / swapped in dark -> 3.64-5.77
+     flat  #6b7786 / #8695a7 -> 4.56 light, 6.87 dark
+   The success pair at 2.56 in light is a real AA shortfall, but it is a value in
+   --mapped-text-success-default / --mapped-icon-success-default (both -> the
+   -500 alias step in light), not a binding this file can choose differently.
+   There is no stronger mapped text tier to rebind to. Logged as a token-layer
+   gap, not worked around here. */
 .mn-trend--up {
   color: var(--mapped-icon-success-default);
 }
