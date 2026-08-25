@@ -90,7 +90,10 @@
 /* === Hover (checked) === */
 .mn-radio:hover:not(.mn-radio--disabled) .mn-radio__circle--checked {
   background: var(--mapped-surface-primary-default-hover);
-  border-color: var(--mapped-border-primary-default-hover);
+  /* Same token as the fill above — on a MARKED box the border is a structural
+     layer, not a visible edge, so it must track the fill exactly (same fix as
+     Button primary, v1.8.0). The base marked rule already binds this way. */
+  border-color: var(--mapped-surface-primary-default-hover);
 }
 
 /* === Active / press (unchecked) === */
@@ -102,7 +105,8 @@
 /* === Active / press (checked) === */
 .mn-radio:active:not(.mn-radio--disabled) .mn-radio__circle--checked {
   background: var(--mapped-surface-primary-default-pressed);
-  border-color: var(--mapped-border-primary-default-pressed);
+  /* Same token as the fill above — see the hover rule note. */
+  border-color: var(--mapped-surface-primary-default-pressed);
 }
 
 /* === Focus ring === */

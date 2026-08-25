@@ -32,7 +32,7 @@
 
 /* `ai` is a fixed brand-primitive gradient — no mapped gradient token covers it;
    the same approved treatment as ProgressRing. It does not dark-flip.
-   NOT --mapped-gradient-primary-default: that band is a different pair of stops
+   NOT --mapped-gradient-primary-stops: that band is a different pair of stops
    and has no consumer yet by design.
    CONTRAST GAP, unresolved here: the violet stop (--brand-violet-500 #df5af6)
    measures 3.03 against the white title, below the 4.5:1 this component's other

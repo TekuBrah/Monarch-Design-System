@@ -351,18 +351,33 @@ function ResponsiveTypeSection() {
 
 // ── Gradient swatches ────────────────────────────────────────────────────────
 
-function GradientCard({ name, token }: { name: string; token: { var: string; value: string; description: string } }) {
+// The two gradient KINDS expose different shapes, and the field names differ on
+// purpose so this union discriminates without a `kind` check:
+//   scrim — a complete gradient, angle included, in `var`.
+//   brand — colour STOPS only, in `stopsVar`; the angle is the consumer's.
+type GradientToken =
+  | { var: string; value: string; mappedVar: string; mappedValue: string; description: string }
+  | { stopsVar: string; stopsValue: string; description: string }
+
+function GradientCard({ name, token }: { name: string; token: GradientToken }) {
   const TILE: React.CSSProperties = {
     position: 'relative', width: '10rem', height: '6rem', borderRadius: '0.4rem', overflow: 'hidden',
     border: '1px solid rgba(0,0,0,0.1)',
   }
+  // A brand entry ships stops without an angle, so the consumer composes one —
+  // this line IS the documented consumption pattern. 0deg reproduces the band
+  // the token used to hardcode; any other angle is equally available now.
+  const shownVar = 'stopsVar' in token ? token.stopsVar : token.var
+  const background = 'stopsVar' in token
+    ? `linear-gradient(0deg, var(${token.stopsVar}))`
+    : `var(${token.var})`
   const OVERLAY: React.CSSProperties = {
-    position: 'absolute', inset: 0, background: `var(${token.var})`,
+    position: 'absolute', inset: 0, background,
   }
   return (
     <div style={{ marginBottom: '1.5rem' }}>
       <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--mapped-text-default-default, #333)', marginBottom: '0.2rem' }}>{name}</div>
-      <div style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtle-default, #888)', marginBottom: '0.1rem' }}>{token.var}</div>
+      <div style={{ fontSize: '0.6rem', fontFamily: 'monospace', color: 'var(--mapped-text-subtle-default, #888)', marginBottom: '0.1rem' }}>{shownVar}</div>
       {token.description && (
         <div style={{ fontSize: '0.6rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.5rem' }}>{token.description}</div>
       )}
@@ -1515,7 +1530,7 @@ export default function App() {
             description={`Brand/Value.json → Gradient — ${Object.keys(gradients).length} tokens — shown over light + dark backgrounds`}
            
           >
-            {(Object.entries(gradients) as [string, { var: string; value: string; description: string }][]).map(
+            {(Object.entries(gradients) as [string, GradientToken][]).map(
               ([name, token]) => <GradientCard key={name} name={name} token={token} />
             )}
           </Section>

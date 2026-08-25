@@ -5,6 +5,84 @@ faithfully from Figma; inconsistencies in the source design are preserved as-is.
 
 ---
 
+## v1.8.0 — brand gradient: colour stops, angle composed by the consumer
+
+`--mapped-gradient-primary-default` is **gone**, replaced by
+`--mapped-gradient-primary-stops`. It is not a rename: the value changed shape.
+
+| | value |
+|---|---|
+| was | `linear-gradient(0deg, var(--mapped-surface-primary-default) 0%, var(--mapped-surface-information-default) 100%)` |
+| now | `var(--mapped-surface-primary-default) 0%, var(--mapped-surface-information-default) 100%` |
+
+**The consumption pattern:**
+
+```css
+background: linear-gradient(<angle>, var(--mapped-gradient-primary-stops));
+```
+
+The token is not usable as a bare `background` value any more, and that is the
+point — it is a stop list, not a gradient, and CSS will drop the declaration if
+it is used as one.
+
+### Why the angle is deliberately not in the token
+
+Direction is a property of the **thing being painted**, not of the brand. A
+header band, a card wash, and a progress fill all legitimately want different
+angles out of the same two brand colours. Baking `0deg` into the token gave a
+consumer wanting any other direction exactly two moves, and both are worse than
+the split:
+
+1. Restate both stops by hand at the angle it wants — which means reaching past
+   the mapped layer into brand primitives. That is the precise bypass the mapped
+   gradient tier was created to close, so the token's own shape was pushing
+   consumers into the violation it exists to prevent.
+2. Overlay a second gradient to fake the direction — extra paint, and the two
+   stops silently stop being a single source of truth.
+
+Splitting the angle out removes both. The stops stay the single brand fact; the
+angle stays with whatever is doing the painting.
+
+**Resolved value, both themes** (identical — both stops are theme-invariant hue
+surfaces, per v1.7.0's ruling): `#0358cc` at 0% → `#006789` at 100%.
+
+### Mechanics and the guard rails
+
+`build-gradients.mjs` splits the source value on its **first comma**, discards
+the angle, and logs that it did so. The split is applied to the *source* value,
+where a brand entry's stops are `{family}` references containing no nested
+parentheses — so a first-comma split is exact there. It would **not** be exact
+after resolution, once the stops hold `var(…)` calls; do not move it later.
+
+`-default` is dropped from the emitted variable name, because a gradient has no
+interaction-state axis — the suffix is inherited from the surface naming, not
+meaningful here. The **source key stays `primary-default`** so a fresh Token
+Studio export still matches it. Two source entries colliding onto one emitted
+name after that drop is a hard exit, not a silent last-writer-wins.
+
+The per-kind post-condition gained a case: a `brand` value that still carries a
+`linear-gradient(` wrapper exits 1. Without it, a failed split would ship a token
+that produces `linear-gradient(<angle>, linear-gradient(…))` at every consumer —
+invalid, and dropped silently by CSS, which is the failure mode this layer keeps
+being bitten by.
+
+`gradients.ts` exposes a brand entry as `stopsVar` / `stopsValue`, **not**
+`mappedVar` / `mappedValue`. Under `as const` that makes
+`gradients['primary-default'].mappedVar` a compile error — the same enforcement
+idiom `var` already uses to keep brand entries off the static tier.
+
+### Consumers
+
+**Zero, before and after.** Verified by full-repo grep excluding `node_modules`
+and `dist`: every hit was the declaration itself, generated metadata, docs prose,
+or the `Toast` / `ToastMobile` comments that explicitly say *not* to use it. The
+only rendering that changed is the Foundations → Gradients showcase card, which
+was **already broken on `main`** — `GradientCard` read `token.var`, which a brand
+entry has never had, so it painted `background: var(undefined)` and rendered two
+empty tiles. It now composes the documented pattern at `0deg`.
+
+---
+
 ## v1.5.0 — dark-mode token layer corrections
 
 **40 mapped colour tokens changed, all dark-theme only except 2.** Nothing here
@@ -3212,7 +3290,7 @@ The `discovery` case is what proves the pattern: there is no
 derived by name-matching. Consequence, confirmed in Part 2:
 `--mapped-surface-information-default` (`#006789`, invariant, 6.36 vs white) has
 **zero component consumers** — its one consumer anywhere is
-`--mapped-gradient-primary-default`'s 100% stop, in the token layer. Re-pointing
+`--mapped-gradient-primary-stops`' 100% stop, in the token layer. Re-pointing
 `information` at it would turn the toast from blue to teal: a visual redesign,
 not a token repair, and not a call to make without the Figma source. **Reported,
 not changed.**

@@ -818,11 +818,24 @@
    is the exact violation composing from mapped tokens was meant to close.
    They sit on `*` rather than :root for the substitution reason above: it
    keeps them correct wherever data-theme is set, not only when it happens to
-   land on the same element as :root. */
+   land on the same element as :root.
+
+   A brand entry emits --mapped-gradient-<base>-stops: the COLOUR STOP LIST
+   ONLY, with no angle and no linear-gradient() wrapper. Consume it as
+
+       background: linear-gradient(<angle>, var(--mapped-gradient-primary-stops));
+
+   The angle is deliberately NOT in the token. Direction is a layout property
+   of the thing being painted — a header band, a card wash and a progress fill
+   want different angles from the same brand colours — while the stops are the
+   brand fact. Shipping 0deg inside the token left a consumer wanting 90deg no
+   move except restating both stops by hand, i.e. reaching past the mapped
+   layer into brand primitives, which is the bypass this tier exists to close.
+   Scrims keep their wrapper: their angle IS the Figma value being preserved. */
 * {
   --mapped-gradient-subtle: linear-gradient(0deg, var(--gradient-surface) 0%, transparent 100%);
   --mapped-gradient-default: linear-gradient(0deg, var(--gradient-surface) 10%, color-mix(in srgb, var(--gradient-surface) 50%, transparent) 100%);
-  --mapped-gradient-primary-default: linear-gradient(0deg, var(--mapped-surface-primary-default) 0%, var(--mapped-surface-information-default) 100%);
+  --mapped-gradient-primary-stops: var(--mapped-surface-primary-default) 0%, var(--mapped-surface-information-default) 100%;
 }
 
 /* === Shadows === */

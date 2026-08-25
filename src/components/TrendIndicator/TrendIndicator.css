@@ -17,12 +17,28 @@
    tiers resolve to the same value today but are semantically distinct, and
    ListItem already used the icon tier for this glyph.
 
-   Mapped tier only, on BOTH halves of every pair. This component renders on
-   whatever surface its parent supplies, and in every code path that is the page
-   surface: ListItem sets `background: none` in its base rule and adds no
-   background in any state, and the showcase places it directly on
-   --mapped-surface-page. So the surface flips, these foregrounds flip, and they
-   flip together — which is what makes the pair legal under the v1.6.0 rule.
+   Mapped tier only, on BOTH halves of every pair. Within THIS repo, every code
+   path puts this component on the page surface: ListItem sets `background: none`
+   in its base rule and adds no background in any state, and the showcase places
+   it directly on --mapped-surface-page. On those surfaces the background flips,
+   these foregrounds flip, and they flip together — which is what makes the pair
+   legal under the v1.6.0 rule.
+
+   That guarantee stops at this repo's boundary, and this comment used to claim
+   more than it could. It read "in every code path that is the page surface",
+   phrased as a property of the COMPONENT; it is only a property of the surfaces
+   this repo happens to hand it. FALSIFIED in the MVP, which renders
+   TrendIndicator inside a brand-teal gradient composed from brand primitives —
+   and --brand-* is theme-invariant by construction. There the foreground flips
+   and the surface does not, so the pair drifts apart in exactly one theme: the
+   precise failure the v1.6.0 rule exists to catch, reached without any alias
+   token being involved.
+
+   So the rule's guarantee is conditional on who supplies the background. A
+   consumer that composes its own from brand primitives owns the pairing and must
+   set the foreground from the same invariant layer, or scope --mapped-* over the
+   subtree, rather than inheriting these. Nothing in this file can enforce that
+   from here, which is why it is recorded rather than fixed.
 
    That also rules the obvious "fix" OUT. Rebinding these to the on-color tier
    would pin white foregrounds onto a surface that turns white in light mode.

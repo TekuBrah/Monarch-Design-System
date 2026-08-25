@@ -68,10 +68,22 @@
   --btn-bg-hover:        var(--mapped-surface-primary-default-hover);
   --btn-bg-pressed:      var(--mapped-surface-primary-default-pressed);
   --btn-bg-disabled:     var(--mapped-surface-disabled-default);
-  --btn-border:          var(--mapped-border-primary-default);
-  --btn-border-hover:    var(--mapped-border-primary-default-hover);
-  --btn-border-pressed:  var(--mapped-border-primary-default-pressed);
-  --btn-border-disabled: var(--mapped-border-disabled-default);
+  /* Primary's border is a STRUCTURAL layer, not a visible edge. Every variant
+     carries a border so the composition is identical across the set, but on
+     primary it must be indistinguishable from the fill in EVERY state. So each
+     border var binds to the SAME TOKEN as its fill var directly above — not to a
+     token that merely happens to resolve to the same hex today. That distinction
+     is the whole fix: v1.7.0 moved the fills one step deeper, the borders did not
+     track, and a lighter ring appeared. Binding to the fill's own token means a
+     future ramp move cannot separate them again.
+     The --mapped-border-primary-* family is NOT rebound — secondary below still
+     uses it, and there the border IS the shape. --btn-focus-ring (line below)
+     also deliberately keeps it: that is precisely what leaves the focus indicator
+     chromatically distinguishable from this border. */
+  --btn-border:          var(--mapped-surface-primary-default);
+  --btn-border-hover:    var(--mapped-surface-primary-default-hover);
+  --btn-border-pressed:  var(--mapped-surface-primary-default-pressed);
+  --btn-border-disabled: var(--mapped-surface-disabled-default);
   --btn-text:            var(--mapped-text-primary-on-color);
   --btn-text-hover:      var(--mapped-text-primary-on-color-hover);
   --btn-text-pressed:    var(--mapped-text-primary-on-color-pressed);

@@ -22,7 +22,10 @@ if (!gradientGroup || typeof gradientGroup !== 'object') {
 //           static --gradient-<name> and the theme-aware
 //           --mapped-gradient-<name> that fades into --gradient-surface.
 //   brand — stops are {family} references into the mapped surface layer.
-//           Emits the --mapped-gradient-<name> tier ONLY (see below).
+//           Emits ONE var, --mapped-gradient-<base>-stops, holding the COLOUR
+//           STOP LIST ONLY — no angle, no linear-gradient() wrapper. The
+//           consumer composes whatever angle it needs:
+//               linear-gradient(<angle>, var(--mapped-gradient-primary-stops))
 const KINDS = new Set(['scrim', 'brand'])
 
 const entries = [] // [{ name, kind, value, description }]
@@ -116,30 +119,90 @@ function toBrandStop(family, ctx) {
   return `var(${v})`
 }
 
-const mappedEntries = entries.map(({ name, kind, value }) => {
-  const ctx = `Gradient.${name}`
-  const mappedValue = kind === 'scrim'
-    ? value.replace(/#[0-9a-fA-F]{6}(?:[0-9a-fA-F]{2})?/g, toMappedStop)
-    : value.replace(/\{([a-z0-9-]+)\}/gi, (_, family) => toBrandStop(family, ctx))
-
-  // Post-condition, applied per kind. This REPLACES a check that only looked for
-  // leftover hex — which a brand gradient passed trivially while still emitting a
-  // flat page-coloured band, because toMappedStop() maps any opaque stop to
-  // var(--gradient-surface). That silent pass was the defect, not just the wrong
-  // output. Now any stop the declared kind’s resolver did not consume survives to
-  // here and exits: hex left in a brand value, a {reference} left in a scrim value.
+// Post-condition, applied per kind. This REPLACES a check that only looked for
+// leftover hex — which a brand gradient passed trivially while still emitting a
+// flat page-coloured band, because toMappedStop() maps any opaque stop to
+// var(--gradient-surface). That silent pass was the defect, not just the wrong
+// output. Now any stop the declared kind’s resolver did not consume survives to
+// here and exits: hex left in a brand value, a {reference} left in a scrim value.
+function assertResolved(value, ctx, kind) {
   const leftovers = [
-    ...[...mappedValue.matchAll(/#[0-9a-fA-F]{3,8}/g)].map(m => m[0]),
-    ...[...mappedValue.matchAll(/\{[^}]*\}/g)].map(m => m[0]),
+    ...[...value.matchAll(/#[0-9a-fA-F]{3,8}/g)].map(m => m[0]),
+    ...[...value.matchAll(/\{[^}]*\}/g)].map(m => m[0]),
   ]
   if (leftovers.length) {
     console.error(
       `ERROR [${ctx}] (kind=${kind}): unresolved stop(s) ${leftovers.join(', ')} after mapping:` +
-      `\n  "${mappedValue}"`
+      `\n  "${value}"`
     )
     process.exit(1)
   }
-  return { name, kind, value: mappedValue }
+  // A brand entry publishes STOPS, never a whole gradient. If the wrapper is
+  // still attached the split below did not happen, and every consumer writing
+  // linear-gradient(<angle>, var(--…-stops)) would emit a nested gradient that
+  // silently drops the declaration.
+  if (kind === 'brand' && /linear-gradient\(/i.test(value)) {
+    console.error(`ERROR [${ctx}]: stops value still carries a linear-gradient() wrapper:\n  "${value}"`)
+    process.exit(1)
+  }
+}
+
+// Splits "linear-gradient(<angle>, <stops>)" into angle and stop list. Applied
+// to the SOURCE value, where a brand entry's stops are {family} references and
+// contain no nested parentheses — so a first-comma split is exact here and no
+// paren matching is needed. (It would NOT be exact after resolution, once the
+// stops hold var(...) calls.)
+const BRAND_SHAPE = /^linear-gradient\(\s*([^,]+?)\s*,\s*([\s\S]+)\)\s*$/
+
+// A gradient has no interaction-state axis, so the `-default` suffix the Figma
+// entry inherits from the surface naming is dropped from the emitted var:
+// Gradient.primary-default → --mapped-gradient-primary-stops. The SOURCE key is
+// deliberately left alone so a fresh Token Studio export still matches it.
+function stopsVarName(name, ctx) {
+  const base = name.replace(/-default$/, '')
+  if (!base) {
+    console.error(`ERROR [${ctx}]: name reduces to empty after dropping "-default"`)
+    process.exit(1)
+  }
+  return `--mapped-gradient-${base}-stops`
+}
+
+// Dropping "-default" can collide two source entries onto one var. Catch it
+// here rather than letting the later declaration silently win in the CSS.
+const seenVars = new Map()
+function claimVar(varName, name, ctx) {
+  if (seenVars.has(varName)) {
+    console.error(`ERROR [${ctx}]: ${varName} already emitted by Gradient.${seenVars.get(varName)}`)
+    process.exit(1)
+  }
+  seenVars.set(varName, name)
+  return varName
+}
+
+const mappedEntries = entries.map(({ name, kind, value }) => {
+  const ctx = `Gradient.${name}`
+
+  // brand: publish the stop list alone. The angle is DELIBERATELY discarded — it
+  // is a layout decision belonging to whatever paints the band, not a property
+  // of the brand colours. Baking 0deg into the token forced any consumer wanting
+  // another direction to restate both stops by hand, which means reaching past
+  // the mapped layer — the exact bypass this tier exists to prevent.
+  if (kind === 'brand') {
+    const m = BRAND_SHAPE.exec(value)
+    if (!m) {
+      console.error(`ERROR [${ctx}]: cannot split angle from stops in:\n  "${value}"`)
+      process.exit(1)
+    }
+    const [, angle, rawStops] = m
+    const stops = rawStops.replace(/\{([a-z0-9-]+)\}/gi, (_, family) => toBrandStop(family, ctx))
+    assertResolved(stops, ctx, kind)
+    console.log(`  ${ctx}: angle "${angle}" dropped — composed by the consumer`)
+    return { name, kind, varName: claimVar(stopsVarName(name, ctx), name, ctx), value: stops }
+  }
+
+  const mappedValue = value.replace(/#[0-9a-fA-F]{6}(?:[0-9a-fA-F]{2})?/g, toMappedStop)
+  assertResolved(mappedValue, ctx, kind)
+  return { name, kind, varName: claimVar(`--mapped-gradient-${name}`, name, ctx), value: mappedValue }
 })
 
 const gradientBlock = [
@@ -175,9 +238,22 @@ const gradientBlock = [
   '   is the exact violation composing from mapped tokens was meant to close.',
   '   They sit on `*` rather than :root for the substitution reason above: it',
   '   keeps them correct wherever data-theme is set, not only when it happens to',
-  '   land on the same element as :root. */',
+  '   land on the same element as :root.',
+  '',
+  '   A brand entry emits --mapped-gradient-<base>-stops: the COLOUR STOP LIST',
+  '   ONLY, with no angle and no linear-gradient() wrapper. Consume it as',
+  '',
+  '       background: linear-gradient(<angle>, var(--mapped-gradient-primary-stops));',
+  '',
+  '   The angle is deliberately NOT in the token. Direction is a layout property',
+  '   of the thing being painted — a header band, a card wash and a progress fill',
+  '   want different angles from the same brand colours — while the stops are the',
+  '   brand fact. Shipping 0deg inside the token left a consumer wanting 90deg no',
+  '   move except restating both stops by hand, i.e. reaching past the mapped',
+  '   layer into brand primitives, which is the bypass this tier exists to close.',
+  '   Scrims keep their wrapper: their angle IS the Figma value being preserved. */',
   '* {',
-  ...mappedEntries.map(({ name, value }) => `  --mapped-gradient-${name}: ${value};`),
+  ...mappedEntries.map(({ varName, value }) => `  ${varName}: ${value};`),
   '}',
   '',
 ].join('\n')
@@ -187,7 +263,7 @@ console.log('✓ src/styles/globals.css (gradients appended)')
 
 // ── src/tokens/gradients.ts ───────────────────────────────────────────────────
 
-const mappedByName = new Map(mappedEntries.map(e => [e.name, e.value]))
+const mappedByName = new Map(mappedEntries.map(e => [e.name, e]))
 
 const tsLines = ['export const gradients = {']
 for (const { name, kind, value, description } of entries) {
@@ -201,8 +277,19 @@ for (const { name, kind, value, description } of entries) {
     tsLines.push(`    var: '--gradient-${name}',`)
     tsLines.push(`    value: '${value}',`)
   }
-  tsLines.push(`    mappedVar: '--mapped-gradient-${name}',`)
-  tsLines.push(`    mappedValue: '${mappedByName.get(name)}',`)
+  // A brand entry exposes stopsVar/stopsValue, a scrim exposes mappedVar/
+  // mappedValue. The names differ on purpose: under `as const`,
+  // gradients['primary-default'].mappedVar is a compile error, so a consumer
+  // cannot reach for a whole-gradient var that no longer exists — the same
+  // enforcement idiom `var` already uses to keep brand off the static tier.
+  const m = mappedByName.get(name)
+  if (kind === 'brand') {
+    tsLines.push(`    stopsVar: '${m.varName}',`)
+    tsLines.push(`    stopsValue: '${m.value}',`)
+  } else {
+    tsLines.push(`    mappedVar: '${m.varName}',`)
+    tsLines.push(`    mappedValue: '${m.value}',`)
+  }
   tsLines.push(`    description: '${description}',`)
   tsLines.push(`  },`)
 }
@@ -237,6 +324,7 @@ console.log('✓ src/tokens/index.ts')
 // gradient has no --gradient-* line to print.
 for (const { name, kind, value, description } of entries) {
   if (kind === 'scrim') console.log(`  --gradient-${name}: ${value}`)
-  console.log(`  --mapped-gradient-${name}: ${mappedByName.get(name)}`)
+  const m = mappedByName.get(name)
+  console.log(`  ${m.varName}: ${m.value}`)
   if (description) console.log(`    → ${description} [${kind}]`)
 }

@@ -147,9 +147,13 @@ v1.7.0, the one layer with two declared KINDS.** `build-gradients.mjs` emits:
   `var(--mapped-surface-page)` and is the supported override point), derived from
   the same source entries so the pairs can't drift. **Use these for anything over
   page surface.**
-- `--mapped-gradient-primary-default` — a **brand** band, composed from
+- `--mapped-gradient-primary-stops` — a **brand** band, composed from
   `--mapped-surface-primary-default` → `--mapped-surface-information-default`.
+  It holds the **colour stops only — no angle, no `linear-gradient()` wrapper**;
+  consume it as `linear-gradient(<angle>, var(--mapped-gradient-primary-stops))`.
   It has **no `--gradient-primary-default` counterpart, deliberately** (below).
+  *(v1.8.0 renamed this from `--mapped-gradient-primary-default`, which held a
+  complete gradient with a baked-in `0deg`. See the angle note below.)*
 
 **The kind is declared in the token source, never inferred.** Every entry in the
 `Gradient` group of `Brand/Value.json` carries `"kind": "scrim" | "brand"`:
@@ -157,7 +161,21 @@ v1.7.0, the one layer with two declared KINDS.** `build-gradients.mjs` emits:
 | kind | stops written as | each stop resolves to | tiers emitted |
 |---|---|---|---|
 | `scrim` | literal `#hex` | `var(--gradient-surface)` / `color-mix(…)` | `--gradient-*` **and** `--mapped-gradient-*` |
-| `brand` | `{family}` references | `var(--mapped-surface-<family>-default)` | `--mapped-gradient-*` only |
+| `brand` | `{family}` references | `var(--mapped-surface-<family>-default)` | `--mapped-gradient-<base>-stops` only (stops, no angle) |
+
+**The angle is deliberately not in a brand token (v1.8.0).** Direction is a
+property of the thing being painted — a header band, a card wash and a progress
+fill want different angles from the same brand colours — while the stops are the
+brand fact. A token holding `linear-gradient(0deg, …)` left a consumer wanting
+another direction no move except restating both stops by hand, which means
+reaching past the mapped layer into brand primitives: the exact bypass this tier
+exists to close. So `build-gradients.mjs` splits the source value on its first
+comma, discards the angle (logging that it did), and emits the stop list alone.
+`-default` is dropped from the emitted name because a gradient has no
+interaction-state axis; the **source key is left as `primary-default`** so a
+fresh Token Studio export still matches it, and a collision after that drop is a
+hard exit. Scrims keep their wrapper — for them the angle *is* the Figma value
+being preserved.
 
 **Do not replace that declaration with a heuristic.** Branching on alpha, on
 opacity, or on any other property of the stop values misfiles at least one entry,
@@ -552,6 +570,26 @@ retroactively conformed to this once already.
   rule says `stretch`, `flex-grow: "0"` where it says `1`. This is the same class
   of trap as the frozen-transition false positive above, and the same discipline
   defeats it — **read the declaration, not the rendering.**
+- **A set-difference diff silently UNDER-REPORTS removals. Use a true
+  line-by-line diff of comment-stripped content.** Comparing two files by
+  building `new Set(lines)` for each and reporting `a.filter(l => !setB.has(l))`
+  looks like a diff and is not one: a removed line that still exists **verbatim
+  somewhere else in the same file** is present in `setB`, so it is never
+  reported as removed. CSS token maps are exactly the shape that triggers this —
+  the same `--btn-border: var(--mapped-border-primary-default);` line appears in
+  several variant blocks.
+  - Concrete case, v1.8.0 Gate 28: rebinding four `--btn-border*` declarations in
+    `.mn-btn--primary` produced a confinement report showing **four additions and
+    zero removals**, because `.mn-btn--secondary` still carried all four old
+    lines unchanged. The reported total was 1 changed declaration when the real
+    answer was 5 — and the under-report pointed the wrong way, making the change
+    look *smaller* and safer than it was. A prediction written beforehand said 5,
+    which is the only reason the gap was noticed at all.
+  - The fix: strip comments, trim, drop blank lines, write both revisions to
+    files, and run a real `diff -u`. Set membership is not ordering-aware and not
+    multiplicity-aware; a diff is both.
+  - Same family as the two traps above: the tool answered a slightly different
+    question than the one being asked, and its answer looked reasonable.
 - **Screenshot capture mode changes the contrast answer — state which mode you
   measured.** `page.screenshot({ fullPage: true })` and a clipped in-viewport
   capture return **different** contrast figures for the same element.
