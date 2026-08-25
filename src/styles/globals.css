@@ -344,6 +344,7 @@
   --mapped-text-error-on-color: var(--alias-foundations-white);
   --mapped-text-error-on-color-hover: var(--alias-neutral-100);
   --mapped-text-error-default-press: var(--alias-error-800);
+  --mapped-text-error-default-pressed: var(--alias-error-800);
   --mapped-text-error-on-color-pressed: var(--alias-neutral-200);
   --mapped-text-information-default: var(--alias-information-500);
   --mapped-text-information-default-hover: var(--alias-information-600);
@@ -427,11 +428,11 @@
   --mapped-icon-subtlest-subtlest: var(--alias-neutral-400);
   --mapped-icon-subtlest-subtlest-hover: var(--alias-neutral-500);
   --mapped-icon-subtlest-default-subtlest-pressed: var(--alias-neutral-600);
-  --mapped-surface-primary-default: var(--alias-primary-500);
-  --mapped-surface-primary-default-hover: var(--alias-primary-600);
+  --mapped-surface-primary-default: var(--alias-primary-600);
+  --mapped-surface-primary-default-hover: var(--alias-primary-700);
   --mapped-surface-primary-default-subtle: var(--alias-foundations-white);
   --mapped-surface-primary-default-subtle-hover: var(--alias-surface-50);
-  --mapped-surface-primary-default-pressed: var(--alias-primary-700);
+  --mapped-surface-primary-default-pressed: var(--alias-primary-800);
   --mapped-surface-primary-default-subtle-pressed: var(--alias-surface-200);
   --mapped-surface-primary-default-subtle-selected: var(--alias-surface-100);
   --mapped-surface-page: var(--alias-foundations-white);
@@ -439,18 +440,18 @@
   --mapped-surface-subtle-default: var(--alias-surface-100);
   --mapped-surface-subtle-hover: var(--alias-surface-200);
   --mapped-surface-subtle-pressed: var(--alias-surface-300);
-  --mapped-surface-error-default: var(--alias-error-500);
-  --mapped-surface-error-default-hover: var(--alias-error-600);
-  --mapped-surface-error-default-pressed: var(--alias-error-700);
-  --mapped-surface-information-default: var(--alias-information-500);
-  --mapped-surface-information-default-hover: var(--alias-information-600);
-  --mapped-surface-information-default-pressed: var(--alias-information-700);
-  --mapped-surface-warning-default: var(--alias-warning-500);
-  --mapped-surface-warning-default-hover: var(--alias-warning-600);
-  --mapped-surface-warning-default-pressed: var(--alias-warning-700);
-  --mapped-surface-success-default: var(--alias-success-500);
-  --mapped-surface-success-default-hover: var(--alias-success-600);
-  --mapped-surface-success-default-pressed: var(--alias-success-700);
+  --mapped-surface-error-default: var(--alias-error-600);
+  --mapped-surface-error-default-hover: var(--alias-error-700);
+  --mapped-surface-error-default-pressed: var(--alias-error-800);
+  --mapped-surface-information-default: var(--alias-information-700);
+  --mapped-surface-information-default-hover: var(--alias-information-800);
+  --mapped-surface-information-default-pressed: var(--alias-information-900);
+  --mapped-surface-warning-default: var(--alias-warning-700);
+  --mapped-surface-warning-default-hover: var(--alias-warning-800);
+  --mapped-surface-warning-default-pressed: var(--alias-warning-900);
+  --mapped-surface-success-default: var(--alias-success-700);
+  --mapped-surface-success-default-hover: var(--alias-success-800);
+  --mapped-surface-success-default-pressed: var(--alias-success-900);
   --mapped-surface-disabled-default: var(--alias-surface-50);
   --mapped-surface-interactive-default: var(--alias-interactive-500);
   --mapped-surface-interactive-default-hover: var(--alias-interactive-600);
@@ -538,6 +539,7 @@
   --mapped-text-error-on-color: var(--alias-foundations-white);
   --mapped-text-error-on-color-hover: var(--alias-neutral-100);
   --mapped-text-error-default-press: var(--alias-error-300);
+  --mapped-text-error-default-pressed: var(--alias-error-300);
   --mapped-text-error-on-color-pressed: var(--alias-neutral-200);
   --mapped-text-information-default: var(--alias-information-600);
   --mapped-text-information-default-hover: var(--alias-information-500);
@@ -560,8 +562,8 @@
   --mapped-text-disabled-default: var(--alias-neutral-400);
   --mapped-text-disabled-on-color: var(--alias-neutral-500);
   --mapped-text-default-default: var(--alias-neutral-200);
-  --mapped-text-default-hover: var(--alias-neutral-300);
-  --mapped-text-default-pressed: var(--alias-neutral-400);
+  --mapped-text-default-hover: var(--alias-neutral-150);
+  --mapped-text-default-pressed: var(--alias-neutral-100);
   --mapped-text-subtle-default: var(--alias-neutral-500);
   --mapped-text-subtle-hover: var(--alias-neutral-400);
   --mapped-text-subtle-subtle-pressed: var(--alias-neutral-200);
@@ -622,10 +624,10 @@
   --mapped-icon-subtlest-subtlest-hover: var(--alias-neutral-500);
   --mapped-icon-subtlest-default-subtlest-pressed: var(--alias-neutral-300);
   --mapped-surface-primary-default: var(--alias-primary-600);
-  --mapped-surface-primary-default-hover: var(--alias-primary-500);
+  --mapped-surface-primary-default-hover: var(--alias-primary-700);
   --mapped-surface-primary-default-subtle: var(--alias-foundations-black);
   --mapped-surface-primary-default-subtle-hover: var(--alias-surface-900);
-  --mapped-surface-primary-default-pressed: var(--alias-primary-700);
+  --mapped-surface-primary-default-pressed: var(--alias-primary-800);
   --mapped-surface-primary-default-subtle-pressed: var(--alias-surface-800);
   --mapped-surface-primary-default-subtle-selected: var(--alias-surface-900);
   --mapped-surface-page: var(--alias-foundations-black);
@@ -634,20 +636,20 @@
   --mapped-surface-subtle-hover: var(--alias-surface-800);
   --mapped-surface-subtle-pressed: var(--alias-surface-700);
   --mapped-surface-error-default: var(--alias-error-600);
-  --mapped-surface-error-default-hover: var(--alias-error-500);
-  --mapped-surface-error-default-pressed: var(--alias-error-700);
-  --mapped-surface-information-default: var(--alias-information-600);
-  --mapped-surface-information-default-hover: var(--alias-information-500);
-  --mapped-surface-information-default-pressed: var(--alias-information-700);
-  --mapped-surface-warning-default: var(--alias-warning-600);
-  --mapped-surface-warning-default-hover: var(--alias-warning-500);
-  --mapped-surface-warning-default-pressed: var(--alias-warning-700);
-  --mapped-surface-success-default: var(--alias-success-600);
-  --mapped-surface-success-default-hover: var(--alias-success-500);
-  --mapped-surface-success-default-pressed: var(--alias-success-700);
+  --mapped-surface-error-default-hover: var(--alias-error-700);
+  --mapped-surface-error-default-pressed: var(--alias-error-800);
+  --mapped-surface-information-default: var(--alias-information-700);
+  --mapped-surface-information-default-hover: var(--alias-information-800);
+  --mapped-surface-information-default-pressed: var(--alias-information-900);
+  --mapped-surface-warning-default: var(--alias-warning-700);
+  --mapped-surface-warning-default-hover: var(--alias-warning-800);
+  --mapped-surface-warning-default-pressed: var(--alias-warning-900);
+  --mapped-surface-success-default: var(--alias-success-700);
+  --mapped-surface-success-default-hover: var(--alias-success-800);
+  --mapped-surface-success-default-pressed: var(--alias-success-900);
   --mapped-surface-disabled-default: var(--alias-surface-900);
-  --mapped-surface-interactive-default: var(--alias-interactive-600);
-  --mapped-surface-interactive-default-hover: var(--alias-interactive-500);
+  --mapped-surface-interactive-default: var(--alias-interactive-500);
+  --mapped-surface-interactive-default-hover: var(--alias-interactive-600);
   --mapped-surface-interactive-default-pressed: var(--alias-interactive-700);
   --mapped-surface-interactive-on-color: var(--alias-foundations-white);
   --mapped-surface-interactive-on-color-hover: var(--alias-neutral-100);
@@ -806,10 +808,21 @@
    override; this form responds on the element itself and via an ancestor.
    Cost of `*`: the pair is recomputed per element, and --mapped-gradient-*
    can no longer be overridden directly at an ancestor and inherited down —
-   --gradient-surface is the supported override point. */
+   --gradient-surface is the supported override point.
+
+   BRAND gradients (kind=brand) are emitted into this same block and have NO
+   --gradient-* counterpart above, deliberately. That static tier exists to
+   preserve Figma’s literal white scrim values; a brand band has no literal
+   identity to preserve, and emitting one would publish a hardcoded,
+   theme-blind hex pair — a sanctioned way to bypass the mapped layer, which
+   is the exact violation composing from mapped tokens was meant to close.
+   They sit on `*` rather than :root for the substitution reason above: it
+   keeps them correct wherever data-theme is set, not only when it happens to
+   land on the same element as :root. */
 * {
   --mapped-gradient-subtle: linear-gradient(0deg, var(--gradient-surface) 0%, transparent 100%);
   --mapped-gradient-default: linear-gradient(0deg, var(--gradient-surface) 10%, color-mix(in srgb, var(--gradient-surface) 50%, transparent) 100%);
+  --mapped-gradient-primary-default: linear-gradient(0deg, var(--mapped-surface-primary-default) 0%, var(--mapped-surface-information-default) 100%);
 }
 
 /* === Shadows === */

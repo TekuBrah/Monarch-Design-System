@@ -185,6 +185,16 @@
           "com.figma.hiddenFromPublishing": false
         }
       },
+      "default-pressed": {
+        "value": "{Error.800}",
+        "type": "color",
+        "$extensions": {
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.hiddenFromPublishing": false
+        }
+      },
       "on-color-pressed": {
         "value": "{Neutral.200}",
         "type": "color",
@@ -1058,7 +1068,7 @@
   "surface": {
     "primary": {
       "default": {
-        "value": "{Primary.500}",
+        "value": "{Primary.600}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1068,7 +1078,7 @@
         }
       },
       "default-hover": {
-        "value": "{Primary.600}",
+        "value": "{Primary.700}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1098,7 +1108,7 @@
         }
       },
       "default-pressed": {
-        "value": "{Primary.700}",
+        "value": "{Primary.800}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1182,16 +1192,6 @@
     },
     "error": {
       "default": {
-        "value": "{Error.500}",
-        "type": "color",
-        "$extensions": {
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
-          "com.figma.hiddenFromPublishing": false
-        }
-      },
-      "default-hover": {
         "value": "{Error.600}",
         "type": "color",
         "$extensions": {
@@ -1201,8 +1201,18 @@
           "com.figma.hiddenFromPublishing": false
         }
       },
-      "default-pressed": {
+      "default-hover": {
         "value": "{Error.700}",
+        "type": "color",
+        "$extensions": {
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.hiddenFromPublishing": false
+        }
+      },
+      "default-pressed": {
+        "value": "{Error.800}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1214,7 +1224,7 @@
     },
     "information": {
       "default": {
-        "value": "{Information.500}",
+        "value": "{Information.700}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1224,7 +1234,7 @@
         }
       },
       "default-hover": {
-        "value": "{Information.600}",
+        "value": "{Information.800}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1234,7 +1244,7 @@
         }
       },
       "default-pressed": {
-        "value": "{Information.700}",
+        "value": "{Information.900}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1246,7 +1256,7 @@
     },
     "warning": {
       "default": {
-        "value": "{Warning.500}",
+        "value": "{Warning.700}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1256,7 +1266,7 @@
         }
       },
       "default-hover": {
-        "value": "{Warning.600}",
+        "value": "{Warning.800}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1266,7 +1276,7 @@
         }
       },
       "default-pressed": {
-        "value": "{Warning.700}",
+        "value": "{Warning.900}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1278,7 +1288,7 @@
     },
     "success": {
       "default": {
-        "value": "{Success.500}",
+        "value": "{Success.700}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1288,7 +1298,7 @@
         }
       },
       "default-hover": {
-        "value": "{Success.600}",
+        "value": "{Success.800}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -1298,7 +1308,7 @@
         }
       },
       "default-pressed": {
-        "value": "{Success.700}",
+        "value": "{Success.900}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [

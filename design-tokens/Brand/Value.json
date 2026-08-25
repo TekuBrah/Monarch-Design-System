@@ -1719,12 +1719,20 @@
     "subtle": {
       "value": "linear-gradient(0deg, #ffffff 0%, #ffffff00 100%)",
       "type": "color",
+      "kind": "scrim",
       "description": "Nav/mobile/section"
     },
     "default": {
       "value": "linear-gradient(0deg, #ffffff 10%, #ffffff80 100%)",
       "type": "color",
+      "kind": "scrim",
       "description": "For footer, during list of selections"
+    },
+    "primary-default": {
+      "value": "linear-gradient(0deg, {primary} 0%, {information} 100%)",
+      "type": "color",
+      "kind": "brand",
+      "description": "Brand band — primary to information"
     }
   },
   "Dropshadow_medium": {

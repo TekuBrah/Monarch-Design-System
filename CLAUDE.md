@@ -48,17 +48,20 @@ been paid for, and both are failures of invoking them individually:
    kept consuming `var(--shadow-*)`. Those silently resolved to nothing, so
    every card and nav rendered with no shadow and no build error. Regression
    introduced at `142df40`, found and repaired 2026-07-31.
-2. *Ending on gradients.* `build-gradients.mjs` emits a barrel that omits the
-   `shadows` exports, so if it is the last script to run, `import { shadows }`
-   silently breaks — see the barrel table below.
+2. *Ending on gradients.* **Fixed at source in v1.7.0 — kept here as the reason
+   the rule existed.** `build-gradients.mjs` used to emit a barrel that omitted
+   the `shadows` exports, so if it ran last, `import { shadows }` silently broke.
+   It now emits all seven, so this specific failure can no longer occur — but
+   failure mode 1 above is untouched and is reason enough on its own.
 
 `npm run build:tokens` removes both failure modes at once: it cannot stop early
 and it cannot end on the wrong script. That is the reason to prefer it.
 
-**Gradients must not run last.** Six of the seven scripts rewrite
-`src/tokens/index.ts` from their own hardcoded export list — `build-brand-colors.mjs`
-is the one exception, it never touches the barrel — so whichever script runs
-last decides the final barrel. Re-derived from the six write sites, 2026-08-25:
+**Barrel completeness (v1.7.0: no longer order-dependent).** Six of the seven
+scripts rewrite `src/tokens/index.ts` from their own hardcoded export list —
+`build-brand-colors.mjs` is the one exception, it never touches the barrel — so
+whichever script runs last decides the final barrel. Re-derived from the six
+write sites, 2026-08-25:
 
 | Script | Barrel it writes |
 |---|---|
@@ -67,21 +70,27 @@ last decides the final barrel. Re-derived from the six write sites, 2026-08-25:
 | `build-mapped.mjs` | + mapped |
 | `build-responsive.mjs` | + responsive |
 | `build-typography.mjs` | **all seven** |
-| `build-gradients.mjs` | six — **omits `shadows`** |
+| `build-gradients.mjs` | **all seven** (was six — fixed in v1.7.0) |
 | `build-shadows.mjs` | **all seven** |
 
-This corrects what this file previously recorded: *"Only `build-shadows.mjs`
-writes the complete set."* It does not. `build-typography.mjs` writes the
-identical seven-export barrel, so completeness is not unique to shadows. Four
-scripts emit an incomplete barrel (alias, mapped, responsive, gradients), but
-the first three run *before* `build-typography.mjs`, which restores the full
-set — **`build-gradients.mjs` is the only incomplete emitter that runs after a
-complete one**, and therefore the only one whose partial barrel can survive to
-the end of a full run.
+**This entry previously read "gradients must not run last."** That constraint
+was real: `build-gradients.mjs` emitted a six-export barrel omitting `shadows`,
+and it was the only incomplete emitter scheduled *after* a complete one
+(`build-typography.mjs`), so its partial barrel was the only one that could
+survive to the end of a full run. v1.7.0 removed the hazard at its source by
+giving `build-gradients.mjs` the same seven-export list the other two complete
+emitters write, turning a documented ordering rule into an unbreakable one.
 
-The operative constraint is *gradients must not run last*, not *shadows must run
-last*. The current order satisfies both statements, so nothing is broken today:
-the recorded reason was wrong, not the behaviour.
+Verified when the change landed: because `build-shadows.mjs` runs afterwards and
+writes the identical seven exports, regenerating produced **no diff at all** on
+`src/tokens/index.ts`. The generated output is unchanged; only the failure mode
+is gone.
+
+Three scripts still emit an incomplete barrel (alias, mapped, responsive), but
+all three run before `build-typography.mjs`, which restores the full set. The
+order in `build:tokens` is therefore no longer load-bearing for barrel
+completeness — it remains load-bearing for value resolution, since each layer
+reads the CSS the previous one wrote.
 
 ### The CI drift gate, and the scope it covers
 
@@ -127,20 +136,82 @@ of this.
 `--brand-scale-*` (px steps) → `--spacing-*` → consumed by components
 `--responsive-font-*` (mobile base + `@media 768px` overrides) → consumed by `.type-*` classes
 
-**Gradients are the one layer with two tiers in the same block.** `build-gradients.mjs`
-emits both:
+**Gradients are the one layer with two tiers in the same block — and, since
+v1.7.0, the one layer with two declared KINDS.** `build-gradients.mjs` emits:
+
 - `--gradient-default` / `--gradient-subtle` — the literal Figma values, hardcoded
   `#ffffff` stops. Static and theme-blind by design; fine as a constant over a
   known-white surface, wrong as a scrim on a themed page.
 - `--mapped-gradient-default` / `--mapped-gradient-subtle` — the same alpha shape
-  restated against `var(--mapped-surface-page)`, derived from the same source
-  entries so the pairs can't drift. **Use these for anything over page surface.**
+  restated against `var(--gradient-surface)` (which defaults to
+  `var(--mapped-surface-page)` and is the supported override point), derived from
+  the same source entries so the pairs can't drift. **Use these for anything over
+  page surface.**
+- `--mapped-gradient-primary-default` — a **brand** band, composed from
+  `--mapped-surface-primary-default` → `--mapped-surface-information-default`.
+  It has **no `--gradient-primary-default` counterpart, deliberately** (below).
 
-These are declared once in `:root` with no `[data-theme="dark"]` block, which looks
-like the dark-mode omission this file warns about elsewhere but isn't:
-`--mapped-surface-page` already flips in the mapped layer, so the gradient
-re-resolves per theme automatically. A second block would be a redundant place to
-drift. Verified: white→white·0.5 in light, black→black·0.5 in dark.
+**The kind is declared in the token source, never inferred.** Every entry in the
+`Gradient` group of `Brand/Value.json` carries `"kind": "scrim" | "brand"`:
+
+| kind | stops written as | each stop resolves to | tiers emitted |
+|---|---|---|---|
+| `scrim` | literal `#hex` | `var(--gradient-surface)` / `color-mix(…)` | `--gradient-*` **and** `--mapped-gradient-*` |
+| `brand` | `{family}` references | `var(--mapped-surface-<family>-default)` | `--mapped-gradient-*` only |
+
+**Do not replace that declaration with a heuristic.** Branching on alpha, on
+opacity, or on any other property of the stop values misfiles at least one entry,
+because a fully opaque scrim stop is legitimate and `toMappedStop()` maps any
+opaque stop to `var(--gradient-surface)`. That is precisely how a brand gradient
+would have been mishandled before v1.7.0: it emitted a flat page-coloured band
+and **passed the script's own `includes('#')` guard silently**, because that
+guard only looked for leftover hex and a fully-converted band has none. The
+silent pass was the defect, not merely the wrong output.
+
+That guard is now a per-kind post-condition: any stop the declared kind's
+resolver did not consume survives to it and exits 1 — hex left in a `brand`
+value, a `{ref}` left in a `scrim` value, or a `{family}` naming a mapped surface
+that does not exist. A missing or unrecognised `kind` hard-exits too, matching
+`resolveValue()`'s contract in `build-mapped.mjs`. All five paths were exercised
+against a mutated source copy when this landed; all five returned exit 1.
+
+**`kind` is a Monarch-local key that Token Studio does not know about**, so a
+fresh export will drop it. That is survivable *only* because a missing `kind` is
+a hard exit rather than a default — the build breaks loudly instead of silently
+refiling every brand gradient as a scrim. Re-apply it by hand after any
+re-export, the same way `Mapped/Dark.json`'s repairs are maintained.
+
+**Why a brand gradient gets no static `--gradient-*` tier.** That tier exists to
+preserve Figma's literal white scrim values. A brand band has no literal identity
+worth preserving, and emitting one would publish a hardcoded, theme-blind hex
+pair — i.e. a *sanctioned* way to bypass the mapped layer, which is the exact
+violation that composing from mapped tokens was meant to close. The omission is
+enforced in `gradients.ts` as well: under `as const`,
+`gradients['primary-default'].var` is a compile error, so the type system says
+the same thing the CSS does.
+
+`--gradient-surface` is declared once in `:root`; the `--mapped-gradient-*`
+entries are declared on `*`, not `:root`, and that is load-bearing — a custom
+property that references another is substituted where it is DECLARED, so a
+`:root` declaration bakes in `:root`'s `--gradient-surface` and any override
+further down does nothing. **This paragraph used to say the gradients were
+"declared once in `:root`"; that was already stale before the brand kind existed
+and is corrected here.**
+
+Neither tier gets a `[data-theme="dark"]` block, which looks like the dark-mode
+omission this file warns about elsewhere but isn't. For the scrims:
+`--mapped-surface-page` already flips in the mapped layer, so they re-resolve per
+theme automatically. Verified: white→white·0.5 in light, black→black·0.5 in dark.
+For the brand band the reason is different — v1.7.0 ruled hue surfaces
+theme-invariant, so both its stops are the same colour in both themes. Either way
+a second block would only be a redundant place to drift.
+
+Measured from the *regenerated* CSS, both themes, resolving the full `var()`
+chain: `#0358cc` at 0% → `#006789` at 100%, with `--mapped-text-primary-on-color`
+(`#ffffff`) at CR **6.42** on the primary stop and **6.36** on the information
+stop. **Worse case 6.36** — AA at every size. Do not re-derive this by sampling a
+midpoint: that flatters the figure to 6.43 and hides the true worst point, which
+is an endpoint. The recorded 6.34 predates this measurement and is superseded.
 
 They are emitted by `build-gradients.mjs` rather than `build-mapped.mjs` because
 that script's `resolveValue()` accepts only `#hex` or `{Group.Step}` and hard-exits

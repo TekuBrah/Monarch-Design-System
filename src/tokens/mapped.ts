@@ -17,6 +17,7 @@ export const mapped = {
   'text-error-on-color': '--mapped-text-error-on-color',
   'text-error-on-color-hover': '--mapped-text-error-on-color-hover',
   'text-error-default-press': '--mapped-text-error-default-press',
+  'text-error-default-pressed': '--mapped-text-error-default-pressed',
   'text-error-on-color-pressed': '--mapped-text-error-on-color-pressed',
   'text-information-default': '--mapped-text-information-default',
   'text-information-default-hover': '--mapped-text-information-default-hover',
