@@ -354,22 +354,26 @@ function ResponsiveTypeSection() {
 // The two gradient KINDS expose different shapes, and the field names differ on
 // purpose so this union discriminates without a `kind` check:
 //   scrim — a complete gradient, angle included, in `var`.
-//   brand — colour STOPS only, in `stopsVar`; the angle is the consumer's.
+//   brand — the two endpoint COLOURS, in `fromVar` / `toVar`; the angle and both
+//           stop positions are the consumer's (v1.9.0 — v1.8.0's combined
+//           `stopsVar` carried the positions and is gone).
 type GradientToken =
   | { var: string; value: string; mappedVar: string; mappedValue: string; description: string }
-  | { stopsVar: string; stopsValue: string; description: string }
+  | { fromVar: string; fromValue: string; toVar: string; toValue: string; description: string }
 
 function GradientCard({ name, token }: { name: string; token: GradientToken }) {
   const TILE: React.CSSProperties = {
     position: 'relative', width: '10rem', height: '6rem', borderRadius: '0.4rem', overflow: 'hidden',
     border: '1px solid rgba(0,0,0,0.1)',
   }
-  // A brand entry ships stops without an angle, so the consumer composes one —
-  // this line IS the documented consumption pattern. 0deg reproduces the band
-  // the token used to hardcode; any other angle is equally available now.
-  const shownVar = 'stopsVar' in token ? token.stopsVar : token.var
-  const background = 'stopsVar' in token
-    ? `linear-gradient(0deg, var(${token.stopsVar}))`
+  // A brand entry ships two endpoint colours and nothing else, so the consumer
+  // composes the angle AND both stop positions — these lines ARE the documented
+  // consumption pattern. 0deg / 0% / 100% reproduces the band the token used to
+  // hardcode; any other angle or placement is equally available now.
+  const isBrand = 'fromVar' in token
+  const shownVar = isBrand ? `${token.fromVar} → ${token.toVar}` : token.var
+  const background = isBrand
+    ? `linear-gradient(0deg, var(${token.fromVar}) 0%, var(${token.toVar}) 100%)`
     : `var(${token.var})`
   const OVERLAY: React.CSSProperties = {
     position: 'absolute', inset: 0, background,

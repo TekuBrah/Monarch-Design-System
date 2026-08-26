@@ -818,24 +818,33 @@
    is the exact violation composing from mapped tokens was meant to close.
    They sit on `*` rather than :root for the substitution reason above: it
    keeps them correct wherever data-theme is set, not only when it happens to
-   land on the same element as :root.
+   land on the same element as :root. ToastMobile sets data-theme="dark" on a
+   DESCENDANT div — precisely the case a :root declaration would get wrong.
 
-   A brand entry emits --mapped-gradient-<base>-stops: the COLOUR STOP LIST
-   ONLY, with no angle and no linear-gradient() wrapper. Consume it as
+   A brand entry emits --mapped-gradient-<base>-from and -to: ONE COLOUR each,
+   carrying no angle, no stop position and no linear-gradient() wrapper.
+   Consume them as
 
-       background: linear-gradient(<angle>, var(--mapped-gradient-primary-stops));
+       background: linear-gradient(
+         <angle>,
+         var(--mapped-gradient-primary-from) <pos>,
+         var(--mapped-gradient-primary-to)   <pos>);
 
-   The angle is deliberately NOT in the token. Direction is a layout property
-   of the thing being painted — a header band, a card wash and a progress fill
-   want different angles from the same brand colours — while the stops are the
-   brand fact. Shipping 0deg inside the token left a consumer wanting 90deg no
-   move except restating both stops by hand, i.e. reaching past the mapped
-   layer into brand primitives, which is the bypass this tier exists to close.
+   Colour is the contract; the angle and BOTH stop positions belong to the
+   consumer. Direction and placement are properties of the thing being painted
+   — a header band, a card wash and a progress fill want different angles AND
+   different stop positions out of the same two brand colours — while the
+   colours are the brand fact. v1.8.0 split the angle out for this reason;
+   v1.9.0 split the positions out for the identical one. Shipping either one
+   inside the token left a consumer needing another value no move except
+   restating both colours by hand, i.e. reaching past the mapped layer into
+   brand primitives, which is the bypass this tier exists to close.
    Scrims keep their wrapper: their angle IS the Figma value being preserved. */
 * {
   --mapped-gradient-subtle: linear-gradient(0deg, var(--gradient-surface) 0%, transparent 100%);
   --mapped-gradient-default: linear-gradient(0deg, var(--gradient-surface) 10%, color-mix(in srgb, var(--gradient-surface) 50%, transparent) 100%);
-  --mapped-gradient-primary-stops: var(--mapped-surface-primary-default) 0%, var(--mapped-surface-information-default) 100%;
+  --mapped-gradient-primary-from: var(--mapped-surface-primary-default);
+  --mapped-gradient-primary-to: var(--mapped-surface-information-default);
 }
 
 /* === Shadows === */

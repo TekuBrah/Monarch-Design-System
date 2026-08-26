@@ -17,8 +17,10 @@ export const gradients = {
   },
   'primary-default': {
     kind: 'brand',
-    stopsVar: '--mapped-gradient-primary-stops',
-    stopsValue: 'var(--mapped-surface-primary-default) 0%, var(--mapped-surface-information-default) 100%',
+    fromVar: '--mapped-gradient-primary-from',
+    fromValue: 'var(--mapped-surface-primary-default)',
+    toVar: '--mapped-gradient-primary-to',
+    toValue: 'var(--mapped-surface-information-default)',
     description: 'Brand band — primary to information',
   },
 } as const

@@ -147,13 +147,25 @@ v1.7.0, the one layer with two declared KINDS.** `build-gradients.mjs` emits:
   `var(--mapped-surface-page)` and is the supported override point), derived from
   the same source entries so the pairs can't drift. **Use these for anything over
   page surface.**
-- `--mapped-gradient-primary-stops` — a **brand** band, composed from
-  `--mapped-surface-primary-default` → `--mapped-surface-information-default`.
-  It holds the **colour stops only — no angle, no `linear-gradient()` wrapper**;
-  consume it as `linear-gradient(<angle>, var(--mapped-gradient-primary-stops))`.
-  It has **no `--gradient-primary-default` counterpart, deliberately** (below).
-  *(v1.8.0 renamed this from `--mapped-gradient-primary-default`, which held a
-  complete gradient with a baked-in `0deg`. See the angle note below.)*
+- `--mapped-gradient-primary-from` / `--mapped-gradient-primary-to` — the two
+  ENDPOINTS of a **brand** band: `--mapped-surface-primary-default` and
+  `--mapped-surface-information-default`. Each holds **one colour and nothing
+  else — no angle, no stop position, no `linear-gradient()` wrapper**. Consume
+  them as
+
+  ```css
+  background: linear-gradient(
+    <angle>,
+    var(--mapped-gradient-primary-from) <pos>,
+    var(--mapped-gradient-primary-to)   <pos>);
+  ```
+
+  There is **no `--gradient-primary-default` counterpart, deliberately** (below).
+  *(History: v1.8.0 replaced `--mapped-gradient-primary-default` — a complete
+  gradient with a baked-in `0deg` — with `--mapped-gradient-primary-stops`, a
+  stop list that still carried `0%`/`100%`. v1.9.0 replaced that in turn with
+  this endpoint pair. **This section previously described the -stops token as
+  current; it no longer exists.** See the composition note below.)*
 
 **The kind is declared in the token source, never inferred.** Every entry in the
 `Gradient` group of `Brand/Value.json` carries `"kind": "scrim" | "brand"`:
@@ -161,16 +173,24 @@ v1.7.0, the one layer with two declared KINDS.** `build-gradients.mjs` emits:
 | kind | stops written as | each stop resolves to | tiers emitted |
 |---|---|---|---|
 | `scrim` | literal `#hex` | `var(--gradient-surface)` / `color-mix(…)` | `--gradient-*` **and** `--mapped-gradient-*` |
-| `brand` | `{family}` references | `var(--mapped-surface-<family>-default)` | `--mapped-gradient-<base>-stops` only (stops, no angle) |
+| `brand` | `{family}` references | `var(--mapped-surface-<family>-default)` | `--mapped-gradient-<base>-from` + `-to` only (one colour each; no angle, no position) |
 
-**The angle is deliberately not in a brand token (v1.8.0).** Direction is a
-property of the thing being painted — a header band, a card wash and a progress
-fill want different angles from the same brand colours — while the stops are the
-brand fact. A token holding `linear-gradient(0deg, …)` left a consumer wanting
-another direction no move except restating both stops by hand, which means
-reaching past the mapped layer into brand primitives: the exact bypass this tier
-exists to close. So `build-gradients.mjs` splits the source value on its first
-comma, discards the angle (logging that it did), and emits the stop list alone.
+**Neither the angle (v1.8.0) nor the stop positions (v1.9.0) live in a brand
+token. Colour is the contract; angle and position are the consumer's.** Both are
+properties of the thing being painted — a header band, a card wash and a progress
+fill want different angles AND different stop positions out of the same two brand
+colours — while the colours are the brand fact. A token holding either one left a
+consumer needing another value no move except restating both colours by hand,
+which means reaching past the mapped layer into brand primitives: the exact
+bypass this tier exists to close. So `build-gradients.mjs` splits the angle off
+on the first comma, then splits the remaining stop list and requires **exactly
+two** stops, discarding each stop's position (logging every discard). Both splits
+run on the SOURCE value, whose stops are `{family}` references with no nested
+parentheses — exact there, and NOT exact after resolution once the values hold
+`var(…)` calls. The **source JSON is left untouched**: it keeps Figma's literal
+`linear-gradient(0deg, {primary} 0%, {information} 100%)`, so a Token Studio
+re-export still matches and the discarding stays a property of the emitter.
+
 `-default` is dropped from the emitted name because a gradient has no
 interaction-state axis; the **source key is left as `primary-default`** so a
 fresh Token Studio export still matches it, and a collision after that drop is a
@@ -190,8 +210,22 @@ That guard is now a per-kind post-condition: any stop the declared kind's
 resolver did not consume survives to it and exits 1 — hex left in a `brand`
 value, a `{ref}` left in a `scrim` value, or a `{family}` naming a mapped surface
 that does not exist. A missing or unrecognised `kind` hard-exits too, matching
-`resolveValue()`'s contract in `build-mapped.mjs`. All five paths were exercised
-against a mutated source copy when this landed; all five returned exit 1.
+`resolveValue()`'s contract in `build-mapped.mjs`. **v1.9.0 added two more brand
+exits** — a stop count other than exactly two, and a stop that is not
+`{family} [position]` — and re-ran the whole set: **ten paths exercised against a
+mutated source copy, all ten exit 1.** (Missing `kind`, unknown `kind`, hex in a
+`brand` value, a `{ref}` in a `scrim` value, an unknown `{family}`, three stops,
+one stop, a non-`{family}` stop, a post-`-default` name collision, and a value
+that is not `linear-gradient(`.)
+
+One correction from that run, recorded because the old text implied otherwise:
+**hex in a `brand` value no longer reaches `assertResolved()`.** It now trips the
+earlier stop-shape exit, because `#ff0000 0%` is not `{family} [position]`. Same
+exit code, different guard — do not assume the leftover-hex check is what catches
+it. Two further guards (a surviving `linear-gradient(` wrapper, and a bare comma
+inside a single endpoint) are **not reachable from source data at all** and were
+not exercised: they are defence-in-depth against a future refactor of the split,
+and saying they were tested would be false.
 
 **`kind` is a Monarch-local key that Token Studio does not know about**, so a
 fresh export will drop it. That is survivable *only* because a missing `kind` is
@@ -225,11 +259,15 @@ theme-invariant, so both its stops are the same colour in both themes. Either wa
 a second block would only be a redundant place to drift.
 
 Measured from the *regenerated* CSS, both themes, resolving the full `var()`
-chain: `#0358cc` at 0% → `#006789` at 100%, with `--mapped-text-primary-on-color`
-(`#ffffff`) at CR **6.42** on the primary stop and **6.36** on the information
-stop. **Worse case 6.36** — AA at every size. Do not re-derive this by sampling a
-midpoint: that flatters the figure to 6.43 and hides the true worst point, which
-is an endpoint. The recorded 6.34 predates this measurement and is superseded.
+chain: `--mapped-gradient-primary-from` `#0358cc`, `--mapped-gradient-primary-to`
+`#006789`, with `--mapped-text-primary-on-color` (`#ffffff`) at CR **6.42** on the
+`from` endpoint and **6.36** on the `to` endpoint. **Worst case 6.36, at `to`** —
+AA at every size. Do not re-derive this by sampling a midpoint: that flatters the
+figure to 6.43 and hides the true worst point, which is an endpoint. The recorded
+6.34 predates this measurement and is superseded. *(v1.9.0 restated this in terms
+of the two endpoint tokens; the previous wording said "at 0%" / "at 100%", which
+now names positions the tokens no longer carry. The colours and the figures are
+unchanged.)*
 
 They are emitted by `build-gradients.mjs` rather than `build-mapped.mjs` because
 that script's `resolveValue()` accepts only `#hex` or `{Group.Step}` and hard-exits
@@ -658,6 +696,40 @@ supersedes the earlier "you may stage and commit locally", which contradicted
 the roadmap's own standing rule ("Claude Code never pushes. No commits, no PRs,
 no remotes"). The MVP repo's `CLAUDE.md` carries the same rule, deliberately —
 the two repos agree.
+
+### Release hygiene — the version field is part of the release
+
+**The package version field must be bumped in the same commit as the release it
+names.** Not in a follow-up, not "next time" — the same commit the release tag
+will point at. Bump it with
+
+```
+npm version <x.y.z> --no-git-tag-version
+```
+
+which updates `package.json` **and** the root `version` entries in
+`package-lock.json` together, and touches git not at all (so it stays inside the
+"Claude Code makes no git writes" rule above). Do **not** hand-edit the string in
+`package.json` and hope the lockfile agrees — it is recorded in two places and
+they drift independently.
+
+**The six-command tag verification cannot catch this, and that is the whole**
+**point of writing the rule down.** That check verifies a tag *points where it
+should* — that `v1.8.0^{}` resolves to the intended commit, that the tag is
+annotated, that CI was green there. Every one of those can pass against a tree
+that **describes itself as a different version**. The tag is metadata *about* the
+commit; the version field is a fact *inside* it, and nothing in the six commands
+reads the tree's contents.
+
+**v1.8.0 is the case that proved it.** `8be2d1f` is tagged `v1.8.0`, annotated,
+CI green — and `package.json` at that commit reads `"version": "1.7.0"`. The tag
+verification passed in full. Anyone installing the package from that tag gets
+something that calls itself 1.7.0. Worse, `package-lock.json` had never been
+bumped at all and read `0.0.0` at both root entries, so the drift was two
+releases deep in one file and nine in the other, and no gate had ever looked.
+
+A tag that points at the right commit is not the same as a tree that knows what
+it is. Check the field, not just the tag.
 
 ## Working conventions
 - Incremental. One layer/component at a time. Verify before proceeding.
