@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './AppShell.css'
 import { Section } from './Section'
 import { brand, alias, mapped, spacing, gradients, shadows } from '@monarch/design-system'
+import type { Gradients, Shadows } from '@monarch/design-system'
 import { Badge } from '@monarch/design-system'
 import type { BadgeAppearance } from '@monarch/design-system'
 import { Button } from '@monarch/design-system'
@@ -357,9 +358,14 @@ function ResponsiveTypeSection() {
 //   brand — the two endpoint COLOURS, in `fromVar` / `toVar`; the angle and both
 //           stop positions are the consumer's (v1.9.0 — v1.8.0's combined
 //           `stopsVar` carried the positions and is gone).
-type GradientToken =
-  | { var: string; value: string; mappedVar: string; mappedValue: string; description: string }
-  | { fromVar: string; fromValue: string; toVar: string; toValue: string; description: string }
+//
+// DERIVED from the token source (v1.10.0) — deliberately NOT restated here.
+// This was a hand-written union consumed through an
+// `as [string, GradientToken][]` cast at the call site. The cast ASSERTED the
+// shape, so a rename in src/tokens/gradients.ts type-checked clean here and
+// blanked at runtime — which is how GradientCard shipped broken on main for a
+// full version. Keyed off `Gradients` instead, a rename is a compile error.
+type GradientToken = Gradients[keyof Gradients]
 
 function GradientCard({ name, token }: { name: string; token: GradientToken }) {
   const TILE: React.CSSProperties = {
@@ -405,7 +411,8 @@ function GradientCard({ name, token }: { name: string; token: GradientToken }) {
 
 // ── Shadow cards ──────────────────────────────────────────────────────────────
 
-type ShadowToken = { var: string; value: string; description: string }
+// DERIVED from the token source — same reason as GradientToken above.
+type ShadowToken = Shadows[keyof Shadows]
 
 function ShadowCard({ name, token }: { name: string; token: ShadowToken }) {
   const TILE: React.CSSProperties = {
@@ -1534,7 +1541,7 @@ export default function App() {
             description={`Brand/Value.json → Gradient — ${Object.keys(gradients).length} tokens — shown over light + dark backgrounds`}
            
           >
-            {(Object.entries(gradients) as [string, GradientToken][]).map(
+            {Object.entries(gradients).map(
               ([name, token]) => <GradientCard key={name} name={name} token={token} />
             )}
           </Section>
@@ -1547,7 +1554,7 @@ export default function App() {
             description={`Brand/Value.json → Dropshadow_* — ${Object.keys(shadows).length} tokens — shown over light + dark surfaces`}
            
           >
-            {(Object.entries(shadows) as [string, ShadowToken][]).map(
+            {Object.entries(shadows).map(
               ([name, token]) => <ShadowCard key={name} name={name} token={token} />
             )}
           </Section>

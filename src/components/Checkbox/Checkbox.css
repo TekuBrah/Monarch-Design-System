@@ -71,13 +71,13 @@
 }
 
 /* === Hover (unchecked) === */
-.mn-checkbox:hover:not(.mn-checkbox--disabled) .mn-checkbox__box:not(.mn-checkbox__box--marked) {
+.mn-checkbox:hover:not(.mn-checkbox--disabled):not(.mn-checkbox--invalid) .mn-checkbox__box:not(.mn-checkbox__box--marked) {
   background: var(--mapped-surface-primary-default-subtle-hover);
-  border-color: var(--mapped-border-disabled-default);
+  border-color: var(--mapped-border-subtlest-default);
 }
 
 /* === Hover (checked/indeterminate) === */
-.mn-checkbox:hover:not(.mn-checkbox--disabled) .mn-checkbox__box--marked {
+.mn-checkbox:hover:not(.mn-checkbox--disabled):not(.mn-checkbox--invalid) .mn-checkbox__box--marked {
   background: var(--mapped-surface-primary-default-hover);
   /* Same token as the fill above — on a MARKED box the border is a structural
      layer, not a visible edge, so it must track the fill exactly (same fix as
@@ -86,13 +86,13 @@
 }
 
 /* === Active / press (unchecked) === */
-.mn-checkbox:active:not(.mn-checkbox--disabled) .mn-checkbox__box:not(.mn-checkbox__box--marked) {
+.mn-checkbox:active:not(.mn-checkbox--disabled):not(.mn-checkbox--invalid) .mn-checkbox__box:not(.mn-checkbox__box--marked) {
   background: var(--mapped-surface-primary-default-subtle-pressed);
   border-color: var(--mapped-border-subtlest-default);
 }
 
 /* === Active / press (checked/indeterminate) === */
-.mn-checkbox:active:not(.mn-checkbox--disabled) .mn-checkbox__box--marked {
+.mn-checkbox:active:not(.mn-checkbox--disabled):not(.mn-checkbox--invalid) .mn-checkbox__box--marked {
   background: var(--mapped-surface-primary-default-pressed);
   /* Same token as the fill above — see the hover rule note. */
   border-color: var(--mapped-surface-primary-default-pressed);

@@ -126,6 +126,21 @@ index blob after a run, and `git diff --exit-code` returns 0 throughout. On a
 Linux runner `actions/checkout` does not smudge, so neither assertion sees any
 of this.
 
+**CORRECTION (Gate 31, 2026-08-27): the "all generated files go `M`" half of
+that account is wrong, and CRLF smudging does not explain which files get
+flagged.** Measured on a clean tree at `76a8230` immediately after
+`npm run build:tokens`: git emitted LF-to-CRLF warnings for **ten** generated
+files, but `git status --porcelain` flagged exactly **two** —
+`src/styles/globals.css` and `src/tokens/gradients.ts`. Both are byte-identical
+to their index blob: `git hash-object` returns the index SHA for each **both
+with and without `--no-filters`**, and `git show HEAD:<path>` compares equal
+under `cmp`. So the `M` is stale stat data that `git status` declined to refresh
+— not a content difference and not a line-ending difference — and
+`git diff --exit-code` returns 0 throughout, which is why assertion 1 stays
+green. The operational guidance is unchanged (assertion 2 reads red locally,
+green in CI). What changed is that **the count is 2, not 10, and the cause is the
+index stat cache.** Do not read the file count as a signal of anything.
+
 ### Generated outputs (never hand-edit)
 - `src/tokens/brand.ts` · `alias.ts` · `mapped.ts` · `responsive.ts` · `typography.ts` · `gradients.ts` · `shadows.ts` · `index.ts`
 - `src/styles/globals.css` — all CSS custom properties (brand → alias → mapped → spacing → responsive font)
@@ -344,6 +359,44 @@ Two of these bite silently if forgotten when adding a component:
 the test suite does not) and **`src/styles/package.css`** (omit it and the
 component ships with no CSS, with no error at all).
 
+**A third thing bites silently, and it lives in `showcase/`, not `src/`
+(Gate 31, 2026-08-27).** `showcase/App.tsx` consumed the token maps through casts
+shaped `Object.entries(gradients) as [string, GradientToken][]`, where
+`GradientToken` was a **hand-written local union** restating the token shape
+instead of deriving it. The cast ASSERTS the shape, so a rename in
+`src/tokens/*.ts` type-checked clean and blanked at runtime — this is how
+`GradientCard` shipped broken on `main` for a full version.
+
+**The showcase was already in the type-check graph. That was never the hole.**
+`tsconfig.app.json` reads `"include": ["src", "showcase"]`, and
+`tsc -p tsconfig.app.json --listFiles` lists all three showcase files
+(`App.tsx`, `main.tsx`, `Section.tsx`). CI’s `npx tsc -b` has always covered
+them. **No change to `ci.yml` or to any tsconfig was needed, and none was made.**
+The cast alone suppressed the error inside a file that was being checked.
+
+Demonstrated in both directions with one scratch rename
+(`fromVar` to `startVar` in `src/tokens/gradients.ts`):
+
+| showcase revision | `npx tsc -b --force` |
+|---|---|
+| with the cast (pre-fix) | **exit 0** — the rename is invisible |
+| with the derived type | **exit 2** — four `TS2339`, all in `showcase/App.tsx` |
+
+Fixed by deriving from the source of truth —
+`type GradientToken = Gradients[keyof Gradients]` and
+`type ShadowToken = Shadows[keyof Shadows]` — with both casts removed.
+`Gradients` and `Shadows` were already exported through `src/tokens/index.ts` and
+the package barrel, so no new export was required. `build:lib` still does not
+compile the showcase (`entry: src/index.ts`, dts `include: ["src"]`), which is
+correct and was left alone.
+
+**Three casts of the same family remain, deliberately unfixed** — reported rather
+than repaired, because the item’s scope was the token-card path:
+`showcase/App.tsx:178` (`mapped`, flat string-to-string, a redundant widening),
+`:452` (`brand` — the real remaining hazard: it is followed by a *second*
+unchecked `group as Record<string, string>` on a genuinely heterogeneous object),
+and `:457` (`alias`). `:452` is the one worth a follow-up.
+
 ## Commands
 - `npm run dev` — local dev server
 
@@ -353,6 +406,46 @@ component ships with no CSS, with no error at all).
   If Figma fixes the composites, update `build-typography.mjs` accordingly.
 - **paragraphSpacing / paragraphIndent**: intentionally ignored — document-level
   properties, not relevant for inline CSS classes.
+- **OPEN DECISION — the teal gradient family (Gate 31, 2026-08-27).** Two MVP
+  sites want a teal gradient pair. **Nothing was shipped** — this is derivation
+  only, recorded so a successor does not re-derive it.
+
+  Only **three** mapped surface tokens are bound to the teal ramp, and all three
+  are **theme-invariant by binding**: `globals.css:446-448` (light) and
+  `:641-643` (dark) carry identical bindings, verified resolved in both themes.
+  Emission for a pair like this happens once on `*`, never `:root` — verified on
+  the shipped pair, not assumed.
+
+  | # | from - to | tokens | computed worst | rendered worst | worst point | AA |
+  |---|---|---|---|---|---|---|
+  | T1 | teal-700 - teal-900 | `--mapped-surface-information-default` / `-pressed` | 6.3611 | 6.3611 | **from** (teal-700) | pass |
+  | T2 | teal-700 - teal-800 | `--mapped-surface-information-default` / `-hover` | 6.3611 | 6.3611 | **from** (teal-700) | pass |
+  | T3 | teal-800 - teal-900 | `-hover` / `-pressed` | 10.4697 | 10.4697 | **from** (teal-800) | pass |
+  | T4 | teal-600 - teal-800 | *no mapped token exists for teal-600* | 3.9480 | n/a | **from** (teal-600) | **FAIL** |
+
+  **The finding is the ceiling, not the shortlist.** Every teal step at 600 and
+  lighter is under AA against white (teal-600 = 3.95) *and* has no mapped surface
+  token, so a light, vivid teal band carrying white text **cannot be built from
+  this ramp** — it needs both a new mapped token and a text colour other than
+  white. T1 is the widest compliant range.
+
+  Calibration, and why arithmetic is not a lower bound on the render: the
+  **shipped** brand band (`#0358cc` to `#006789`) computes 6.3611 at its worst
+  endpoint but **renders 6.3025**, at 94% along, pixel `rgb(1,103,142)` —
+  dithering, -0.0586. That band crosses hues, so interpolation leaves the ramp.
+  The three teal candidates stay on one ramp and their rendered worst equals their
+  computed endpoint exactly. Swatch file lives in the session scratchpad, outside
+  the repo: `teal-gradient-candidates.html`.
+
+- **OPEN — every component CSS rule is present TWICE in the dev CSSOM.** Measured
+  in the showcase at Gate 31: each `.mn-checkbox` / `.mn-radio` rule appears at
+  two distinct rule indices (~148 and ~1031), because the component’s own
+  `import` of its CSS and `src/styles/package.css`’s `@import` chain both load
+  it. Harmless to the cascade (the copies are identical, so later-wins picks the
+  same declaration). **The built bundle does NOT duplicate** — checked at the same
+  gate: `.mn-checkbox__box--marked` occurs 8 times in `src/.../Checkbox.css` and
+  exactly 8 times in `dist/index.css`, i.e. one copy, so this is a dev-server
+  artifact only and never reaches a consumer. Noted so nobody re-derives it.
 - **Per-layer scripts**: consider consolidating into a single `npm run build:tokens`
   that runs all five in order. Style Dictionary is a longer-term option if the
   pipeline grows complex.
@@ -470,6 +563,85 @@ When a new component is added, the same three things are true every time:
   `removed` 2.23 in dark) plus a raw `--brand-slate-600` — and was invisible to
   the grep entirely, because it had no `.css` file at all. Fixed in v1.6.0.
   The pairing test catches all of these; the interactive-state test caught none.
+- **THE COMPANION RULE (added v1.10.0): an interaction state may not outrank a
+  validity state.** A `:hover` / `:active` rule written as
+  `.mn-x:hover:not(.mn-x--disabled) .mn-x__part` carries **more** specificity than
+  the `--invalid` rule it competes with, so hovering an invalid control silently
+  repaints it as a valid one. Guard every interaction rule with
+  `:not(.mn-x--invalid)` exactly the way it already guards
+  `:not(.mn-x--disabled)`. Disabled was guarded from the start and invalid was
+  not — that asymmetry is the whole defect.
+
+  *Measured, Gate 31 (2026-08-27), before the fix.* `Checkbox` and `Radio` carried
+  the identical inversion, twice each. Their selector SETS are byte-for-byte
+  parallel — a normalised `diff -u` of the two files differs only in
+  DECLARATIONS — so this was never an inversion *between* the two components, as
+  the review thread had it. It is one inversion present identically in both.
+
+  | competing pair | specificity | wins |
+  |---|---|---|
+  | `.mn-checkbox__box--invalid.mn-checkbox__box--marked` | (0,2,0) | no |
+  | `.mn-checkbox:hover:not(.mn-checkbox--disabled) .mn-checkbox__box--marked` | (0,4,0) | **yes** |
+  | `.mn-checkbox--invalid .mn-checkbox__box:not(...--marked)` | (0,3,0) | no |
+  | `.mn-checkbox:hover:not(.mn-checkbox--disabled) .mn-checkbox__box:not(...--marked)` | (0,5,0) | **yes** |
+
+  Browser-measured consequence, **both themes**: an **invalid + checked** control
+  sits at error red `rgb(188,63,66)` at rest and became primary blue
+  `rgb(2,66,153)` on hover — the error affordance destroyed by a mouse-over. An
+  **invalid + unchecked** control lost its error border to a grey. The showcase
+  renders no `isInvalid isChecked` combination at all, which is why this was never
+  seen. Fixed by adding `:not(--invalid)` to all four interaction rules in each
+  file: by structure, no `!important`, no doubled class. Controlled revert
+  confirmed the fix is not inert — guard removed, stylesheet reloaded, rendered
+  value moved back to `rgb(2,66,153)`.
+
+  **A unit test cannot catch this, and none was added.** `vitest.config.ts` sets
+  no `test.css` option, so CSS imports are stubbed and no stylesheet is applied in
+  jsdom; zero test files call `getComputedStyle`. Cascade defects in this repo are
+  reachable only through a real browser. That is why the measurement above is the
+  record rather than a test name.
+- **RESOLVED (v1.10.0, Decision 2B) — the hover state that bound a DISABLED
+  token.** Filed as an OPEN item by the Gate 31 audit; that note is gone from
+  Known open items rather than left standing beside this one.
+
+  `Checkbox.css`’s hover-unchecked rule set
+  `border-color: var(--mapped-border-disabled-default)` while the *same rule* set
+  `background: var(--mapped-surface-primary-default-subtle-hover)`.
+
+  **In dark the collision is at the ALIAS level, not a coincidence of hex.** Both
+  properties resolved through `var(--alias-surface-900)`, so the box outline was
+  the same colour as its own fill — contrast **1.0000**, outline gone. It hit
+  **every** unchecked checkbox on hover in dark, not only invalid ones.
+
+  **Light was affected too, despite not being an exact collision.** Light bound
+  `alias-surface-50` (fill) against `alias-surface-100` (border): different tokens,
+  different hex, contrast **1.0633** — visually the same missing outline. The
+  original OPEN note described this as a dark-only defect; that was wrong.
+
+  **What the fix is NOT, so it is not re-attempted.** The first ruling was to
+  rebind the *fill*, on the belief that Radio used a different one. It does not:
+  measured by CSSOM declaration text, `Checkbox` and `Radio` bind the **identical**
+  fill token and differ only in `border-color`. Rebinding the fill was therefore a
+  no-op, and every non-colliding fill alternative moved light-mode appearance — so
+  that route could not satisfy its own constraints.
+
+  **The fix**: one line, `Checkbox.css:76`, `--mapped-border-disabled-default` to
+  `--mapped-border-subtlest-default`, the token Radio already carried on the
+  equivalent line. `globals.css` is untouched, so no disabled-state definition
+  moves and no disabled control anywhere in the product changes. Afterwards the two
+  components’ hover rules are byte-identical in declaration text.
+
+  | theme | fill | border before / after | contrast before / after |
+  |---|---|---|---|
+  | dark | `#262626` *(unchanged)* | `#262626` / `#bdbdbd` | **1.0000 / 8.0551** |
+  | light | `#f9f9f9` *(unchanged)* | `#f2f2f2` / `#cacaca` | **1.0633 / 1.5568** |
+
+  Both after-figures equal Radio’s own measured values exactly, and the fill is
+  unchanged in both themes. Controlled revert re-measured **1.0000** in dark with
+  the rule reverted and the stylesheet CSSOM-confirmed reloaded, so the fix is not
+  inert. `--mapped-border-disabled-default` retains exactly two usages across both
+  files — `Checkbox.css:110` and `Radio.css:122` — both in genuine `--disabled`
+  rules, which is where it belongs.
 - **Token-source gap protocol** — when Figma specifies a value with no
   corresponding token (missing opacity/tint, or a px value off the
   `--brand-scale` ramp), do not invent a fallback silently. Get explicit

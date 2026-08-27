@@ -82,13 +82,13 @@
 }
 
 /* === Hover (unchecked) === */
-.mn-radio:hover:not(.mn-radio--disabled) .mn-radio__circle:not(.mn-radio__circle--checked) {
+.mn-radio:hover:not(.mn-radio--disabled):not(.mn-radio--invalid) .mn-radio__circle:not(.mn-radio__circle--checked) {
   background: var(--mapped-surface-primary-default-subtle-hover);
   border-color: var(--mapped-border-subtlest-default);
 }
 
 /* === Hover (checked) === */
-.mn-radio:hover:not(.mn-radio--disabled) .mn-radio__circle--checked {
+.mn-radio:hover:not(.mn-radio--disabled):not(.mn-radio--invalid) .mn-radio__circle--checked {
   background: var(--mapped-surface-primary-default-hover);
   /* Same token as the fill above — on a MARKED box the border is a structural
      layer, not a visible edge, so it must track the fill exactly (same fix as
@@ -97,13 +97,13 @@
 }
 
 /* === Active / press (unchecked) === */
-.mn-radio:active:not(.mn-radio--disabled) .mn-radio__circle:not(.mn-radio__circle--checked) {
+.mn-radio:active:not(.mn-radio--disabled):not(.mn-radio--invalid) .mn-radio__circle:not(.mn-radio__circle--checked) {
   background: var(--mapped-surface-primary-default-subtle-pressed);
   border-color: var(--mapped-border-subtlest-default);
 }
 
 /* === Active / press (checked) === */
-.mn-radio:active:not(.mn-radio--disabled) .mn-radio__circle--checked {
+.mn-radio:active:not(.mn-radio--disabled):not(.mn-radio--invalid) .mn-radio__circle--checked {
   background: var(--mapped-surface-primary-default-pressed);
   /* Same token as the fill above — see the hover rule note. */
   border-color: var(--mapped-surface-primary-default-pressed);
