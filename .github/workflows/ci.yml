@@ -118,6 +118,26 @@ jobs:
             exit 1
           fi
 
+      # A component .css file that is not reachable from src/styles/package.css
+      # ships to the consumer with NO STYLES AND NO ERROR ANYWHERE: it compiles,
+      # the tests pass, and it renders correctly in the showcase, because the
+      # component's own .tsx imports its own CSS. Only the packaged build is
+      # missing it.
+      #
+      # This must run in CI rather than on request. Registration parity was a
+      # HAND derivation — re-counted @import lines against .css files on disk at
+      # each release — and the hand derivation is precisely what failed:
+      # ElementWrapper established the failure mode and Badge reproduced it,
+      # invisible for four releases (v1.6.0 CHANGELOG, "Item 3"). A detector
+      # that only runs when someone remembers to run it reproduces the exact
+      # failure mode it was built to catch.
+      #
+      # Positioned before Typecheck and Test so it fails fast: it reads source
+      # only, needs no build output, and takes milliseconds. Steps are
+      # sequential and fail-fast, so a non-zero exit here blocks the run.
+      - name: Check component CSS registration
+        run: npm run check:css-registration
+
       # build:lib is "vite build --config vite.config.lib.ts" — no tsc. It is what
       # the prepare script runs on a consumer's machine, so nothing in the publish
       # path typechecks. This step is that missing typecheck.

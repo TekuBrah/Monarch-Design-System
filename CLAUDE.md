@@ -141,6 +141,76 @@ green. The operational guidance is unchanged (assertion 2 reads red locally,
 green in CI). What changed is that **the count is 2, not 10, and the cause is the
 index stat cache.** Do not read the file count as a signal of anything.
 
+### Token-value coverage (Gate 34, v1.12.0)
+
+`src/test/tokens.test.ts` + `src/test/tokenCss.ts`. **14 tests.** Before this,
+nothing asserted a token RESOLVES to anything — the CI drift gate proves the
+generated files match the generator, not that what the generator produced is
+usable.
+
+**It resolves the CSS statically, not through `getComputedStyle`.**
+`vitest.config.ts` sets no `test.css` option, so CSS imports are stubbed and no
+stylesheet is ever applied in jsdom; nothing in the suite can read a resolved
+custom property from the DOM. Parsing `globals.css` is not a workaround for
+that — it is the stronger check, because it walks the whole `var()` chain and
+names *which link* is missing rather than returning the empty string a browser
+hands back.
+
+**Declarations are collected by SELECTOR, not by assuming `:root`.** The four
+`--mapped-gradient-*` are emitted on `*` deliberately; a `:root`-scoped read
+returns nothing for them and looks like a failure. The parser is a brace-depth
+scan with a selector stack, so a `:root` nested inside `@media` is not confused
+with a top-level one.
+
+What is asserted:
+
+| # | assertion |
+|---|---|
+| 1–2 | every `--mapped-*` resolves non-empty in light / in dark |
+| 3 | every declared custom property resolves in both themes, no cycles |
+| 4 | the light and dark mapped blocks declare identical name sets |
+| 5 | `[data-theme="dark"]` declares **only** `--mapped-*` |
+| 6 | every `on-color` token stays on the light side of the ramp, both themes |
+| 7 | every pure-white `on-color` token stays `#ffffff` in dark |
+| 8 | the page chrome (one token per family) actually flips |
+| 9 | every `--mapped-gradient-*` is on `*`, none on `:root` |
+| 10 | the brand endpoints resolve to a bare colour — no angle, no `%`, no wrapper |
+| 11 | the scrims re-resolve per theme with no dark block |
+| 12 | component CSS references only DS tokens that are declared |
+| 13–14 | resolver self-check: undeclared name throws, cycle throws |
+
+Every one was **mutation-proven at Gate 34** — the mutation applied to
+`globals.css` (or `Toggle.css` for 12), the suite re-run, exit 1 confirmed, the
+file restored. A test that cannot fail is worse than no test; these were made to
+fail on purpose before being trusted.
+
+**Deliberate exclusions, and why:**
+
+- **Exact colour values.** Pinning `--mapped-surface-page === '#ffffff'`
+  re-states the token source in a second place, and the next legitimate Figma
+  change fails a test that was only ever a copy. Nothing here pins a hex. What is
+  pinned is STRUCTURE: does it resolve, does it flip, is it declared in both
+  themes.
+- **Contrast ratios.** They belong to a component plus a pairing, not to a token
+  in isolation, and this repo measures them in a real browser because rendered
+  and computed figures differ (see Verification discipline).
+- **`--brand-*` / `--spacing-*` / `--responsive-*` as separate suites.** Covered
+  transitively — every `--mapped-*` resolves *through* them, so a broken
+  primitive fails at the mapped token that consumes it, naming the missing link.
+- **The `@media (min-width: 768px)` block.** It redeclares 14
+  `--responsive-font-*` tokens that no `--mapped-*` consumes.
+- **"Zero `--alias-*` in component CSS."** Proposed and **rejected**: it fails
+  today on **22 references across 5 files** (`Badge`, `Chips`, `HeaderBg`,
+  `StatusBar`, `TrendIndicator`), and every one is legitimate. The pairing rule
+  permits a both-halves-alias pair — theme-invariant by construction — and those
+  five use exactly that. The rule is about MIXING layers, not about alias itself.
+- **The pairing rule as an automated gate.** Attempted at Gate 34 and **not
+  shipped**; see Known open items for the measurements and why.
+
+Verified when this landed: **all 195 `--mapped-*` tokens resolve in both
+themes, zero failures.** The name sets in the two theme blocks are identical at
+191 each (the other 4 are the gradient pair plus scrims, on `*`).
+
 ### Generated outputs (never hand-edit)
 - `src/tokens/brand.ts` · `alias.ts` · `mapped.ts` · `responsive.ts` · `typography.ts` · `gradients.ts` · `shadows.ts` · `index.ts`
 - `src/styles/globals.css` — all CSS custom properties (brand → alias → mapped → spacing → responsive font)
@@ -399,6 +469,55 @@ and `:457` (`alias`). `:452` is the one worth a follow-up.
 
 ## Commands
 - `npm run dev` — local dev server
+- `npm run check:css-registration` — the registration detector (below)
+
+### The registration detector (Gate 34, v1.12.0)
+
+```
+npm run check:css-registration
+```
+
+`scripts/check-css-registration.mjs`. Exit 0 with a `✓` line, exit 1 with
+`ERROR:` lines naming every offending file — the same convention the seven
+`build-*.mjs` scripts use.
+
+**It catches**: a component `.css` file on disk that is NOT reachable from
+`src/styles/package.css`, and an `@import` in that graph whose target does not
+exist. That is the silent failure — a component missing from the graph compiles,
+tests green, and renders correctly in the showcase (its own `.tsx` imports its
+own CSS), then ships to the consumer with no styles and no error anywhere.
+`Badge` sat in that state for four releases, reproducing `ElementWrapper`'s
+original failure mode; parity had been re-derived **by hand** at every release
+since. This replaces the hand derivation.
+
+Two properties are deliberate and should survive any rewrite:
+
+- **The component list comes from the filesystem, never from an array in the
+  script.** A detector you have to remember to update is the same failure class
+  it guards against.
+- **Reachability is computed by resolving the `@import` graph transitively**,
+  not by pattern-matching `package.css`'s text. Proven at Gate 34: routing
+  `CardBalance.css` through an intermediate index file leaves zero textual
+  matches in `package.css`, and the detector still exits 0.
+
+**It does NOT catch**, and these are the gaps to keep in mind:
+
+- A component with **no `.css` file at all** — styled through inline `style={{}}`
+  objects, invisible to every CSS audit here. Reported as a `NOTE`, never a
+  failure, because `Icon` legitimately has none (it delegates all styling to
+  `ElementWrapper`). **Read the notes.**
+- A component whose own `.tsx` does not import its CSS. That breaks the showcase,
+  not the package.
+- Missing registration in `src/index.ts` — `tsc -b` already fails on that.
+- Rules that are reachable but dead, duplicated, or overridden.
+- Anything about `dist/`. It reads source, so it proves the graph Vite is asked
+  to follow, not the bytes it emitted. `npm run build:lib` remains the gate on
+  the artefact.
+
+**There is no `check-tokens.mjs` and no `lint:tokens` script in this repo**, and
+Gate 34 did not add one. Those live in the **MVP** repo; `CHANGELOG.md`'s known
+gap #4 records the absence here and the ~36 raw-px findings such a gate would
+surface. Do not go looking for them.
 
 ## Known open items
 - **Heading font-size in source**: Figma composites wire `{fontSize.N}` (static), not a
@@ -503,10 +622,86 @@ and `:457` (`alias`). `:452` is the one worth a follow-up.
     that the file previously asserted they were fine, which is why nobody
     looked again.
 
+  - **✅ CORRECTION (Gate 34, 2026-08-29): E-3 is CLOSED, and the three-token
+    table above is stale.** Measured from the generated `globals.css` by
+    resolving the full `var()` chain in both themes — all three now resolve
+    `#e7eaed` in light **and** `#e7eaed` in dark. The `neutral-950` bindings are
+    gone. `CHANGELOG.md`'s v1.6.0 entry records the repair ("Item 4 · E-3
+    closed"); this file was never updated to match, so it has been carrying a
+    fixed defect as open for two releases. The table is left in place because
+    the *shape* of the defect is the thing worth remembering — it is now the
+    thing test 6 and test 7 of the token-coverage suite exist to catch — but do
+    not act on it as a live finding.
+
+  - **⚠️ NEW, Gate 34: FOUR `on-color` tokens do still differ between themes.**
+    Found by writing the theme-invariance assertion and watching it fail. This
+    is a different set from E-3's — none of these is a near-black binding.
+
+    | Token | light | dark | Δ luminance |
+    |---|---|---|---|
+    | `--mapped-text-disabled-on-color` | `#b6bfca` 0.5147 | `#8695a7` 0.2935 | −0.2212 |
+    | `--mapped-icon-disabled-on-color` | `#b6bfca` 0.5147 | `#8695a7` 0.2935 | −0.2212 |
+    | `--mapped-surface-interactive-on-color-hover` | `#f2f2f2` 0.8879 | `#e7eaed` 0.8195 | −0.0684 |
+    | `--mapped-surface-interactive-on-color-pressed` | `#e5e5e5` 0.7835 | `#cfd5dc` 0.6602 | −0.1233 |
+
+    **The bottom two are DELIBERATE** — the v1.6.0 pass set
+    `surface.Interactive.on-color{-hover,-pressed}` to neutral-100 / neutral-200
+    in dark on purpose, "matching Figma's Inverse-variant dark values". They are
+    listed here so a successor does not re-file them as defects.
+
+    **The `disabled` pair is unexplained** and is the open question. It is the
+    same semantic class as E-3 (content on a fixed coloured surface should not
+    follow the app theme) at a much smaller magnitude. Fixing it means editing
+    `Mapped/Dark.json`, which is a Figma-source decision — **Teku's, not
+    Claude's.** Not fixed at Gate 34.
+
+    This is why test 6 asserts a **luminance floor** rather than
+    theme-invariance. The floor is derived, not fitted: the lowest luminance
+    across all 53 `on-color` tokens in both themes is **0.2935**; E-3's defect
+    value `#0d0f11` is **0.0047**. The threshold sits at **0.15** — ~2× headroom
+    above every legitimate value, ~30× below the defect it exists to catch. The
+    stricter assertion would have needed a four-name exception list, i.e. the
+    hand-maintained array this gate was built to avoid.
+
+- **OPEN — the pairing rule has no automated gate, and Gate 34 deliberately did
+  not ship one.** Two formulations were built and measured; neither is
+  shippable as-is.
+
+  1. **Layer-mixing** (the letter of the rule: alias on one side, mapped on the
+     other, same rule). Returns **3 hits** — `Badge.css .mn-badge--dark`,
+     `Chips.css .mn-chips--default.mn-chips--bold`,
+     `.mn-chips--success.mn-chips--bold`. **All three are false positives**: the
+     mapped half is an `on-color` token, which is theme-invariant, so the pair
+     cannot drift. The layer is the wrong thing to test.
+  2. **Flip-parity** (the *purpose* of the rule: exactly one half changes
+     between themes). Returns **6 hits**, all mapped-on-mapped and therefore
+     outside what the written rule prohibits:
+
+     | file | rule | mismatch |
+     |---|---|---|
+     | `Badge.css` | `.mn-badge--inverted` | bg `--mapped-surface-page` flips, `color` static |
+     | `CardMonthlyBudget.css` | `__add-icon` | bg `--mapped-icon-subtle-default` flips, `color` static |
+     | `LineChart.css` | `__marker` | **false positive** — `border` colour is `currentColor` |
+     | `Tab.css` | `:focus-visible` | **false positive** — `outline` is width + a static border token |
+     | `Tag.css` | `--default:hover` | bg `color-mix(…)` static, `border-color` flips |
+     | `Tag.css` | `--default:active` | bg `color-mix(…)` static, `border-color` flips |
+
+     Four survive scrutiny (`Badge`, `CardMonthlyBudget`, two in `Tag`). They
+     are **not rule violations** — both halves are mapped, which the rule
+     explicitly permits — but the rule's stated reasoning ("they flip together")
+     is not true of them. Either the rule's wording or these four call sites is
+     wrong, and which one is **Teku's call.**
+
+  Shipping either check would have meant a whitelist to get it green, which is
+  the failure class §3's detector was built to avoid. Reported, not asserted.
+
 ## Component roster — current state
 
-**49 components are built** (`ls src/components/` — verified 2026-08-11), with
-**59 test files / 494 tests** and 47 showcase sections.
+**49 components are built** (`ls src/components/` — re-derived from disk at
+Gate 34, 2026-08-29), with **60 test files / 508 tests** and 47 showcase
+sections. **58 component `.css` files**, all 58 registered in
+`src/styles/package.css` — no longer a hand derivation, see the registration
+detector.
 
 **⚠️ The showcase-section figure is the one number here nobody has re-derived.**
 Counted from disk at Gate 32, `showcase/App.tsx` carries **55** `<Section`
@@ -529,7 +724,17 @@ files.
 > with `className`, explicit `'fixed'` equalling omission, the `fill` modifier,
 > modifier ordering before `className`, the `<button>` render, and axe — for a
 > current total of **494**, again with no new test file and no existing test
-> modified. The library is well past
+> modified.
+>
+> **Gate 34 (v1.12.0) added 14, in the first NEW test file since the count was
+> started**: `src/test/tokens.test.ts`, so the file count moves 59 → **60** and
+> the test count 494 → **508**. Derivation, by `describe` block: token
+> resolution 3, theme parity 2, theme-flip semantics 3, gradient emission 3,
+> component consumption 1, resolver self-check 2. No existing test was modified
+> and no component test was added — this file asserts on the generated token
+> CSS, not on any component. Its helper `src/test/tokenCss.ts` is **not** a test
+> file (no `.test.` in the name, so vitest does not collect it) and does not
+> move the file count. The library is well past
 "build the first component", which is what this section used to say.
 
 Direction for what comes next lives in `MONARCH-BUILD-ROADMAP.md`, not here —
