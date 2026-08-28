@@ -506,7 +506,15 @@ and `:457` (`alias`). `:452` is the one worth a follow-up.
 ## Component roster — current state
 
 **49 components are built** (`ls src/components/` — verified 2026-08-11), with
-**59 test files / 487 tests** and 47 showcase sections.
+**59 test files / 494 tests** and 47 showcase sections.
+
+**⚠️ The showcase-section figure is the one number here nobody has re-derived.**
+Counted from disk at Gate 32, `showcase/App.tsx` carries **55** `<Section`
+opening tags and 55 closing ones. The `47` above is left as written because
+"showcase sections" may not mean "`<Section` elements" — but the two figures do
+not agree and the gap is 8, so do not quote `47` as verified. The component and
+test-file counts WERE re-derived at Gate 32 and are correct: 49 folders, 59 test
+files.
 
 > **Test count history.** This line read *472 tests* and was stale by one: it was
 > recorded on 2026-08-11 *before* commit `6bacfe8` landed later the same day,
@@ -516,7 +524,12 @@ and `:457` (`alias`). `:452` is the one worth a follow-up.
 > a 2×2 `it.each` matrix plus a default-preservation and an `m`-invariance case),
 > `Icon` `logo_monarch` + size `xl` (2), and `ListItem` chart-slot gating (2) —
 > for a current total of **487**, with the file count unchanged at 59 (all
-> additive: no new test files, no existing test modified). The library is well past
+> additive: no new test files, no existing test modified). **Gate 32 (v1.11.0)
+> added 7** — all `CardBalance.sizing`: the omitted-prop class string, the same
+> with `className`, explicit `'fixed'` equalling omission, the `fill` modifier,
+> modifier ordering before `className`, the `<button>` render, and axe — for a
+> current total of **494**, again with no new test file and no existing test
+> modified. The library is well past
 "build the first component", which is what this section used to say.
 
 Direction for what comes next lives in `MONARCH-BUILD-ROADMAP.md`, not here —
@@ -642,6 +655,42 @@ When a new component is added, the same three things are true every time:
   inert. `--mapped-border-disabled-default` retains exactly two usages across both
   files — `Checkbox.css:110` and `Radio.css:122` — both in genuine `--disabled`
   rules, which is where it belongs.
+- **THE `sizing` PROP (v1.5.0 `CardFeaturesAndEducation`, v1.11.0 `CardBalance`)
+  — a component that carries a fixed Figma width releases it through
+  `sizing?: 'fixed' | 'fill'`, never through consumer CSS.** A consumer cannot
+  widen a component past its own `max-width` without overriding DS rules from the
+  app, which rule 3 forbids; both instances of this prop exist because an MVP
+  screen hit exactly that wall and stopped. When a third component needs it, copy
+  the shape rather than inventing one:
+
+  | | |
+  |---|---|
+  | values | `'fixed'` (default, today's behaviour) and `'fill'` |
+  | modifier | `.mn-<block>--fill`, declared **after** the base rule — equal specificity, so source order is what makes it win |
+  | releases | `width: auto`, `max-width: none` |
+  | retains | `min-width` — the Figma floor holds in BOTH modes, never reset |
+  | also sets | `flex: 1 1 0` |
+
+  **`flex: 1 1 0` is not decoration, and dropping the cap alone is not enough.**
+  Without it the default `flex: 0 1 auto` sizes the card to its CONTENT, floored
+  at `min-width` — measured at Gate 32 in a 600px flex row, `fill` renders
+  **128px against `fixed`'s 161px**, i.e. NARROWER than the default while still
+  passing a naive "differs from default" check. Grid items ignore flex properties
+  entirely, so the one declaration serves a grid track and a flex line alike.
+
+  **Verify this prop by DECLARATION, not by pixels.** `CardFeaturesAndEducation`'s
+  `fill` was invisible at 375px because three tiles at their cap plus two gaps
+  summed to exactly the content width by coincidence
+  (`3 × 109 + 2 × 8 = 343 = 375 − 32`). Any container at or under the component's
+  `max-width` renders the two modes identically and proves nothing. What proves
+  the prop took effect is the modifier applying and computed `max-width` moving
+  from a value to `none`. Both showcase demos are sized above the cap
+  deliberately — 480px for the tiles, 440px for the balance cards.
+
+  **The value names are deliberately identical across both components, and they
+  are `'fixed'`, not `'hug'`.** The default is a literal fixed width (161px /
+  109px), not a hug-contents box, so Figma's `hug` would name behaviour neither
+  component has. A second vocabulary for one prop is the wart worth avoiding.
 - **Token-source gap protocol** — when Figma specifies a value with no
   corresponding token (missing opacity/tint, or a px value off the
   `--brand-scale` ramp), do not invent a fallback silently. Get explicit

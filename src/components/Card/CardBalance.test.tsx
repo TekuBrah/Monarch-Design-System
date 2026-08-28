@@ -94,4 +94,55 @@ describe('CardBalance', () => {
       expect(await axe(container)).toHaveNoViolations()
     })
   })
+
+  // Gate 32. jsdom applies no stylesheet (vitest.config.ts sets no `test.css`),
+  // so these assert the class CONTRACT — which modifier is composed onto the
+  // root. The declarations the modifier changes are browser-measured instead;
+  // see docs/component-tokens.md, "`sizing` (added v1.11.0)".
+  describe('sizing', () => {
+    // NO-CHANGE PROOF: omitting the prop must compose the exact class string it
+    // composed before the prop existed — not merely "contains mn-card-balance".
+    it('composes an unchanged class string when omitted', () => {
+      const { container } = render(<CardBalance {...props} />)
+      expect(container.firstElementChild).toHaveAttribute('class', 'mn-card-balance')
+    })
+
+    it('composes an unchanged class string with className when omitted', () => {
+      const { container } = render(<CardBalance {...props} className="extra" />)
+      expect(container.firstElementChild).toHaveAttribute('class', 'mn-card-balance extra')
+    })
+
+    it("treats an explicit 'fixed' as identical to omitting the prop", () => {
+      const omitted = render(<CardBalance {...props} />).container.innerHTML
+      const explicit = render(<CardBalance {...props} sizing="fixed" />).container.innerHTML
+      expect(explicit).toBe(omitted)
+    })
+
+    it("adds the fill modifier only for 'fill'", () => {
+      const { container } = render(<CardBalance {...props} sizing="fill" />)
+      expect(container.firstElementChild).toHaveClass('mn-card-balance--fill')
+    })
+
+    // The modifier must land BEFORE the consumer's className, so a consumer
+    // class declared later in its own sheet can still override the modifier.
+    it('orders the modifier before className', () => {
+      const { container } = render(<CardBalance {...props} sizing="fill" className="extra" />)
+      expect(container.firstElementChild).toHaveAttribute(
+        'class',
+        'mn-card-balance mn-card-balance--fill extra',
+      )
+    })
+
+    // The prop is orthogonal to the div/button fork — it must reach both.
+    it('applies to the button render too', () => {
+      const { container } = render(<CardBalance {...props} sizing="fill" onClick={() => {}} />)
+      expect(container.firstElementChild?.nodeName).toBe('BUTTON')
+      expect(container.firstElementChild).toHaveClass('mn-card-balance--fill')
+    })
+
+    it('has no axe violations when filling', async () => {
+      const { container } = render(<CardBalance {...props} sizing="fill" />)
+      expect(await axe(container)).toHaveNoViolations()
+    })
+  })
 })

@@ -36,6 +36,28 @@ button.mn-card-balance:focus-visible {
   outline-offset: var(--brand-scale-50);
 }
 
+/* sizing='fill' — the container decides the width instead of the 161px Figma
+   box. Declared after the base rule on purpose: both selectors are single-class
+   (equal specificity), so source order is what lets this win. The only other
+   rule matching the root is `button.mn-card-balance` (0,1,1), which sets
+   `cursor` alone and touches no width property, so the button render fills too.
+
+   `flex: 1 1 0` is load-bearing in a FLEX parent and inert in a GRID one.
+   Dropping width/max-width alone leaves the default `flex: 0 1 auto`, which
+   sizes the card to its CONTENT — narrower than 'fixed', not wider. That would
+   satisfy a "must differ from default" check while doing the opposite of
+   filling. Grid items ignore flex properties entirely, so the same declaration
+   serves the /finance two-column grid this prop was added for and a flex row.
+   Same reasoning as CardFeaturesAndEducation; see docs/component-tokens.md.
+
+   min-width: 128px comes from the base rule and is deliberately NOT reset, so
+   the Figma floor holds in both modes. */
+.mn-card-balance--fill {
+  width: auto;
+  max-width: none;
+  flex: 1 1 0;
+}
+
 .mn-card-balance__header {
   display: flex;
   align-items: center;

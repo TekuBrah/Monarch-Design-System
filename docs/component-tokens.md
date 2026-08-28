@@ -4006,6 +4006,7 @@ uses `ProgressBar`; `CardBalance` uses `IconObject`.
 | `type` / `name` / `amount` | `string` | Required |
 | `onClick` | `() => void` | Renders as `<button>` when set — same precedent as `CardAction` / `CardGoals` / `CardFeaturesAndEducation` |
 | `className` | `string` | |
+| `sizing` | `'fixed' | 'fill'` | Default `'fixed'`. **Added v1.11.0** — see below |
 
 **`onClick` is additive.** Omitted, the card renders exactly as before: a non-interactive `<div>`, no button semantics, nothing in the tab order, no focus ring. Keyboard activation (`Enter`/`Space`) comes from the native `<button>` element, not a key handler.
 
@@ -4013,7 +4014,7 @@ The base class carries UA button resets (`border: none`, `margin: 0`, `cursor: d
 
 | Element | Token |
 |---|---|
-| Container | `--mapped-surface-elevation-default`, `--shadow-subtlest`, width 161px (min 128 / max 172) |
+| Container | `--mapped-surface-elevation-default`, `--shadow-subtlest`, width 161px (min 128 / max 172). `sizing='fill'` drops width/max-width; **min-width `128px` applies in BOTH modes** |
 | Focus ring (`button.mn-card-balance:focus-visible`) | `--brand-scale-50` outline + offset, `--mapped-border-primary-default` |
 | Padding | `--brand-scale-250` (10px) — **corrected v1.3.0, see below** |
 | Icon | Reused `IconObject` (defaults `color="slate" size="l" shape="circle"`, all now overridable) |
@@ -4061,6 +4062,62 @@ reasoning, same bug. Out of scope for the v1.3.0 prop batch because correcting
 it is a visual change on a component that batch never opened — **it needs its
 own approval, exactly as this one did.** Logged here so it is fixed
 deliberately rather than inherited silently.
+
+### `sizing` (added v1.11.0, Gate 32)
+
+`'fixed'` is today's behaviour: `width: 161px` inside the 128-172px Figma range,
+unchanged. `'fill'` drops `width` and `max-width` so the container decides. The
+modifier is declared **after** the base rule on purpose — both selectors are
+single-class, so source order is what lets it win. The only other rule matching
+the root is `button.mn-card-balance` (0,1,1), which sets `cursor` alone and
+touches no width property, so the `<button>` render fills too (tested).
+
+**Why it exists.** The MVP's `/finance` screen lays balance cards out in a
+two-column grid whose tracks are wider than the card's 172px ceiling, so every
+card stopped short and left dead space. No consumer CSS can widen a component
+past its own `max-width` without overriding DS rules from the app, which the
+project's rule 3 forbids — so the fix had to land here. Same shape, and the same
+prop name, as `CardFeaturesAndEducation.sizing` (v1.5.0).
+
+**`min-width: 128px` is inherited from the base rule and deliberately not
+reset**, so the Figma floor holds in both modes — matching the precedent's
+treatment of its own 90px floor.
+
+**`flex: 1 1 0` is load-bearing in a flex parent and inert in a grid one.**
+Grid items ignore flex properties, so the same declaration serves the
+two-column grid this prop was added for and a plain flex row. Browser-measured
+against detached probes, 600px flex row:
+
+| parent | `fixed` | `fill` | `fill` without the `flex` declaration |
+|---|---|---|---|
+| flex, 600px | 161px | **292px** | **128px** — floored at `min-width` |
+| grid, 398px / 2 tracks + 16px gap (track 191px) | 161px | **191px** | n/a — flex is inert in grid |
+
+Without `flex`, `fill` in a flex row is **narrower** than `fixed` — the opposite
+of filling — while still passing a naive "differs from default" check. Identical
+finding to `CardFeaturesAndEducation`; recorded again because the measurement was
+re-run here rather than carried.
+
+**The default is inert, proven at byte level.** The rendered `innerHTML` of three
+default renders (plain, `onClick`, and one passing every badge prop plus
+`className`) was captured before the change and again after: **2189 bytes,
+identical MD5** (`cc8be5e0…`). `sizing="fixed"` and omitting the prop produce
+identical markup, asserted in the test suite rather than only measured.
+
+**Measured difference**, showcase demo, 440px grid / two 212px tracks, identical
+in both themes:
+
+| | `fixed` | `fill` |
+|---|---|---|
+| computed `max-width` | `172px` | **`none`** |
+| computed `min-width` | `128px` | `128px` |
+| `flex-grow` / `flex-basis` | `0` / `auto` | **`1` / `0px`** |
+| rendered width in a 212px track | 161px (**51px dead space**) | **212px** (exact fit) |
+
+**Pixels are the wrong primary instrument for this prop, declarations are the
+right one** — the precedent's 375px coincidence made `fill` and `fixed` measure
+byte-identical and look inert. The showcase renders this at 440px for exactly
+that reason: any track at or under 172px demonstrates nothing.
 
 ### CardDataDisplay
 

@@ -20,6 +20,11 @@ export interface CardBalanceProps {
   amount: string
   onClick?: () => void
   className?: string
+  /** `'fixed'` (default) keeps the Figma component box: `width: 161px` inside a
+   *  128-172px range. `'fill'` drops `width` and `max-width` so the container
+   *  decides — a grid track or a flex line. `min-width: 128px` is retained in
+   *  BOTH modes. Same shape as `CardFeaturesAndEducation.sizing`. */
+  sizing?: 'fixed' | 'fill'
 }
 
 export function CardBalance({
@@ -33,8 +38,15 @@ export function CardBalance({
   amount,
   onClick,
   className,
+  sizing = 'fixed',
 }: CardBalanceProps) {
-  const classes = ['mn-card-balance', className].filter(Boolean).join(' ')
+  const classes = [
+    'mn-card-balance',
+    sizing === 'fill' && 'mn-card-balance--fill',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ')
   const content = (
     <>
       <div className="mn-card-balance__header">

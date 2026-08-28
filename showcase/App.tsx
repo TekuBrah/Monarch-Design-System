@@ -71,6 +71,23 @@ import {
   CardGoals,
   CardFeaturesAndEducation,
 } from '@monarch/design-system'
+import type { CardBalanceProps } from '@monarch/design-system'
+
+// Gate 32 — DERIVED from the shipped prop type, never restated. Gate 31 found
+// hand-written token unions in this file hiding a rename behind an `as` cast;
+// a hand-written option list is the same hazard by another route, since a list
+// of string literals drifts from the type it claims to mirror without the
+// compiler noticing. Both guards below are compile-time and there is no cast:
+//   · rename a member       -> CARD_BALANCE_SIZINGS fails `satisfies`
+//   · add a member          -> CARD_BALANCE_SIZING_NOTES is missing a key
+type CardBalanceSizing = NonNullable<CardBalanceProps['sizing']>
+
+const CARD_BALANCE_SIZING_NOTES: Record<CardBalanceSizing, string> = {
+  fixed: 'width 161px, capped at 172px — stops short of the track',
+  fill: 'width/max-width released — the track decides; min-width 128px still applies',
+}
+
+const CARD_BALANCE_SIZINGS = ['fixed', 'fill'] as const satisfies readonly CardBalanceSizing[]
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 
@@ -2908,6 +2925,42 @@ export default function App() {
               <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.5rem' }}>
                 Badge was hard-coded <code>color="slate" size="l"</code>. Now <code>iconColor</code> / <code>iconSize</code> / <code>shape</code> / <code>iconAriaLabel</code>; omit them all and the render is unchanged (first two cards above).
               </div>
+
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', margin: '1.5rem 0 0.75rem' }}>
+                CardBalance — sizing (v1.11.0, Gate 32)
+              </div>
+              <p style={{ color: 'var(--mapped-text-subtle-default)', fontSize: '0.75rem', margin: '0 0 0.75rem', maxWidth: '480px' }}>
+                Both grids are <strong>440px</strong> wide with two equal tracks, so every track is
+                <strong> 212px</strong> — wider than the card's 172px ceiling. That width is deliberate:
+                a track of 172px or less would render <code>fixed</code> and <code>fill</code>
+                identically and demonstrate nothing, the same coincidence that hid
+                <code> CardFeaturesAndEducation</code>'s prop at 375px.
+              </p>
+              {CARD_BALANCE_SIZINGS.map(size => (
+                <div key={size} style={{ marginBottom: '1rem' }}>
+                  <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.35rem' }}>
+                    sizing="{size}"{size === 'fixed' ? ' (default)' : ''} — {CARD_BALANCE_SIZING_NOTES[size]}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', width: '440px', maxWidth: '100%' }}>
+                    <CardBalance
+                      sizing={size}
+                      icon={<Icon name="icon_grocery" size="m" />}
+                      iconColor="teal"
+                      type="Wallet"
+                      name="Main Account"
+                      amount="RM 1,204.50"
+                    />
+                    <CardBalance
+                      sizing={size}
+                      icon={<Icon name="icon_car" size="m" />}
+                      iconColor="orange"
+                      type="Wallet"
+                      name="Savings"
+                      amount="RM 8,940.10"
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
 
             <div>
