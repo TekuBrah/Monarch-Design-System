@@ -75,7 +75,7 @@
   background: color-mix(in srgb, var(--mapped-border-primary-default) 16%, transparent);
 }
 .mn-filter-chip--selected:active {
-  background: color-mix(in srgb, var(--mapped-border-primary-default) 24%, transparent);
+  background: color-mix(in srgb, var(--mapped-border-primary-default) 20%, transparent);
 }
 
 /* === Focus (keyboard) === */

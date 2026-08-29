@@ -74,7 +74,7 @@
     },
     "primary": {
       "default": {
-        "value": "{Primary.500}",
+        "value": "{Primary.600}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -84,7 +84,7 @@
         }
       },
       "default-hover": {
-        "value": "{Primary.600}",
+        "value": "{Primary.700}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [
@@ -114,7 +114,7 @@
         }
       },
       "default-pressed": {
-        "value": "{Primary.700}",
+        "value": "{Primary.800}",
         "type": "color",
         "$extensions": {
           "com.figma.scopes": [

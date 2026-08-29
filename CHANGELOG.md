@@ -4,6 +4,173 @@ All notable changes to `@monarch/design-system`.
 
 ---
 
+## v1.14.0
+
+### The primary accent ramp moves one step. Eight components change colour.
+
+**Consumers WILL see this.** `--mapped-text-primary-default` and its
+`-hover` / `-pressed` siblings move one ramp step outward in light and two in
+dark. Links, selected navigation labels, card labels, chips, menu rows and
+outline buttons all render a different blue. Six token values changed, plus two
+component CSS edits. `--mapped-border-primary-*` and `--mapped-icon-primary-*`
+were deliberately NOT moved — see item 3.
+
+Gate 36 was briefed to "re-derive the primary accent ramp" against gap #13. The
+brief was right that a re-derivation was needed and wrong about its size: the
+failure is **larger and in both themes**, and the worst instance of it is a
+component the gap never named.
+
+### 1 · What the census actually found
+
+Gap #13 recorded `--mapped-text-primary-default` as **9 declarations across 8
+components**. Re-derived from disk: **12 declarations across 9 components**, and
+**22 across 11** once `-hover` and `-pressed` are included. The three it missed
+are all in `Button.css` (`:107`, `:124`, `:142`), invisible to a `color:`-scoped
+grep because Button assigns through a `--btn-text` indirection and consumes it
+one rule later.
+
+Measured across every (token, surface) pair the census proves reachable —
+69 cells, both themes, translucent fills composited over each backdrop they can
+actually land on:
+
+| | before | after |
+|---|---|---|
+| text cells failing AA 4.5 | **20 of 69** | **0 of 69** |
+| worst text cell | **1.6452** | **4.8638** |
+| cells below the 0.30 margin floor | — | **0** |
+| border cells failing 3.0 (of 33) | 1 | 1 *(pre-existing, improved — gap #23)* |
+
+Every text site is 12–16px at weight 400–600. Nothing reaches WCAG large text
+(24px regular / 18.66px bold), so **4.5 applies at every text site without
+exception**; no site qualified for the 3.0 relaxation.
+
+### 2 · The Figma variables panel and this repo disagree, in both directions
+
+The gate brief carried a description of the Figma panel as `[reported]` and
+asked for it to be checked. It disagrees with disk on **all three** points it
+names:
+
+| the panel [reported] | disk [verified] |
+|---|---|
+| default = Primary/500 light, **Primary/600 dark** | 500 light, **500 dark** |
+| default-hover = 600 light, **Primary/500 dark** | 600 light, **400 dark** |
+| on-color pair = white light, **black dark** | white light, **white dark** |
+
+The load-bearing one is the first. **`-default` was the only member of the
+family that did not flip between themes** — both its siblings did. That
+asymmetry is the defect, and it is not what the panel describes. The on-color
+disagreement matters too: had the panel been right, the `on-color` family would
+carry E-3's black-binding defect, which v1.6.0 already repaired.
+
+*Nothing in Figma was changed. This records that a re-export will reintroduce
+the old values unless the panel is corrected first.*
+
+### 3 · Text and border now diverge, and that was measured, not assumed
+
+All 33 border cells already passed 3.0 before this release, so the border family
+needed no move. Moving it anyway was tested and is **strictly worse**: the
+selected-tint fills in `FilterChip`, `MenuItem` and `Tag` are `color-mix()`
+washes derived *from* `--mapped-border-primary-default`, so darkening the border
+darkens the backdrop the text sits on and the text chases its own fill.
+Measured, moving both families **reintroduces 4 text failures** (worst 4.0050)
+where moving text alone leaves zero.
+
+**The visible consequence, stated rather than discovered later:** where a
+primary border and a primary label co-occur they are now one ramp step apart
+instead of identical — `FilterChip` selected, `Tag` hover/press. The same is
+true of `--mapped-icon-primary-default`, which mirrors the border family, so a
+selected `BottomNavigation` / `SideNavigation` item now pairs a blue-500 icon
+with a blue-600 label. That is a design consequence of the fix, not a defect,
+and it is the reason the divergence is recorded here in full.
+
+### 4 · Three of the six token moves fixed no contrast failure
+
+Worth stating because it changes what a mutation proof can even mean. Against
+the pre-release baseline:
+
+| move | driven by |
+|---|---|
+| `-default` light 500 to 600 | **contrast** — 4.4876 on white everywhere |
+| `-default` dark 500 to 300 | **contrast** — 3.3723 on elevation, 3.0948 on the rest tint |
+| `-default-hover` dark 400 to 200 | **contrast** — `Tag` hover label 4.1596 on elevation |
+| `-default-hover` light 600 to 700 | **monotonic ordering only** — 600 passed everywhere (5.6021–6.4187) |
+| `-default-pressed` light 700 to 800 | **monotonic ordering only** — 700 passed (7.0980–9.3673) |
+| `-default-pressed` dark 300 to 150 | **monotonic ordering only** — 300 passed (5.1474–8.6337) |
+
+The three ordering-driven moves exist so hover and pressed stay distinct from
+the new resting value and keep moving *away* from the page surface. They cannot
+be mutation-proven against a contrast threshold because **there was no failing
+figure to reintroduce**; reverting them instead collapses two ladder steps onto
+the same hex, a state with no visible feedback. They were proven against that
+invariant instead. A proof that passes before and after proves nothing, and
+three of these would have looked exactly like that.
+
+Final ladder — monotonic within each theme, opposite directions between them:
+
+| theme | rest | hover | pressed |
+|---|---|---|---|
+| light | `#0358cc` (600) | `#024299` (700) | `#022c66` (800) |
+| dark | `#68a8ff` (300) | `#9bc5ff` (200) | `#b4d4ff` (150) |
+
+### 5 · The FilterChip wash change is margin-driven, not compliance-driven
+
+`FilterChip.css:78` — the selected-pressed wash goes **24% to 20%**, matching
+MenuItem's existing 20%. Once the text token moved, the 24% wash **already
+passed** at 4.5898; what it did not clear was the 0.30 margin floor, at 0.0898.
+At 20% the same cell reads 4.8638, margin 0.3638.
+
+This is the one value in the set safe to move without contradicting Figma:
+FilterChip's 16% and 24% selected washes are annotated in its own CSS as "a
+deliberate addition beyond Figma source". The 10% rest wash, which Figma does
+specify, is untouched.
+
+### 6 · The dark-mode primary Button was the worst failure in the system
+
+Found by census, recorded in no gap, changelog or handoff. In dark,
+`.mn-btn--primary` inverts to a **white** fill —
+`--mapped-surface-interactive-on-color` resolves `#ffffff` in *both* themes —
+while its label took the dark ladder, which runs *lighter*:
+
+| state | fill | label before | CR before | label after | CR after |
+|---|---|---|---|---|---|
+| rest | `#ffffff` | `#046eff` | **4.4876** ❌ | `#0358cc` | **6.4187** ✅ |
+| hover | `#e7eaed` | `#368bff` | **2.7630** ❌ | `#024299` | **7.7569** ✅ |
+| pressed | `#cfd5dc` | `#68a8ff` | **1.6452** ❌ | `#022c66` | **9.1362** ✅ |
+
+**No token move could have fixed this, and the ramp move made it worse.** In
+dark, `--mapped-text-primary-default` must serve both `#ffffff` (this button)
+and `#000000` (the page); the best any single colour can do against both is
+**4.5826**, and against `#262626` elevation it is worse. There is no such ramp
+step and none could be added. Confirmed structurally: **no theme-invariant
+`--mapped-text-*` token is a dark accent colour** — the only theme-invariant
+blue in the family was `-default` itself, and this release removes that
+property.
+
+So it is a **binding** defect, not a value defect. Fixed at
+`Button.css:142-144` by binding the label to the light ladder directly
+(`--brand-blue-600/700/800`), the same buttons-only exception `--btn-bg-hover`
+on `.mn-btn--secondary` has always taken. A named inverse token family would be
+the purer answer and was rejected for now: it would mirror no Figma variable,
+which is the thing `build-mapped.mjs` exists to refuse.
+
+### Verification
+
+- `build:tokens` regenerated **`src/styles/globals.css` only** — 6 declarations,
+  3 in `:root` and 3 in `[data-theme="dark"]`. `src/tokens/mapped.ts` did **not**
+  change: `build-mapped.mjs:96-98` writes names, never values. No other generated
+  file moved.
+- **All 8 edits mutation-proven**, each against the invariant it actually
+  governs: 5 against a measured contrast failure, 3 against the ordering
+  invariant, 1 against the 0.30 margin floor. Every file restored and verified by
+  `git hash-object` against its pre-mutation blob, per gap #18.
+- Gates: `tsc -b --force` 0 · `npm test` 0 (**60 files / 508 tests, delta 0** —
+  predicted by filename beforehand: none, because no test pins a hex, tests 6/7
+  read only `on-color` tokens which did not change, and test 12's `TOKEN_PREFIX`
+  already accepts declared `--brand-*`) · `check:css-registration` 0 (58/58) ·
+  `build` 0 · `build:lib` 0. `dist/index.css` confirmed carrying the new values.
+
+---
+
 ## v1.13.0
 
 ### ✅ NOTHING A CONSUMER CAN SEE CHANGES. THIS RELEASE IS DOCUMENTATION ONLY.
@@ -666,7 +833,8 @@ Originally ten items at v1.5.0. **v1.6.0 resolved #1 (and corrected it — it wa
 wrong as written), corrected #4's count, and appended #11–#15. v1.12.0 partially
 addressed #4 and appended #16–#19. v1.13.0 amended #13 (the token is a
 system-wide finding, and it fails in dark as well), corrected #19's figures and
-annotated every translucent one with its backdrop, and appended #20–#21.** The
+annotated every translucent one with its backdrop, and appended #20–#21.
+v1.14.0 RESOLVED #13 and #20, and appended #22–#23.** The
 count is the length of the list below.
 
 **Token layer**
@@ -767,7 +935,35 @@ count is the length of the list below.
     finding. Any fix is a **surface** decision (darker stop, or a scrim), and it is
     Teku's design call — deliberately not made here.
 
-13. **Ten `--mapped-text-*` tokens fail AA 4.5 in LIGHT mode**, measured against
+13. ~~**Ten `--mapped-text-*` tokens fail AA 4.5 in LIGHT mode.**~~
+    **`--mapped-text-primary-*` RESOLVED in v1.14.0. The other nine remain open —
+    see the note at the end of this item.**
+
+    **What v1.14.0 fixed.** `--mapped-text-primary-default` and its `-hover` /
+    `-pressed` siblings moved one ramp step outward in light and two in dark:
+    light `#0358cc` / `#024299` / `#022c66`, dark `#68a8ff` / `#9bc5ff` /
+    `#b4d4ff`. All 69 measured (token, surface) cells now clear 4.5 with at least
+    0.30 of margin; the worst is 4.8638. See the v1.14.0 entry for the full
+    derivation, the mutation proof and the blast radius.
+
+    **Two corrections to what this item recorded**, both found by re-deriving
+    from disk rather than adopting the table below:
+
+    - **The census was an undercount.** It recorded 9 declarations across 8
+      components. Disk holds **12 across 9** for `-default` alone and **22 across
+      11** including `-hover` / `-pressed`. The three missed are
+      `Button.css:107`, `:124` and `:142`, invisible to a `color:`-scoped grep
+      because Button assigns through a `--btn-text` indirection.
+    - **The worst instance was never in this item at all.** The dark-mode primary
+      Button puts a blue label on a WHITE fill and measured **1.6452** when
+      pressed — worse than every figure recorded here, and unfixable by any ramp
+      move. Filed as #22.
+
+    The original table is left below because the *shape* of the finding is worth
+    keeping, and because the nine non-primary tokens in it are still open. Do not
+    act on the `--mapped-text-primary-default` rows as live.
+
+    Measured against
     `--mapped-surface-page` `#ffffff` across the full 54-token family (28 excluding
     `on-color`, which sits on a different surface):
 
@@ -822,10 +1018,10 @@ count is the length of the list below.
     contrast-sensitive text role in any design system, it renders at 14px/400, and
     it fails in light everywhere it appears.
 
-    **Pending a Figma decision from Teku.** Fixing this means moving
-    `--mapped-text-primary-default` off its current step, which is a token-source
-    change, not a code fix, and it will visibly shift eight components. Not
-    attempted at Gate 35. Cross-referenced from gaps #14 and #19.
+    ~~**Pending a Figma decision from Teku.**~~ **DONE in v1.14.0** — the token
+    moved off its step, in both themes, and the eight components did visibly
+    shift. Cross-referenced from gaps #14 and #19; #14's `Badge inverted` row is
+    superseded by that move and should be re-measured when #14 is next opened.
 
     **v1.5.0 audited dark and explicitly declined to touch the warning/success/
     information family**, on the correct grounds that the `500 → 600` dark swap
@@ -1143,8 +1339,31 @@ count is the length of the list below.
 
 **Added in v1.13.0**
 
-20. **The token tests cover token VALUES, not token PAIRINGS — and one shipped
-    pair has 0.0565 of margin.** No test in this repo would go red if either half
+20. ~~**The token tests cover token VALUES, not token PAIRINGS — and one shipped
+    pair has 0.0565 of margin.**~~ **The MARGIN half is RESOLVED in v1.14.0; the
+    MISSING-GATE half is NOT, and is re-filed below as the part that still
+    stands.**
+
+    **Resolved.** The 0.0565 cell — `CardMonthlyBudget` `__add-icon`, white on
+    `--mapped-icon-subtle-default` in dark — was re-measured at Gate 36 and is
+    unchanged at **3.0565**, because neither token in that pair moved. What
+    v1.14.0 did resolve is the *policy*: a 0.30 margin floor was applied to every
+    token this gate touched, and `FilterChip`'s selected-press wash was thinned
+    24% → 20% purely to satisfy it, at no compliance cost (24% already passed at
+    4.5898). All 69 primary-text cells now sit at 0.3638 of margin or better.
+
+    **Still open, and the reason this item is not struck through entirely:** the
+    DS still has **no regression gate on any contrast figure it has ever
+    measured**, in either repo. Gate 36 measured 69 text cells and 33 border
+    cells and committed none of them to a test. Every figure in gaps #12, #13,
+    #14, #19, #22 and #23 remains a point-in-time measurement that nothing
+    re-checks. Whether that can be closed without the hand-maintained pairing
+    list the registration detector exists to avoid is still the open design
+    question.
+
+    *Original text follows.*
+
+    **The original finding.** No test in this repo would go red if either half
     of a colour pair moved until the pair itself stopped meeting contrast.
 
     `CardMonthlyBudget.css` `__add-icon` puts `--mapped-text-primary-on-color`
@@ -1234,3 +1453,66 @@ count is the length of the list below.
     define is never added. Anything beyond that — a genuine touch-specific press
     treatment — requires reading the Figma source and is Teku's call, not a
     successor session's inference.
+
+22. ~~**The dark-mode primary `Button` put a light-ladder blue label on a white
+    fill — 1.6452 when pressed.**~~ **RESOLVED in v1.14.0.** Recorded because the
+    defect existed on `main` for the entire life of the component and appeared in
+    no gap, changelog, handoff or roadmap entry until Gate 36's census walked
+    every call site of the primary text family.
+
+    In dark, `.mn-btn--primary` inverts to a white fill —
+    `--mapped-surface-interactive-on-color` resolves `#ffffff` in **both** themes
+    — while `--btn-text` took the mapped dark ladder, which runs *lighter* as it
+    moves from rest to pressed:
+
+    | state | fill | label before | before | label after | after |
+    |---|---|---|---|---|---|
+    | rest | `#ffffff` | `#046eff` | **4.4876** ❌ | `#0358cc` | **6.4187** ✅ |
+    | hover | `#e7eaed` | `#368bff` | **2.7630** ❌ | `#024299` | **7.7569** ✅ |
+    | pressed | `#cfd5dc` | `#68a8ff` | **1.6452** ❌ | `#022c66` | **9.1362** ✅ |
+
+    **The generalisable lesson, which is why this is a numbered item and not just
+    a changelog line: a token move cannot fix a binding error, and can deepen
+    one.** Gate 36's ramp move would have taken the pressed cell from 1.6452 to
+    **1.0291**. The reason is arithmetic, not taste — in dark,
+    `--mapped-text-primary-default` must serve both `#ffffff` (this button) and
+    `#000000` (the page), and the best any single colour achieves against both is
+    **4.5826**, worse again against `#262626` elevation. No ramp step exists and
+    none could be added.
+
+    Fixed at `Button.css:142-144` by binding the label to the light ladder
+    directly (`--brand-blue-600/700/800`), the buttons-only exception
+    `--btn-bg-hover` on `.mn-btn--secondary` already takes.
+
+    **What is still open here is the architecture, not the contrast.** The DS has
+    **no theme-invariant `--mapped-text-*` token that is a dark accent colour** —
+    verified by resolving all 54 in both themes; the only theme-invariant blue was
+    `-default` itself, and v1.14.0 removed that property. A named inverse family
+    (`--mapped-text-primary-on-light` or similar) is the correct long-term answer
+    and was **not** built, because it would mirror no Figma variable, which is the
+    thing `build-mapped.mjs` exists to refuse. **If a second component ever needs
+    an inverse accent label, build the family rather than copying this
+    exception.** That is Teku's call and needs the Figma source.
+
+23. **`FilterChip`'s selected border fails 3.0 against its OWN pressed fill in
+    dark on an elevated surface — 2.7900.** Surfaced by Gate 36 and **not fixed**.
+    Pre-existing and **improved, not caused, by v1.14.0**: at the old 24% wash it
+    was **2.6672**; the 20% wash lifts it to 2.7900. Still short of 3.0.
+
+    `--mapped-border-primary-default` (`#046eff`, unchanged by v1.14.0) against a
+    20% wash of itself over `--mapped-surface-elevation-default` (`#262626`).
+
+    **Two reasons it was left alone rather than chased.** First, it is arguably
+    not a WCAG 1.4.11 failure at all: the boundary that identifies the control is
+    the border's **outer** edge against the surface behind it, which measures
+    **3.3723** and passes: an invisible inner edge makes the chip read as solidly
+    filled, not as absent. Second, the only fixes available make something else
+    worse — moving `--mapped-border-primary-default` was measured at Gate 36 and
+    reintroduces **4 text failures** (see the v1.14.0 entry, item 3), and thinning
+    the wash further would start contradicting Figma's 10% rest value.
+
+    **This cell was missing from Gate 36's own Phase 2 border census** and only
+    appeared in the Phase 4e re-run, which is how a pre-existing failure came to
+    be found *after* the change rather than before it. A border-versus-its-own-
+    fill pairing is easy to omit because both halves come from one token; any
+    future census should enumerate it explicitly.

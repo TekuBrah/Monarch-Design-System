@@ -742,8 +742,14 @@ surface. Do not go looking for them.
   at **4.4876** against white in light. Two of them — `CardBalance.css:84` and
   `CardMonthlyBudget.css:48` — sit on `--mapped-surface-elevation-default`, which
   is `#262626` in dark, where the same token measures **3.3723**. Gap #13's
-  recorded `4.68 ✅` dark figure is the *page* reading only. Moving the token is
-  gap #13's Figma-source decision, **Teku's call.**
+  recorded `4.68 ✅` dark figure is the *page* reading only. ~~Moving the token is
+  gap #13's Figma-source decision, **Teku's call.**~~
+
+  **✅ RESOLVED at Gate 36 (v1.14.0). Every figure in the paragraph above is now
+  historical, and the census in it is an UNDERCOUNT — see below.** The token
+  moved: light `#046eff` → `#0358cc`, dark `#046eff` → `#68a8ff`, with `-hover`
+  and `-pressed` following. `Badge --inverted` now measures **6.4187** light /
+  **8.6337** dark. Do not carry 4.4876 or 3.3723 forward as live figures.
 
   **Two things the flip-parity table got wrong about its own false positives.**
   `Tab.css :focus-visible` was dismissed because "`outline` is a width token plus
@@ -797,6 +803,93 @@ surface. Do not go looking for them.
   so it stays clear of the standing rule that an interaction state Figma does not
   define is never added silently. Anything past that — a real touch-specific press
   treatment — needs the Figma source read and is **Teku's call.**
+
+- **✅ RESOLVED (Gate 36, v1.14.0) — the primary accent ramp moved, and three
+  things the record had wrong.** Full derivation in `CHANGELOG.md` v1.14.0 and
+  gaps #13, #22, #23; recorded in both files per gap #17's hazard. Scope from
+  these facts, do not re-derive them.
+
+  `--mapped-text-primary-default` / `-hover` / `-pressed` now resolve:
+
+  | theme | rest | hover | pressed |
+  |---|---|---|---|
+  | light | `#0358cc` (600) | `#024299` (700) | `#022c66` (800) |
+  | dark | `#68a8ff` (300) | `#9bc5ff` (200) | `#b4d4ff` (150) |
+
+  **20 of 69 measured text cells failed AA before; 0 fail now**, worst 4.8638,
+  every cell clearing a 0.30 margin floor. `--mapped-border-primary-*` and
+  `--mapped-icon-primary-*` were deliberately NOT moved.
+
+  **1 · The census this repo carried was an undercount.** Gap #13 said 9
+  declarations across 8 components. Disk holds **12 across 9**, and **22 across
+  11** including `-hover`/`-pressed`. The three missed are `Button.css:107`,
+  `:124`, `:142` — invisible to a `color:`-scoped grep because Button assigns
+  through a `--btn-text` indirection and consumes it one rule later. **Any future
+  token census in this repo must follow indirections, not just `color:`.**
+
+  **2 · Text and border MUST diverge, and that was measured.** All 33 border
+  cells already passed 3.0, so the border family needed no move — and moving it
+  anyway is *strictly worse*. The selected-tint fills in `FilterChip`,
+  `MenuItem` and `Tag` are `color-mix()` washes derived FROM
+  `--mapped-border-primary-default`, so darkening the border darkens the backdrop
+  the text sits on and the text chases its own fill: measured, moving both
+  families **reintroduces 4 text failures** (worst 4.0050). The visible
+  consequence is deliberate — a primary border and a primary label are now one
+  ramp step apart where they co-occur, and a selected nav item pairs a blue-500
+  icon with a blue-600 label.
+
+  **3 · A token move cannot fix a binding error, and can deepen one.** The
+  dark-mode primary `Button` inverts to a WHITE fill
+  (`--mapped-surface-interactive-on-color` is `#ffffff` in **both** themes) while
+  its label took the dark ladder, which runs *lighter*: **4.4876 / 2.7630 /
+  1.6452** rest/hover/pressed. The ramp move would have taken the pressed cell to
+  **1.0291**. It is arithmetic, not taste: in dark
+  `--mapped-text-primary-default` must serve both `#ffffff` and `#000000`, and
+  the ceiling for any single colour against both is **4.5826**. Fixed at
+  `Button.css:142-144` by binding to the light ladder directly
+  (`--brand-blue-600/700/800`), the buttons-only exception `--btn-bg-hover`
+  already takes. Now **6.4187 / 7.7569 / 9.1362**.
+
+  **⚠️ The DS has NO theme-invariant `--mapped-text-*` token that is a dark
+  accent colour** — verified across all 54 in both themes. The only one was
+  `-default` itself, and this release removed that property. **If a second
+  component ever needs an inverse accent label, build a named family
+  (`--mapped-text-primary-on-light`) rather than copying Button's exception.**
+  That needs the Figma source and is Teku's call.
+
+  **A re-export will undo this.** `Mapped/Light.json` and `Dark.json` were
+  hand-edited (6 values, `text.primary.default{,-hover,-pressed}`), the same way
+  `Dark.json`'s other repairs are maintained. Teku's Figma variables panel still
+  describes the OLD binding, and it disagreed with disk in three places even
+  before this gate — see the next item.
+
+- **⚠️ OPEN — the Figma variables panel and this repo disagree about the primary
+  text family, in both directions (Gate 36).** Reported to Gate 36 as the Figma
+  state and checked against disk; all three points differ:
+
+  | panel [reported] | disk before Gate 36 [verified] |
+  |---|---|
+  | default = Primary/500 light, **Primary/600 dark** | 500 light, **500 dark** |
+  | default-hover = 600 light, **Primary/500 dark** | 600 light, **400 dark** |
+  | on-color pair = white light, **black dark** | white light, **white dark** |
+
+  The first is load-bearing: **`-default` was the only member of the family that
+  did not flip between themes**, and that asymmetry was the defect Gate 36 fixed.
+  The third matters too — had the panel been right, the `on-color` family would
+  carry E-3's black-binding defect that v1.6.0 already repaired.
+
+  **Nothing in Figma was changed.** Correcting the panel is Teku's, and until it
+  is corrected a Token Studio re-export will silently revert v1.14.0's six values.
+
+- **OPEN — `FilterChip`'s selected border fails 3.0 against its OWN pressed fill
+  in dark on elevation, 2.7900 (Gate 36, gap #23).** Pre-existing and *improved*
+  by v1.14.0 (2.6672 → 2.7900), not caused by it. Left alone deliberately: the
+  boundary that identifies the control is the border's OUTER edge against the
+  surface behind it, which passes at **3.3723**, and every available fix makes
+  something else worse. Noted because the cell was **missing from Gate 36's own
+  Phase 2 border census** and surfaced only in the Phase 4 re-run — a
+  border-against-its-own-fill pairing is easy to omit when both halves come from
+  one token.
 
 ## Component roster — current state
 

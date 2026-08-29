@@ -244,8 +244,11 @@ html, body {
    interaction-named token) that is distinct from the page in both themes and
    sits a full step above the hover token, preserving hover < active ordering.
    Text is --mapped-text-default-default, matching Tab's selected-label
-   precedent — --mapped-text-primary-default failed WCAG AA on this surface
-   (3.27:1 dark / 4.49:1 light). */
+   precedent — --mapped-text-primary-default fails WCAG AA on this surface
+   in DARK (3.5305:1). Figures updated at Gate 36 (v1.14.0), which moved the
+   token: light is now 5.0955:1 and PASSES, dark still fails, so the choice of
+   --mapped-text-default-default stands on the dark reading alone. The prior
+   comment read "3.27:1 dark / 4.49:1 light" and both were stale. */
 .app-sidebar__item--active {
   background: var(--mapped-surface-default-default);
   color: var(--mapped-text-default-default);

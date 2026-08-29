@@ -139,9 +139,18 @@
   --btn-border:          var(--mapped-surface-interactive-on-color);
   --btn-border-hover:    var(--mapped-surface-interactive-on-color-hover);
   --btn-border-pressed:  var(--mapped-surface-interactive-on-color-pressed);
-  --btn-text:            var(--mapped-text-primary-default);
-  --btn-text-hover:      var(--mapped-text-primary-default-hover);
-  --btn-text-pressed:    var(--mapped-text-primary-default-pressed);
+  /* The label reads against a WHITE fill here, not against the dark page, so it
+     must take the LIGHT ladder. The dark ladder runs LIGHTER (blue-300/200/150)
+     and would put a pale blue on near-white: measured 4.4876 / 2.7630 / 1.6452
+     before this rebind — a pressed label at 1.65 is effectively invisible.
+     No mapped token can serve this. In dark, --mapped-text-primary-default must
+     ALSO work on the black page, and the best any single colour can do against
+     both #ffffff and #000000 is 4.5826. So this reaches the brand ramp directly,
+     the same buttons-only exception --btn-bg-hover on .mn-btn--secondary takes.
+     Measured after: 6.4187 / 7.7569 / 9.1362. See CHANGELOG v1.14.0, finding 2. */
+  --btn-text:            var(--brand-blue-600);
+  --btn-text-hover:      var(--brand-blue-700);
+  --btn-text-pressed:    var(--brand-blue-800);
   --btn-focus-ring:      var(--mapped-surface-interactive-on-color);
 }
 
