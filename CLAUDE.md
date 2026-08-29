@@ -695,6 +695,109 @@ surface. Do not go looking for them.
   Shipping either check would have meant a whitelist to get it green, which is
   the failure class §3's detector was built to avoid. Reported, not asserted.
 
+  **✅ MEASURED (Gate 35, 2026-08-29). Three of the four are harmless; the fourth
+  is an already-recorded token gap, not a call-site defect. Nothing was fixed and
+  the rule was not rewritten.** Full figures live in `CHANGELOG.md` known gap #19
+  — recorded in both files deliberately, per gap #17's hazard. The four survivors
+  and both false positives re-derived exactly; the falsifier is clear (every token
+  resolves to a flat hex in both themes, no gradient, no scrim).
+
+  **Every translucent figure names the backdrop it was composited over. A bare
+  number for a `color-mix(…, transparent)` fill is not comparable to anything.**
+  `Badge` and `CardMonthlyBudget` are opaque on both halves, so no backdrop
+  applies to them; both `Tag` rules are translucent and are given twice.
+
+  | pair | threshold | worst measured cell | verdict |
+  |---|---|---|---|
+  | `Badge` `--inverted` | 4.5 body | light, `#046eff` on page `#ffffff` — **4.4876** | **fails** — but see below |
+  | `CardMonthlyBudget` `__add-icon` | 3.0 graphical | dark, `#ffffff` on `#8695a7` — 3.0565 | passes, **0.0565** headroom |
+  | `Tag` `--default:hover` | 3.0 border / 4.5 label | dark on **elevation `#262626`** → fill `#232d3c` — 4.1596 | border ✅ / **label ❌** |
+  | `Tag` `--default:active` | 3.0 border / 4.5 label | dark on **elevation `#262626`** → fill `#1f3451` — 5.1474 | passes both |
+
+  Over the **page** backdrop instead, the same two `Tag` rules measure 5.6021
+  light / 5.9217 dark (hover, fill `#e6f1ff` / `#000b1a`) and 7.0980 light /
+  7.4198 dark (active, fill `#cde2ff` / `#011633`) — all passing. In light the two
+  backdrops are the same colour (`--mapped-surface-page` and
+  `--mapped-surface-elevation-default` both resolve `#ffffff`), so they diverge
+  only in dark. **Dark-on-elevation is the only failing cell in the entire set.**
+
+  **One measurement, two thresholds — not two findings.**
+  `--mapped-border-primary-default-hover` and `--mapped-text-primary-default-hover`
+  are **different tokens that resolve to the identical value** in both themes
+  (`#0358cc` / `#368bff`); same for the `-pressed` pair (`#024299` / `#68a8ff`).
+  So `Tag`'s border and its label are the same colour on the same fill, judged
+  against 3.0 as a UI boundary and 4.5 as 14px text. The border passes 4.1596 and
+  the label fails it. Any future table here must carry both readings or it will
+  under-report the way the first Gate 35 pass did.
+
+  **`Badge --inverted` is not a new finding.** It is gaps #13 and #14 seen again:
+  gap #14's table already recorded `Badge inverted 4.49 ❌ / 4.68 ✅`, so gap #19's
+  claim that "none of the four has been contrast-measured" was false when written.
+  The figure is **4.4876** (`#046eff` luminance `0.18397673`; `1.05 / 0.23397673`).
+  *An earlier Gate 35 draft wrote `4.4870` in prose for this same pairing — that
+  was a transcription slip from a hand computation, wrong in the fourth decimal.*
+
+  **The token is a system-wide finding, and it fails in BOTH themes.** It is a
+  text colour in **9 declarations across 8 components including `Link`**, every one
+  at **4.4876** against white in light. Two of them — `CardBalance.css:84` and
+  `CardMonthlyBudget.css:48` — sit on `--mapped-surface-elevation-default`, which
+  is `#262626` in dark, where the same token measures **3.3723**. Gap #13's
+  recorded `4.68 ✅` dark figure is the *page* reading only. Moving the token is
+  gap #13's Figma-source decision, **Teku's call.**
+
+  **Two things the flip-parity table got wrong about its own false positives.**
+  `Tab.css :focus-visible` was dismissed because "`outline` is a width token plus
+  a static border token" — but the declaration does carry a colour token and the
+  rule *is* a real mismatch. It passes anyway (4.4876 / 4.6795 against 3.0), and
+  the better reason to discount it is that `outline-offset` puts the ring outside
+  the tab's own background entirely. `LineChart __marker` is a correct dismissal.
+
+  **The lesson for any future gate: flip-parity is not by itself evidence of a
+  defect.** Three of the four mismatch and pass. A gate built on formulation 2
+  would have flagged four call sites needing zero code changes.
+
+  **Separately — a hazard no rule-scoped check can see.** `Tag`'s label colour is
+  set in a *sibling* rule, so nothing that compares declarations within one rule
+  will pair it against the fill. Measured, a `Tag` hovered **inside a card in dark
+  mode** puts `#368bff` on `#232d3c` at **4.1596**, under the 4.5 its 14px label
+  needs. Over the page surface `#000000` the identical rule composites to
+  `#000b1a` and measures 5.9217, which passes — the fill is a
+  `color-mix(…, transparent)`, so its rendered value depends on the backdrop.
+  **Any measurement of a translucent fill is incomplete unless it says which
+  backdrop it assumed.** Not fixed; needs a token or design decision.
+
+- **OPEN — "touch feedback" has NO scope record in this repo, and the v1.7.0
+  attribution is false. Gate 35 halted on it (2026-08-29). Scope from the facts
+  below; do not re-derive them.** Full version in `CHANGELOG.md` known gap #21,
+  recorded in both files per gap #17's hazard.
+
+  Gate 35 was briefed to implement "touch feedback — press states for touch input,
+  split out of v1.7.0 by an earlier ruling". **Searched and found empty:** this
+  file, all 21 CHANGELOG gaps, all three `docs/` files, all 13
+  `MONARCH-CHAT-HANDOFF-*.md`, the roadmap's parked table, and every commit
+  message on every branch. The string `touch` occurs ~25 times in the repo's
+  Markdown and **every occurrence is the past-tense verb "touched"** — zero as an
+  input modality. The `v1.6.0..v1.8.0` commits (`c507d6a`, `6f12a4e`, `58557b1`)
+  are CI/drift-gate, surface ladders + brand gradient, and Toast-background work;
+  none defers anything about press or touch.
+
+  | fact | measured value |
+  |---|---|
+  | components declaring `:active` | **11 of 49**, 28 declarations — `Button` 1, `Checkbox` 3, `FilterChip` 4, `Link` 5, `MenuItem` 3, `SideNavigation` 1, `Radio` 3, `RangeSlider` 1, `Slider` 1, `Tab` 2, `Tag` 4 |
+  | `-press`/`-pressed` mapped tokens | **56 distinct**, declared 56 in `:root` and 56 in `[data-theme="dark"]` — full parity. The layer is complete. One naming outlier, `--mapped-text-error-default-press` |
+  | touch-vs-mouse distinction | **none anywhere.** Zero `@media (pointer: …)`, zero `@media (hover: …)`, zero `-webkit-tap-highlight-color` under `src/`. The only `@media` in any CSS in `src/` is the 768px font breakpoint in `globals.css` |
+  | touch-aware code that does exist | `touch-action: none` on the `Slider` and `RangeSlider` tracks + `React.PointerEvent` in those two only — **drag-gesture handling, not feedback** |
+
+  **The one concrete defect this produced:** with no hover rule guarded by
+  `@media (hover: hover)`, hover styling in all 11 components above **persists
+  after a tap on most mobile browsers** until the user taps elsewhere.
+
+  **That defect is fixable without Figma and the distinction matters.** A
+  hover-capable media query **removes an unintended state** rather than adding one,
+  so it stays clear of the standing rule that an interaction state Figma does not
+  define is never added silently. Anything past that — a real touch-specific press
+  treatment — needs the Figma source read and is **Teku's call.**
+
 ## Component roster — current state
 
 **49 components are built** (`ls src/components/` — re-derived from disk at

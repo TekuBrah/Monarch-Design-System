@@ -4,6 +4,113 @@ All notable changes to `@monarch/design-system`.
 
 ---
 
+## v1.13.0
+
+### ✅ NOTHING A CONSUMER CAN SEE CHANGES. THIS RELEASE IS DOCUMENTATION ONLY.
+
+No source file changed. No component, token, generated file, build script or
+test was touched — confirmed by `git diff --stat -- src/styles src/tokens
+design-tokens` returning empty, and by the test suite holding at 60 files / 508
+tests with a delta of zero. `build:tokens` was deliberately not run, because
+nothing that feeds it moved. The only changes are `CHANGELOG.md`, `CLAUDE.md`
+and the three version fields.
+
+**The gate's headline item did not ship, and the tag records the gate closing,
+not a feature landing.** Gate 35 was briefed to implement touch feedback and
+halted before writing any code, for a reason recorded in full as known gap #21.
+What it did produce is measurement, and that is what this entry records.
+
+### 1 · The four flip-parity call sites are measured
+
+v1.12.0's known gap #19 reported four call sites where both halves of a colour
+pair come from the mapped layer — which the pairing rule permits on the stated
+grounds that mapped tokens "flip together" — and yet only one half flips. It
+recorded that **none of the four had been contrast-measured**, and that the next
+step was measurement rather than a rule rewrite. This release takes that step.
+
+The hit list was re-derived from scratch rather than trusted. A scan of all 58
+component CSS files, resolving the full `var()` chain in both themes, returns 30
+flip-parity mismatches; filtering to pairs where *both* halves are actual colours
+— dropping every rule whose other half is `none`, `transparent` or `currentColor`,
+which is not a colour pair at all — reproduces **exactly** the four survivors and
+both false positives. The Gate 34 list was correct.
+
+**Falsifier checked and clear.** Every token in all four pairs resolves to a flat
+six-digit hex in both themes. Nothing touches `--mapped-gradient-*` or a scrim, so
+the standing caveat that arithmetic contrast is not a lower bound — which applies
+to a gradient's interpolation — does not apply here, and no browser measurement
+was needed.
+
+**Every figure below names its backdrop, because two of the four are
+translucent.** Both `Tag` rules paint `color-mix(…, transparent)`, whose rendered
+value depends on what is behind the component. That is not a gradient, so it
+passed the falsifier as posed, but it is not flat either. Alpha compositing over a
+flat backdrop is exact arithmetic — unlike gradient interpolation it does not
+dither — so it remains measurable, but a bare number is meaningless. Both
+backdrops the DS actually offers are given.
+
+| pair | threshold | light | dark |
+|---|---|---|---|
+| `Badge --inverted` — opaque | 4.5, body 14px/400 | on page `#ffffff`: **4.4876 ❌** | on page `#000000`: 4.6795 ✅ |
+| `CardMonthlyBudget __add-icon` — opaque | 3.0, graphical object | on `#6b7786`: 4.5572 ✅ | on `#8695a7`: 3.0565 ✅ |
+| `Tag --default:hover` — translucent | 3.0 border / 4.5 label | page `#e6f1ff`: 5.6021 ✅ · elevation `#e6f1ff`: 5.6021 ✅ | page `#000b1a`: 5.9217 ✅ · **elevation `#232d3c`: 4.1596 — border ✅, label ❌** |
+| `Tag --default:active` — translucent | 3.0 border / 4.5 label | page `#cde2ff`: 7.0980 ✅ · elevation `#cde2ff`: 7.0980 ✅ | page `#011633`: 7.4198 ✅ · elevation `#1f3451`: 5.1474 ✅ |
+
+`Tag`'s border colour and its label colour are **two different tokens that resolve
+to the identical value** in both themes, so one composited pair carries two
+thresholds at once — 3.0 as a UI-component boundary, 4.5 as 14px text. Dark-on-
+elevation is the only cell in the whole set that fails, and it fails only the
+label reading.
+
+**Verdict: three of the four are harmless, and the fourth is not a call-site
+defect.** `Badge --inverted` is gaps #13 and #14 seen from a third angle — gap
+#14's table already recorded it at 4.49/4.68, matching this re-derivation to the
+digit, which means **gap #19's claim that none of the four had been measured was
+false when written.** Tracing that token out of `Badge` found eight further call
+sites, including `Link`; the census is recorded as an amendment to gap #13, where
+it belongs, and it is pending a Figma decision.
+
+### 2 · The load-bearing conclusion: flip-parity alone is not evidence of a defect
+
+Three of the four pairs mismatch on flip parity and pass their threshold, two of
+them comfortably. A gate built on gap #19's formulation 2 would have flagged four
+call sites of which **zero needed a code change**, and would then have required a
+whitelist to go green — the exact failure class the registration detector was
+built to avoid.
+
+The pairing rule is therefore **left as written and no gate was shipped for it**,
+now on measured grounds rather than on the judgement call v1.12.0 had to make.
+Two corrections to gap #19's own reasoning are recorded there: `Tab.css`
+`:focus-visible` was dismissed for a wrong reason (its outline does carry a colour
+token and the rule is a genuine mismatch — it simply passes at 4.4876/4.6795
+against a 3.0 threshold), while `LineChart __marker` was dismissed correctly.
+
+A hazard no rule-scoped check can see is recorded alongside them: `Tag`'s label
+colour lives in a *sibling* rule, so nothing comparing declarations within a
+single rule will ever pair it against the fill it sits on.
+
+### 3 · The touch-feedback gate halted, and why
+
+No scope record for "touch feedback" exists anywhere in this repo, and its stated
+provenance — split out of v1.7.0 — is false. Implementing from the label alone
+would have meant inventing interaction states Figma does not define, which the
+standing component rules forbid, so **Phase 2 halted and nothing was written.**
+
+The full evidence base is recorded as known gap #21 so a successor can scope from
+it without re-deriving it: which components declare `:active`, the state of the
+press token layer, the complete absence of any touch-versus-mouse distinction, and
+the one concrete defect the search did surface — hover styling persisting after a
+tap on mobile, in 11 components.
+
+### 4 · Known gaps
+
+#13 amended (the primary-text token is a system-wide finding and fails in dark on
+card surfaces as well as in light on the page), #14 cross-referenced, #19
+corrected and fully annotated with backdrops, and **#20–#21 added**: the token
+tests cover values but not pairings, and the touch-feedback evidence base.
+
+---
+
 ## v1.12.0
 
 ### ✅ NOTHING A CONSUMER CAN SEE CHANGES. THIS RELEASE IS TOOLING ONLY.
@@ -557,7 +664,10 @@ Three tiles fill a 343px container exactly (`3 × 109 + 2 × 8 = 343 = 375 − 3
 
 Originally ten items at v1.5.0. **v1.6.0 resolved #1 (and corrected it — it was
 wrong as written), corrected #4's count, and appended #11–#15. v1.12.0 partially
-addressed #4 and appended #16–#19.** The count is the length of the list below.
+addressed #4 and appended #16–#19. v1.13.0 amended #13 (the token is a
+system-wide finding, and it fails in dark as well), corrected #19's figures and
+annotated every translucent one with its backdrop, and appended #20–#21.** The
+count is the length of the list below.
 
 **Token layer**
 
@@ -676,6 +786,47 @@ addressed #4 and appended #16–#19.** The count is the length of the list below
     (A tenth, `--mapped-text-disabled-default` at 1.48, is **excluded as a defect** —
     WCAG 1.4.3 exempts inactive controls.)
 
+    **AMENDED (Gate 35, 2026-08-29) — `--mapped-text-primary-default` is a
+    design-system-wide finding, not the `Badge` finding it has been recorded as,
+    and its dark figure above is only true against ONE of the two surfaces it
+    actually lands on.** Reached from the opposite direction: gap #19's flip-parity
+    measurement flagged `Badge --inverted`, and tracing the token out of that one
+    call site found eight more.
+
+    It is consumed as a text colour in **9 declarations across 8 components**, and
+    in light every one measures **4.4876** — `#046eff` on `#ffffff` — because
+    `--mapped-surface-page` and `--mapped-surface-elevation-default` are the same
+    colour in light:
+
+    | site | surface it sits on | light | dark |
+    |---|---|---|---|
+    | `Badge.css:60` `.mn-badge--inverted` | page `#ffffff` / `#000000` | **4.4876** ❌ | 4.6795 ✅ |
+    | `CardBalance.css:84` `__name` | **elevation** `#ffffff` / `#262626` | **4.4876** ❌ | **3.3723** ❌ |
+    | `CardMonthlyBudget.css:48` `__details` | **elevation** `#ffffff` / `#262626` | **4.4876** ❌ | **3.3723** ❌ |
+    | `FilterChip.css:69` | page | **4.4876** ❌ | 4.6795 ✅ |
+    | **`Link.css:21`** | page | **4.4876** ❌ | 4.6795 ✅ |
+    | `MenuItem.css:49` | page | **4.4876** ❌ | 4.6795 ✅ |
+    | `MenuItem.css:119` | page | **4.4876** ❌ | 4.6795 ✅ |
+    | `BottomNavigation.css:82` | page | **4.4876** ❌ | 4.6795 ✅ |
+    | `SideNavigation.css:148` | page | **4.4876** ❌ | 4.6795 ✅ |
+
+    **The `4.68 ✅` in the table above is the page-surface figure and it is not the
+    whole story.** On a card — `--mapped-surface-elevation-default`, `#262626` in
+    dark — the same token measures **3.3723**, which fails 4.5 by a wide margin and
+    is worse than the light-mode failure this item was filed for. Both
+    `CardBalance` and `CardMonthlyBudget` set that surface on their own root and
+    then place this token on it. So the token fails AA **in both themes**, at
+    different call sites, and this item has only ever recorded half of that.
+
+    **`Link` is the consequential entry.** A hyperlink is the single most
+    contrast-sensitive text role in any design system, it renders at 14px/400, and
+    it fails in light everywhere it appears.
+
+    **Pending a Figma decision from Teku.** Fixing this means moving
+    `--mapped-text-primary-default` off its current step, which is a token-source
+    change, not a code fix, and it will visibly shift eight components. Not
+    attempted at Gate 35. Cross-referenced from gaps #14 and #19.
+
     **v1.5.0 audited dark and explicitly declined to touch the warning/success/
     information family**, on the correct grounds that the `500 → 600` dark swap
     *improves* those hues in dark. That reasoning holds. What it left unstated is
@@ -698,6 +849,11 @@ addressed #4 and appended #16–#19.** The count is the length of the list below
     | `Badge` `important` | **3.64** ❌ | 5.35 ✅ |
     | `Badge` `primary` | **4.49** ❌ | 6.42 ✅ |
     | `Badge` `inverted` | **4.49** ❌ | 4.68 ✅ |
+    <!-- Badge inverted: re-measured at Gate 35 as 4.4876 / 4.6795 — this row was
+         right all along. See gap #13's Gate 35 amendment: the same token fails at
+         eight further call sites, and gap #19's claim that the four flip-parity
+         hits had never been contrast-measured was false because of this row. -->
+
 
     Out of v1.6.0's stated scope (`--subtle` only) and **not fixable from existing
     tokens**: `success--bold` and `moved--bold` fail in *both* themes, and no
@@ -835,3 +991,246 @@ addressed #4 and appended #16–#19.** The count is the length of the list below
     Shipping either check would have required a whitelist to get it green, which
     is the failure class the registration detector was built to avoid. **Reported,
     not asserted.** The next step is measurement, not a rule rewrite.
+
+    ### MEASURED (Gate 35, 2026-08-29). Three of the four are harmless; one is a
+    ### restatement of gaps #13 and #14, not a new finding.
+
+    The six-hit table above was re-derived from scratch before measuring, not
+    trusted. A broader scan (any rule setting both a background-ish and a
+    foreground-ish property, resolved through the full `var()` chain in both
+    themes) returns **30** flip-parity mismatches across the 58 component CSS
+    files. Filtering to pairs where *both* halves are actual colours — dropping
+    every rule whose other half is `none`, `transparent`, or `currentColor`, which
+    is not a colour pair at all — reproduces exactly the four survivors and both
+    false positives. The Gate 34 list is correct.
+
+    **The falsifier was checked and is clear of gradients.** Every token in all
+    four pairs resolves to a flat six-digit hex in both themes; none touches
+    `--mapped-gradient-*` or a scrim. The standing caveat that arithmetic contrast
+    is not a lower bound applies only across a gradient's interpolation, so
+    arithmetic is valid here and no browser measurement is needed.
+
+    **But two of the four are not flat on one side, in a way the falsifier as
+    posed did not name.** Both `Tag` rules paint
+    `color-mix(in srgb, var(--mapped-border-primary-default) N%, transparent)`,
+    which is a *translucent* fill, not a gradient. Its rendered value depends on
+    the backdrop behind the Tag. Alpha compositing over a flat backdrop is exact
+    arithmetic — unlike gradient interpolation, it does not dither — so this is
+    still measurable, but the backdrop must be stated. Both backdrops the DS
+    actually offers are measured below.
+
+    **P1 and P2 are opaque on both halves, so a backdrop does not apply to them:**
+
+    | # | file · rule | pair | light | dark | threshold | verdict |
+    |---|---|---|---|---|---|---|
+    | P1 | `Badge.css` `.mn-badge--inverted` | `--mapped-surface-page` / `--mapped-text-primary-default` | `#046eff` on `#ffffff` **4.4876** ❌ | `#046eff` on `#000000` 4.6795 ✅ | 4.5 (body, 14px/400) | **FAILS light** |
+    | P2 | `CardMonthlyBudget.css` `__add-icon` | `--mapped-icon-subtle-default` / `--mapped-text-primary-on-color` | `#ffffff` on `#6b7786` 4.5572 ✅ | `#ffffff` on `#8695a7` 3.0565 ✅ | 3.0 (graphical object) | passes, **0.0565 of headroom in dark** |
+
+    **P3 and P4 paint a translucent fill, so every figure below names the backdrop
+    it was composited over.** No figure for these two rules is meaningful without
+    one; a bare number is not comparable to another bare number.
+
+    | # | rule | theme | backdrop | composited fill | border vs 3.0 | label vs 4.5 |
+    |---|---|---|---|---|---|---|
+    | P3 | `--default:hover` | light | page `#ffffff` | `#e6f1ff` | 5.6021 ✅ | 5.6021 ✅ |
+    | P3 | `--default:hover` | light | elevation `#ffffff` | `#e6f1ff` | 5.6021 ✅ | 5.6021 ✅ |
+    | P3 | `--default:hover` | dark | page `#000000` | `#000b1a` | 5.9217 ✅ | 5.9217 ✅ |
+    | P3 | `--default:hover` | dark | **elevation `#262626`** | `#232d3c` | 4.1596 ✅ | **4.1596 ❌** |
+    | P4 | `--default:active` | light | page `#ffffff` | `#cde2ff` | 7.0980 ✅ | 7.0980 ✅ |
+    | P4 | `--default:active` | light | elevation `#ffffff` | `#cde2ff` | 7.0980 ✅ | 7.0980 ✅ |
+    | P4 | `--default:active` | dark | page `#000000` | `#011633` | 7.4198 ✅ | 7.4198 ✅ |
+    | P4 | `--default:active` | dark | elevation `#262626` | `#1f3451` | 5.1474 ✅ | 5.1474 ✅ |
+
+    In light the two backdrops are the same colour — `--mapped-surface-page` and
+    `--mapped-surface-elevation-default` both resolve `#ffffff` — so the light rows
+    are identical by construction, not by coincidence. They diverge only in dark
+    (`#000000` vs `#262626`), which is why **dark-on-elevation is the only cell in
+    the whole set that fails.**
+
+    **Why the border and label columns hold the same number, and why that is not a
+    duplicate.** `--mapped-border-primary-default-hover` and
+    `--mapped-text-primary-default-hover` are **two different tokens that resolve to
+    the identical value** in both themes (`#0358cc` light, `#368bff` dark); likewise
+    the `-pressed` pair (`#024299` / `#68a8ff`). So one composited pair carries **two
+    thresholds at once** — 3.0 where it is read as a UI-component boundary
+    (WCAG 1.4.11) and 4.5 where the same colour is read as the 14px label (1.4.3).
+    The earlier one-row-per-rule form under-reported this: it showed only the border
+    reading and left the label to a separate paragraph, which made one measurement
+    look like two findings. It is one measurement, judged twice.
+
+    That is also the resolution of a collision in the Gate 35 report: **4.1596
+    appeared as both P3's border figure and the Tag label figure. Both were
+    correct** — same fill, same colour, same backdrop, two thresholds. The border
+    passes it and the label fails it.
+
+    Thresholds applied: **4.5** for P1, because `Badge` renders its label with
+    `type-body-sm` — 14px at weight 400, which is not WCAG "large text" (≥18.66px
+    bold or ≥24px). **3.0** for P2, whose content is an `Icon` glyph, a graphical
+    object under 1.4.11. **3.0** for P3/P4, where the measured foreground is a
+    `border-color` — a non-text UI component boundary, also 1.4.11.
+
+    **P1 is not a new defect. It is gaps #13 and #14 seen from a third angle**,
+    and the figure was already in this file twice: #13 records
+    `--mapped-text-primary-default` at 4.49 light / 4.68 dark, and #14's table
+    records `Badge` `inverted` at **4.49 ❌ / 4.68 ✅**. Both match the measurement
+    above to the digit. **Item #19's own claim that "none of the four has been
+    contrast-measured" was therefore false when written** — one of them had been
+    measured twice, in two adjacent items of the same list. This is gap #17's
+    hazard (records drifting apart) occurring *within a single file* rather than
+    between two.
+
+    The scope is wider than `Badge` — see the amendment to gap #13 for the full
+    census. In short: `--mapped-text-primary-default` is a text colour in **9
+    declarations across 8 components including `Link`**, every one of them at
+    **4.4876** against white in light.
+
+    **Figure corrected (Gate 35 continuation): 4.4876, not 4.4870.** The Gate 35
+    report gave `4.4876` in its table and `4.4870` in its prose for what is the
+    same pairing — `#046eff` on `#ffffff`, the only pairing available, since both
+    `--mapped-surface-page` and `--mapped-surface-elevation-default` resolve
+    `#ffffff` in light. Re-derived to six decimal places: the relative luminance of
+    `#046eff` is `0.18397673`, giving `1.05 / 0.23397673` = **4.487626**. The prose
+    figure was a transcription slip from a hand computation and is wrong in the
+    fourth decimal; `4.4876` is correct and is used everywhere in this record.
+
+    **Two corrections to the six-hit table's false-positive column.**
+
+    - `Tab.css` `:focus-visible` was dismissed on the grounds that "`outline` is a
+      width token plus a static border token". That reasoning is wrong: the
+      declaration is `var(--brand-scale-50) solid var(--mapped-border-primary-default)`,
+      which *does* carry a colour token, and the rule *is* a genuine flip-parity
+      mismatch (background flips `#ffffff`→`#000000`, outline colour is `#046eff`
+      in both). **The conclusion survives the reasoning.** Measured, it is 4.4876
+      light / 4.6795 dark against a 3.0 threshold for a focus indicator — passing
+      with margin in both themes. There is a *better* reason to discount it, too:
+      `outline-offset: var(--brand-scale-50)` places the ring 2px outside the
+      border box, so the ring is not drawn over the tab's own background at all.
+      It happens not to matter, because `--mapped-surface-primary-default-subtle`
+      resolves to the same value as `--mapped-surface-page` in both themes.
+    - `LineChart.css` `__marker` is a correct false positive, for the stated
+      reason. `currentColor` is not statically resolvable and the marker's border
+      inherits from its series colour.
+
+    **One pair the rule-scoped scan structurally cannot see, reported because it
+    is the only figure here that fails on a backdrop the DS actually renders.**
+    `Tag`'s label colour is set in a *sibling* rule
+    (`.mn-tag--default:hover .mn-tag__label`), so no check that compares
+    declarations within one rule will ever pair it against the fill. Measured
+    across both backdrops:
+
+    | pair | backdrop | light | dark |
+    |---|---|---|---|
+    | hover fill / `--mapped-text-primary-default-hover` | page `#ffffff` / `#000000` | 5.6021 ✅ | 5.9217 ✅ |
+    | hover fill / `--mapped-text-primary-default-hover` | elevation `#ffffff` / `#262626` | 5.6021 ✅ | **4.1596 ❌** |
+    | active fill / `--mapped-text-primary-default-pressed` | page `#ffffff` / `#000000` | 7.0980 ✅ | 7.4198 ✅ |
+    | active fill / `--mapped-text-primary-default-pressed` | elevation `#ffffff` / `#262626` | 7.0980 ✅ | 5.1474 ✅ |
+
+    A `Tag` hovered **inside a card in dark mode** puts `#368bff` on a fill of
+    `#232d3c` (10% `#046eff` composited over elevation `#262626`) at **4.1596**,
+    under the 4.5 needed for its 14px label. The identical rule over the page
+    surface `#000000` composites to `#000b1a` and measures 5.9217, which passes. This is a translucent-fill hazard, not a
+    flip-parity one, and it is the reason the backdrop had to be stated rather
+    than assumed. **Not fixed** — like P1 it needs a token or design decision.
+
+    **Verdict on the question this measurement existed to settle: three of the
+    four are harmless, and the fourth is an already-recorded token gap rather than
+    a call-site defect.** Nothing here justifies rewriting the pairing rule, and
+    nothing here was fixed. What it does establish is that **flip-parity is not by
+    itself evidence of a defect** — P2, P3 and P4 all mismatch and all pass, two of
+    them comfortably. A future gate built on formulation 2 would have flagged four
+    call sites of which zero needed a code change. That is the argument against
+    shipping it, and it is now measured rather than asserted.
+
+**Added in v1.13.0**
+
+20. **The token tests cover token VALUES, not token PAIRINGS — and one shipped
+    pair has 0.0565 of margin.** No test in this repo would go red if either half
+    of a colour pair moved until the pair itself stopped meeting contrast.
+
+    `CardMonthlyBudget.css` `__add-icon` puts `--mapped-text-primary-on-color`
+    (`#ffffff`, theme-invariant) on `--mapped-icon-subtle-default` (`#6b7786`
+    light, `#8695a7` dark). Its content is an `Icon` glyph, so the applicable
+    threshold is **3.0** (WCAG 1.4.11, graphical object). Measured at Gate 35:
+    **4.5572 in light, 3.0565 in dark.** The dark figure clears its threshold by
+    **0.0565**.
+
+    That is roughly one 8-bit step of lightness. Nudging
+    `--mapped-icon-subtle-default` one rung darker in dark mode — an ordinary,
+    plausible Figma change that nobody would think of as risky — drops this pair
+    under 3.0.
+
+    **The 14 tests added at v1.12.0 would all stay green through that change**, and
+    this is by design rather than oversight. They assert that every `--mapped-*`
+    token *resolves* in both themes, that the two theme blocks declare identical
+    name sets, that `on-color` tokens hold a luminance floor, that gradients are
+    emitted on `*`. Every one of those is a property of a token **in isolation**.
+    Contrast is a property of **two tokens and the surface one sits on**, which no
+    assertion in the suite currently expresses. The deliberate-exclusions list at
+    v1.12.0 says as much — "contrast ratios belong to a component plus a pairing,
+    not to a token in isolation" — and that reasoning still holds. What was not
+    stated then, and is stated here, is the **consequence**: the DS has no
+    regression gate on any contrast figure it has ever measured, in either repo.
+
+    Every figure in gaps #12, #13, #14 and #19 is a point-in-time measurement that
+    nothing re-checks. Whether that is worth closing, and whether it can be closed
+    without the hand-maintained pairing list the registration detector exists to
+    avoid, is an open design question — the same wall gap #19's two formulations
+    hit. Recorded so the margin is on the record even if the gate never is.
+
+21. **"Touch feedback" has no scope record anywhere in this repo, and its stated
+    provenance is false. This item is the evidence base so a successor does not
+    re-derive it.**
+
+    Gate 35 was briefed to implement "touch feedback — press states for touch
+    input, split out of v1.7.0 by an earlier ruling", and **HALTED at Phase 2**
+    because no such record exists.
+
+    **What was searched, and found empty:** `CLAUDE.md`; every one of the 19
+    entries in this list; all three files under `docs/`; all 13
+    `MONARCH-CHAT-HANDOFF-*.md`; `MONARCH-BUILD-ROADMAP.md`'s parked table; and
+    every commit message on every branch (`git log --all`). The string `touch`
+    occurs roughly 25 times across the repo's Markdown and **every single
+    occurrence is the past-tense verb "touched"**. There are zero occurrences of
+    touch as an input modality.
+
+    **The v1.7.0 attribution is false.** The three commits in `v1.6.0..v1.8.0` are
+    `c507d6a` (CI workflow + drift gate), `6f12a4e` (AA surface ladders, monotonic
+    hover, brand gradient, `engines >=24`) and `58557b1` (Toast background moved to
+    CSS, four falsified comments corrected). None splits out, defers, or mentions
+    press or touch states. The roadmap's parked table holds "Motion/elevation token
+    layer" and nothing adjacent.
+
+    **The factual position, measured at Gate 35 — scope from this, do not
+    re-derive it:**
+
+    - **11 of 49 components declare `:active`**, 28 declarations in total:
+      `Button` (1), `Checkbox` (3), `FilterChip` (4), `Link` (5), `MenuItem` (3),
+      `SideNavigation` (1), `Radio` (3), `RangeSlider` (1), `Slider` (1), `Tab` (2),
+      `Tag` (4).
+    - **56 distinct `-press`/`-pressed` mapped tokens exist**, declared in `:root`
+      and in `[data-theme="dark"]` at **56 each — full theme parity**. The press
+      token layer is complete; nothing is missing there. One naming outlier
+      survives, `--mapped-text-error-default-press` (gap #2).
+    - **Nothing anywhere distinguishes touch from mouse.** Zero
+      `@media (pointer: …)`, zero `@media (hover: …)`, zero
+      `-webkit-tap-highlight-color` in any file under `src/`. The **only** `@media`
+      block in any CSS in `src/` is the 768px responsive-font breakpoint in
+      `globals.css`.
+    - **The only touch-aware code in the package** is `touch-action: none` on the
+      `Slider` and `RangeSlider` tracks, plus `React.PointerEvent` handlers in those
+      same two components. Both exist for **drag-gesture handling, not for
+      feedback**, and neither generalises to anything else.
+
+    **The consequence, which is the one concrete defect this search did produce:**
+    because no rule is guarded by `@media (hover: hover)`, the hover styling in all
+    11 components above **persists after a tap on most mobile browsers**, until the
+    user taps elsewhere. A tapped `Tag`, `Tab` or `MenuItem` stays visually hovered.
+    This is a real, reproducible defect in shipped components.
+
+    **It is also the one thing in this area that can be fixed without Figma**, and
+    that distinction is what makes it safe: wrapping hover rules in a hover-capable
+    media query **removes an unintended state** rather than inventing one, so it
+    stays clear of the standing rule that an interaction state Figma does not
+    define is never added. Anything beyond that — a genuine touch-specific press
+    treatment — requires reading the Figma source and is Teku's call, not a
+    successor session's inference.
