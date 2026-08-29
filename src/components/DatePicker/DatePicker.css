@@ -83,7 +83,13 @@
 }
 
 /* === Hover (Standard) === */
-.mn-datepicker--standard:not(.mn-datepicker--disabled):not(.mn-datepicker--invalid):hover:not(:focus-within) .mn-datepicker__control,
+@media (hover: hover) {
+  .mn-datepicker--standard:not(.mn-datepicker--disabled):not(.mn-datepicker--invalid):hover:not(:focus-within) .mn-datepicker__control {
+    background: var(--mapped-surface-primary-default-subtle-hover);
+    border-color: var(--mapped-border-primary-default-subtle-hover);
+  }
+}
+
 .mn-datepicker--standard.mn-datepicker--hover:not(.mn-datepicker--disabled):not(.mn-datepicker--invalid) .mn-datepicker__control {
   background: var(--mapped-surface-primary-default-subtle-hover);
   border-color: var(--mapped-border-primary-default-subtle-hover);

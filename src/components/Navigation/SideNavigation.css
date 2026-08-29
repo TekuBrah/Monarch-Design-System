@@ -34,9 +34,11 @@
   cursor: pointer;
 }
 
-.mn-side-nav__toggle:hover {
-  background: var(--mapped-surface-subtle-hover);
-  border-color: var(--mapped-border-primary-default-subtle-hover);
+@media (hover: hover) {
+  .mn-side-nav__toggle:hover {
+    background: var(--mapped-surface-subtle-hover);
+    border-color: var(--mapped-border-primary-default-subtle-hover);
+  }
 }
 
 .mn-side-nav__toggle:active {

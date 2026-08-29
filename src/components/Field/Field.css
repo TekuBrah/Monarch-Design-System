@@ -72,7 +72,13 @@
 }
 
 /* === Hover (Standard) — bg + faint border shift === */
-.mn-field--standard:not(.mn-field--disabled):not(.mn-field--invalid):hover:not(:focus-within),
+@media (hover: hover) {
+  .mn-field--standard:not(.mn-field--disabled):not(.mn-field--invalid):hover:not(:focus-within) {
+    background: var(--mapped-surface-primary-default-subtle-hover); /* #f9f9f9 */
+    border-color: var(--mapped-border-primary-default-subtle-hover); /* #f2f2f2 */
+  }
+}
+
 .mn-field--standard.mn-field--hover:not(.mn-field--disabled):not(.mn-field--invalid) {
   background: var(--mapped-surface-primary-default-subtle-hover); /* #f9f9f9 */
   border-color: var(--mapped-border-primary-default-subtle-hover); /* #f2f2f2 */

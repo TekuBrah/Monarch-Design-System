@@ -772,37 +772,65 @@ surface. Do not go looking for them.
   **Any measurement of a translucent fill is incomplete unless it says which
   backdrop it assumed.** Not fixed; needs a token or design decision.
 
-- **OPEN — "touch feedback" has NO scope record in this repo, and the v1.7.0
-  attribution is false. Gate 35 halted on it (2026-08-29). Scope from the facts
-  below; do not re-derive them.** Full version in `CHANGELOG.md` known gap #21,
-  recorded in both files per gap #17's hazard.
+- **✅ RESOLVED (Gate 37, v1.15.0) — sticky hover is guarded. The "touch
+  feedback" label is retired, not deferred again.** Full derivation in
+  `CHANGELOG.md` v1.15.0 and known gap #21; recorded in both files per gap #17's
+  hazard. Scope from these facts, do not re-derive them.
 
-  Gate 35 was briefed to implement "touch feedback — press states for touch input,
-  split out of v1.7.0 by an earlier ruling". **Searched and found empty:** this
-  file, all 21 CHANGELOG gaps, all three `docs/` files, all 13
-  `MONARCH-CHAT-HANDOFF-*.md`, the roadmap's parked table, and every commit
-  message on every branch. The string `touch` occurs ~25 times in the repo's
-  Markdown and **every occurrence is the past-tense verb "touched"** — zero as an
-  input modality. The `v1.6.0..v1.8.0` commits (`c507d6a`, `6f12a4e`, `58557b1`)
-  are CI/drift-gate, surface ladders + brand gradient, and Toast-background work;
-  none defers anything about press or touch.
+  **Do not reopen anything under the name "touch feedback."** That label rode
+  from Gate 27 to Gate 35 with no scope record anywhere in this repo and a false
+  v1.7.0 attribution — Gate 35 searched this file, every CHANGELOG gap, all
+  `docs/`, all 13 `MONARCH-CHAT-HANDOFF-*.md`, the roadmap's parked table and
+  every commit message on every branch, and found the string `touch` used only as
+  the past-tense verb "touched". The label named no work. **It is closed.** The
+  one real defect hiding behind it is fixed below; anything genuinely new about
+  touch input starts from a Figma read and is Teku's call, under its own name.
 
-  | fact | measured value |
-  |---|---|
-  | components declaring `:active` | **11 of 49**, 28 declarations — `Button` 1, `Checkbox` 3, `FilterChip` 4, `Link` 5, `MenuItem` 3, `SideNavigation` 1, `Radio` 3, `RangeSlider` 1, `Slider` 1, `Tab` 2, `Tag` 4 |
-  | `-press`/`-pressed` mapped tokens | **56 distinct**, declared 56 in `:root` and 56 in `[data-theme="dark"]` — full parity. The layer is complete. One naming outlier, `--mapped-text-error-default-press` |
-  | touch-vs-mouse distinction | **none anywhere.** Zero `@media (pointer: …)`, zero `@media (hover: …)`, zero `-webkit-tap-highlight-color` under `src/`. The only `@media` in any CSS in `src/` is the 768px font breakpoint in `globals.css` |
-  | touch-aware code that does exist | `touch-action: none` on the `Slider` and `RangeSlider` tracks + `React.PointerEvent` in those two only — **drag-gesture handling, not feedback** |
+  **What shipped:** every plain `:hover` rule in the DS is wrapped in
+  `@media (hover: hover)`, so hover styling can no longer persist after a tap.
+  **39 rules across 17 component CSS files, 69 selector→declaration pairs.** No
+  token value moved, no API changed, no interaction state invented — a
+  hover-capable media query *removes* an unintended state, which is why this
+  stayed clear of the standing rule that a state Figma does not define is never
+  added silently.
 
-  **The one concrete defect this produced:** with no hover rule guarded by
-  `@media (hover: hover)`, hover styling in all 11 components above **persists
-  after a tap on most mobile browsers** until the user taps elsewhere.
+  **Gate 35's figures were re-derived at Gate 37 and two of the three were
+  wrong. Use these.**
 
-  **That defect is fixable without Figma and the distinction matters.** A
-  hover-capable media query **removes an unintended state** rather than adding one,
-  so it stays clear of the standing rule that an interaction state Figma does not
-  define is never added silently. Anything past that — a real touch-specific press
-  treatment — needs the Figma source read and is **Teku's call.**
+  | fact | Gate 35 said | measured at Gate 37 |
+  |---|---|---|
+  | components declaring `:active` | 11 of 49, 28 declarations | **11 files — confirmed.** 28 is a raw `:active` *occurrence* count and reproduces exactly, but 2 of `FilterChip`'s 4 are `:not(:active)` negations inside hover rules. Genuine: **26 occurrences, 24 rules** |
+  | `-press`/`-pressed` mapped tokens | 56 distinct, 56/56 light/dark | **57 distinct, 57/57.** Off by one, and it predates Gate 36 — v1.13.0 also holds 57, with identical name sets |
+  | touch-vs-mouse distinction | none anywhere | **confirmed at the time.** Now 39 `@media (hover: hover)` blocks; still zero `@media (pointer: …)` and zero `-webkit-tap-highlight-color` |
+
+  The 57th token is `--mapped-text-information-on-color-pressed-2`. Gate 35's 56
+  = 55 names ending `-pressed` plus the known outlier
+  `--mapped-text-error-default-press`; a name containing "pressed" but not
+  *ending* in it was missed. **A `press` census here must not anchor on a suffix.**
+
+  **Two things a successor should not re-derive.**
+
+  1. **The `:focus` hazard the brief predicted does not exist.** No `:hover` rule
+     shares a block with `:focus`/`:focus-visible`. Seven mention `:focus-within`
+     and all seven are `:not(:focus-within)` negations *inside* hover rules.
+     Verified live: **60 `:focus-visible` rules, 0 gated.**
+  2. **The real hazard is `previewState`.** 23 of the 39 rules paired `:hover`
+     with a prop-driven forced-state selector in the same block —
+     `.mn-<block>--hover` (18) or `[data-preview="hover"]` (5, all `Link`).
+     Gating those would make a public prop silently inert on touch, i.e. an API
+     change. All 23 were split; the forced half is ungated. Verified live: **52
+     forced-state rules, 0 wrongly gated.**
+
+  **⚠️ The obvious way to verify this is worthless, and Gate 37 nearly reported
+  it as evidence.** Emulating a touch device and pointing at a component shows
+  the resting colour — but it shows *exactly the same thing with the guard
+  removed*, because the harness's pointer action never produces a `:hover` match
+  under Chrome touch emulation. The guard was removed from three real rules
+  (`MenuItem`, `Button`, `Tab`), the page fully reloaded, the CSSOM confirmed
+  them ungated, and the reading did not move. **Verify the media condition with
+  an A/B probe instead** — one identical declaration inside
+  `@media (hover: hover)` and one outside — which measures `rgb(255,255,255)` vs
+  `rgb(11,22,33)` under `hover: none` and both applying under `hover: hover`.
 
 - **✅ RESOLVED (Gate 36, v1.14.0) — the primary accent ramp moved, and three
   things the record had wrong.** Full derivation in `CHANGELOG.md` v1.14.0 and

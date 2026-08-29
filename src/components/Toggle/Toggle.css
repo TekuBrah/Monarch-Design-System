@@ -87,13 +87,17 @@
 }
 
 /* === Hover (unchecked) === */
-.mn-toggle:hover:not(.mn-toggle--disabled) .mn-toggle__track {
-  background: var(--mapped-icon-subtlest-subtlest-hover);
+@media (hover: hover) {
+  .mn-toggle:hover:not(.mn-toggle--disabled) .mn-toggle__track {
+    background: var(--mapped-icon-subtlest-subtlest-hover);
+  }
 }
 
 /* === Hover (checked) === */
-.mn-toggle:hover:not(.mn-toggle--disabled) .mn-toggle__input:checked + .mn-toggle__track {
-  background: var(--mapped-surface-primary-default-hover);
+@media (hover: hover) {
+  .mn-toggle:hover:not(.mn-toggle--disabled) .mn-toggle__input:checked + .mn-toggle__track {
+    background: var(--mapped-surface-primary-default-hover);
+  }
 }
 
 /* === Disabled === */

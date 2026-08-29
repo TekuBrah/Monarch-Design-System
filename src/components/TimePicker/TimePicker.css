@@ -69,7 +69,13 @@
 }
 
 /* === Hover (Standard) === */
-.mn-timepicker--standard:not(.mn-timepicker--disabled):not(.mn-timepicker--invalid):hover:not(:focus-within) .mn-timepicker__control,
+@media (hover: hover) {
+  .mn-timepicker--standard:not(.mn-timepicker--disabled):not(.mn-timepicker--invalid):hover:not(:focus-within) .mn-timepicker__control {
+    background: var(--mapped-surface-primary-default-subtle-hover);
+    border-color: var(--mapped-border-primary-default-subtle-hover);
+  }
+}
+
 .mn-timepicker--standard.mn-timepicker--hover:not(.mn-timepicker--disabled):not(.mn-timepicker--invalid) .mn-timepicker__control {
   background: var(--mapped-surface-primary-default-subtle-hover);
   border-color: var(--mapped-border-primary-default-subtle-hover);
@@ -82,7 +88,12 @@
   background: transparent;
   border-color: transparent;
 }
-.mn-timepicker--subtle:not(.mn-timepicker--disabled):not(.mn-timepicker--invalid):hover:not(:focus-within) .mn-timepicker__control,
+@media (hover: hover) {
+  .mn-timepicker--subtle:not(.mn-timepicker--disabled):not(.mn-timepicker--invalid):hover:not(:focus-within) .mn-timepicker__control {
+    background: var(--mapped-surface-primary-default-subtle-hover);
+  }
+}
+
 .mn-timepicker--subtle.mn-timepicker--hover:not(.mn-timepicker--disabled):not(.mn-timepicker--invalid) .mn-timepicker__control {
   background: var(--mapped-surface-primary-default-subtle-hover);
 }

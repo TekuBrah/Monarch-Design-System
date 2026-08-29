@@ -71,18 +71,22 @@
 }
 
 /* === Hover (unchecked) === */
-.mn-checkbox:hover:not(.mn-checkbox--disabled):not(.mn-checkbox--invalid) .mn-checkbox__box:not(.mn-checkbox__box--marked) {
-  background: var(--mapped-surface-primary-default-subtle-hover);
-  border-color: var(--mapped-border-subtlest-default);
+@media (hover: hover) {
+  .mn-checkbox:hover:not(.mn-checkbox--disabled):not(.mn-checkbox--invalid) .mn-checkbox__box:not(.mn-checkbox__box--marked) {
+    background: var(--mapped-surface-primary-default-subtle-hover);
+    border-color: var(--mapped-border-subtlest-default);
+  }
 }
 
 /* === Hover (checked/indeterminate) === */
-.mn-checkbox:hover:not(.mn-checkbox--disabled):not(.mn-checkbox--invalid) .mn-checkbox__box--marked {
-  background: var(--mapped-surface-primary-default-hover);
-  /* Same token as the fill above — on a MARKED box the border is a structural
-     layer, not a visible edge, so it must track the fill exactly (same fix as
-     Button primary, v1.8.0). The base marked rule already binds this way. */
-  border-color: var(--mapped-surface-primary-default-hover);
+@media (hover: hover) {
+  .mn-checkbox:hover:not(.mn-checkbox--disabled):not(.mn-checkbox--invalid) .mn-checkbox__box--marked {
+    background: var(--mapped-surface-primary-default-hover);
+    /* Same token as the fill above — on a MARKED box the border is a structural
+       layer, not a visible edge, so it must track the fill exactly (same fix as
+       Button primary, v1.8.0). The base marked rule already binds this way. */
+    border-color: var(--mapped-surface-primary-default-hover);
+  }
 }
 
 /* === Active / press (unchecked) === */
@@ -122,8 +126,10 @@
   transition: color 0.12s ease;
 }
 
-.mn-checkbox:hover:not(.mn-checkbox--disabled) .mn-checkbox__label {
-  color: var(--mapped-text-default-hover);
+@media (hover: hover) {
+  .mn-checkbox:hover:not(.mn-checkbox--disabled) .mn-checkbox__label {
+    color: var(--mapped-text-default-hover);
+  }
 }
 
 .mn-checkbox:active:not(.mn-checkbox--disabled) .mn-checkbox__label {

@@ -21,7 +21,13 @@
   color: var(--mapped-text-primary-default);
   text-decoration: none;
 }
-.mn-link--default:not(.mn-link--visited):hover,
+@media (hover: hover) {
+  .mn-link--default:not(.mn-link--visited):hover {
+    color: var(--mapped-text-primary-default-hover);
+    text-decoration: underline;
+  }
+}
+
 .mn-link--default:not(.mn-link--visited)[data-preview="hover"] {
   color: var(--mapped-text-primary-default-hover);
   text-decoration: underline;
@@ -37,7 +43,13 @@
   color: var(--mapped-text-interactive-default);
   text-decoration: underline;
 }
-.mn-link--default.mn-link--visited:hover,
+@media (hover: hover) {
+  .mn-link--default.mn-link--visited:hover {
+    color: var(--mapped-text-interactive-default);
+    text-decoration: underline;
+  }
+}
+
 .mn-link--default.mn-link--visited[data-preview="hover"] {
   color: var(--mapped-text-interactive-default);
   text-decoration: underline;
@@ -53,7 +65,14 @@
   color: var(--mapped-text-subtle-default);
   text-decoration: none;
 }
-.mn-link--subtle:not(.mn-link--visited):hover,
+@media (hover: hover) {
+  .mn-link--subtle:not(.mn-link--visited):hover {
+    /* Figma: subtle hover keeps the same color, only underline changes */
+    color: var(--mapped-text-subtle-default);
+    text-decoration: underline;
+  }
+}
+
 .mn-link--subtle:not(.mn-link--visited)[data-preview="hover"] {
   /* Figma: subtle hover keeps the same color, only underline changes */
   color: var(--mapped-text-subtle-default);
@@ -69,7 +88,13 @@
   color: var(--mapped-text-interactive-default);
   text-decoration: underline;
 }
-.mn-link--subtle.mn-link--visited:hover,
+@media (hover: hover) {
+  .mn-link--subtle.mn-link--visited:hover {
+    color: var(--mapped-text-interactive-default);
+    text-decoration: underline;
+  }
+}
+
 .mn-link--subtle.mn-link--visited[data-preview="hover"] {
   color: var(--mapped-text-interactive-default);
   text-decoration: underline;
@@ -86,7 +111,12 @@
   color: var(--mapped-text-primary-on-color);
   text-decoration: none;
 }
-.mn-link--inverse:hover,
+@media (hover: hover) {
+  .mn-link--inverse:hover {
+    text-decoration: underline;
+  }
+}
+
 .mn-link--inverse[data-preview="hover"] {
   text-decoration: underline;
 }

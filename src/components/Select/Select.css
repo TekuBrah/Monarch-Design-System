@@ -71,7 +71,13 @@
 }
 
 /* === Hover (Standard) === */
-.mn-select--standard:not(.mn-select--disabled):not(.mn-select--invalid):not(.mn-select--selected) .mn-select__control:hover:not(:focus-within),
+@media (hover: hover) {
+  .mn-select--standard:not(.mn-select--disabled):not(.mn-select--invalid):not(.mn-select--selected) .mn-select__control:hover:not(:focus-within) {
+    background: var(--mapped-surface-primary-default-subtle-hover);
+    border-color: var(--mapped-border-primary-default-subtle-hover);
+  }
+}
+
 .mn-select--standard.mn-select--hover:not(.mn-select--disabled):not(.mn-select--invalid):not(.mn-select--selected) .mn-select__control {
   background: var(--mapped-surface-primary-default-subtle-hover);
   border-color: var(--mapped-border-primary-default-subtle-hover);

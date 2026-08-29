@@ -48,7 +48,13 @@
 }
 
 /* === Hover (Standard) === */
-.mn-textarea--standard:not(.mn-textarea--disabled):not(.mn-textarea--invalid):hover:not(:focus-within),
+@media (hover: hover) {
+  .mn-textarea--standard:not(.mn-textarea--disabled):not(.mn-textarea--invalid):hover:not(:focus-within) {
+    background: var(--mapped-surface-primary-default-subtle-hover);
+    border-color: var(--mapped-border-primary-default-subtle-hover);
+  }
+}
+
 .mn-textarea--standard.mn-textarea--hover:not(.mn-textarea--disabled):not(.mn-textarea--invalid) {
   background: var(--mapped-surface-primary-default-subtle-hover);
   border-color: var(--mapped-border-primary-default-subtle-hover);

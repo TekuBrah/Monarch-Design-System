@@ -82,18 +82,22 @@
 }
 
 /* === Hover (unchecked) === */
-.mn-radio:hover:not(.mn-radio--disabled):not(.mn-radio--invalid) .mn-radio__circle:not(.mn-radio__circle--checked) {
-  background: var(--mapped-surface-primary-default-subtle-hover);
-  border-color: var(--mapped-border-subtlest-default);
+@media (hover: hover) {
+  .mn-radio:hover:not(.mn-radio--disabled):not(.mn-radio--invalid) .mn-radio__circle:not(.mn-radio__circle--checked) {
+    background: var(--mapped-surface-primary-default-subtle-hover);
+    border-color: var(--mapped-border-subtlest-default);
+  }
 }
 
 /* === Hover (checked) === */
-.mn-radio:hover:not(.mn-radio--disabled):not(.mn-radio--invalid) .mn-radio__circle--checked {
-  background: var(--mapped-surface-primary-default-hover);
-  /* Same token as the fill above — on a MARKED box the border is a structural
-     layer, not a visible edge, so it must track the fill exactly (same fix as
-     Button primary, v1.8.0). The base marked rule already binds this way. */
-  border-color: var(--mapped-surface-primary-default-hover);
+@media (hover: hover) {
+  .mn-radio:hover:not(.mn-radio--disabled):not(.mn-radio--invalid) .mn-radio__circle--checked {
+    background: var(--mapped-surface-primary-default-hover);
+    /* Same token as the fill above — on a MARKED box the border is a structural
+       layer, not a visible edge, so it must track the fill exactly (same fix as
+       Button primary, v1.8.0). The base marked rule already binds this way. */
+    border-color: var(--mapped-surface-primary-default-hover);
+  }
 }
 
 /* === Active / press (unchecked) === */
@@ -133,8 +137,10 @@
   transition: color 0.12s ease;
 }
 
-.mn-radio:hover:not(.mn-radio--disabled) .mn-radio__label {
-  color: var(--mapped-text-default-hover);
+@media (hover: hover) {
+  .mn-radio:hover:not(.mn-radio--disabled) .mn-radio__label {
+    color: var(--mapped-text-default-hover);
+  }
 }
 
 .mn-radio:active:not(.mn-radio--disabled) .mn-radio__label {

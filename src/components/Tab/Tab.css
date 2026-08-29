@@ -45,13 +45,24 @@
 }
 
 /* === Hover (unselected only) === */
-.mn-tab:hover:not(.mn-tab--selected):not(.mn-tab--pressed):not(.mn-tab--focus),
+@media (hover: hover) {
+  .mn-tab:hover:not(.mn-tab--selected):not(.mn-tab--pressed):not(.mn-tab--focus) {
+    background: var(--mapped-surface-primary-default-subtle-hover);
+    box-shadow: var(--shadow-subtlest);
+  }
+}
+
 .mn-tab--hover:not(.mn-tab--selected) {
   background: var(--mapped-surface-primary-default-subtle-hover);
   box-shadow: var(--shadow-subtlest);
 }
 
-.mn-tab:hover:not(.mn-tab--selected):not(.mn-tab--pressed):not(.mn-tab--focus) .mn-tab__label,
+@media (hover: hover) {
+  .mn-tab:hover:not(.mn-tab--selected):not(.mn-tab--pressed):not(.mn-tab--focus) .mn-tab__label {
+    color: var(--mapped-text-subtle-hover);
+  }
+}
+
 .mn-tab--hover:not(.mn-tab--selected) .mn-tab__label {
   color: var(--mapped-text-subtle-hover);
 }

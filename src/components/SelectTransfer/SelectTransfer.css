@@ -127,7 +127,13 @@
 }
 
 /* === Hover (Standard) === */
-.mn-select-transfer--standard:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid):not(.mn-select-transfer--selected) .mn-select-transfer__control:hover:not(:focus-within),
+@media (hover: hover) {
+  .mn-select-transfer--standard:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid):not(.mn-select-transfer--selected) .mn-select-transfer__control:hover:not(:focus-within) {
+    background: var(--mapped-surface-primary-default-subtle-hover);
+    border-color: var(--mapped-border-primary-default-subtle-hover);
+  }
+}
+
 .mn-select-transfer--standard.mn-select-transfer--hover:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid):not(.mn-select-transfer--selected) .mn-select-transfer__control {
   background: var(--mapped-surface-primary-default-subtle-hover);
   border-color: var(--mapped-border-primary-default-subtle-hover);
@@ -136,23 +142,43 @@
 /* === Hover (Attention) — CONFIRMED: border-bottom recolors to -hover AND
    every text node (label, amount/placeholder, divider, currency label)
    repaints to text/subtle/hover — a wholesale recolor, not just the border. */
-.mn-select-transfer--attention:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid):hover .mn-select-transfer__control,
+@media (hover: hover) {
+  .mn-select-transfer--attention:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid):hover .mn-select-transfer__control {
+    border-bottom-color: var(--mapped-border-primary-default-hover);
+  }
+}
+
 .mn-select-transfer--attention.mn-select-transfer--hover:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid) .mn-select-transfer__control {
   border-bottom-color: var(--mapped-border-primary-default-hover);
 }
-.mn-select-transfer--attention:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid):hover .mn-select-transfer__label,
-.mn-select-transfer--attention:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid):hover .mn-select-transfer__amount,
-.mn-select-transfer--attention:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid):hover .mn-select-transfer__ccy,
+@media (hover: hover) {
+  .mn-select-transfer--attention:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid):hover .mn-select-transfer__label,
+  .mn-select-transfer--attention:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid):hover .mn-select-transfer__amount,
+  .mn-select-transfer--attention:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid):hover .mn-select-transfer__ccy {
+    color: var(--mapped-text-subtle-hover);
+  }
+}
+
 .mn-select-transfer--attention.mn-select-transfer--hover:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid) .mn-select-transfer__label,
 .mn-select-transfer--attention.mn-select-transfer--hover:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid) .mn-select-transfer__amount,
 .mn-select-transfer--attention.mn-select-transfer--hover:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid) .mn-select-transfer__ccy {
   color: var(--mapped-text-subtle-hover);
 }
-.mn-select-transfer--attention:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid):hover .mn-select-transfer__amount::placeholder,
+@media (hover: hover) {
+  .mn-select-transfer--attention:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid):hover .mn-select-transfer__amount::placeholder {
+    color: var(--mapped-text-subtle-hover);
+  }
+}
+
 .mn-select-transfer--attention.mn-select-transfer--hover:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid) .mn-select-transfer__amount::placeholder {
   color: var(--mapped-text-subtle-hover);
 }
-.mn-select-transfer--attention:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid):hover .mn-select-transfer__divider,
+@media (hover: hover) {
+  .mn-select-transfer--attention:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid):hover .mn-select-transfer__divider {
+    background: var(--mapped-text-subtle-hover);
+  }
+}
+
 .mn-select-transfer--attention.mn-select-transfer--hover:not(.mn-select-transfer--disabled):not(.mn-select-transfer--invalid) .mn-select-transfer__divider {
   background: var(--mapped-text-subtle-hover);
 }

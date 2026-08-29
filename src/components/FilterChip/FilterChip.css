@@ -52,9 +52,11 @@
    toggle control needs hover/press feedback. Unselected state only; no
    selected+hover/press combo, matching Tab's precedent of respecting
    Figma's omitted combos. See docs/component-tokens.md for full rationale. */
-.mn-filter-chip:not(.mn-filter-chip--selected):hover:not(:active) {
-  background: var(--mapped-surface-subtle-hover);
-  color: var(--mapped-text-default-hover);
+@media (hover: hover) {
+  .mn-filter-chip:not(.mn-filter-chip--selected):hover:not(:active) {
+    background: var(--mapped-surface-subtle-hover);
+    color: var(--mapped-text-default-hover);
+  }
 }
 .mn-filter-chip:not(.mn-filter-chip--selected):active {
   background: var(--mapped-surface-subtle-pressed);
@@ -71,8 +73,10 @@
 /* Selected hover/press — user-requested feedback (deliberate addition beyond
    Figma source): deepen the same border-derived tint so the fill reads
    brighter/darker on interaction. */
-.mn-filter-chip--selected:hover:not(:active) {
-  background: color-mix(in srgb, var(--mapped-border-primary-default) 16%, transparent);
+@media (hover: hover) {
+  .mn-filter-chip--selected:hover:not(:active) {
+    background: color-mix(in srgb, var(--mapped-border-primary-default) 16%, transparent);
+  }
 }
 .mn-filter-chip--selected:active {
   background: color-mix(in srgb, var(--mapped-border-primary-default) 20%, transparent);

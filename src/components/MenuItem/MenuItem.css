@@ -20,8 +20,10 @@
 }
 
 /* === Hover / press (all types, unselected) === */
-.mn-menu-item:hover {
-  background: var(--mapped-surface-primary-default-subtle-hover);
+@media (hover: hover) {
+  .mn-menu-item:hover {
+    background: var(--mapped-surface-primary-default-subtle-hover);
+  }
 }
 .mn-menu-item:active {
   background: var(--mapped-surface-primary-default-subtle-pressed);

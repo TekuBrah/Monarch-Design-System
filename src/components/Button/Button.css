@@ -16,10 +16,12 @@
 }
 
 /* ── Interaction states ──────────────────────────────────────────── */
-.mn-btn:hover:not(:disabled) {
-  background: var(--btn-bg-hover);
-  border-color: var(--btn-border-hover);
-  color: var(--btn-text-hover);
+@media (hover: hover) {
+  .mn-btn:hover:not(:disabled) {
+    background: var(--btn-bg-hover);
+    border-color: var(--btn-border-hover);
+    color: var(--btn-text-hover);
+  }
 }
 
 .mn-btn:active:not(:disabled) {

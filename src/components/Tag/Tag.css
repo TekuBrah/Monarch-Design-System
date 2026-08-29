@@ -39,16 +39,20 @@
 }
 
 /* Hover */
-.mn-tag--default:not(.mn-tag--disabled):hover {
-  /* No mapped subtle-primary-tint token exists. Derived from the mapped border
-     token so it dark-flips (matches FilterChip precedent). Figma hover tint
-     alias-primary-50 (#e6f1ff) ≈ 10% primary over white. */
-  background: color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent);
-  border-color: var(--mapped-border-primary-default-hover);
+@media (hover: hover) {
+  .mn-tag--default:not(.mn-tag--disabled):hover {
+    /* No mapped subtle-primary-tint token exists. Derived from the mapped border
+       token so it dark-flips (matches FilterChip precedent). Figma hover tint
+       alias-primary-50 (#e6f1ff) ≈ 10% primary over white. */
+    background: color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent);
+    border-color: var(--mapped-border-primary-default-hover);
+  }
 }
-.mn-tag--default:not(.mn-tag--disabled):hover .mn-tag__label,
-.mn-tag--default:not(.mn-tag--disabled):hover .mn-tag__icon {
-  color: var(--mapped-text-primary-default-hover);
+@media (hover: hover) {
+  .mn-tag--default:not(.mn-tag--disabled):hover .mn-tag__label,
+  .mn-tag--default:not(.mn-tag--disabled):hover .mn-tag__icon {
+    color: var(--mapped-text-primary-default-hover);
+  }
 }
 
 /* Press / active */
@@ -101,8 +105,10 @@
 }
 
 /* Hover */
-.mn-tag--overlay:not(.mn-tag--disabled):hover {
-  background: var(--mapped-surface-overlay-hover);
+@media (hover: hover) {
+  .mn-tag--overlay:not(.mn-tag--disabled):hover {
+    background: var(--mapped-surface-overlay-hover);
+  }
 }
 
 /* Press */

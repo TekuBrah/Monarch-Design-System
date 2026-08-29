@@ -4,6 +4,117 @@ All notable changes to `@monarch/design-system`.
 
 ---
 
+## v1.15.0
+
+### Sticky hover is guarded. 39 rules across 17 components, no token changes.
+
+Every plain `:hover` rule in the DS is now wrapped in `@media (hover: hover)`,
+so hover styling can no longer persist after a tap on a touchscreen. **No token
+value moved, no component API changed, no new interaction state was invented.**
+This release only *removes* an unintended state; it adds nothing.
+
+The defect: with no hover-capable media query anywhere in the DS, every
+`:hover` rule applied on touch devices, where most mobile browsers leave the
+hovered state stuck on the tapped element until the user taps elsewhere.
+
+**Scope, re-derived from disk at Gate 37 — do not carry gap #21's figures
+forward, two of the three were wrong.**
+
+| measure | value |
+|---|---|
+| component `.css` files carrying a `:hover` rule | **17** |
+| `:hover` rules gated | **39** |
+| selector→declaration pairs moved under the guard | **69** |
+| rules split so a prop-driven state stayed ungated | **23** |
+| `@media (hover: hover)` blocks in `dist/index.css` | **39**, 0 ungated hover rules remain |
+
+### 1 · The real hazard was NOT the one the gate brief predicted
+
+The brief expected the danger to be `:hover` rules sharing a declaration block
+with `:focus` / `:focus-visible`, where a naive wrap would strip keyboard focus
+styling too. **There are none.** Seven hover rules mention `:focus-within`, and
+in every one it is a `:not(:focus-within)` *negation* inside a hover rule — the
+opposite of shared focus styling. Zero rules needed splitting for focus reasons.
+
+The actual hazard is **`previewState`**. 23 of the 39 rules pair the `:hover`
+pseudo-class with a prop-driven forced-state selector in the same block — a
+`.mn-<block>--hover` class (18 rules) or `[data-preview="hover"]` (5, all
+`Link`). Those are set from the `previewState` prop, not by a pointer. Wrapping
+them would have made a public prop silently inert on touch devices, which is a
+component API change and out of scope by rule 3c. All 23 were split: the
+`:hover` half is guarded, the forced-state half is not.
+
+Measured live in the CSSOM after the change: **52 forced-state rules, 0 wrongly
+gated; 60 `:focus-visible` rules, 0 gated.**
+
+### 2 · One block per rule, in place — source order is load-bearing here
+
+Each rule is wrapped where it already sat rather than being hoisted into a
+consolidated per-file block. A media query adds no specificity, and a selector
+list's specificity is per-selector, so splitting one rule into two with
+identical declarations at the same source position is **cascade-identical**.
+Consolidating would have moved rules relative to their neighbours, which this
+codebase cannot afford — see the `sizing` prop's "declared after the base rule,
+equal specificity, source order is what makes it win", and Gate 31's specificity
+inversion.
+
+Proven mechanically rather than by inspection: a selector→declaration map built
+for all 49 component CSS files holds **2618 pairs before and 2618 after**, and
+once the at-rule stack is normalised away the two maps are **byte-identical**.
+No declaration, no selector, and no ordering changed — the only difference is
+which pairs sit under a media condition.
+
+`@media (hover: hover)` is Media Queries Level 4, supported since Chrome 38 /
+Firefox 64 / Safari 9. The project pins no browserslist and sets no Vite
+`build.target`, so the floor is Vite 6's default `'modules'` target
+(chrome87 / edge88 / firefox78 / safari14) — every one far above the feature's
+introduction.
+
+### 3 · The mutation proof killed the obvious verification
+
+The intuitive check — emulate a touch device, point at a component, observe no
+hover styling — **is worthless, and Gate 37 nearly reported it as evidence.**
+
+Under Chrome mobile emulation (`hover: none`, `pointer: coarse`,
+`maxTouchPoints` 5) the guarded components read their resting colour. The guard
+was then *removed* from three real rules in source (`MenuItem`, `Button`,
+`Tab`), the page fully reloaded, and the CSSOM confirmed all three now ungated.
+**The measurement was identical.** The harness's pointer action never produces a
+`:hover` match under touch emulation at all, so that reading would have looked
+the same with no fix in the tree.
+
+What was measured instead, with real computed styles: an A/B pair of rules with
+one identical declaration, one inside `@media (hover: hover)` and one outside.
+
+| environment | gated rule | ungated rule |
+|---|---|---|
+| touch (`hover: none`) | **did not apply** (`rgb(255,255,255)`) | applied (`rgb(11,22,33)`) |
+| pointer-fine (`hover: hover`) | applied (`rgb(11,22,33)`) | applied (`rgb(11,22,33)`) |
+
+That, plus the CSSOM census showing all 69 pairs sit inside such a block, is the
+proof. Hover itself still works where it should — measured by really hovering,
+both themes, after the guard was restored:
+
+| probe | light rest → hover | dark rest → hover |
+|---|---|---|
+| `.mn-menu-item` | `#ffffff` → `#f9f9f9` | `#000000` → `#262626` |
+| `.mn-tab` | transparent → `#f9f9f9` | — |
+| `.mn-btn--primary` | `#0358cc` → `#024299` | `#e7eaed` → `#ffffff` |
+| `.mn-tab--hover` (prop-driven) | `#f9f9f9` with no pointer on it | `#262626` |
+
+The `Button` focus ring still resolves `solid 1.6px rgb(4,110,255)` with the
+guard in place.
+
+### 4 · Gates
+
+`tsc -b --force` 0 · **60 files / 508 tests, delta 0** · registration 58/58 ·
+`build` 0 · `build:lib` 0. The zero test delta was predicted before the run:
+no test asserts on a selector or a media query, and the suite's only
+component-CSS test is a text-level `var(--token)` scan, which the identical
+declaration map leaves untouched. `dist/index.css` grows 147.89 → 150.56 kB.
+
+---
+
 ## v1.14.0
 
 ### The primary accent ramp moves one step. Eight components change colour.
@@ -1396,9 +1507,19 @@ count is the length of the list below.
     avoid, is an open design question — the same wall gap #19's two formulations
     hit. Recorded so the margin is on the record even if the gate never is.
 
-21. **"Touch feedback" has no scope record anywhere in this repo, and its stated
-    provenance is false. This item is the evidence base so a successor does not
-    re-derive it.**
+21. ~~**"Touch feedback" has no scope record anywhere in this repo, and its
+    stated provenance is false.**~~ **The label is RETIRED and the one real defect
+    behind it is FIXED in v1.15.0** — every plain `:hover` rule is now wrapped in
+    `@media (hover: hover)` (39 rules, 17 files, 69 declarations). Do not reopen
+    anything under the name "touch feedback"; it named no work from Gate 27 to
+    Gate 35. **Two of the three figures below were re-derived at Gate 37 and are
+    WRONG as written:** the `:active` count of 28 is a raw occurrence count of
+    which 2 are `:not(:active)` negations (genuine: 26 occurrences / 24 rules),
+    and the press-token count is **57, not 56** — the miss is
+    `--mapped-text-information-on-color-pressed-2`, a name containing "pressed"
+    without ending in it, and it predates Gate 36 (v1.13.0 also holds 57). The 11
+    components and the zero-media-query claim both reproduced exactly. The rest of
+    this item stands as the evidence base for why the label was closed.
 
     Gate 35 was briefed to implement "touch feedback — press states for touch
     input, split out of v1.7.0 by an earlier ruling", and **HALTED at Phase 2**
