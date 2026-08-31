@@ -244,19 +244,30 @@ describe('gradient emission', () => {
   })
 })
 
+/**
+ * Every component CSS file on disk. Derived from the filesystem, never from an
+ * array in this file — a list you have to remember to update is the same
+ * failure class these checks exist to guard against (see
+ * scripts/check-css-registration.mjs, which holds the same property).
+ */
+function componentCssFiles(): string[] {
+  const root = resolve(process.cwd(), 'src/components')
+  const out: string[] = []
+  for (const entry of readdirSync(root, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue
+    const dir = join(root, entry.name)
+    for (const f of readdirSync(dir)) if (f.endsWith('.css')) out.push(join(dir, f))
+  }
+  return out.sort()
+}
+
+/** `src/components/Button/Button.css` -> `Button/Button.css`, for readable failures. */
+function shortName(file: string): string {
+  return file.replace(/\\/g, '/').split('/src/components/').pop() ?? file
+}
+
 describe('component consumption', () => {
   const TOKEN_PREFIX = /^--(mapped|alias|brand|spacing|responsive|gradient|shadow|font)-/
-
-  function componentCssFiles(): string[] {
-    const root = resolve(process.cwd(), 'src/components')
-    const out: string[] = []
-    for (const entry of readdirSync(root, { withFileTypes: true })) {
-      if (!entry.isDirectory()) continue
-      const dir = join(root, entry.name)
-      for (const f of readdirSync(dir)) if (f.endsWith('.css')) out.push(join(dir, f))
-    }
-    return out.sort()
-  }
 
   it('references only design-system tokens that are actually declared', () => {
     // A renamed or deleted token is invisible today: var(--typo) yields the
@@ -285,6 +296,105 @@ describe('component consumption', () => {
       }
     }
     expect([...new Set(bad)].sort()).toEqual([])
+  })
+})
+
+/* Touch-safe hover — Gate 40, the regression guard for Gate 37 (v1.15.0).
+ *
+ * WHAT IT CATCHES. A plain `:hover` rule with no `@media (hover: hover)` around
+ * it. On a touch device the hover state latches after a tap and STAYS until the
+ * user taps elsewhere, so a control sits in its hover paint indefinitely. Gate
+ * 37 wrapped all 39 such rules across 17 component CSS files; nothing stopped
+ * the 40th from being written ungated, and the symptom never appears on a
+ * developer's mouse.
+ *
+ * WHY IT LIVES HERE AND NOT IN A NEW SCRIPT. The two pieces it needs already
+ * exist and are already exercised in CI: componentCssFiles() above enumerates
+ * the input set from disk, and parseBlocks() in ./tokenCss is a brace-depth
+ * scan that already records each rule's enclosing at-rules as `context`. The
+ * question "is this rule inside a hover media query" is a direct read of that
+ * field. scripts/check-css-registration.mjs answers a different question — the
+ * REACHABILITY of whole files — and explicitly declares rule-level properties
+ * out of scope, so this does not belong there.
+ *
+ * SCOPE. src/components only. showcase/AppShell.css carries one genuinely
+ * ungated element hover (.app-sidebar__item:hover) plus one scrollbar-thumb
+ * hover, and is deliberately excluded: showcase/ is not in the published
+ * package (vite.config.lib.ts builds src/index.ts, dts include is ["src"]), so
+ * no consumer can reach it.
+ *
+ * ⚠️ DO NOT try to verify this by emulating a touch device and pointing at a
+ * component. Gate 37 measured that and it proves nothing: the reading is
+ * IDENTICAL with the guard removed, because the harness's pointer action never
+ * produces a :hover match under Chrome touch emulation. The negative control
+ * for this test is a deliberately ungated rule, which is what was used.
+ */
+describe('touch-safe hover', () => {
+  /** A hover-capable media query, in either the `hover` or `any-hover` form. */
+  const HOVER_MQ = /\(\s*(?:any-)?hover\s*:\s*hover\s*\)/
+
+  /* Scrollbar pseudo-elements are exempt. `::-webkit-scrollbar-thumb:hover`
+     describes a scrollbar affordance, not a touch target — a touch device has
+     no scrollbar thumb to latch, so gating it would be noise rather than a
+     fix. None exists under src/components today; the exemption is here so that
+     adding one does not read as a defect. */
+  const EXEMPT = /::-webkit-scrollbar/
+
+  interface HoverRule { file: string; selector: string; gated: boolean }
+
+  function hoverRules(): HoverRule[] {
+    const out: HoverRule[] = []
+    for (const file of componentCssFiles()) {
+      for (const block of parseBlocks(readFileSync(file, 'utf8'))) {
+        if (!block.selector.includes(':hover')) continue
+        if (EXEMPT.test(block.selector)) continue
+        out.push({
+          file: shortName(file),
+          selector: block.selector,
+          gated: block.context.some(c => c.startsWith('@media') && HOVER_MQ.test(c)),
+        })
+      }
+    }
+    return out
+  }
+
+  it('gates every component :hover rule behind @media (hover: hover)', () => {
+    const rules = hoverRules()
+
+    // Guard the guard. If the parser or the glob ever stopped finding rules,
+    // the assertion below would pass vacuously and this file would report a
+    // green check on zero evidence.
+    expect(rules.length, 'no :hover rules found at all — the check is vacuous').toBeGreaterThan(30)
+
+    const ungated = rules
+      .filter(r => !r.gated)
+      .map(r => `${r.file}: ${r.selector}`)
+      .sort()
+
+    expect(ungated).toEqual([])
+  })
+
+  it('leaves prop-driven forced-state rules ungated', () => {
+    // The hazard in the other direction, and the one Gate 37 had to split 23
+    // rules to avoid. `.mn-<block>--hover` and [data-preview="hover"] are
+    // PUBLIC API — previewState forces a visual state with no pointer
+    // involved. Wrapping those in a hover-capable media query would make a
+    // documented prop silently inert on touch, which is an API change wearing
+    // a bug fix's clothes. They are not :hover rules and must never be gated.
+    const FORCED = /--hover\b|\[data-preview="hover"\]/
+
+    const wronglyGated: string[] = []
+    for (const file of componentCssFiles()) {
+      for (const block of parseBlocks(readFileSync(file, 'utf8'))) {
+        if (!FORCED.test(block.selector)) continue
+        if (block.selector.includes(':hover')) continue // a genuine hover rule, covered above
+        if (block.context.some(c => c.startsWith('@media') && HOVER_MQ.test(c))) {
+          wronglyGated.push(`${shortName(file)}: ${block.selector}`)
+        }
+      }
+    }
+
+    expect(wronglyGated.sort()).toEqual([])
   })
 })
 

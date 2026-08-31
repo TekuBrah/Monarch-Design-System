@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import './AppShell.css'
 import { Section } from './Section'
 import { brand, alias, mapped, spacing, gradients, shadows } from '@monarch/design-system'
-import type { Gradients, Shadows } from '@monarch/design-system'
+import type { Gradients, Shadows, Alias, Mapped } from '@monarch/design-system'
 import { Badge } from '@monarch/design-system'
 import type { BadgeAppearance } from '@monarch/design-system'
 import { Button } from '@monarch/design-system'
@@ -192,7 +192,13 @@ const MAPPED_STRUCTURE: { cat: string; subs: string[] }[] = [
 ]
 
 function buildMappedTree(): MCategory[] {
-  const allEntries = Object.entries(mapped) as [string, string][]
+  // DERIVED from the token source (Gate 40) — same reason as GradientToken and
+  // ShadowToken below. This was `as [string, string][]`, which Gate 31 recorded
+  // as "a redundant widening": harmless today because `mapped` really is flat
+  // string-to-string, but a cast ASSERTS rather than checks, so it would go on
+  // type-checking clean if the generator ever emitted a value that was not a
+  // plain string. Keyed off `Mapped`, that becomes a compile error here.
+  const allEntries = Object.entries(mapped) as [string, Mapped[keyof Mapped]][]
   const claimed = new Set<string>()
 
   return MAPPED_STRUCTURE.map(({ cat, subs }) => {
@@ -207,7 +213,10 @@ function buildMappedTree(): MCategory[] {
         .map(([slug, varName]) => {
           claimed.add(slug)
           const stateLabel = slug === prefix ? sub : slug.slice(prefix.length + 1)
-          return { varName: varName as string, stateLabel }
+          // No `as string` here: that cast (a fourth of the family, unnamed by
+          // Gate 31) re-asserted exactly what the derived type above now checks,
+          // so leaving it would have made the derivation cosmetic.
+          return { varName, stateLabel }
         })
       if (entries.length > 0) subMap.set(sub, entries)
     }
@@ -471,7 +480,12 @@ for (const [name, group] of Object.entries(brand) as [string, Record<string, unk
   else if (name !== 'Scale') brandScales.push([name, group as Record<string, string>])
 }
 
-const aliasGroups = Object.entries(alias) as [string, Record<string, string>][]
+// DERIVED from the token source (Gate 40) — same reason as GradientToken and
+// ShadowToken above. This was `as [string, Record<string, string>][]`, a
+// hand-restated shape that would have kept type-checking clean through any
+// rename or retyping inside src/tokens/alias.ts. Keyed off `Alias`, it cannot.
+type AliasGroup = Alias[keyof Alias]
+const aliasGroups: [string, AliasGroup][] = Object.entries(alias)
 
 // ── Blanket demo (owns its own toggle state) ──────────────────────────────────
 

@@ -122,10 +122,16 @@ html, body {
   /* Jump-to offset. scrollIntoView({block:'start'}) aligns a section to the
      viewport top, where the sticky nav sits — without this the section's <h1>
      lands *behind* the nav (measured: 48px occluded at 1280px, 54px at 900px).
-     Applied on this shared selector rather than inside Section.tsx so the 8
-     Foundations sections — which are direct children of .app-main but do not
-     use <Section> yet — get the same behaviour instead of an inconsistent gap.
-     Inert on <hr>, which is never a scroll target. */
+     Applied on this shared selector rather than inside Section.tsx, which is
+     why it still reaches <hr> — inert there, since an <hr> is never a scroll
+     target.
+     CORRECTED Gate 40: this previously read "so the 8 Foundations sections —
+     which are direct children of .app-main but do not use <Section> yet — get
+     the same behaviour". They DO use <Section> now (App.tsx:1478, 1492, 1508,
+     1523, 1534, 1545, 1556, 1569), so that reason no longer holds. The count 8
+     is still right; only the "not yet migrated" clause was stale. Every
+     <Section> in the file — 8 Foundations plus 47 Components, 55 in total —
+     now takes this offset through the shared selector. */
   scroll-margin-top: var(--app-topnav-h, 48px);
 }
 

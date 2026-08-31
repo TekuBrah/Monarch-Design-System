@@ -128,24 +128,35 @@ of this.
 
 **CORRECTION (Gate 31, 2026-08-27): the "all generated files go `M`" half of
 that account is wrong, and CRLF smudging does not explain which files get
-flagged.** Measured on a clean tree at `76a8230` immediately after
-`npm run build:tokens`: git emitted LF-to-CRLF warnings for **ten** generated
-files, but `git status --porcelain` flagged exactly **two** —
-`src/styles/globals.css` and `src/tokens/gradients.ts`. Both are byte-identical
-to their index blob: `git hash-object` returns the index SHA for each **both
-with and without `--no-filters`**, and `git show HEAD:<path>` compares equal
-under `cmp`. So the `M` is stale stat data that `git status` declined to refresh
-— not a content difference and not a line-ending difference — and
-`git diff --exit-code` returns 0 throughout, which is why assertion 1 stays
-green. The operational guidance is unchanged (assertion 2 reads red locally,
-green in CI). What changed is that **the count is 2, not 10, and the cause is the
-index stat cache.** Do not read the file count as a signal of anything.
+flagged.** After `npm run build:tokens` on a clean tree, git emits LF-to-CRLF
+warnings for many more generated files than `git status --porcelain` actually
+flags, and every flagged file is byte-identical to its index blob:
+`git hash-object` returns the index SHA **both with and without
+`--no-filters`**, and `git show HEAD:<path>` compares equal under `cmp`. So the
+`M` is stale stat data that `git status` declined to refresh — not a content
+difference and not a line-ending difference — and `git diff --exit-code`
+returns 0 throughout, which is why assertion 1 stays green. The operational
+guidance is unchanged: assertion 2 reads red locally, green in CI.
+
+**This note deliberately carries NO file count, and reinstating one is a
+regression.** It used to assert a specific number of flagged files, and that
+number has already gone stale once: Gate 31 measured two
+(`src/styles/globals.css` and `src/tokens/gradients.ts`); Gate 40 re-measured
+and found **only `src/styles/globals.css`** — `gradients.ts` no longer appears
+at all. Nothing about the mechanism changed between those two readings, because
+the index stat cache is a property of the local checkout's history, not of the
+pipeline. **The count is an artefact of when the index was last refreshed and
+carries no information.** Verify identity per file with `git hash-object` when
+it matters; never compare counts across gates.
 
 ### Token-value coverage (Gate 34, v1.12.0)
 
-`src/test/tokens.test.ts` + `src/test/tokenCss.ts`. **14 tests.** Before this,
-nothing asserted a token RESOLVES to anything — the CI drift gate proves the
-generated files match the generator, not that what the generator produced is
+`src/test/tokens.test.ts` + `src/test/tokenCss.ts`. **Gate 34 contributed the
+14 tests numbered below**; Gate 40 added 2 more to the same file for the
+touch-safe hover guard, so the file now holds **16**. The two sets are
+independent — the numbered table is Gate 34's and is not renumbered. Before
+this, nothing asserted a token RESOLVES to anything — the CI drift gate proves
+the generated files match the generator, not that what the generator produced is
 usable.
 
 **It resolves the CSS statically, not through `getComputedStyle`.**
@@ -460,12 +471,37 @@ the package barrel, so no new export was required. `build:lib` still does not
 compile the showcase (`entry: src/index.ts`, dts `include: ["src"]`), which is
 correct and was left alone.
 
-**Three casts of the same family remain, deliberately unfixed** — reported rather
-than repaired, because the item’s scope was the token-card path:
-`showcase/App.tsx:178` (`mapped`, flat string-to-string, a redundant widening),
-`:452` (`brand` — the real remaining hazard: it is followed by a *second*
-unchecked `group as Record<string, string>` on a genuinely heterogeneous object),
-and `:457` (`alias`). `:452` is the one worth a follow-up.
+**Gate 31 left three more casts of the same family unfixed; Gate 40 closed two
+of them and found a fourth Gate 31 had never named.** All are in
+`showcase/App.tsx`. **They are identified here by symbol and enclosing function,
+never by line number** — Gate 31 recorded them as `:178` / `:452` / `:457`, and
+by Gate 40 the same three casts sat at `:195` / `:469` / `:474` without anyone
+touching them. A line number in this file is a figure that goes stale on the
+next edit anywhere above it.
+
+| cast | where | Gate 40 |
+|---|---|---|
+| `Object.entries(mapped)` | `allEntries`, inside `buildMappedTree()` | **fixed** — now `Mapped[keyof Mapped]` |
+| `varName as string` | the `.map()` return inside `buildMappedTree()` | **fixed** — cast removed |
+| `Object.entries(alias)` | `aliasGroups`, module scope, "Data assembly" | **fixed** — now `AliasGroup = Alias[keyof Alias]` |
+| `Object.entries(brand)` | the `brandScales` / `brandFoundations` loop, module scope, "Data assembly" | **still open** |
+
+**`varName as string` is the fourth cast, and Gate 31 missed it.** It sits
+directly downstream of the `mapped` cast, inside the same function, and
+re-asserts exactly what deriving the type upstream starts checking. Fixing the
+`Object.entries(mapped)` cast alone would have been **cosmetic** — the derived
+type would have been laundered straight back to `string` one statement later.
+When removing a cast of this family, look for a second one on the value it
+produces.
+
+**The `brand` cast remains the real hazard, and is still the one worth a
+follow-up.** It is the only one of the four over a genuinely heterogeneous
+object — `brand` mixes colour-scale groups of strings with a `Scale` group of
+**numbers** — and it is followed by a *second* unchecked
+`group as Record<string, string>` on each entry. The other three were widenings
+over uniformly-typed maps; this one asserts a shape that is actually false for
+part of the object, so deriving it is a real refactor rather than a type swap.
+Out of scope at Gate 40, whose brief named the two lower-risk casts.
 
 ## Commands
 - `npm run dev` — local dev server
@@ -518,6 +554,170 @@ Two properties are deliberate and should survive any rewrite:
 Gate 34 did not add one. Those live in the **MVP** repo; `CHANGELOG.md`'s known
 gap #4 records the absence here and the ~36 raw-px findings such a gate would
 surface. Do not go looking for them.
+
+## Gate 40 — dependency hygiene and the touch-safe hover guard (v1.16.0)
+
+Nothing a consumer can see changes in this release. No token value moved, no
+component API changed, no CSS declaration was rewritten.
+
+### 1 · `npm audit fix` is a NO-OP in this repo. This is a standing warning.
+
+**Do not report an advisory as unfixable because `npm audit fix` did not fix
+it, and do not report one as fixed because `npm audit` went quiet.** Both
+failure modes were hit at Gate 40 in the same sitting.
+
+`npm audit fix` — with `--dry-run` and in earnest — prints `up to date`, changes
+nothing, and then re-lists every advisory it just declined to act on. The
+working sequence is:
+
+```
+npm update <pkg>...      # rewrites package-lock.json ONLY
+rm -rf node_modules
+npm ci                   # the step that actually moves what is on disk
+```
+
+**`npm update` alone leaves `node_modules` on the vulnerable versions while
+`npm audit` reports `found 0 vulnerabilities`.** Audit reads the lockfile, not
+the installed tree, so the green reading after step 1 is real about the lockfile
+and false about disk. Only after the cold `npm ci` did `require()` on each
+package report the fixed version. **Verify the fix by reading
+`node_modules/<pkg>/package.json`, never by trusting a clean `npm audit`.**
+
+### 2 · The three advisories
+
+All three high-severity, all **transitive**, all **build-time only**, and none
+reaches shipped output — `dist/index.js` contains zero references to any of
+them.
+
+| pkg | before → after | path | under |
+|---|---|---|---|
+| js-yaml | 4.3.0 → **4.3.2** | `vite-plugin-svgr` → `@svgr/core` → `cosmiconfig` → js-yaml | a `dependencies` entry |
+| nanoid | 3.3.13 → **3.3.18** | `vite` → `postcss` → nanoid | a `devDependency` |
+| postcss | 8.5.15 → **8.5.26** | `vite` → postcss | a `devDependency` |
+
+**No `package.json` dependency entry changed — not one.** Every fixed release
+already satisfied the range its existing consumer declares (`cosmiconfig` wants
+`^4.1.0`, `postcss` wants `^3.3.12`, `vite` wants `^8.5.3`), so the whole repair
+is a lockfile refresh. No direct dependency crossed a major version, which was
+the constraint the gate was given. The lockfile diff also picked up an
+`engines: { node: ">=24" }` block that had never been synced from
+`package.json`; that is metadata, not a dependency change.
+
+### 3 · The touch-safe hover guard
+
+**It lives in `src/test/tokens.test.ts` as `describe('touch-safe hover')`, two
+tests, and it runs under `npm test` — CI step 8.** It is **not** part of the
+registration detector, which is `scripts/check-css-registration.mjs`, a plain
+Node script at **CI step 6** that has no `describe`/`it` and therefore no test
+count at all. Those two are easy to conflate and a gate brief has already done
+it; they answer different questions and live in different files.
+
+**Why the test file and not the detector.** Both pieces the guard needs already
+existed there and were already exercised in CI: `componentCssFiles()` enumerates
+`src/components/*/*.css` from the filesystem, and `parseBlocks()` in
+`./tokenCss` is a brace-depth scan that already records each rule's enclosing
+at-rules as `context`. "Is this rule inside a hover media query" is a direct
+read of that field. The detector's job is the **reachability of whole files**,
+and it explicitly declares rule-level properties out of scope. Putting this
+there would have meant a second CSS parser and a second npm script for a
+question the test harness could already answer. `componentCssFiles()` was lifted
+to module scope so both checks share one filesystem-derived list.
+
+**Two exemption classes, both load-bearing.**
+
+- **Scrollbar pseudo-elements** (`::-webkit-scrollbar*:hover`). A scrollbar
+  thumb is not a touch target and has no hover state to latch after a tap, so
+  gating one fixes nothing and reads as noise. None exists under
+  `src/components` today; the exemption is there so that adding one is not
+  mistaken for a defect. (`showcase/AppShell.css` has one, and is out of scope
+  for a different reason — see below.)
+- **Prop-driven forced-state rules** (`.mn-<block>--hover`,
+  `[data-preview="hover"]`). These are **public API** — `previewState` forces a
+  visual state with no pointer involved. Wrapping them in a hover-capable media
+  query would make a documented prop silently inert on touch: an API change
+  wearing a bug fix's clothes. This is the hazard Gate 37 had to split 23 rules
+  to avoid, so the second test asserts the *opposite* direction — that no
+  forced-state rule has been gated.
+
+**Scope is `src/components` only.** `showcase/AppShell.css` carries one genuine
+ungated element hover (`.app-sidebar__item:hover`) plus the scrollbar-thumb one,
+and is deliberately excluded: `showcase/` is not in the published package
+(`vite.config.lib.ts` builds `src/index.ts`, dts `include: ["src"]`), so no
+consumer can reach it.
+
+**Measured from disk at Gate 40, across all 58 component CSS files: 39 `:hover`
+rules, all 39 gated, 0 ungated, in 17 files.** Gate 37's figures reproduce
+exactly. The guard therefore starts green over a real population rather than
+vacuously, and asserts a floor on that population so it cannot pass by finding
+nothing.
+
+**⚠️ Two of Gate 37's "verified live" figures are inflated 2×, and the cause is
+already documented in this file.** Re-measured from source at Gate 40:
+
+| | Gate 37 recorded ("verified live") | measured from source, Gate 40 |
+|---|---|---|
+| forced-state rules | 52, 0 gated | **26 rules** (34 selectors), 0 gated, in 12 files |
+| `:focus-visible` rules | 60, 0 gated | **30 rules**, 0 gated |
+
+Both are exactly double. Known open items records that **every component CSS
+rule is present TWICE in the dev CSSOM** — the component's own `import` and
+`package.css`'s `@import` chain both load it — and Gate 37 measured those two in
+the live showcase. The conclusions Gate 37 drew are unaffected (0 gated is 0
+gated either way); only the counts are. **A rule census taken from the dev CSSOM
+must be halved, or taken from source instead.**
+
+### 4 · Both negative controls, observed failing
+
+A guard never seen failing is not known to work. Each mutation was applied to a
+real component file, the suite re-run, exit 1 confirmed, the file restored, and
+`git status` checked clean before continuing.
+
+| control | mutation | result |
+|---|---|---|
+| ungated `:hover` | appended `.mn-btn--gate40-probe:hover` to `Button.css` | **exit 1** — named `Button/Button.css: .mn-btn--gate40-probe:hover` |
+| wrongly-gated forced state | wrapped `Field.css`'s `.mn-field--standard.mn-field--hover:not(…)` rule in `@media (hover: hover)` | **exit 1** — named `Field/Field.css: .mn-field--standard.mn-field--hover:not(…)` |
+
+**Do NOT try to verify this guard by emulating a touch device and pointing at a
+component.** Gate 37 measured that and it proves nothing: the reading is
+identical with the guard removed, because the harness's pointer action never
+produces a `:hover` match under Chrome touch emulation. A deliberately ungated
+rule is the control that works.
+
+### 5 · `CardFeaturesAndEducation.sizing` is covered
+
+The component that **established** the `sizing` prop (v1.5.0) carried zero tests
+for it, while `CardBalance`'s later copy of the same prop was covered at Gate 32.
+**12 tests added, 9 → 21**, mirroring the `CardBalance` suite deliberately —
+the prop's whole rationale is that both components share one shape, so the tests
+should be comparable too. One case has no `CardBalance` counterpart: a
+variant × sizing matrix, because this component composes a variant modifier into
+the same class string and `fill` therefore has a neighbour it must not displace
+or reorder.
+
+**Mutation-proven:** renaming the emitted modifier fails **8 of the 12**. The 4
+survivors are the omitted-prop and explicit-`'fixed'` no-change proofs, which
+that mutation correctly does not touch — a fill-modifier rename must not change
+what the default composes.
+
+### 6 · Gate 31's cast follow-up, closed for three of four
+
+See Structure above for the table and for why the `brand` cast is still open.
+Two casts were named by Gate 31's brief; a **fourth** (`varName as string`) was
+found downstream of the first, inside the same function, and would have made
+fixing the first purely cosmetic.
+
+Proven load-bearing in **both directions** with one scratch mutation of the
+token sources (`mapped['text-on-color-heading']` set to `42`,
+`alias.Primary[50]` set to `99`):
+
+| showcase revision | mutated token sources | `npx tsc -b --force` |
+|---|---|---|
+| with the casts | as above | **exit 0** — the mutation is invisible |
+| with the derived types | as above | **exit 2** — `TS2345` + `TS2322`, both in `showcase/App.tsx` |
+
+This is the same demonstration Gate 31 ran for `GradientToken`/`ShadowToken`,
+and it is the only thing that distinguishes a real fix here from a cosmetic
+one. Token sources were restored afterwards and `src/tokens` verified clean.
 
 ## Known open items
 - **Heading font-size in source**: Figma composites wire `{fontSize.N}` (static), not a
@@ -922,18 +1122,36 @@ surface. Do not go looking for them.
 ## Component roster — current state
 
 **49 components are built** (`ls src/components/` — re-derived from disk at
-Gate 34, 2026-08-29), with **60 test files / 508 tests** and 47 showcase
-sections. **58 component `.css` files**, all 58 registered in
+Gate 34, 2026-08-29), with **60 test files / 522 tests** (re-derived at Gate 40)
+and 47 showcase sections. **58 component `.css` files**, all 58 registered in
 `src/styles/package.css` — no longer a hand derivation, see the registration
 detector.
 
-**⚠️ The showcase-section figure is the one number here nobody has re-derived.**
-Counted from disk at Gate 32, `showcase/App.tsx` carries **55** `<Section`
-opening tags and 55 closing ones. The `47` above is left as written because
-"showcase sections" may not mean "`<Section` elements" — but the two figures do
-not agree and the gap is 8, so do not quote `47` as verified. The component and
-test-file counts WERE re-derived at Gate 32 and are correct: 49 folders, 59 test
-files.
+**✅ RESOLVED (Gate 40) — the showcase-section figures agree, and always did.**
+This entry used to warn that `47` and `55` "do not agree and the gap is 8, so do
+not quote `47` as verified". Both are correct and the gap IS the Foundations
+tab. Re-derived from disk at Gate 40, `showcase/App.tsx` carries **55**
+`<Section` opening tags and 55 closing ones, splitting as:
+
+| | count | where |
+|---|---|---|
+| `<Section>` **with** an `id=` | **47** | all in the Components tab |
+| `<Section>` **without** an `id=` | **8** | all in the Foundations tab |
+
+So "47 showcase sections" counts the Components tab, which is what the roster
+line above is about, and 55 counts every `<Section>` element in the file. Both
+may be quoted as verified.
+
+**Count the `id=` with a parser, not a line-scoped grep.** A `<Section id=`
+grep returns **46**, not 47, and the missing one is not id-less — it is
+`select-wallet-account`, whose opening tag is written across several lines with
+`id=` on the line *after* `<Section`. A first Gate 40 pass took that 46 at face
+value and invented a nonexistent "id-less Components section" to reconcile it
+against 55. The arithmetic came out right and the derivation was wrong, which is
+the failure mode worth remembering here.
+
+The component and test-file counts WERE re-derived at Gate 32 and are correct:
+49 folders, 59 test files.
 
 > **Test count history.** This line read *472 tests* and was stale by one: it was
 > recorded on 2026-08-11 *before* commit `6bacfe8` landed later the same day,
@@ -958,7 +1176,17 @@ files.
 > and no component test was added — this file asserts on the generated token
 > CSS, not on any component. Its helper `src/test/tokenCss.ts` is **not** a test
 > file (no `.test.` in the name, so vitest does not collect it) and does not
-> move the file count. The library is well past
+> move the file count.
+>
+> **Gate 40 (v1.16.0) added 14, and the file count does NOT move — it stays at
+> 60.** Both additions land in files that already existed: 12 to
+> `src/components/Card/CardFeaturesAndEducation.test.tsx` (9 → 21, the `sizing`
+> prop, 5 of the 12 from an `it.each` variant matrix) and 2 to
+> `src/test/tokens.test.ts` (14 → 16, the touch-safe hover guard). Total
+> 508 → **522**. No existing test was modified; one helper,
+> `componentCssFiles()`, was lifted from a `describe` scope to module scope in
+> `tokens.test.ts` so both checks share one filesystem-derived list. The library
+> is well past
 "build the first component", which is what this section used to say.
 
 Direction for what comes next lives in `MONARCH-BUILD-ROADMAP.md`, not here —
