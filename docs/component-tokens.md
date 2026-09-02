@@ -1248,7 +1248,7 @@ A filter/selection pill rendered as a `<button>`. Two appearances (default on wh
 
 ### Known Figma inconsistencies
 
-- **Hover/press tint backgrounds — no mapped subtle-primary-tint token exists**: `--mapped-surface-primary-default-subtle-hover` resolves to `alias-surface-50` (neutral gray), not a blue tint. Figma source uses `color.blue.50` (#e6f1ff ≈ 10% primary over white) for hover and `color.blue.100` (#cde2ff ≈ 20%) for press. **Superseding the earlier alias fallback**: now derived via `color-mix(in srgb, var(--mapped-border-primary-default) N%, transparent)` (10% hover / 20% press), matching the FilterChip precedent — this dark-flips correctly, whereas the previous `--alias-primary-50/100` were frozen across themes. Flag for a future Figma Variables addition of proper subtle-primary-tint tokens.
+- **Hover/press tint backgrounds — no mapped subtle-primary-tint token exists**: `--mapped-surface-primary-default-subtle-hover` resolves to `alias-surface-50` (neutral gray), not a blue tint. Figma source uses `color.blue.50` (#e6f1ff ≈ 10% primary over white) for hover and `color.blue.100` (#cde2ff ≈ 20%) for press. **Superseding the earlier alias fallback**: now derived via `color-mix(in srgb, var(--mapped-border-primary-default) N%, transparent)` (10% hover / 20% press), matching the ToggleChip precedent — this dark-flips correctly, whereas the previous `--alias-primary-50/100` were frozen across themes. Flag for a future Figma Variables addition of proper subtle-primary-tint tokens.
 - **Overlay focus ring**: Now uses `--mapped-text-primary-on-color` (was hardcoded `white`). Overlay context is always dark, so it resolves to #ffffff either way; the token form keeps Tag free of raw color literals.
 
 ---
@@ -1607,12 +1607,12 @@ All surface/border/text/focus tokens are inherited unchanged from `IconButton` a
 
 ---
 
-## Filter Chip
+## Toggle Chip
 
 **Figma node:** 12:137 (`filter/chips/toggle`, labeled "Toggle chip")
 **Source file:** `xhA5ARVgSeD3gA41lYDqST` · **frame:** `148:2290` (Components documentation frame)
 
-A single-selection toggle chip — button-like pill that flips between an unselected outline state and a selected primary-tinted state. Component: `FilterChip` (singular), folder `src/components/FilterChip/`.
+A single-selection toggle chip — button-like pill that flips between an unselected outline state and a selected primary-tinted state. Component: `ToggleChip` (singular), folder `src/components/ToggleChip/`.
 
 **Out of scope, not built:** the same documentation frame (148:2290) also contains a second, unrelated component — `Field` (228:1296), labeled "Chip" — a removable tag with an "×" affordance. It is not nested inside `filter/chips/toggle`, does not match our existing `Chips` component (a status/appearance tag, different purpose), and was explicitly excluded from this build. Noted for future consideration.
 
@@ -1634,7 +1634,7 @@ A single-selection toggle chip — button-like pill that flips between an unsele
 | `default`, any icon combo | `--mapped-border-subtle-default` | transparent | `--mapped-text-default-default` |
 | `Selected`, any icon combo | `--mapped-border-primary-default` | `color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent)` | `--mapped-text-primary-default` |
 
-Icons are caller-supplied `ReactNode` slots (e.g. `<Icon name="..." />`), coloring via `currentColor` inheritance — **the color is set once on the root `.filter-chip`** (`color: var(--mapped-text-default-default)`, overridden to `--mapped-text-primary-default` when `.filter-chip--selected`), and `.filter-chip__label`/`.filter-chip__icon` both inherit it via `color: inherit`. This guarantees the icon always matches the label/border in every state without a second token. **Fixed** — icons previously had no color set at all (defaulted to black), so a selected chip's icon didn't follow its blue label/border.
+Icons are caller-supplied `ReactNode` slots (e.g. `<Icon name="..." />`), coloring via `currentColor` inheritance — **the color is set once on the root `.toggle-chip`** (`color: var(--mapped-text-default-default)`, overridden to `--mapped-text-primary-default` when `.toggle-chip--selected`), and `.toggle-chip__label`/`.toggle-chip__icon` both inherit it via `color: inherit`. This guarantees the icon always matches the label/border in every state without a second token. **Fixed** — icons previously had no color set at all (defaulted to black), so a selected chip's icon didn't follow its blue label/border.
 
 ### Geometry
 
@@ -1658,7 +1658,7 @@ Figma's source (12:137) defines only 2 states — `default` and `Selected` — w
 
 This is a **case-by-case UX call, not a CLAUDE.md mandate and not an automatic extension of the Tag precedent** — CLAUDE.md's "map interaction states to tokens" rule governs which token layer to use once a state is needed, it does not mandate inventing states absent from Figma. Future components with similarly sparse interaction-state source should be evaluated individually, not assumed to get the same treatment automatically.
 
-**REVISED — selected+hover/press added.** Originally the selected state was excluded from hover/press entirely (`:not(.filter-chip--selected)` on both rules), matching Tab's precedent of respecting Figma's omitted combos. User feedback: a selected filter chip is still clickable (to deselect) and needs the same interaction feedback as unselected — the omission read as a bug, not a deliberate omission, once live. Fixed by deepening the same border-derived tint on hover/press:
+**REVISED — selected+hover/press added.** Originally the selected state was excluded from hover/press entirely (`:not(.toggle-chip--selected)` on both rules), matching Tab's precedent of respecting Figma's omitted combos. User feedback: a selected toggle chip is still clickable (to deselect) and needs the same interaction feedback as unselected — the omission read as a bug, not a deliberate omission, once live. Fixed by deepening the same border-derived tint on hover/press:
 
 | Selected state | Background |
 |---|---|
@@ -1676,6 +1676,129 @@ The 16%/24% steps are not Figma-sourced (Figma has no selected-hover/press varia
 - **Selected-state background has no matching opacity/tint token**: Figma uses `rgba(4,110,255,0.1)` (10%-opacity primary blue), and no rgba/opacity token exists anywhere in the token source. Resolved with `color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent)` — derived from a real mapped token (dark-mode safe) rather than a hardcoded rgba(). **First use of `color-mix()` in this codebase** — accepted as the standard pattern for future missing-opacity-token cases. Flag for a future Figma Variables addition of a proper tint/overlay token.
 
 ---
+
+---
+
+## Filter Chip
+
+**Figma node:** 228:1296 (`filter/chips`, labeled "Filter Chip") — component set on the
+`❖ Filter Chips` page (13:183), sibling to `filter/chips/toggle` (12:137 → `ToggleChip`).
+
+**NOT the component this repo shipped as `FilterChip` before v2.0.0.** That one was the
+40-tall bordered filter-sheet control and is now `ToggleChip`; this name was freed and
+reused. No deprecated alias exists, deliberately — an alias would point at the wrong
+component.
+
+Summarises a filter currently in force; dismissed to clear that facet. Component:
+`FilterChip`, folder `src/components/FilterChip/`.
+
+### Variants
+
+Four, over two independent boolean axes (`Icon_left` × `Icon_right`), all height 24:
+
+| Figma variant | node | width | code |
+|---|---|---|---|
+| Default | 228:1294 | 55 | `<FilterChip label />` |
+| Variant2 (Icon_right) | 228:1297 | 67 | `+ onDismiss` |
+| Variant3 (Icon_left) | 228:1311 | 67 | `+ icon` |
+| Variant4 (both) | 228:1321 | 79 | `+ icon + onDismiss` |
+
+**The geometry is derived, then confirmed against all four widths.** With a 31px label
+box, padding 4px vertical / 12px on a plain side / 8px on an icon side, 4px gap and
+12×12 icons, the model reproduces 55 / 67 / 67 / 79 exactly. Height 24 = 4 + 16
+(caption line-height) + 4, which is also the proof that **the source carries no border**
+— 1px would make it 26.
+
+### Token mapping
+
+| Figma | value | token | note |
+|---|---|---|---|
+| radius `Scale/200` | 8 | `--brand-scale-200` | exact |
+| padding vertical `Scale/100` | 4 | `--brand-scale-100` | exact |
+| padding, plain side `Scale/300` | 12 | `--brand-scale-300` | exact |
+| padding, icon side `Scale/200` | 8 | `--brand-scale-200` | exact |
+| gap `Scale/100` | 4 | `--brand-scale-100` | exact |
+| icon box | 12×12 | `--brand-scale-300` | exact; `<Icon size="xs" />` |
+| label type `body/caption-semibold` | Poppins SemiBold 12/16 | `.type-body-caption-semibold` | exact |
+| `Dropshadow_default` | `0 0 10px #00000008` | `--shadow-subtlest` | **exact** |
+| `icon/default/default` | `#363c43` | `--mapped-icon-default-default` | **exact** in light; flips `#cfd5dc` dark |
+| `Neutral02` (label) | `#6b7280` | `--mapped-text-subtle-default` | **TOKEN GAP — see below** |
+| background | `surface/elevation/default` = `#ffffff` | `--mapped-surface-elevation-default` | **exact** — confirmed from source, Gate 41 |
+
+### Token-source gap: the label colour
+
+Figma binds the label to `Neutral02` = `#6b7280`. **Nothing in this repo resolves to that
+value in any layer** — verified by resolving every declared custom property (brand, alias
+and mapped) in both themes. Per the token-source gap protocol no raw value was minted.
+
+Bound instead to `--mapped-text-subtle-default`, which carries the same semantic role
+("subtle text") and resolves `#6b7786` light / `#8695a7` dark. That is a 0.4% deviation in
+light, and unlike a frozen `#6b7280` it **dark-flips**. Flag for a Figma Variables
+addition of a `Neutral02`-backed text token.
+
+Measured on `--mapped-surface-elevation-default`: **4.5572 light / 4.9513 dark**. Both
+clear the 4.5 a 12px label needs, but **light clears it by only 0.0572** — this pairing has
+almost no headroom and should be re-measured if either token moves. (Figma's own
+`#6b7280` would have been 4.8345.)
+
+### Confirmed from source: the background
+
+**Confirmed at Gate 41 (2026-09-02). This entry previously recorded the fill as
+INFERRED; it is not — the source binds it.** All four variants (`228:1294` /
+`228:1297` / `228:1311` / `228:1321`) carry the Figma variable
+`surface/elevation/default` = `#ffffff`, identically. There is **no per-variant
+difference**, so the fill stays out of the component's API.
+
+The mapping is closed end to end and exact: `surface/elevation/default` →
+`Mapped/Light.json` `surface.elevation.default` = `{Foundations.white}` →
+`--mapped-surface-elevation-default: var(--alias-foundations-white)` →
+`var(--brand-white)` → `#ffffff`. Dark takes `{Surface.900}` →
+`--alias-surface-900` → `--brand-gray-900` → `#262626`. Figma's value and the
+light resolution agree exactly — **deviation 0**. `FilterChip.css`'s binding was
+already correct and was **not changed**; the contrast figures above stand
+unaltered.
+
+**Why the earlier read missed it — the part worth keeping.** `get_variable_defs`
+was called on the **component set** (`228:1296`) and returned no fill variable.
+Called on any individual **variant symbol** it returns the binding immediately.
+A component set is a container for its variants and does not carry their fills,
+so **an empty `get_variable_defs` on a component-set node is not evidence that a
+property is unbound.** Query a variant.
+
+**The backing rectangle `228:1295` is documentation chrome, not a product
+surface.** It is a sibling of the chip frame inside the documentation frame
+`148:2290`, is bound to `surface/Default/default` `#e5e5e5`, and is wider and
+taller than the chip row it sits behind (435×75 at x=-6, against the frame's
+349×64 at x=0). It exists so that white, borderless, shadow-only chips are
+visible on a white documentation page — it corroborates the white fill rather
+than standing in for it. Do not map it to a token the component consumes.
+
+### API decisions
+
+- **The root is NOT interactive.** The only action the source models is dismissal.
+  Making the root a button as well would nest a button inside a button — an a11y
+  violation jest-axe fails. A clickable filter pill is `ToggleChip`, not this.
+- **`onDismiss` is optional**, because Figma models `Icon_right` as a variant axis with a
+  False case. Supplying it is what renders the dismiss button.
+- **The dismiss button is a real `<button>`** with `aria-label` defaulting to
+  `Remove <label>`, overridable via `dismissLabel`.
+- **Both glyph slots are real `ReactNode` slots**, not booleans behind one hard-coded
+  icon (the `Link` mistake). `dismissIcon` defaults to `<Icon name="close" size="xs" />`.
+
+### Deliberate addition beyond source
+
+Figma models no interaction state for this component. Hover/press feedback was added
+**on the dismiss button only** — a real button with no pointer feedback reads as
+decorative. The chip body stays inert. The hover rule is wrapped in
+`@media (hover: hover)` per the Gate 40 touch-safe hover guard.
+
+`:active` binds `--mapped-icon-default-label-pressed`, **not** a `-pressed` sibling:
+there is no `--mapped-icon-default-pressed` in this DS. In `Mapped/Light.json` the
+`icon.default` family is `default`=Neutral.800, `hover`=Neutral.900,
+`"Label - pressed"`=Neutral.950 — so this token *is* the family's pressed step,
+continuing the same ramp; the name is a Figma artefact. All three icon states measure
+≥ 6.41 against the chip surface in both themes.
+
 
 ## Link
 
@@ -1820,7 +1943,7 @@ The last breadcrumb in the Figma source (102:2959) renders with underline presen
 
 A rotating spinner. No nested component instances.
 
-**First CSS `@keyframes` animation in this codebase** — flagged and confirmed with the user before building, same governance as `color-mix()` for Filter Chips.
+**First CSS `@keyframes` animation in this codebase** — flagged and confirmed with the user before building, same governance as `color-mix()` for Toggle Chips.
 
 ### Why this couldn't be read from source like other components
 
@@ -1858,7 +1981,7 @@ Standard border-trick spinner: a transparent circle with one edge colored, rotat
 
 ### Known Figma inconsistencies
 
-- **Source uses a rasterized PNG + duplicated flattened SVG elements**, not clean vector paths — first component in this batch where exact geometry couldn't be extracted rather than merely being off the token ramp (contrast with Filter Chips' literal-10px case, where the *value* was knowable but token-less; here the *value itself* isn't reliably knowable from source).
+- **Source uses a rasterized PNG + duplicated flattened SVG elements**, not clean vector paths — first component in this batch where exact geometry couldn't be extracted rather than merely being off the token ramp (contrast with Toggle Chips' literal-10px case, where the *value* was knowable but token-less; here the *value itself* isn't reliably knowable from source).
 - **Stroke width (`3px`) and rotation speed (`0.8s linear`) are estimates**, not sourced values — recorded here explicitly so they aren't mistaken for confirmed design decisions in the future. If exact values become available (e.g. a cleaner Figma export or designer input), update this component and this note together.
 - **Container size and color ARE real, confirmed source values** (32px, `surface/primary/default`) — only the stroke/motion values are estimated.
 
@@ -2756,7 +2879,7 @@ way.
 | Selected | `color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent)` | `--mapped-text-primary-default` |
 | Selected + press (checkbox/radio only) | `color-mix(in srgb, var(--mapped-border-primary-default) 20%, transparent)` | `--mapped-text-primary-default` |
 
-Same derivation already used by `Tag`/`FilterChip`'s selected state — chosen
+Same derivation already used by `Tag`/`ToggleChip`'s selected state — chosen
 over a raw literal or a new mapped token so it dark-flips automatically. The
 math lines up exactly: 20% of `--mapped-border-primary-default` (#046eff)
 over transparent = `rgb(205,226,255)` = `#cde2ff`, the literal `Blue/100`

@@ -46,6 +46,51 @@ describe('Field', () => {
     expect(screen.getByRole('textbox', { name: 'Search' })).toHaveAttribute('aria-required', 'true')
   })
 
+  // === sizing (gap B2) =================================================
+  // Verified by DECLARATION, not by pixels: jsdom applies no stylesheet, and
+  // even in a browser any container at or under 240px renders both modes
+  // identically. What proves the prop took effect is the modifier applying.
+  describe('sizing', () => {
+    it('emits no sizing modifier when the prop is omitted', () => {
+      const { container } = render(<Field ariaLabel="Search" />)
+      expect(container.firstChild).not.toHaveClass('mn-field--fill')
+    })
+
+    it("explicit 'fixed' equals omission — no modifier", () => {
+      const { container } = render(<Field ariaLabel="Search" sizing="fixed" />)
+      expect(container.firstChild).not.toHaveClass('mn-field--fill')
+    })
+
+    it("'fill' applies the fill modifier", () => {
+      const { container } = render(<Field ariaLabel="Search" sizing="fill" />)
+      expect(container.firstChild).toHaveClass('mn-field--fill')
+    })
+
+    it("'fill' preserves the base and appearance classes", () => {
+      const { container } = render(<Field ariaLabel="Search" sizing="fill" />)
+      expect(container.firstChild).toHaveClass('mn-field', 'mn-field--standard', 'mn-field--fill')
+    })
+
+    // The compact branch returns EARLY from a different JSX tree, so the
+    // modifier reaching it at all is what the CSS source-order rule depends on
+    // — .mn-field--compact { width: auto } is declared after --fill and wins.
+    it('still emits the fill modifier on the compact branch, where CSS order makes it inert', () => {
+      const { container } = render(<Field isCompact ariaLabel="Search" sizing="fill" />)
+      expect(container.firstChild).toHaveClass('mn-field--compact', 'mn-field--fill')
+    })
+
+    it('compact without sizing carries no fill modifier', () => {
+      const { container } = render(<Field isCompact ariaLabel="Search" />)
+      expect(container.firstChild).toHaveClass('mn-field--compact')
+      expect(container.firstChild).not.toHaveClass('mn-field--fill')
+    })
+
+    it('has no axe violations with sizing="fill"', async () => {
+      const { container } = render(<Field ariaLabel="Search" sizing="fill" />)
+      expect(await axe(container)).toHaveNoViolations()
+    })
+  })
+
   it('has no axe violations in its default state', async () => {
     const { container } = render(<Field ariaLabel="Search" />)
     expect(await axe(container)).toHaveNoViolations()

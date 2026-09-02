@@ -1,103 +1,90 @@
+/* FilterChip — Figma component set `filter/chips` (228:1296), 4 variants across
+   Icon_left x Icon_right. Every value read from get_variable_defs on that node;
+   the geometry below is confirmed against all four variant widths (55 / 67 / 67
+   / 79 at height 24), which the padding model reproduces exactly.
+
+   NO BORDER: height 24 = 4 (Scale/100) + 16 (caption line-height) + 4. A 1px
+   border would make it 26, so the source cannot be carrying one.
+
+   TOKEN-SOURCE GAP, label colour. Figma binds the label to `Neutral02`
+   (#6b7280). NOTHING in this repo resolves to that value in any layer — brand,
+   alias or mapped (checked by resolving every declared custom property in both
+   themes). Per the token-source gap protocol no raw value was minted. Bound
+   instead to --mapped-text-subtle-default, which is the same SEMANTIC role
+   ("subtle text") and resolves #6b7786 light / #8695a7 dark — a 0.4% deviation
+   in light, and unlike a frozen #6b7280 it dark-flips. Flag for a Figma
+   Variables addition. Measured: 4.5572 light / 4.9513 dark on elevation, both
+   over the 4.5 the 12px label needs, but light clears it by only 0.0572. */
+
 .mn-filter-chip {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0;
-  padding: var(--brand-scale-300) var(--brand-scale-400); /* 12px 16px */
-  border: var(--brand-scale-25) solid var(--mapped-border-subtle-default);
-  border-radius: var(--brand-scale-200); /* 8px */
-  background: transparent;
-  color: var(--mapped-text-default-default); /* icon (currentColor) + label both follow this */
-  cursor: pointer;
-  font-family: inherit;
-  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+  box-sizing: border-box;
+  gap: var(--brand-scale-100); /* 4px = Scale/100 */
+  padding: var(--brand-scale-100) var(--brand-scale-300); /* 4px 12px */
+  border-radius: var(--brand-scale-200); /* 8px = Scale/200 */
+  background: var(--mapped-surface-elevation-default);
+  box-shadow: var(--shadow-subtlest); /* 0 0 10px #00000008 = Figma Dropshadow_default, exact */
+  color: var(--mapped-text-subtle-default); /* label; see the gap note above */
 }
 
-.mn-filter-chip__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--brand-scale-400); /* 16px */
-  height: var(--brand-scale-400);
-  flex-shrink: 0;
+/* Icon-side padding tightens 12 -> 8, mirroring the source widths. */
+.mn-filter-chip[data-icon-left='true'] {
+  padding-left: var(--brand-scale-200); /* 8px */
+}
+.mn-filter-chip[data-icon-right='true'] {
+  padding-right: var(--brand-scale-200); /* 8px */
 }
 
 .mn-filter-chip__label {
-  color: inherit; /* follows .mn-filter-chip color, so icon + label always match */
+  color: inherit;
 }
 
-/* === Icon-driven padding/gap (Figma: icon hugs its adjacent edge at 12px, opposite edge stays 16px) === */
-.mn-filter-chip[data-icon-left="true"]:not([data-icon-right="true"]) {
-  padding-left: var(--brand-scale-300); /* 12px */
-  padding-right: var(--brand-scale-400); /* 16px */
-  gap: var(--brand-scale-200); /* 8px */
-}
-.mn-filter-chip[data-icon-right="true"]:not([data-icon-left="true"]) {
-  padding-left: var(--brand-scale-400);
-  padding-right: var(--brand-scale-300);
-  gap: var(--brand-scale-200);
-}
-.mn-filter-chip[data-icon-left="true"][data-icon-right="true"] {
-  /* Figma specifies 10px = --brand-scale-250. The previous FAIL-LOUD comment
-     here claimed no token matched, listing only 200 (8px) and 300 (12px) as
-     nearest — it skipped 250, which sits between them and is exactly 10px.
-     Pure substitution: the computed value is unchanged. */
-  padding-left: var(--brand-scale-250);
-  padding-right: var(--brand-scale-250);
-  gap: var(--brand-scale-200);
+/* Both slots are 12x12 = Scale/300. Icon colour is its own mapped token
+   (Figma `icon/default/default` = #363c43), which --mapped-icon-default-default
+   resolves to EXACTLY in light and flips to #cfd5dc in dark. */
+.mn-filter-chip__icon,
+.mn-filter-chip__dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--brand-scale-300); /* 12px */
+  height: var(--brand-scale-300);
+  color: var(--mapped-icon-default-default);
 }
 
-/* DELIBERATE UX ADDITION beyond Figma source (not a CLAUDE.md mandate, not
-   automatic from Tag precedent) — case-by-case call: a repeatedly-clicked
-   toggle control needs hover/press feedback. Unselected state only; no
-   selected+hover/press combo, matching Tab's precedent of respecting
-   Figma's omitted combos. See docs/component-tokens.md for full rationale. */
+.mn-filter-chip__dismiss {
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: var(--brand-scale-100); /* 4px — focus ring follows the hit box */
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Hover feedback on the dismiss button only. DELIBERATE ADDITION beyond the
+   Figma source, which models no interaction state for this component: a real
+   button with no pointer feedback reads as decorative. Scoped to the dismiss
+   affordance so the chip body — which is not interactive — stays inert.
+   Gated per the touch-safe hover guard (Gate 40), so it cannot latch after a
+   tap on a touch device. */
 @media (hover: hover) {
-  .mn-filter-chip:not(.mn-filter-chip--selected):hover:not(:active) {
-    background: var(--mapped-surface-subtle-hover);
-    color: var(--mapped-text-default-hover);
+  .mn-filter-chip__dismiss:hover:not(:active) {
+    color: var(--mapped-icon-default-hover);
   }
 }
-.mn-filter-chip:not(.mn-filter-chip--selected):active {
-  background: var(--mapped-surface-subtle-pressed);
-  color: var(--mapped-text-default-pressed);
+/* --mapped-icon-default-label-pressed, NOT a "-pressed" sibling: there is no
+   --mapped-icon-default-pressed in this DS. The icon.default family in
+   Mapped/Light.json is default=Neutral.800, hover=Neutral.900,
+   "Label - pressed"=Neutral.950 — so this IS this family's pressed step,
+   continuing the same ramp; the name is a Figma artefact. Verified declared
+   and resolving in both themes. */
+.mn-filter-chip__dismiss:active {
+  color: var(--mapped-icon-default-label-pressed);
 }
 
-/* === Selected === */
-.mn-filter-chip--selected {
-  border-color: var(--mapped-border-primary-default);
-  /* No opacity/tint token exists in source — derived from the real mapped border token. See docs. */
-  background: color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent);
-  color: var(--mapped-text-primary-default);
-}
-/* Selected hover/press — user-requested feedback (deliberate addition beyond
-   Figma source): deepen the same border-derived tint so the fill reads
-   brighter/darker on interaction. */
-@media (hover: hover) {
-  .mn-filter-chip--selected:hover:not(:active) {
-    background: color-mix(in srgb, var(--mapped-border-primary-default) 16%, transparent);
-  }
-}
-.mn-filter-chip--selected:active {
-  background: color-mix(in srgb, var(--mapped-border-primary-default) 20%, transparent);
-}
-
-/* === Focus (keyboard) === */
-.mn-filter-chip:focus-visible {
-  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+.mn-filter-chip__dismiss:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default); /* 2px */
   outline-offset: var(--brand-scale-50);
-}
-
-/* Preview overrides — showcase only, not for production use */
-.mn-filter-chip[data-preview="hover"]:not(.mn-filter-chip--selected) {
-  background: var(--mapped-surface-subtle-hover) !important;
-  color: var(--mapped-text-default-hover) !important;
-}
-.mn-filter-chip[data-preview="pressed"]:not(.mn-filter-chip--selected) {
-  background: var(--mapped-surface-subtle-pressed) !important;
-  color: var(--mapped-text-default-pressed) !important;
-}
-.mn-filter-chip[data-preview="focus"] {
-  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default) !important;
-  outline-offset: var(--brand-scale-50) !important;
 }

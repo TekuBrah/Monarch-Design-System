@@ -25,6 +25,15 @@ export interface FieldProps {
   ariaLabel?: string
   /** Showcase only — forces a visual state without interaction. */
   previewState?: 'hover' | 'focus'
+  /** `'fixed'` (default) keeps the Figma component box: `width: 240px`.
+   *  `'fill'` takes the field to 100% of its container, so a consumer can size
+   *  it from the column instead of overriding DS rules from the app. Same
+   *  shape as `CardBalance.sizing` / `CardFeaturesAndEducation.sizing`.
+   *
+   *  `isCompact` OUTRANKS this: compact is a square icon-only box, and
+   *  `.mn-field--compact { width: auto }` is declared AFTER `--fill` at equal
+   *  specificity, so `isCompact sizing="fill"` stays square. See Field.css. */
+  sizing?: 'fixed' | 'fill'
 }
 
 export function Field({
@@ -45,6 +54,7 @@ export function Field({
   type = 'text',
   ariaLabel,
   previewState,
+  sizing = 'fixed',
 }: FieldProps) {
   const autoId = useId()
   const inputId = id ?? autoId
@@ -57,6 +67,7 @@ export function Field({
     isDisabled && 'mn-field--disabled',
     isInvalid && 'mn-field--invalid',
     previewState && `mn-field--${previewState}`,
+    sizing === 'fill' && 'mn-field--fill',
   ]
     .filter(Boolean)
     .join(' ')

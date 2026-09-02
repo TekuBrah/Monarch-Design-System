@@ -16,6 +16,29 @@
   transition: background 0.12s ease, border-color 0.12s ease;
 }
 
+/* sizing='fill' — the container decides the width instead of the 240px Figma
+   demo box, closing gap B2 (a consumer could not widen the field without
+   overriding DS rules from the app). Same shape as CardBalance.sizing.
+
+   `width: 100%` rather than CardBalance's `width: auto`: .mn-field declares a
+   hard `width`, not a `max-width`, so releasing it to `auto` would size the
+   field to its CONTENT — narrower than 'fixed', the exact trap CardBalance's
+   own comment warns about. `box-sizing: border-box` is already on the base
+   rule, so 100% includes the padding and border.
+
+   `flex: 1 1 0` is load-bearing in a FLEX parent and inert in a GRID one, so
+   one declaration serves both. Both selectors here are single-class (0,1,0),
+   so source ORDER is what lets this beat the base rule.
+
+   DECLARED BEFORE .mn-field--compact ON PURPOSE. Compact is a square,
+   icon-only 44x44 box; its `width: auto` is a shape contract, not a default.
+   Placing --fill above it means compact WINS at equal specificity, so
+   `isCompact sizing="fill"` stays square and 'fill' is a no-op there. */
+.mn-field--fill {
+  width: 100%;
+  flex: 1 1 0;
+}
+
 /* Label present → vertical padding tightens to 8px (Scale/200) */
 .mn-field--labeled {
   padding-top: var(--brand-scale-200);

@@ -999,7 +999,7 @@ one. Token sources were restored afterwards and `src/tokens` verified clean.
 
   | fact | Gate 35 said | measured at Gate 37 |
   |---|---|---|
-  | components declaring `:active` | 11 of 49, 28 declarations | **11 files — confirmed.** 28 is a raw `:active` *occurrence* count and reproduces exactly, but 2 of `FilterChip`'s 4 are `:not(:active)` negations inside hover rules. Genuine: **26 occurrences, 24 rules** |
+  | components declaring `:active` | 11 of 49, 28 declarations | **11 files — confirmed.** 28 is a raw `:active` *occurrence* count and reproduces exactly, but 2 of `ToggleChip`'s 4 are `:not(:active)` negations inside hover rules. Genuine: **26 occurrences, 24 rules** |
   | `-press`/`-pressed` mapped tokens | 56 distinct, 56/56 light/dark | **57 distinct, 57/57.** Off by one, and it predates Gate 36 — v1.13.0 also holds 57, with identical name sets |
   | touch-vs-mouse distinction | none anywhere | **confirmed at the time.** Now 39 `@media (hover: hover)` blocks; still zero `@media (pointer: …)` and zero `-webkit-tap-highlight-color` |
 
@@ -1057,7 +1057,7 @@ one. Token sources were restored afterwards and `src/tokens` verified clean.
 
   **2 · Text and border MUST diverge, and that was measured.** All 33 border
   cells already passed 3.0, so the border family needed no move — and moving it
-  anyway is *strictly worse*. The selected-tint fills in `FilterChip`,
+  anyway is *strictly worse*. The selected-tint fills in `ToggleChip`,
   `MenuItem` and `Tag` are `color-mix()` washes derived FROM
   `--mapped-border-primary-default`, so darkening the border darkens the backdrop
   the text sits on and the text chases its own fill: measured, moving both
@@ -1109,7 +1109,7 @@ one. Token sources were restored afterwards and `src/tokens` verified clean.
   **Nothing in Figma was changed.** Correcting the panel is Teku's, and until it
   is corrected a Token Studio re-export will silently revert v1.14.0's six values.
 
-- **OPEN — `FilterChip`'s selected border fails 3.0 against its OWN pressed fill
+- **OPEN — `ToggleChip`'s selected border fails 3.0 against its OWN pressed fill
   in dark on elevation, 2.7900 (Gate 36, gap #23).** Pre-existing and *improved*
   by v1.14.0 (2.6672 → 2.7900), not caused by it. Left alone deliberately: the
   boundary that identifies the control is the border's OUTER edge against the
@@ -1354,10 +1354,10 @@ When a new component is added, the same three things are true every time:
   approval before using either approved pattern:
   (a) `color-mix(in srgb, var(<real mapped token>) N%, transparent)` for a
       missing opacity/tint token — N must match Figma's actual percentage
-      (e.g. FilterChip's selected background, Tag's hover/press tint).
+      (e.g. ToggleChip's selected background, Tag's hover/press tint).
   (b) a plain px literal with a FAIL-LOUD comment (the Figma value, the
       nearest ramp steps, a note that this needs a Figma Variables fix) for
-      an off-ramp value — e.g. FilterChip's 10px, Radio's 14px/6px.
+      an off-ramp value — e.g. ToggleChip's 10px, Radio's 14px/6px.
   **Banned**: `calc()` curve-fits between unrelated scale tokens to hit a
   target number (e.g. averaging two scale steps) — this fabricates a
   relationship between tokens that doesn't exist in the source. Rejected
@@ -1368,7 +1368,7 @@ When a new component is added, the same three things are true every time:
   no standing rule that "interactive components always get hover/press."
   If approved, document it in docs/component-tokens.md as a deliberate
   addition beyond source, not as an inferred/default behavior.
-- **API conventions** (established across Button/Tab/Link/FilterChip/Tag):
+- **API conventions** (established across Button/Tab/Link/ToggleChip/Tag):
   text content goes through a `label` prop wherever Figma models it as a
   string prop — never `children` (a silent-failure risk: `Button` has no
   `children` handling, so passing text as children renders nothing visibly
@@ -1401,7 +1401,7 @@ When a new component is added, the same three things are true every time:
 
 ## Accessibility baseline
 Every interactive component (Toggle, Checkbox, Radio, Tab/Tabs, Link,
-Breadcrumbs, FilterChips, ButtonGroup, etc.) must have, before it's considered
+Breadcrumbs, ToggleChips, ButtonGroup, etc.) must have, before it's considered
 done:
 - Correct ARIA role and state attributes for what it semantically is
   (`role="switch"`, `role="tablist"`/`role="tab"`, `role="group"`, etc.).

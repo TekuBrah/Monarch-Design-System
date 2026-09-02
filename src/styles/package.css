@@ -42,6 +42,7 @@
 @import '../components/ElementWrapper/ElementWrapper.css';
 @import '../components/Field/Field.css';
 @import '../components/FilterChip/FilterChip.css';
+@import '../components/ToggleChip/ToggleChip.css';
 @import '../components/Header/HeaderBg.css';
 @import '../components/Header/HeaderDefault.css';
 @import '../components/IconButton/IconButton.css';

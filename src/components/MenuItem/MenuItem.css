@@ -41,7 +41,7 @@
    correctly-named `surface/primary/default-subtle-selected` variable in the
    Figma file is an unrelated gray, #f2f2f2, not what's actually applied here).
    Derived from the mapped border token so it dark-flips, matching the
-   Tag/FilterChip precedent (10%/20% ≈ exactly #e6f1ff/#cde2ff at these values). */
+   Tag/ToggleChip precedent (10%/20% ≈ exactly #e6f1ff/#cde2ff at these values). */
 .mn-menu-item--selected {
   background: color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent);
 }

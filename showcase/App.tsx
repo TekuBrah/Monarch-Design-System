@@ -32,6 +32,7 @@ import { Tab } from '@monarch/design-system'
 import { Tabs } from '@monarch/design-system'
 import { ButtonGroup } from '@monarch/design-system'
 import { FilterChip } from '@monarch/design-system'
+import { ToggleChip } from '@monarch/design-system'
 import { Link } from '@monarch/design-system'
 import { Breadcrumbs } from '@monarch/design-system'
 import { Loader } from '@monarch/design-system'
@@ -1247,6 +1248,7 @@ const SIDEBAR_CATEGORIES: { name: string; items: SidebarSection[] }[] = [
     { slug: 'date-picker', label: 'Date Picker' },
     { slug: 'time-picker', label: 'Time Picker' },
     { slug: 'text-area', label: 'Text Area' },
+    { slug: 'toggle-chip', label: 'Toggle Chip' },
     { slug: 'filter-chip', label: 'Filter Chip' },
   ] },
   { name: 'Sliders', items: [
@@ -1301,7 +1303,8 @@ export default function App() {
   const [tabsSelected, setTabsSelected] = useState('overview')
   const [scrollableTabsSelected, setScrollableTabsSelected] = useState('overview')
   const [balanceClicks, setBalanceClicks] = useState(0)
-  const [filterChipsSelected, setFilterChipsSelected] = useState<Record<string, boolean>>({ chip2: true })
+  const [toggleChipsSelected, setToggleChipsSelected] = useState<Record<string, boolean>>({ chip2: true })
+  const [activeFilters, setActiveFilters] = useState<string[]>(['Groceries', 'This month', 'Over $50'])
   const [bottomNavSelected, setBottomNavSelected] = useState('home')
   const [sideNavSelected, setSideNavSelected] = useState('home')
   const [sideNavCompact, setSideNavCompact] = useState(false)
@@ -2191,49 +2194,87 @@ export default function App() {
 
       {tab === 'components' && <hr style={HR} />}
 
-      {/* ── Filter Chip ───────────────────────────────────────────── */}
+      {/* ── Toggle Chip ───────────────────────────────────────────── */}
       {tab === 'components' && (
         <>
-          <Section id="filter-chip" title="Filter Chip" description="2 states × 4 icon combos — selected bg via color-mix() (no opacity token in source) — hover/press on unselected only (deliberate addition, see docs)">
+          <Section id="toggle-chip" title="Toggle Chip" description="2 states × 4 icon combos — selected bg via color-mix() (no opacity token in source) — hover/press on unselected only (deliberate addition, see docs)">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Default — icon combos</div>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <FilterChip label="Chip" />
-                  <FilterChip label="Chip" iconLeft={<Icon name="add" size="s" />} />
-                  <FilterChip label="Chip" iconRight={<Icon name="add" size="s" />} />
-                  <FilterChip label="Chip" iconLeft={<Icon name="add" size="s" />} iconRight={<Icon name="close" size="s" />} />
+                  <ToggleChip label="Chip" />
+                  <ToggleChip label="Chip" iconLeft={<Icon name="add" size="s" />} />
+                  <ToggleChip label="Chip" iconRight={<Icon name="add" size="s" />} />
+                  <ToggleChip label="Chip" iconLeft={<Icon name="add" size="s" />} iconRight={<Icon name="close" size="s" />} />
                 </div>
               </div>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Selected — icon combos</div>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <FilterChip label="Chip" isSelected />
-                  <FilterChip label="Chip" isSelected iconLeft={<Icon name="add" size="s" />} />
-                  <FilterChip label="Chip" isSelected iconRight={<Icon name="add" size="s" />} />
-                  <FilterChip label="Chip" isSelected iconLeft={<Icon name="add" size="s" />} iconRight={<Icon name="close" size="s" />} />
+                  <ToggleChip label="Chip" isSelected />
+                  <ToggleChip label="Chip" isSelected iconLeft={<Icon name="add" size="s" />} />
+                  <ToggleChip label="Chip" isSelected iconRight={<Icon name="add" size="s" />} />
+                  <ToggleChip label="Chip" isSelected iconLeft={<Icon name="add" size="s" />} iconRight={<Icon name="close" size="s" />} />
                 </div>
               </div>
               <div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>Forced states (unselected)</div>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <FilterChip label="Default" />
-                  <FilterChip label="Hover" previewState="hover" />
-                  <FilterChip label="Pressed" previewState="pressed" />
-                  <FilterChip label="Focus" previewState="focus" />
+                  <ToggleChip label="Default" />
+                  <ToggleChip label="Hover" previewState="hover" />
+                  <ToggleChip label="Pressed" previewState="pressed" />
+                  <ToggleChip label="Focus" previewState="focus" />
                 </div>
               </div>
               <div className="showcase-interactive">
                 <div className="showcase-interactive__label">Interactive example — click to toggle</div>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   {['chip1', 'chip2', 'chip3'].map(id => (
-                    <FilterChip
+                    <ToggleChip
                       key={id}
                       label={id}
-                      isSelected={!!filterChipsSelected[id]}
-                      onClick={() => setFilterChipsSelected(s => ({ ...s, [id]: !s[id] }))}
+                      isSelected={!!toggleChipsSelected[id]}
+                      onClick={() => setToggleChipsSelected(s => ({ ...s, [id]: !s[id] }))}
                     />
                   ))}
+                </div>
+              </div>
+            </div>
+          </Section>
+        </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Filter Chip ───────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <>
+          <Section id="filter-chip" title="Filter Chip" description="Summarises a filter in force; dismissed to clear that facet. 4 Figma variants (Icon_left × Icon_right). Root is NOT interactive — the dismiss button is the only control.">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginBottom: '0.5rem', color: 'var(--mapped-text-subtle-default)' }}>The four source variants</div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <FilterChip label="Label" />
+                  <FilterChip label="Label" onDismiss={() => {}} />
+                  <FilterChip label="Label" icon={<Icon name="add" size="xs" />} />
+                  <FilterChip label="Label" icon={<Icon name="add" size="xs" />} onDismiss={() => {}} />
+                </div>
+              </div>
+              <div className="showcase-interactive">
+                <div className="showcase-interactive__label">Interactive example — dismiss to clear a facet</div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center', minHeight: '1.5rem' }}>
+                  {activeFilters.map(f => (
+                    <FilterChip
+                      key={f}
+                      label={f}
+                      onDismiss={() => setActiveFilters(list => list.filter(x => x !== f))}
+                    />
+                  ))}
+                  {activeFilters.length === 0 && (
+                    <button type="button" onClick={() => setActiveFilters(['Groceries', 'This month', 'Over $50'])} style={{ font: 'inherit', fontSize: '0.75rem', cursor: 'pointer', background: 'transparent', border: '1px solid var(--mapped-border-subtle-default)', borderRadius: '4px', padding: '0.25rem 0.5rem', color: 'var(--mapped-text-subtle-default)' }}>
+                      reset
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

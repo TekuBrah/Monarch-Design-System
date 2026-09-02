@@ -3,6 +3,27 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## 2.0.0
+
+### BREAKING
+
+- `FilterChip` has been renamed to `ToggleChip` — the 40-tall bordered
+  control used inside a filter sheet. Its CSS classes rename with it
+  (`.mn-filter-chip*` → `.mn-toggle-chip*`). No deprecation alias is
+  provided, deliberately: the freed name is reused in this same release.
+- `FilterChip` is now a **different component** — a 24-tall applied-filter
+  pill with an optional dismiss button. A consumer that does not update
+  will resolve `FilterChip` to this new component rather than failing to
+  import, so every existing usage must be reviewed.
+
+### Added
+
+- `FilterChip` — applied-filter pill, label with optional leading glyph and
+  optional `onDismiss` trailing button. Four variants matching the Figma
+  source.
+- `Field` gains `sizing?: 'fixed' | 'fill'`, default `'fixed'`. `'fixed'`
+  reproduces existing rendering unchanged; `'fill'` takes the field to 100%
+  of its container. When combined with `isCompact`, compact wins.
 
 ## v1.15.0
 
