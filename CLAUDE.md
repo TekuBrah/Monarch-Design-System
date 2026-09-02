@@ -431,7 +431,7 @@ src/
     typography.css      # font-family var + 22 .type-* composite classes
     package.css         # source-level equivalent of dist/index.css —
                         #   HAND-MAINTAINED, one @import per component CSS file
-  components/<Name>/    # 49 component folders
+  components/<Name>/    # 50 component folders
   test/                 # vitest setup + type shims (setup.ts, *.d.ts)
 ```
 
@@ -1121,11 +1121,21 @@ one. Token sources were restored afterwards and `src/tokens` verified clean.
 
 ## Component roster — current state
 
-**49 components are built** (`ls src/components/` — re-derived from disk at
-Gate 34, 2026-08-29), with **60 test files / 522 tests** (re-derived at Gate 40)
-and 47 showcase sections. **58 component `.css` files**, all 58 registered in
-`src/styles/package.css` — no longer a hand derivation, see the registration
-detector.
+**50 component folders are built** (`ls src/components/`), exporting **60
+distinct components** — four folders each hold a tightly-coupled family
+(`Card` 7, `Item` 3, `Header` 2, `Navigation` 2 — see Component rules), which
+is exactly the difference of 10; this line has always counted FOLDERS. Those 50
+folders also export **4 non-component values** (`Logo`'s `LOGOS`, `LOGO_MAP`
+and `LOGOS_BY_CATEGORY`, plus `Toast`'s `TOAST_DEFAULT_ICON`), so a raw count
+of named value exports is **64** — do not read that as a component count.
+With **61 test files / 542 tests** and **48 showcase sections** (`<Section`
+tags carrying an `id=`, counted with a parser — a line-scoped
+`grep -c "<Section id="` returns **47**, which is the previous value and is
+wrong for the reason recorded below). **59 component `.css` files**, all 59
+registered in `src/styles/package.css` — no longer a hand derivation, see the
+registration detector.
+
+Every figure in this paragraph was re-derived from disk at Gate 42, 2026-09-02.
 
 **✅ RESOLVED (Gate 40) — the showcase-section figures agree, and always did.**
 This entry used to warn that `47` and `55` "do not agree and the gap is 8, so do
@@ -1150,8 +1160,14 @@ value and invented a nonexistent "id-less Components section" to reconcile it
 against 55. The arithmetic came out right and the derivation was wrong, which is
 the failure mode worth remembering here.
 
-The component and test-file counts WERE re-derived at Gate 32 and are correct:
-49 folders, 59 test files.
+**Gate 42 re-derived the same three figures on 2026-09-02: 56 / 48 / 8** — and
+the `<Section id=` grep now returns **47**, which is Gate 40's *correct* value
+above, so the broken form now reads as confirmation of the stale figure rather
+than as the off-by-one it still is.
+
+The component and test-file counts WERE re-derived at Gate 42, 2026-09-02, and
+are correct: **50 folders, 61 test files**. (Gate 32 measured 49 folders / 59
+test files, correct when taken.)
 
 > **Test count history.** This line read *472 tests* and was stale by one: it was
 > recorded on 2026-08-11 *before* commit `6bacfe8` landed later the same day,
@@ -1185,7 +1201,17 @@ The component and test-file counts WERE re-derived at Gate 32 and are correct:
 > `src/test/tokens.test.ts` (14 → 16, the touch-safe hover guard). Total
 > 508 → **522**. No existing test was modified; one helper,
 > `componentCssFiles()`, was lifted from a `describe` scope to module scope in
-> `tokens.test.ts` so both checks share one filesystem-derived list. The library
+> `tokens.test.ts` so both checks share one filesystem-derived list.
+>
+> **Gate 42 (v2.0.1) added no tests. The jump to today's figures happened at
+> v2.0.0, which left no entry here.** Re-derived from a full `npm test` run at
+> Gate 42: **61 files / 542 tests** — so v2.0.0 moved the file count 60 → **61**
+> and the test count 522 → **542**, a delta of 20. **That delta is NOT
+> attributed.** Gate 42 measured the totals, not which files supplied them, so
+> do not quote a per-file breakdown for v2.0.0 until someone derives one. Gate
+> 42's own delta is zero: its only tree changes were three manifest lines and a
+> `CHANGELOG.md` entry, neither of which vitest collects, and the suite ran
+> 542/542 both before and after. The library
 > is well past
 "build the first component", which is what this section used to say.
 
@@ -1599,12 +1625,58 @@ that **describes itself as a different version**. The tag is metadata *about* th
 commit; the version field is a fact *inside* it, and nothing in the six commands
 reads the tree's contents.
 
-**v1.8.0 is the case that proved it.** `8be2d1f` is tagged `v1.8.0`, annotated,
+**v1.8.0 is the case that got written up — but it was the second of three, not
+the only one.** `8be2d1f` is tagged `v1.8.0`, annotated,
 CI green — and `package.json` at that commit reads `"version": "1.7.0"`. The tag
 verification passed in full. Anyone installing the package from that tag gets
 something that calls itself 1.7.0. Worse, `package-lock.json` had never been
 bumped at all and read `0.0.0` at both root entries, so the drift was two
 releases deep in one file and nine in the other, and no gate had ever looked.
+
+**Three of eighteen tags carried this defect** (measured at Gate 42, 2026-09-02,
+by reading the version field out of every tag rather than trusting the record):
+
+| tag | version field declared at that commit |
+|---|---|
+| v1.1.0 | `1.0.0` |
+| v1.8.0 | `1.7.0` |
+| v2.0.0 | `1.16.0` |
+
+Reproduce it with:
+
+```
+for t in $(git --no-pager tag -l | sort -V); do
+  echo "$t declares $(git --no-pager show "$t:package.json" | grep -m1 '"version"')"
+done
+```
+
+**v1.1.0 had never been recorded anywhere.** This section presented v1.8.0 as
+the case that proved the rule; it was in fact the second instance, and the first
+predates the rule being written down at all. v2.0.0 is the third — tagged with
+the field still reading `1.16.0`, which is the whole reason v2.0.1 exists. So
+this is not a one-off that a written rule has since contained: it has recurred
+roughly once every six tags, and prose is its only enforcement.
+
+**STANDING CHECK — run this before any annotated tag is cut.** Not aspirational;
+it is the procedure, and it costs two commands:
+
+1. Bump first, inside the release commit itself:
+   `npm version <x.y.z> --no-git-tag-version`.
+2. Read the field back out of the tree that is about to be tagged:
+   `node -p "require('./package.json').version"`.
+3. Confirm that string equals the intended tag name with its leading `v`
+   stripped. If it does not, **stop and fix the tree — do not cut the tag.**
+4. Confirm `package-lock.json` agrees at **both** root entries, since they drift
+   independently:
+   `node -p "const l=require('./package-lock.json');[l.version,l.packages[''].version].join(' ')"`.
+
+**An automatic CI guard is deferred, not rejected.** Gate 42 established that no
+such guard exists anywhere on disk — `.github/workflows/` holds one file whose
+eight steps never read the version field or a tag ref, `.git/hooks/` holds only
+the 14 stock `.sample` files, `core.hooksPath` is unset, and there is no husky,
+lefthook, simple-git-hooks or pre-commit config, nor a dependency on one. Gate 42
+was scoped not to add one; whether to is Teku's call. Until it is made, step 3 is
+the only thing standing between a release and a fourth instance.
 
 A tag that points at the right commit is not the same as a tree that knows what
 it is. Check the field, not just the tag.

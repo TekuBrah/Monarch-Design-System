@@ -3,6 +3,79 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## v2.0.1
+
+### ✅ NOTHING A CONSUMER CAN SEE CHANGES. THIS RELEASE IS THE VERSION FIELD v2.0.0 OMITTED.
+
+v2.0.0 was tagged with `package.json` still reading `1.16.0`. The tag and the
+code at it are genuinely v2.0.0 — everything the entry below describes shipped,
+and shipped correctly. The only thing wrong was the version the tree declared
+about itself. **No component, no token, no CSS class and no type changes in this
+release**, and the published v2.0.0 tag is left where it is rather than moved.
+
+### Changed — version
+
+`package.json` `1.16.0` → `2.0.1`, via `npm version 2.0.1 --no-git-tag-version`
+(that form touches git not at all). `package-lock.json` agrees at **both** root
+entries (`version` and `packages[""]`) — verified after the bump rather than
+assumed, because a mismatch there fails `npm ci`. Three lines changed across the
+two files and nothing else; no dependency moved. Tag count unchanged at **18**.
+
+The agreement was then confirmed a second way, by the tool that would reject it:
+`npm ci` ran clean and announced itself as `@monarch/design-system@2.0.1`.
+
+**Patch, not minor — and this does not overturn the rule v1.12.0 set.** That
+rule ("a tooling-only release still takes a minor") is about a release that
+closes a gate with real work in it, where the number is the signal that a gate
+closed. This release closes no gate and carries no work: it is a field
+correction, applied forward. Ruled by Teku.
+
+### Nothing was rebuilt, because nothing built carries the version
+
+Established before the bump rather than after: `dist/` is gitignored and **no
+build output is tracked at all** (`git ls-files dist` → 0, and no tracked
+`.js`/`.mjs`/`.d.ts` exists outside `scripts/`, `showcase/` and `src/`). The
+version string therefore lives in exactly **three tracked lines** —
+`package.json:4`, `package-lock.json:3` and `package-lock.json:9` — all three of
+which the bump rewrote. Two further occurrences of `1.16.0` exist in `CLAUDE.md`,
+both prose references to Gate 40, both historical, both deliberately untouched.
+
+### Root cause — nothing in this repo checks the version field against the tag
+
+Reported, **not fixed**; adding a guard is a scoping decision, not this gate's.
+
+There is no such check anywhere on disk: `.github/workflows/` holds one file and
+none of its eight steps reads the version field or a tag ref; `.git/hooks/` holds
+only the 14 stock `.sample` files; `core.hooksPath` is unset; and there is no
+husky, lefthook, simple-git-hooks or pre-commit config, nor any dependency on
+one. The only npm lifecycle script is `prepare`, which runs `build:lib`.
+
+The rule exists — `CLAUDE.md`'s "Release hygiene" section states it, and states
+that the six-command tag verification cannot catch it — but it is enforced by
+prose alone, and prose has now failed three times in eighteen tags:
+
+| tag | version field declared at that commit |
+|---|---|
+| v1.1.0 | `1.0.0` |
+| v1.8.0 | `1.7.0` |
+| v2.0.0 | `1.16.0` |
+
+**v1.1.0 is a third instance the record did not know about.** `CLAUDE.md`
+documents v1.8.0 as the case that proved the point; it was in fact the second.
+
+### Gates
+
+Every step of `.github/workflows/ci.yml`, in workflow order, on Node v24.17.0
+(the pinned major): `npm ci` 0 · `build:tokens` 0 · drift assertion 1 clean once
+the two intentional manifest edits are excluded, assertion 2 **empty** ·
+`check:css-registration` **59/59** reachable, 50 folders · `tsc -b` 0 and
+`tsc -b --force` 0 · **61 files / 542 tests, delta 0**.
+
+The zero test delta was predicted before the run: no test reads `package.json`,
+and the only tree changes are three manifest lines and this entry, neither of
+which vitest collects.
+
+---
 ## 2.0.0
 
 ### BREAKING
