@@ -3,6 +3,80 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## v2.2.0
+
+### HeaderBg and StatusBar now use Figma's FIXED row heights instead of hugging
+
+Gate 45-B (G18). No export, prop, type or token changed — this release changes
+**rendered geometry only**, on every screen carrying a `HeaderBg`.
+
+**Note on this file's continuity: v2.0.0 and v2.1.0 have no entries here.** That
+gap pre-dates this release and was not filled by it; the v2.0.1 entry below
+refers to a v2.0.0 entry that does not exist. Do not read the headings in this
+file as a complete release history.
+
+### The defect
+
+Both of `HeaderBg`'s stacked rows are fixed-height frames in Figma
+(`390:639`, Type=No search bar) and were hug-height boxes in the DS:
+
+| band | Figma | DS before | DS after |
+|---|---|---|---|
+| status row `390:641` | **44** fixed | 40 — hugged 8 + 24px line box + 8 | **44** |
+| column gap, `Scale/200` | 8 | 8 ✅ | 8 |
+| content row `390:642`→`390:643` | **50** fixed | 32 — hugged its 32px `Avatar` | **50** |
+| space below | 10 | 10 ✅ | 10 |
+| **total** | **112** | **90** | **112** |
+
+**22px short on every header.** Measured live in the showcase at 90 before and
+112 after, matching the source derivation in both directions. The gap and the
+bottom padding were already right, because the bottom padding had been
+back-solved from Figma's frame height minus Figma's row heights — it landed on
+the correct 10px while the rows themselves stayed hugged.
+
+### Changed
+
+- `src/components/StatusBar/StatusBar.css` — `.mn-status-bar` gains `height: 44px`
+- `src/components/Header/HeaderBg.css` — `.mn-header-bg__row` gains `height: 50px`
+
+**Both are raw literals, flagged FAIL-LOUD** per pattern (b) of the token-source
+gap protocol. Neither 44 nor 50 is on the `--brand-scale` ramp (…40, 48, 56…),
+and `get_variable_defs` on `390:639` returns no variable resolving to either —
+they are unbound in Figma too, so the literals mirror the source rather than
+departing from it. `calc()` curve-fitting between neighbouring scale steps is
+banned and was not used.
+
+**No padding was added.** The avatar at y=9 and the bell at y=13 are centring
+artifacts of the fixed 50px box — `(50−32)/2` and `(50−24)/2` — and the existing
+`align-items: center` reproduces both once the box is fixed. Verified after the
+change: measured 9 and 13.
+
+### How this was verified — the unit suite cannot see it
+
+`vitest.config.ts` sets no `test.css` option, so no stylesheet is applied in
+jsdom and a height change is invisible to the 558-test suite. **A green suite is
+not evidence for this change** and was not treated as such. Verification was by
+artefact, quoted from `dist/index.css` after `npm run build:lib`, plus a live
+CSSOM + `getBoundingClientRect` measurement in the showcase after a full reload
+(HMR does not reach component CSS through `package.css`'s `@import` chain).
+
+### Consumer consequence
+
+A downstream app that hides `.mn-status-bar` and floors it with
+`min-height: env(safe-area-inset-top)` now gets `max(44px, inset)` where it
+previously got `max(40px, inset)` — so its standalone header changes only where
+the inset is under 44px. The 18px gained on the content row applies
+unconditionally. Nothing downstream was changed by this gate.
+
+### Minor, not patch, and not major
+
+No public API moved, so a consumer's code still compiles unchanged — that is
+what separates this from v2.0.0, whose `FilterChip`→`ToggleChip` rename required
+consumer edits. But 22px of unavoidable rendered change on every header screen
+is more than "patch" communicates, and v1.12.0 already established that this
+repo takes a minor for a release that closes a gate with real work in it.
+
+---
 ## v2.0.1
 
 ### ✅ NOTHING A CONSUMER CAN SEE CHANGES. THIS RELEASE IS THE VERSION FIELD v2.0.0 OMITTED.

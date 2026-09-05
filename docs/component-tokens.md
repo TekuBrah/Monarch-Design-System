@@ -3956,6 +3956,7 @@ Two components: `HeaderBg` (mobile screen header, background-image slot) and `He
 | Notification badge | Reused `Badge` |
 | Search field | Reused `Field` |
 | Content row padding | `0 var(--brand-scale-400)` per row (greeting/title row, search row) — each row owns its own horizontal inset, matching Figma's per-row model (only `StatusBar` has its own vertical padding) |
+| Content row height | **`50px` raw literal** (Gate 45-B, v2.2.0) — Figma `390:642` → `390:643` is a FIXED `h-[50px]`. No `--brand-scale-*` step equals 50 (nearest 1100/48, 1200/56) and `get_variable_defs` on `390:639` returns no variable resolving to 50, so it is unbound in Figma too. Flagged FAIL-LOUD in `HeaderBg.css`; see *Fixed row heights* below |
 | Content bottom padding | `--brand-scale-250` (10px) on `.header-bg__content` — see inconsistency note below |
 | Focus ring | `--mapped-border-primary-default` outline, `--brand-scale-50` (Tab.css pattern) |
 
@@ -3984,6 +3985,65 @@ Two components: `HeaderBg` (mobile screen header, background-image slot) and `He
 | Stepper | Reused `ProgressStepper` |
 | Action | Reused `Link` |
 | Focus ring | Same pattern as `HeaderBg` |
+
+### Fixed row heights (Gate 45-B, v2.2.0)
+
+Both of `HeaderBg`'s stacked rows are **fixed-height frames in Figma** and were
+**hug-height boxes in the DS**. The component therefore rendered **90px** where
+Figma specifies **112px** — 22px short on every screen carrying a header.
+
+Re-derived from source and measured live in the showcase, before and after
+(`noSearchBar`, the variant read from Figma):
+
+| band | Figma `390:639`, Type=No search bar | DS before | DS after |
+|---|---|---|---|
+| status row | `390:641`, y=0, **h=44** (fixed) | 40 — hugged: 8 + 24px line box + 8 | **44** |
+| column gap | y=44, **h=8**, bound `Scale/200` | 8 — `--brand-scale-200` ✅ | 8 |
+| content row | `390:642`→`390:643`, y=52, **h=50** (fixed) | 32 — hugged its tallest child, the 32px `Avatar` | **50** |
+| space below | y=102 → 112, **h=10** | 10 — `--brand-scale-250` ✅ | 10 |
+| **total** | **112** | **90** | **112** |
+
+Only the two hugged bands were wrong; the gap and the bottom padding were
+already correct. That is not a coincidence — the bottom-padding bullet below
+back-solved its 10px from *Figma's* frame height minus *Figma's* row heights, so
+it landed on the right number while the rows themselves stayed hugged.
+
+**The avatar's y=9 and the bell's y=13 are centring artifacts, not paddings.**
+Figma places `390:644` (32px) at y=9 and `390:645` (24px) at y=13 inside the
+50px row; `(50−32)/2 = 9` and `(50−24)/2 = 13`. The existing
+`align-items: center` reproduces both for free once the box is fixed —
+**verified after the change, measured 9 and 13 in the showcase.** Do not add
+padding to reproduce them.
+
+**Both values are raw literals, flagged FAIL-LOUD.** Neither 44 nor 50 exists on
+the `--brand-scale` ramp (…40, 48, 56…) and neither is bound to a Figma
+variable, so pattern (b) of the token-source gap protocol applies. `calc()`
+curve-fitting between neighbouring scale steps is banned and was not used.
+
+The unit suite cannot see this: `vitest.config.ts` sets no `test.css` option, so
+no stylesheet is applied in jsdom and a height change is invisible to it. Verify
+by artefact instead — after `npm run build:lib`:
+
+```bash
+grep -o "\.mn-status-bar{[^}]*}" dist/index.css
+```
+
+```bash
+grep -o "\.mn-header-bg__row{[^}]*}" dist/index.css
+```
+
+which at v2.2.0 print, respectively:
+
+```
+.mn-status-bar{display:flex;align-items:center;justify-content:space-between;width:100%;box-sizing:border-box;padding:var(--brand-scale-200) var(--brand-scale-400);height:44px}
+.mn-header-bg__row{display:flex;align-items:center;justify-content:space-between;gap:var(--brand-scale-250);padding:0 var(--brand-scale-400);height:50px}
+```
+
+**Consumer consequence.** A downstream app that hides `.mn-status-bar` and floors
+it with `min-height: env(safe-area-inset-top)` now gets `max(44px, inset)` where
+it previously got `max(40px, inset)`, so its standalone header changes only
+where the inset is under 44px; the 18px gained on the content row applies
+unconditionally. Nothing downstream was changed by this gate.
 
 ### Known Figma inconsistencies
 
@@ -4015,6 +4075,7 @@ wherever a plain-surface header needs one (`mode="Light"`).
 
 | Element | Token |
 |---|---|
+| Height | **`44px` raw literal** (Gate 45-B, v2.2.0) — fixed `h-[44px]` on Figma instance `390:641`. No `--brand-scale-*` step equals 44 (nearest 1000/40, 1100/48) and no variable resolves to 44. Previously hugged to 40px (8 + 24px line box + 8). See Header's *Fixed row heights* |
 | Padding | `--brand-scale-200` / `--brand-scale-400` (8px/16px) |
 | Icon gap | `--brand-scale-100` (4px) — Figma specifies 5px, off the ramp (4/8); rounded to the nearer step per approval |
 | `mode="Light"` color | `--alias-neutral-800` (static) |
@@ -4025,6 +4086,7 @@ wherever a plain-surface header needs one (`mode="Light"`).
 
 - **Both modes use static, non-flipping colors** (`--alias-*`, not `--mapped-*`). This mirrors a real OS status-bar API (e.g. iOS's light-content/dark-content style) — the mode is chosen per the surface behind it, not per the app's semantic theme. Flagged per the alias/mapped dark-flip rule, but this is a deliberate exception: unlike an interactive-state color, there is no "theme" for fake OS chrome to track.
 - **5px icon gap**: off the `--brand-scale` ramp (4/8px). Rounded to `--brand-scale-100` (4px) per approval.
+- **44px height off the ramp** (Gate 45-B, v2.2.0): the bar is a fixed-height frame in Figma, not a hug box, and 44 is neither a `--brand-scale` step nor a bound variable. Emitted as a flagged raw literal per pattern (b); needs a Figma Variables fix to become a token.
 
 ---
 

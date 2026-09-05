@@ -61,6 +61,17 @@
   justify-content: space-between;
   gap: var(--brand-scale-250);
   padding: 0 var(--brand-scale-400);
+  /* FAIL LOUD — RAW LITERAL, NO TOKEN EXISTS.
+     Figma: Header/bg node 390:639, row frame 390:642 -> 390:643, FIXED
+     h-[50px]. Nearest --brand-scale steps are 1100 (48px) and 1200 (56px);
+     neither is 50, and get_variable_defs on 390:639 returns no variable
+     resolving to 50 — unbound in Figma too. Needs a Figma Variables fix.
+     Do NOT curve-fit this with calc() between scale steps — banned.
+     The row previously HUGGED its tallest child (the 32px Avatar), rendering
+     32px against Figma's 50. The avatar group at y=9 and the bell at y=13 are
+     CENTRING ARTIFACTS of this fixed box, not paddings — align-items: center
+     above reproduces both; do not add padding for them. */
+  height: 50px;
 }
 
 .mn-header-bg__greeting-group {
