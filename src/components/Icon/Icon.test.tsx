@@ -6,10 +6,18 @@ import type { IconName, IconSize } from './Icon'
 
 const SIZES: IconSize[] = ['xs', 's', 'm', 'l']
 
-// Deviation, flagged: IconName is a 101-entry asset REGISTRY, not a variant
+// Deviation, flagged: IconName is a 103-entry asset REGISTRY, not a variant
 // axis. Enumerating it would be inventory testing, not smoke — so a
 // representative sample is used and IconSize is iterated in full instead
 // (same reasoning as Logo's LogoName exclusion in Batch 1).
+//
+// THE COUNT WAS STALE AND HAD PROPAGATED. This comment read "101-entry" from
+// Gate 4 until Gate 45; a parser over the ICONS object measures 103 (67 from
+// @material-design-icons/svg/round + 36 from Assets/icons-custom, one of
+// which — logo_monarch — is a brand mark). The MVP's gap register quoted the
+// 101 as fact when opening G16, so a comment nobody re-derived became an
+// external figure. It is a dated prose count with no gate behind it; do not
+// trust it without re-running the parser.
 const SAMPLE_NAMES: IconName[] = ['add', 'close', 'check', 'edit', 'refresh', 'search']
 
 // Icon renders a decorative, aria-hidden <svg> inside an unclassed
@@ -55,6 +63,26 @@ describe('Icon', () => {
   // logo_monarch is the Monarch brand mark, registered as an Icon rather than a
   // Logo on purpose — Icon tints via currentColor, Logo does not, and the AI FAB
   // needs it white on a gradient. See docs/component-tokens.md.
+  // storefront — the merchant mark added at Gate 45 to close gap G16, whose
+  // consumer is a payee/merchant Select's `leadingSlot`. Asserted by name
+  // rather than being folded into SAMPLE_NAMES so that a registry regression
+  // names THIS glyph instead of failing an anonymous sample row.
+  it('renders the storefront merchant mark', () => {
+    const { container } = render(<Icon name="storefront" />)
+    expect(container.querySelector('svg')).not.toBeNull()
+  })
+
+  // Material Round ships storefront.svg with no fill attribute of its own, so
+  // it inherits the fill="currentColor" Icon sets at the call site — the same
+  // path all 66 Material entries take. Asserted because an asset that arrived
+  // with a hardcoded fill would tint wrongly on a themed surface and nothing
+  // else here would catch it.
+  it('tints the storefront mark through currentColor', () => {
+    const { container } = render(<Icon name="storefront" />)
+    const svg = container.querySelector('svg')
+    expect(svg).toHaveAttribute('fill', 'currentColor')
+  })
+
   it('renders the logo_monarch brand mark', () => {
     const { container } = render(<Icon name="logo_monarch" />)
     expect(container.querySelector('svg')).not.toBeNull()

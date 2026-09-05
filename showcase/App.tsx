@@ -3516,6 +3516,7 @@ export default function App() {
               { label: 'People & Comms', names: ['person', 'account_circle', 'group', 'login', 'logout', 'notifications', 'mail'] },
               { label: 'App & Content', names: ['dashboard', 'calendar_today', 'schedule', 'link'] },
               { label: 'Ratings', names: ['star', 'star_border', 'favorite', 'favorite_border'] },
+              { label: 'Commerce', names: ['storefront'] },
               { label: 'Form Controls', names: ['radio_button_unchecked', 'radio_button_checked', 'check_box', 'check_box_outline_blank'] },
             ]
             const CUSTOM_GROUPS: { label: string; names: IconName[] }[] = [

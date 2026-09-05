@@ -32,6 +32,22 @@ export interface SelectProps {
   ariaLabel?: string
   /** Showcase only — forces a visual state without interaction. */
   previewState?: 'hover' | 'focus'
+  /** Width behaviour. `'fixed'` (default) keeps the 320px Figma demo box;
+   *  `'fill'` takes the select to 100% of its container, so a consumer can
+   *  size it from the layout instead of overriding DS rules from the app.
+   *  Same prop name and value names as `Field.sizing` (v2.0.0),
+   *  `CardBalance.sizing` (v1.11.0) and `CardFeaturesAndEducation.sizing`
+   *  (v1.5.0). Closes gap G15.
+   *
+   *  `'fixed'`, not `'hug'`: the default is a literal 320px box, not a
+   *  hug-contents one, so Figma's `hug` would name behaviour this component
+   *  does not have.
+   *
+   *  Nothing outranks `'fill'` here. `Field` had to declare `--fill` BEFORE
+   *  `--compact` so an icon-only square stayed square; `Select` exposes no
+   *  compact/icon-only variant and no other geometry-owning prop, so there is
+   *  no shape contract to order against. */
+  sizing?: 'fixed' | 'fill'
 }
 
 export function Select({
@@ -52,6 +68,7 @@ export function Select({
   name,
   ariaLabel,
   previewState,
+  sizing = 'fixed',
 }: SelectProps) {
   const autoId = useId()
   const inputId = id ?? autoId
@@ -69,6 +86,7 @@ export function Select({
     isDisabled && 'mn-select--disabled',
     isInvalid && 'mn-select--invalid',
     previewState && `mn-select--${previewState}`,
+    sizing === 'fill' && 'mn-select--fill',
   ]
     .filter(Boolean)
     .join(' ')

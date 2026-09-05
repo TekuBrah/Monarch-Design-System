@@ -64,6 +64,7 @@ import SignalCellularAltIcon from '@material-design-icons/svg/round/signal_cellu
 import WifiIcon from '@material-design-icons/svg/round/wifi.svg?react'
 import ReceiptLongIcon from '@material-design-icons/svg/round/receipt_long.svg?react'
 import QuestionMarkIcon from '@material-design-icons/svg/round/question_mark.svg?react'
+import StorefrontIcon from '@material-design-icons/svg/round/storefront.svg?react'
 
 // Custom icons (Assets/icons-custom/) — normalized to currentColor via scripts/normalize-custom-icons.mjs
 import CIconAiinsights from '../../../Assets/icons-custom/icon_aiinsights.svg?react'
@@ -177,6 +178,15 @@ export const ICONS = {
   star_border:            StarBorderIcon,
   favorite:               FavoriteIcon,
   favorite_border:        FavoriteBorderIcon,
+  // Commerce
+  // The merchant mark for a payee/merchant control's leading slot (Select
+  // exposes it as `leadingSlot`), closing gap G16. Sourced from Material
+  // Round like the other 66 entries above — Monarch has no custom storefront
+  // drawn, so this is the shipping asset and not a placeholder.
+  // NOT `icon_shopping`: that asset is a shopping BAG (handles over a bag
+  // body), which is a different noun. G16 was explicit that a near-miss must
+  // not be substituted.
+  storefront:             StorefrontIcon,
   // Form Controls
   radio_button_unchecked: RadioButtonUncheckedIcon,
   radio_button_checked:   RadioButtonCheckedIcon,

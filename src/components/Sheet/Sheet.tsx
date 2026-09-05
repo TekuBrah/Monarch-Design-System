@@ -52,6 +52,31 @@ export interface SheetProps {
    * so it still needs `ariaLabel`.
    */
   ariaLabel?: string
+  /**
+   * HEIGHT behaviour. `'hug'` (default) is today's sheet: the panel hugs its
+   * content and grows with it, capping at the existing
+   * `max-height: calc(100dvh - var(--brand-scale-1100))`. `'fill'` opens the
+   * panel AT that cap regardless of how little content it holds.
+   *
+   * This introduces NO new geometry: 'fill' takes the cap the panel already
+   * declares. No new literal, no new token, no second viewport expression.
+   *
+   * THE VALUES ARE 'hug' | 'fill', NOT 'fixed' | 'fill', and the departure
+   * from `Field.sizing` / `CardBalance.sizing` is deliberate. Those name
+   * their default `'fixed'` because it IS a literal box (240px / 161px), and
+   * CLAUDE.md records that Figma's `hug` "would name behaviour neither
+   * component has". Sheet is the opposite case: its default is genuinely
+   * hug-height — `.mn-sheet__content` is `flex: 0 1 auto`, shrink-only, and
+   * the CSS comment states outright that it "never opens at the cap
+   * regardless of content". Calling that `'fixed'` would name behaviour THIS
+   * component does not have. Same vocabulary, correct term for the axis.
+   *
+   * THE AXIS IS HEIGHT, where every other `sizing` prop in the DS governs
+   * width. That is safe here and is not a second vocabulary: the panel's
+   * width is invariant (`width: 100%`, no max-width — see gap G13), so
+   * `sizing` on Sheet has only one dimension it could mean.
+   */
+  sizing?: 'hug' | 'fill'
   id?: string
   className?: string
 }
@@ -79,6 +104,7 @@ export function Sheet({
   closeOnScrimClick = true,
   showCloseButton = true,
   ariaLabel,
+  sizing = 'hug',
   id,
   className,
 }: SheetProps) {
@@ -192,7 +218,9 @@ export function Sheet({
         aria-labelledby={title ? titleId : undefined}
         aria-label={title ? undefined : ariaLabel}
         tabIndex={-1}
-        className="mn-sheet__panel"
+        className={['mn-sheet__panel', sizing === 'fill' && 'mn-sheet__panel--fill']
+          .filter(Boolean)
+          .join(' ')}
       >
         {hasHeader && (
           <div className="mn-sheet__header">

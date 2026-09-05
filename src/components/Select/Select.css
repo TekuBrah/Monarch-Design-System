@@ -9,6 +9,33 @@
   width: 320px; /* Figma demo width; caller-controllable */
 }
 
+/* sizing='fill' — the container decides the width instead of the 320px Figma
+   demo box, closing gap G15. Until this existed the comment above was not
+   true: SelectProps exposed neither a sizing prop nor a className, so there
+   was no mechanism to control the width with, and an MVP screen rendered the
+   control 320 wide in a 343 column.
+
+   Same shape as Field.sizing (v2.0.0), and `width: 100%` for Field's reason
+   rather than CardBalance's `width: auto`: .mn-select declares a hard
+   `width`, not a `max-width`, so releasing it to `auto` would size the
+   control to its CONTENT — narrower than 'fixed', which is the trap
+   CardBalance's own comment warns about. `box-sizing: border-box` already
+   sits on .mn-select__control, and the root box carries no padding or border
+   of its own, so 100% needs no adjustment here.
+
+   `flex: 1 1 0` is load-bearing in a FLEX parent and inert in a GRID one, so
+   one declaration serves both. Both selectors are single-class (0,1,0), so
+   source ORDER is what lets this beat the base rule — same as Field.
+
+   NOTHING IS DECLARED AFTER THIS THAT MUST WIN. Field had to place --fill
+   above --compact because compact is a square icon-only shape contract;
+   Select has no compact variant and no other geometry-owning modifier, so
+   this rule has no equal-specificity competitor. */
+.mn-select--fill {
+  width: 100%;
+  flex: 1 1 0;
+}
+
 /* === The bordered field box === */
 .mn-select__control {
   position: relative;

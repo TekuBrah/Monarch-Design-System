@@ -691,6 +691,43 @@ A sized, colour-inheriting wrapper around a single Material Round SVG. Renders `
 | `name` | `IconName` | — | Required. Key of the bundled icon registry |
 | `size` | `IconSize` | `'m'` | `'xs'` \| `'s'` \| `'m'` \| `'l'` \| `'xl'` |
 
+### `storefront` (added v2.1.0, Gate 45 — closes gap G16)
+
+The merchant mark, for a payee/merchant control's leading slot (`Select`
+exposes it as `leadingSlot`). Sourced from `@material-design-icons/svg/round`
+like the majority of the registry. **Monarch has no custom storefront drawn, so
+this is the shipping asset and not a placeholder** — if a custom one is drawn
+later it should replace this under the same registry key, which costs consumers
+nothing.
+
+**It is not `icon_shopping`.** That asset is a shopping **bag** (handles over a
+bag body), a different noun. G16 was explicit that a near-miss must not be
+substituted, and this entry exists because the registry had no storefront and
+no store.
+
+Material Round ships `storefront.svg` with no `fill` attribute of its own, so
+it inherits the `fill="currentColor"` that `Icon` sets at the call site — the
+same path every other Material entry takes. That is asserted in
+`Icon.test.tsx`, because an asset arriving with a hardcoded fill would tint
+wrongly on a themed surface and nothing else would catch it.
+
+> **THE REGISTRY COUNT IS 103, AND THE PREVIOUS FIGURE WAS STALE.** A comment in
+> `Icon.test.tsx` read "101-entry" from Gate 4 until Gate 45, and the MVP's gap
+> register quoted that 101 as fact when opening G16 — a prose count nobody
+> re-derived became an external figure. Re-derived from disk at Gate 45:
+> **103 keys, 103 unique, 67 from `@material-design-icons/svg/round` + 36 from
+> `Assets/icons-custom`** (one of the custom entries, `logo_monarch`, is a brand
+> mark registered as an Icon on purpose — `Icon` tints via `currentColor` and
+> `Logo` does not). This figure is dated 2026-09-05; re-run the parser rather
+> than trusting it:
+>
+> ```bash
+> node -e "const s=require('fs').readFileSync('src/components/Icon/icons.ts','utf8');const b=s.slice(s.indexOf('export const ICONS'));const k=[...b.matchAll(/^\s+([A-Za-z0-9_]+):\s*\w+,?\s*$/gm)].map(m=>m[1]);console.log('keys',k.length,'unique',new Set(k).size)"
+> ```
+>
+> A line-scoped `grep -c` over this file does **not** answer the same question —
+> it counts import lines and registry rows together.
+
 ### Size → token mapping
 
 | size | px | ElementWrapper size | `--brand-scale-*` token |
@@ -2121,6 +2158,56 @@ duplicate it.
 | `name` | `string` | — | Forwarded to `<input>` |
 | `ariaLabel` | `string` | — | Accessible name when no visible `label` |
 | `previewState` | `'hover' \| 'focus'` | — | Showcase only |
+| `sizing` | `'fixed' \| 'fill'` | `'fixed'` | **Added v2.1.0 (Gate 45)** — see below |
+
+### `sizing` (added v2.1.0, Gate 45 — closes gap G15)
+
+`.mn-select` declares `width: 320px`, and its own comment called that value
+"caller-controllable" while `SelectProps` exposed **neither a `sizing` prop nor
+a `className`**. There was no mechanism to control it with, so the comment was
+not true. Measured in the MVP: the control rendered **320 wide in a 343 column**,
+23px short, at both 375 and 430. This is gap B2 on `Field` again, on a different
+component.
+
+| | |
+|---|---|
+| values | `'fixed'` (default, today's 320px box) and `'fill'` |
+| modifier | `.mn-select--fill`, declared **after** the base rule — equal specificity (0,1,0), so source order is what makes it win |
+| releases | `width: 100%` |
+| also sets | `flex: 1 1 0` |
+
+**`width: 100%`, not CardBalance's `width: auto`.** This follows `Field.sizing`
+(v2.0.0) rather than `CardBalance.sizing` (v1.11.0), for Field's reason:
+`.mn-select` declares a hard `width`, not a `max-width`, so releasing it to
+`auto` would size the control to its **content** — narrower than `'fixed'`, the
+exact trap CardBalance's own comment warns about. `box-sizing: border-box` sits
+on `.mn-select__control`, and the root box carries no padding or border of its
+own, so 100% needs no adjustment.
+
+**`'fixed'`, not `'hug'`** — the default is a literal 320px box, not a
+hug-contents one, so Figma's `hug` would name behaviour this component does not
+have. Same reasoning CLAUDE.md records for the two `Card` instances.
+
+**Nothing outranks `'fill'` here, and that is a real difference from `Field`.**
+`Field` had to declare `--fill` **before** `--compact` so that `isCompact` with
+`sizing="fill"` stayed a square icon-only box. `Select` exposes no compact
+variant and no other geometry-owning prop, so there is no shape contract to
+order against and no ordering hazard to preserve.
+
+**Verify by DECLARATION, not by pixels.** Any container at or under 320px
+renders both modes identically and proves nothing — the standing rule for this
+prop family. The unit tests assert the modifier composes correctly alongside the
+`appearance` modifier; they cannot assert width, because `vitest.config.ts` sets
+no `test.css` option and no stylesheet is ever applied in jsdom.
+
+> **NOT FIXED, and deliberately: `SelectTransfer` and `SelectWalletAccount`
+> carry the identical literal.** `SelectTransfer.css:9` and
+> `SelectWalletAccount.css:16` both declare `width: 320px` with the same
+> "caller-controllable" comment, and neither exposes a `sizing` prop or a
+> `className` either. They are **independent components** — own root classes,
+> they do not compose `Select` — so this fix does not reach them. G15 names
+> `.mn-select` only; the two siblings are registered as **new gap G19** and were
+> not touched at Gate 45.
 
 ### State → token mapping
 
@@ -4841,6 +4928,93 @@ component — they are `children`.
 | `closeOnScrimClick` | `boolean` | `true` | |
 | `ariaLabel` | `string` | — | Accessible name when there is no visible `title` — see below |
 | `id`, `className` | `string` | — | |
+| `sizing` | `'hug' \| 'fill'` | `'hug'` | **Added v2.1.0 (Gate 45)** — height, not width; see below |
+
+### `sizing` (added v2.1.0, Gate 45)
+
+The mechanism behind an **in-place push**: one `Sheet` stays mounted, its props
+are swapped, and `'fill'` raises the panel to full height without a second
+overlay. `'hug'` is today's behaviour, unchanged.
+
+| | |
+|---|---|
+| values | `'hug'` (default, today's behaviour) and `'fill'` |
+| modifier | `.mn-sheet__panel--fill`, declared **after** the base rule — equal specificity (0,1,0), so source order is what makes it win |
+| sets | `height: 100%` on the panel |
+| also sets | `flex: 1 1 auto` on `.mn-sheet__content`, via `.mn-sheet__panel--fill .mn-sheet__content` (0,2,0) — wins on **specificity**, not order |
+
+**IT INTRODUCES NO NEW GEOMETRY.** The panel already declares
+`max-height: calc(100dvh - var(--brand-scale-1100))`, but `.mn-sheet__content`
+is `flex: 0 1 auto` — shrink-only — so the sheet hugs its content and, in that
+region's own words, "never opens at the cap regardless of content". `'fill'`
+means **take the cap that is already there**. `height: 100%` resolves against
+`.mn-sheet`, which is `position: fixed; inset: 0`, so it asks for the full
+viewport and the existing `max-height` clamps it. There is no new literal, no
+new token and no second viewport expression: the status-bar inset stays defined
+in one place, and changing `--brand-scale-1100` moves both modes together.
+
+**`height`, not `flex-grow: 1`.** Both reach the cap inside this flex parent;
+`height` keeps the rule meaningful if the panel is ever taken out of one.
+
+**The second rule is not cosmetic.** Releasing the panel's height alone leaves
+the sheet visibly broken: `.mn-sheet__content` keeps hugging in a now-tall
+panel, while `.mn-sheet__actions` and `.mn-sheet__home-indicator-frame` are
+`flex-shrink: 0` and follow immediately after it — so the buttons and the home
+indicator float in the middle with dead space beneath them. Letting the content
+region take the slack pins both back to the bottom edge and keeps the scroll
+region the only flexible one.
+
+#### Why the values are `'hug' | 'fill'` and not `'fixed' | 'fill'`
+
+This departs from `Field.sizing`, `CardBalance.sizing` and
+`CardFeaturesAndEducation.sizing` **deliberately, and on those props' own
+stated reasoning.** CLAUDE.md records that the two `Card` instances are named
+`'fixed'` rather than `'hug'` because their default is a literal fixed width
+(161px / 109px), "so Figma's `hug` would name behaviour neither component has".
+
+`Sheet` is the opposite case. Its default height is genuinely hug-contents —
+`flex: 0 1 auto`, shrink-only, growing with its content up to a cap it never
+reaches on its own. Calling that `'fixed'` would name behaviour **this**
+component does not have. Same DS vocabulary (Fixed reacts to nothing, Hug
+reacts to content, Fill reacts to container), correct term for what is actually
+there.
+
+#### Why the axis is height, and why that is safe
+
+Every other `sizing` prop in the DS governs **width**. This one governs
+**height**, and the prop is still called `sizing` rather than something like
+`heightSizing` because a second vocabulary for one prop is the wart worth
+avoiding. It is unambiguous here: the panel's width is invariant
+(`width: 100%`, no max-width — see gap G13), so `sizing` on `Sheet` has only
+one dimension it could mean.
+
+#### The in-place push — what the DS ships and what it does not
+
+The DS ships the **mechanism**. It does not ship a picker. Merchant options are
+derived from data, never from labels, so the DS must not carry them; the
+merchant picker itself is composed app-side.
+
+Everything else the push needs was already a prop, and no new component was
+required:
+
+| requirement | mechanism |
+|---|---|
+| swap the title | `title` |
+| back arrow replaces a trailing action | `headerIconLeft` + `showCloseButton={false}` |
+| swap the body for a searchable list | `children`, holding a `Menu` + `MenuItem` rows |
+| raise to full height, then return | **`sizing`** — the only thing that was missing |
+| ONE overlay, ONE scrim, ONE dismiss | `Sheet` renders exactly one `Blanket` per instance; keep one mounted and swap props |
+
+**A second stacked sheet is rejected**, and the unit tests assert against it
+directly: the panel node must be the *same* element across the swap
+(remounting would be a second overlay wearing the first one's markup, and would
+reset focus), exactly one `[role="dialog"]` must exist, and the scrim count
+must not change between modes.
+
+`showCloseButton` is deliberately **not** auto-suppressed when
+`headerIconLeft` is supplied — keying one control's presence off an unrelated
+prop is silent behaviour — so the back-arrow header is an explicit two-prop
+combination and is tested as one.
 
 **The dialog must have an accessible name**, measured not assumed — without
 one it fails axe's `aria-dialog-name`. This is enforced by a **dev-only

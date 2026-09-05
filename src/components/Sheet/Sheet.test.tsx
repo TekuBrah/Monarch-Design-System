@@ -273,4 +273,136 @@ describe('Sheet', () => {
     )
     expect(await axe(baseElement)).toHaveNoViolations()
   })
+
+  // sizing (Gate 45) — the mechanism behind an in-place push: one Sheet stays
+  // mounted, its props are swapped, and 'fill' raises it to the cap it already
+  // declares. ONE overlay, ONE scrim, ONE dismiss gesture; a second stacked
+  // sheet was rejected and none of these tests should ever mount two.
+  //
+  // Assertions go through `baseElement` for the portal reason above, and
+  // through the MODIFIER rather than a measured height — vitest.config.ts sets
+  // no test.css option, so no stylesheet is applied in jsdom and a height read
+  // here would be meaningless. What the CSS does with the modifier is
+  // documented in Sheet.css and belongs to a browser check, not to this file.
+  describe('sizing', () => {
+    it('omits the fill modifier by default', () => {
+      const { baseElement } = render(
+        <Sheet isOpen onClose={() => {}} title="Filter">
+          Body
+        </Sheet>,
+      )
+      const panel = baseElement.querySelector('.mn-sheet__panel')
+      expect(panel).not.toBeNull()
+      expect(panel).not.toHaveClass('mn-sheet__panel--fill')
+    })
+
+    it('applies the fill modifier when sizing is fill', () => {
+      const { baseElement } = render(
+        <Sheet isOpen onClose={() => {}} title="Filter" sizing="fill">
+          Body
+        </Sheet>,
+      )
+      expect(baseElement.querySelector('.mn-sheet__panel')).toHaveClass('mn-sheet__panel--fill')
+    })
+
+    it("treats an explicit 'hug' as identical to omitting the prop", () => {
+      const a = render(
+        <Sheet isOpen onClose={() => {}} title="Filter" sizing="hug">
+          Body
+        </Sheet>,
+      )
+      const explicit = (a.baseElement.querySelector('.mn-sheet__panel') as HTMLElement).className
+      a.unmount()
+
+      const b = render(
+        <Sheet isOpen onClose={() => {}} title="Filter">
+          Body
+        </Sheet>,
+      )
+      const omitted = (b.baseElement.querySelector('.mn-sheet__panel') as HTMLElement).className
+
+      expect(explicit).toBe(omitted)
+    })
+
+    // THE IN-PLACE PUSH, asserted as one mounted Sheet whose props change.
+    // The dialog node must survive the swap — remounting it would be a second
+    // overlay wearing the first one's markup, and would reset focus.
+    it('raises and returns in place, on one dialog, across a prop swap', () => {
+      const { baseElement, rerender } = render(
+        <Sheet isOpen onClose={() => {}} title="Filter">
+          Body
+        </Sheet>,
+      )
+      const before = baseElement.querySelector('.mn-sheet__panel')
+      expect(before).not.toHaveClass('mn-sheet__panel--fill')
+
+      rerender(
+        <Sheet isOpen onClose={() => {}} title="Select merchant" sizing="fill">
+          Merchants
+        </Sheet>,
+      )
+      const during = baseElement.querySelector('.mn-sheet__panel')
+      expect(during).toHaveClass('mn-sheet__panel--fill')
+      expect(during).toBe(before)
+      expect(baseElement.querySelectorAll('[role="dialog"]')).toHaveLength(1)
+
+      rerender(
+        <Sheet isOpen onClose={() => {}} title="Filter">
+          Body
+        </Sheet>,
+      )
+      const after = baseElement.querySelector('.mn-sheet__panel')
+      expect(after).not.toHaveClass('mn-sheet__panel--fill')
+      expect(after).toBe(before)
+    })
+
+    // The scrim is Sheet's own Blanket. One sheet must never render two, and a
+    // sizing change must not add one.
+    it('renders exactly one scrim in either mode', () => {
+      const { baseElement, rerender } = render(
+        <Sheet isOpen onClose={() => {}} title="Filter">
+          Body
+        </Sheet>,
+      )
+      const hug = baseElement.querySelectorAll('.mn-blanket').length
+      expect(hug).toBe(1)
+
+      rerender(
+        <Sheet isOpen onClose={() => {}} title="Select merchant" sizing="fill">
+          Merchants
+        </Sheet>,
+      )
+      expect(baseElement.querySelectorAll('.mn-blanket')).toHaveLength(hug)
+    })
+
+    // A back arrow in headerIconLeft with the ✕ suppressed is the picker's
+    // header shape. showCloseButton is deliberately NOT auto-suppressed, so
+    // this combination has to be asserted rather than assumed.
+    it('supports a back-arrow header with the close button suppressed', () => {
+      render(
+        <Sheet
+          isOpen
+          onClose={() => {}}
+          title="Select merchant"
+          sizing="fill"
+          headerIconLeft={<button aria-label="Back">‹</button>}
+          showCloseButton={false}
+        >
+          Merchants
+        </Sheet>,
+      )
+      expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument()
+      expect(screen.getByRole('dialog', { name: 'Select merchant' })).toBeInTheDocument()
+    })
+
+    it('has no axe violations while filling', async () => {
+      const { baseElement } = render(
+        <Sheet isOpen onClose={() => {}} title="Select merchant" sizing="fill">
+          Merchants
+        </Sheet>,
+      )
+      expect(await axe(baseElement)).toHaveNoViolations()
+    })
+  })
 })

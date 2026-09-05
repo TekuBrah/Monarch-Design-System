@@ -44,6 +44,39 @@
   /* No drop shadow — Figma's sheet has none; the Blanket scrim provides depth. */
 }
 
+/* sizing='fill' — open AT the cap the panel already declares, instead of
+   hugging up to it. NO NEW GEOMETRY: there is no second viewport expression
+   here and no new literal. `height: 100%` resolves against .mn-sheet, which
+   is `position: fixed; inset: 0`, so it asks for the full viewport and the
+   max-height above clamps it to the same calc() the hug mode caps at. The
+   status-bar inset therefore stays defined in exactly one place; changing
+   --brand-scale-1100 moves both modes together.
+
+   `height`, not `flex-grow: 1`: both reach the cap inside this flex parent,
+   but height keeps the rule meaningful if the panel is ever taken out of one.
+
+   Equal specificity with .mn-sheet__panel (0,1,0), so source ORDER is what
+   lets it win — the same mechanism Field.sizing and CardBalance.sizing use. */
+.mn-sheet__panel--fill {
+  height: 100%;
+}
+
+/* NOT COSMETIC, AND NOT OPTIONAL — releasing the panel's height alone leaves
+   the sheet visibly broken. .mn-sheet__content is `flex: 0 1 auto`
+   (shrink-only) so it keeps hugging its content in a now-tall panel, while
+   .mn-sheet__actions and .mn-sheet__home-indicator-frame are `flex-shrink: 0`
+   and follow immediately after it. The result is a full-height sheet whose
+   buttons and home indicator float in the middle with dead space beneath
+   them. Letting the content region take the slack pins both back to the
+   bottom edge and keeps the scroll region the only flexible one.
+
+   Descendant selector (0,2,0) beats .mn-sheet__content (0,1,0) on
+   SPECIFICITY, so unlike the rule above this one does not depend on source
+   order. */
+.mn-sheet__panel--fill .mn-sheet__content {
+  flex: 1 1 auto;
+}
+
 /* --- Header (optional region) ------------------------------------------- */
 /* Left-aligned title + close, unlike Modal's spacer-centred title. */
 .mn-sheet__header {
