@@ -711,14 +711,14 @@ same path every other Material entry takes. That is asserted in
 `Icon.test.tsx`, because an asset arriving with a hardcoded fill would tint
 wrongly on a themed surface and nothing else would catch it.
 
-> **THE REGISTRY COUNT IS 103, AND THE PREVIOUS FIGURE WAS STALE.** A comment in
+> **THE REGISTRY COUNT IS 106, AND THE PREVIOUS FIGURE WAS STALE.** A comment in
 > `Icon.test.tsx` read "101-entry" from Gate 4 until Gate 45, and the MVP's gap
 > register quoted that 101 as fact when opening G16 — a prose count nobody
 > re-derived became an external figure. Re-derived from disk at Gate 45:
-> **103 keys, 103 unique, 67 from `@material-design-icons/svg/round` + 36 from
+> **106 keys, 106 unique, 70 from `@material-design-icons/svg/round` + 36 from
 > `Assets/icons-custom`** (one of the custom entries, `logo_monarch`, is a brand
 > mark registered as an Icon on purpose — `Icon` tints via `currentColor` and
-> `Logo` does not). This figure is dated 2026-09-05; re-run the parser rather
+> `Logo` does not). This figure is dated 2026-09-09; re-run the parser rather
 > than trusting it:
 >
 > ```bash
@@ -742,9 +742,9 @@ wrongly on a themed surface and nothing else would catch it.
 
 ### Bundled set
 
-**102 icons total** — 66 Material Round + 36 Custom. All keys are in `IconName` (derived from `keyof typeof ICONS`). (Icons are added on-demand as components need them, not front-loaded — this list grows across sessions; verify against `icons.ts` directly rather than trusting a stale count here if it's been a while.)
+**106 icons total** — 70 Material Round + 36 Custom. All keys are in `IconName` (derived from `keyof typeof ICONS`). (Icons are added on-demand as components need them, not front-loaded — this list grows across sessions; verify against `icons.ts` directly rather than trusting a stale count here if it's been a while.)
 
-**Material Round (66):** `add`, `remove`, `close`, `check`, `edit`, `delete`, `content_copy`, `refresh`, `share`, `send`, `download`, `upload`, `open_in_new`, `attach_file`, `home`, `menu`, `arrow_back`, `arrow_forward`, `arrow_upward`, `arrow_downward`, `chevron_left`, `chevron_right`, `expand_more`, `expand_less`, `unfold_more`, `search`, `filter_list`, `sort`, `settings`, `tune`, `more_vert`, `more_horiz`, `info`, `warning`, `error`, `check_circle`, `done`, `cancel`, `remove_circle`, `help_outline`, `visibility`, `visibility_off`, `person`, `account_circle`, `group`, `login`, `logout`, `notifications`, `mail`, `dashboard`, `calendar_today`, `calendar_month`, `schedule`, `link`, `star`, `star_border`, `favorite`, `favorite_border`, `radio_button_unchecked`, `radio_button_checked`, `check_box`, `check_box_outline_blank`, `signal_cellular_alt`, `wifi`, `receipt_long`, `question_mark`
+**Material Round (70):** `add`, `remove`, `close`, `check`, `edit`, `delete`, `content_copy`, `refresh`, `share`, `send`, `download`, `upload`, `open_in_new`, `attach_file`, `home`, `menu`, `arrow_back`, `arrow_forward`, `arrow_upward`, `arrow_downward`, `chevron_left`, `chevron_right`, `expand_more`, `expand_less`, `unfold_more`, `search`, `filter_list`, `sort`, `settings`, `tune`, `more_vert`, `more_horiz`, `info`, `warning`, `error`, `check_circle`, `done`, `cancel`, `remove_circle`, `help_outline`, `visibility`, `visibility_off`, `person`, `account_circle`, `group`, `login`, `logout`, `notifications`, `mail`, `dashboard`, `calendar_today`, `calendar_month`, `schedule`, `link`, `star`, `star_border`, `favorite`, `favorite_border`, `radio_button_unchecked`, `radio_button_checked`, `check_box`, `check_box_outline_blank`, `signal_cellular_alt`, `wifi`, `receipt_long`, `question_mark`, `storefront`, `link_off`, `list_alt`, `credit_card`
 
 **Custom (36):** `icon_finance`, `icon_bank`, `icon_wallet`, `icon_stocks`, `icon_crypto`, `icon_gold`, `icon_battery_horizontal`, `icon_transfer`, `icon_receive`, `icon_buy_and_sell_crypto`, `icon_crypto_transfers`, `icon_grocery`, `icon_grocery_1`, `icon_food`, `icon_car`, `icon_healthcare`, `icon_healthcare_1`, `icon_shopping`, `icon_bills`, `icon_budget`, `icon_duration`, `icon_aiinsights`, `icon_aimage`, `icon_track_spending`, `icon_spending_alert`, `icon_scheduled_payments`, `icon_automatic_savings`, `icon_home`, `icon_more`, `icon_chevron_expand_less`, `icon_chevron_expand_more`, `icon_triangle_up`, `icon_triangle_down`, `icon_pdf`, `icon_monarchacademy`, `logo_monarch`
 

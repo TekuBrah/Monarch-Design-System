@@ -3514,9 +3514,9 @@ export default function App() {
               { label: 'Search & Controls', names: ['search', 'filter_list', 'sort', 'settings', 'tune', 'more_vert', 'more_horiz'] },
               { label: 'Status & Feedback', names: ['info', 'warning', 'error', 'check_circle', 'check', 'done', 'cancel', 'help_outline', 'visibility', 'visibility_off'] },
               { label: 'People & Comms', names: ['person', 'account_circle', 'group', 'login', 'logout', 'notifications', 'mail'] },
-              { label: 'App & Content', names: ['dashboard', 'calendar_today', 'schedule', 'link'] },
+              { label: 'App & Content', names: ['dashboard', 'calendar_today', 'schedule', 'link', 'link_off', 'list_alt'] },
               { label: 'Ratings', names: ['star', 'star_border', 'favorite', 'favorite_border'] },
-              { label: 'Commerce', names: ['storefront'] },
+              { label: 'Commerce', names: ['storefront', 'credit_card'] },
               { label: 'Form Controls', names: ['radio_button_unchecked', 'radio_button_checked', 'check_box', 'check_box_outline_blank'] },
             ]
             const CUSTOM_GROUPS: { label: string; names: IconName[] }[] = [
@@ -3534,7 +3534,7 @@ export default function App() {
               </div>
             )
             return (
-              <Section id="icon" title="Icon" description="102 icons (66 Material Round + 36 Custom) — sized via --brand-scale-* (xs/s/m/l/xl) — inherits currentColor">
+              <Section id="icon" title="Icon" description="106 icons (70 Material Round + 36 Custom) — sized via --brand-scale-* (xs/s/m/l/xl) — inherits currentColor">
 
                 {/* v1.4.0: the brand mark + the 32px size step it needs */}
                 <div style={{ marginBottom: '1.75rem' }}>

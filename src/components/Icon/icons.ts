@@ -65,6 +65,9 @@ import WifiIcon from '@material-design-icons/svg/round/wifi.svg?react'
 import ReceiptLongIcon from '@material-design-icons/svg/round/receipt_long.svg?react'
 import QuestionMarkIcon from '@material-design-icons/svg/round/question_mark.svg?react'
 import StorefrontIcon from '@material-design-icons/svg/round/storefront.svg?react'
+import LinkOffIcon from '@material-design-icons/svg/round/link_off.svg?react'
+import ListAltIcon from '@material-design-icons/svg/round/list_alt.svg?react'
+import CreditCardIcon from '@material-design-icons/svg/round/credit_card.svg?react'
 
 // Custom icons (Assets/icons-custom/) — normalized to currentColor via scripts/normalize-custom-icons.mjs
 import CIconAiinsights from '../../../Assets/icons-custom/icon_aiinsights.svg?react'
@@ -173,12 +176,15 @@ export const ICONS = {
   calendar_month:         CalendarMonthIcon,
   schedule:               ScheduleIcon,
   link:                   LinkIcon,
+  link_off:               LinkOffIcon,
+  list_alt:               ListAltIcon,
   // Ratings
   star:                   StarIcon,
   star_border:            StarBorderIcon,
   favorite:               FavoriteIcon,
   favorite_border:        FavoriteBorderIcon,
   // Commerce
+  credit_card:            CreditCardIcon,
   // The merchant mark for a payee/merchant control's leading slot (Select
   // exposes it as `leadingSlot`), closing gap G16. Sourced from Material
   // Round like the other 66 entries above — Monarch has no custom storefront

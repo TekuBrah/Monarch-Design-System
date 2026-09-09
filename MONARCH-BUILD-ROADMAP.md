@@ -26,6 +26,20 @@ if one does need revisiting, note the reason and the date here.
 | D6 | **Package specifier is `@monarch/design-system` everywhere** | Showcase and MVP import identically. Showcase becomes consumer #1 and dogfoods the package before the MVP depends on it. |
 | D7 | **No visual-regression tooling** | Screenshot tooling has been unreliable throughout this project. `getComputedStyle` in both themes remains the verification standard. |
 | D8 | **No pnpm workspaces / monorepo** | One package, one consumer, separate repos by design. Two Vite configs is sufficient machinery. |
+| D9 | **OCR runs client-side; no backend, no API key** | Receipt extraction runs in the browser via Tesseract.js (WebAssembly, MIT); the language model lazy-loads and the image never leaves the device. Rejected: a cloud OCR API (exposes a key in page source and routes user photographs to third-party servers) and a Python backend (infrastructure the MVP does not have and will not acquire). |
+
+**D7 revised 09/09/2026 — the decision no longer holds for the MVP repo. D7 itself is left as
+written, as the dated record of what was decided and why.**
+
+Reason: `Monarch-MVP` has carried committed Playwright visual-regression baselines since its
+Gate 7, and holds 112 baselines as of MVP Gate 49. D7 was locked on the premise that screenshot
+tooling had been unreliable throughout the project; that premise was about ad-hoc capture, and it
+did not survive baselines being committed to the repo and compared run-over-run.
+
+Scope of the revision: **the MVP repo only.** `Monarch-Design-System` has no Playwright, no
+visual-regression baselines, and acquires none here — in this repo `getComputedStyle` in both
+themes remains the verification standard exactly as D7 states. D7 is therefore superseded where
+the MVP is concerned and still current where the DS is concerned.
 
 ---
 

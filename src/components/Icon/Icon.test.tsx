@@ -6,13 +6,13 @@ import type { IconName, IconSize } from './Icon'
 
 const SIZES: IconSize[] = ['xs', 's', 'm', 'l']
 
-// Deviation, flagged: IconName is a 103-entry asset REGISTRY, not a variant
+// Deviation, flagged: IconName is a 106-entry asset REGISTRY, not a variant
 // axis. Enumerating it would be inventory testing, not smoke — so a
 // representative sample is used and IconSize is iterated in full instead
 // (same reasoning as Logo's LogoName exclusion in Batch 1).
 //
 // THE COUNT WAS STALE AND HAD PROPAGATED. This comment read "101-entry" from
-// Gate 4 until Gate 45; a parser over the ICONS object measures 103 (67 from
+// Gate 4 until Gate 45; a parser over the ICONS object measures 106 (70 from
 // @material-design-icons/svg/round + 36 from Assets/icons-custom, one of
 // which — logo_monarch — is a brand mark). The MVP's gap register quoted the
 // 101 as fact when opening G16, so a comment nobody re-derived became an
