@@ -24,6 +24,7 @@ import { Label } from '@monarch/design-system'
 import { Toggle } from '@monarch/design-system'
 import { ProgressStepper } from '@monarch/design-system'
 import { Tag } from '@monarch/design-system'
+import { InlineMessage } from '@monarch/design-system'
 import { IconObject } from '@monarch/design-system'
 import type { IconObjectColor, IconObjectSize } from '@monarch/design-system'
 import { Checkbox } from '@monarch/design-system'
@@ -1261,6 +1262,7 @@ const SIDEBAR_CATEGORIES: { name: string; items: SidebarSection[] }[] = [
     { slug: 'tag', label: 'Tag' },
     { slug: 'loader', label: 'Loader' },
     { slug: 'toast', label: 'Toast' },
+    { slug: 'inline-message', label: 'Inline Message' },
     { slug: 'progress-bar', label: 'Progress Bar' },
     { slug: 'progress-ring', label: 'Progress Ring' },
     { slug: 'progress-stepper', label: 'Progress Stepper' },
@@ -2488,6 +2490,34 @@ export default function App() {
 
       {tab === 'components' && <hr style={HR} />}
 
+      {/* ── Inline Message ─────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <Section id="inline-message" title="Inline Message" description="Title + body + optional actions, in the page flow. Never takes focus, never blocks. Tones: neutral, warning. isFramed paints its own surface; set it false inside a container that already does.">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '400px' }}>
+            <InlineMessage
+              title="Add a receipt"
+              actions={<Button variant="secondary" size="m" label="Add receipt" leadingIcon={<Icon name="photo_camera" size="m" />} />}
+            >
+              Snap one to keep it with this transaction.
+            </InlineMessage>
+            <InlineMessage
+              tone="warning"
+              title="We couldn't read this photo"
+              actions={<Button variant="secondary" size="m" label="Retake photo" leadingIcon={<Icon name="photo_camera" size="m" />} />}
+            >
+              It was too hard to make out. Try again with the receipt flat, in good light and in focus — or keep this one.
+            </InlineMessage>
+            <div style={{ padding: '12px', background: 'var(--mapped-surface-subtlest-default)', borderRadius: '8px' }}>
+              <InlineMessage tone="warning" title="Unframed, inside a container that paints the surface" isFramed={false}>
+                No second box drawn on an identical ground.
+              </InlineMessage>
+            </div>
+          </div>
+        </Section>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
       {/* ── Progress Bar ───────────────────────────────────────────── */}
       {tab === 'components' && (
         <Section id="progress-bar" title="Progress Bar" description="Horizontal track, fill = success surface. Two versions: percentage-only, and a stepper with the current/total readout. Sizes S (caption) / M (body). Drag the controls to drive it.">
@@ -3514,7 +3544,7 @@ export default function App() {
               { label: 'Search & Controls', names: ['search', 'filter_list', 'sort', 'settings', 'tune', 'more_vert', 'more_horiz'] },
               { label: 'Status & Feedback', names: ['info', 'warning', 'error', 'check_circle', 'check', 'done', 'cancel', 'help_outline', 'visibility', 'visibility_off'] },
               { label: 'People & Comms', names: ['person', 'account_circle', 'group', 'login', 'logout', 'notifications', 'mail'] },
-              { label: 'App & Content', names: ['dashboard', 'calendar_today', 'schedule', 'link', 'link_off', 'list_alt'] },
+              { label: 'App & Content', names: ['dashboard', 'calendar_today', 'schedule', 'link', 'link_off', 'list_alt', 'photo_camera'] },
               { label: 'Ratings', names: ['star', 'star_border', 'favorite', 'favorite_border'] },
               { label: 'Commerce', names: ['storefront', 'credit_card'] },
               { label: 'Form Controls', names: ['radio_button_unchecked', 'radio_button_checked', 'check_box', 'check_box_outline_blank'] },

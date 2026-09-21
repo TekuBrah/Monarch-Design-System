@@ -47,6 +47,7 @@
 @import '../components/Header/HeaderDefault.css';
 @import '../components/IconButton/IconButton.css';
 @import '../components/IconObject/IconObject.css';
+@import '../components/InlineMessage/InlineMessage.css';
 @import '../components/Item/ChartLegendItem.css';
 @import '../components/Item/ListItem.css';
 @import '../components/Item/SummaryItem.css';

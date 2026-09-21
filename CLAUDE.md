@@ -719,6 +719,190 @@ This is the same demonstration Gate 31 ran for `GradientToken`/`ShadowToken`,
 and it is the only thing that distinguishes a real fix here from a cosmetic
 one. Token sources were restored afterwards and `src/tokens` verified clean.
 
+## Gate 62 — InlineMessage, photo_camera, G31; warning/subtle text measured (v2.4.0)
+
+Four gaps the MVP had routed around for four gates, plus its register entry
+G31. Branch `gate62` off `main` at `586c859`. Release notes in `CHANGELOG.md`
+v2.4.0; component detail in `docs/component-tokens.md`.
+
+### 0 · RULING: colours are used EXACTLY as designed in Figma. Standing.
+
+**Teku, Gate 62: "Use colors exactly as i designed in figma, they already have
+tokens."** A token's value is Figma's. **Never hand-edit a value in
+`design-tokens/**` to fix contrast** — measure it, report it, and leave the
+change to Figma. This supersedes, for new work, the hand-edit practice Gate 36
+used on `text.primary` (that edit stays where it is; this ruling does not undo
+it).
+
+An earlier draft of this gate re-bound `--mapped-text-warning-default` in both
+mapped JSONs (light 500 → 800, dark 600 → 300, plus hover/pressed) and added a
+contrast test asserting the new values. **Both were reverted on this ruling**:
+`design-tokens/**`, `globals.css`, every `src/tokens/*.ts` and
+`src/test/tokens.test.ts` are byte-identical to v2.3.0. **v2.4.0 changes no
+token value.**
+
+### 1 · `--mapped-text-warning-default` is a TEXT token. Its Figma value fails AA.
+
+Of the three diagnoses the brief offered — wrong value, a fill/accent token
+misused as text, or a mapping picking the wrong source — the evidence says it is
+a text token, and the mapping is faithful:
+
+- **Declared as text.** `text.Warning.default` in both
+  `design-tokens/Mapped/Light.json` and `Dark.json`, inside the `text` group,
+  beside its own `on-color` sibling (the member meant for fills). Figma scopes
+  carry no signal: all 191 mapped tokens are `ALL_SCOPES`.
+- **Mapping faithful.** Source `{Warning.500}` light / `{Warning.600}` dark
+  emits `var(--alias-warning-500)` / `-600` exactly.
+- **It shares its step with icon and border.** `text-`, `icon-` and
+  `border-warning-default` bind the same step in both themes — the pattern Gate
+  36 found on `text-primary`. Whether that is intended is a design question, and
+  under §0 it is answered in Figma.
+
+**Measured at the Figma value, every surface, both themes.** ⁽ⁿ⁾ marks a ground
+on which body text (`--mapped-text-default-default`) also fails — in dark, no
+text token in the system clears 4.5 on every surface.
+
+| surface | light ground | ratio | dark ground | ratio | class |
+|---|---|---|---|---|---|
+| `primary-default` | #0358cc | ❌ 2.74 | #0358cc | ❌ 1.79 | hue fill |
+| `primary-default-hover` | #024299 | ❌ 4.00 | #024299 | ❌ 2.61 | hue fill |
+| `primary-default-subtle` | #ffffff | ❌ 2.34 | #000000 | 5.86 | neutral ground |
+| `primary-default-subtle-hover` | #f9f9f9 | ❌ 2.22 | #262626 | ❌ 4.22 | neutral ground |
+| `primary-default-pressed` | #022c66 | 5.77 | #022c66 | ❌ 3.77 | hue fill |
+| `primary-default-subtle-pressed` | #e5e5e5 | ❌ 1.86 | #4c4c4c | ❌ 2.40 | neutral ground |
+| `primary-default-subtle-selected` | #f2f2f2 | ❌ 2.09 | #262626 | ❌ 4.22 | neutral ground |
+| `page` | #ffffff | ❌ 2.34 | #000000 | 5.86 | neutral ground |
+| `page-secondary` | #f9f9f9 | ❌ 2.22 | #262626 | ❌ 4.22 | neutral ground |
+| `subtle-default` | #f2f2f2 | ❌ 2.09 | #262626 | ❌ 4.22 | neutral ground |
+| `subtle-hover` | #e5e5e5 | ❌ 1.86 | #4c4c4c | ❌ 2.40 | neutral ground |
+| `subtle-pressed` | #d7d7d7 | ❌ 1.63 | #717171 | ❌ 1.36 ⁽ⁿ⁾ | neutral ground |
+| `error-default` | #bc3f42 | ❌ 2.29 | #bc3f42 | ❌ 1.49 | hue fill |
+| `error-default-hover` | #8d2f31 | ❌ 3.48 | #8d2f31 | ❌ 2.27 | hue fill |
+| `error-default-pressed` | #5e2021 | 5.27 | #5e2021 | ❌ 3.44 | hue fill |
+| `information-default` | #006789 | ❌ 2.72 | #006789 | ❌ 1.77 | hue fill |
+| `information-default-hover` | #00455c | ❌ 4.48 | #00455c | ❌ 2.92 | hue fill |
+| `information-default-pressed` | #00222e | 7.08 | #00222e | 4.62 | hue fill |
+| `warning-default` | #99532b | ❌ 2.48 | #99532b | ❌ 1.61 | hue fill |
+| `warning-default-hover` | #66371c | ❌ 4.22 | #66371c | ❌ 2.75 | hue fill |
+| `warning-default-pressed` | #331c0e | 6.84 | #331c0e | ❌ 4.46 | hue fill |
+| `success-default` | #226e3a | ❌ 2.67 | #226e3a | ❌ 1.74 | hue fill |
+| `success-default-hover` | #164a26 | ❌ 4.40 | #164a26 | ❌ 2.87 | hue fill |
+| `success-default-pressed` | #0b2513 | 6.97 | #0b2513 | 4.55 | hue fill |
+| `disabled-default` | #f9f9f9 | ❌ 2.22 | #262626 | ❌ 4.22 | neutral ground |
+| `interactive-default` | #5e4db2 | ❌ 2.82 | #5e4db2 | ❌ 1.84 | hue fill |
+| `interactive-default-hover` | #4b3e8e | ❌ 3.77 | #4b3e8e | ❌ 2.46 | hue fill |
+| `interactive-default-pressed` | #382e6b | 5.07 | #382e6b | ❌ 3.31 | hue fill |
+| `interactive-on-color` | #ffffff | ❌ 2.34 | #ffffff | ❌ 3.59 ⁽ⁿ⁾ | neutral ground |
+| `interactive-on-color-hover` | #f2f2f2 | ❌ 2.09 | #e7eaed | ❌ 2.97 ⁽ⁿ⁾ | neutral ground |
+| `interactive-on-color-pressed` | #e5e5e5 | ❌ 1.86 | #cfd5dc | ❌ 2.43 ⁽ⁿ⁾ | neutral ground |
+| `default-default` | #e5e5e5 | ❌ 1.86 | #4c4c4c | ❌ 2.40 | neutral ground |
+| `default-hover` | #cacaca | ❌ 1.43 | #717171 | ❌ 1.36 ⁽ⁿ⁾ | neutral ground |
+| `default-pressed` | #bdbdbd | ❌ 1.24 | #979797 | ❌ 1.23 ⁽ⁿ⁾ | neutral ground |
+| `subtlest-default` | #f9f9f9 | ❌ 2.22 | #131313 | 5.18 | neutral ground |
+| `subtlest-hover` | #ececec | ❌ 1.98 | #262626 | ❌ 4.22 | neutral ground |
+| `subtlest-pressed` | #e5e5e5 | ❌ 1.86 | #4c4c4c | ❌ 2.40 | neutral ground |
+| `elevation-default` | #ffffff | ❌ 2.34 | #262626 | ❌ 4.22 | neutral ground |
+| `elevation-hover` | #e5e5e5 | ❌ 1.86 | #4c4c4c | ❌ 2.40 | neutral ground |
+| `elevation-pressed` | #d7d7d7 | ❌ 1.63 | #717171 | ❌ 1.36 ⁽ⁿ⁾ | neutral ground |
+| `overlay-*` (3), `alpha-*` (3) | translucent | — | translucent | — | backdrop-dependent |
+
+**Summary.** Light: fails all 22 neutral grounds (best **2.34** on white,
+**2.22** on subtlest). Dark: fails 12 of the 15 neutral grounds body text
+passes on — **4.22** on the `#262626` card surfaces — and passes only on black
+(5.86) and subtlest `#131313` (5.18). **No component in this repo or the MVP
+consumed the token before this gate** (grep: zero declarations; the MVP has one
+comment), so its first rendered consumer is `InlineMessage`'s warning title (§3).
+
+### 2 · Subtle text on subtlest — reproduced, left at the Figma value
+
+`--mapped-text-subtle-default` (slate-600 `#6b7786`) on
+`--mapped-surface-subtlest-default` (`#f9f9f9`) is **4.3285** in light — the
+reported 4.33 reproduces. The scope is wider than reported: **subtle text fails
+18 of the 22 light neutral grounds** and passes only on pure white (4.5572).
+Reach if Figma moves it: **42 declarations in 27 component CSS files**
+(`CardDataDisplay`'s info line is this exact failing pair, inside the DS), plus
+the MVP. For reference, the next ramp step (slate-700) would pass 20 of 22 but
+shrink default:subtle separation from 2.446 to 1.568. Not changed, per §0.
+
+### 3 · `InlineMessage` — built from the MVP's advisory, not copied
+
+No Figma node exists; `ReceiptAdvisory.tsx` was read as the requirements
+document, and nothing finance-specific crossed (copy, retake-label logic, the
+photo/PDF noun switch, a hardcoded `Button`). Tones `neutral` | `warning` — the
+two the MVP has needed. The title takes its tone's own text token at the Figma
+value; the body is default text, because subtle text fails on the component's
+own surface (§2). `role="group"` named by the title; **no live region**; never
+takes focus, hides nothing, inerts nothing — three tests, one per failure mode,
+each mutation-proven. Registered in `src/index.ts` and `package.css` (detector
+60/60). The checkpoint's Figma-read step had no source to read — the Figma MCP
+servers also failed to connect this session — and that is recorded in the docs
+entry rather than skipped silently.
+
+**Rendered in the showcase with `getComputedStyle`, rendered = computed:**
+neutral title and body 10.5857 light / 12.5674 dark. **Warning title at the
+Figma value: `#ff8a47` on `#f9f9f9` = 2.2216 light — under AA for its 16px
+semibold title — and `#cc6e39` on `#131313` = 5.1820 dark.** Reported, not
+worked around, per §0.
+
+### 4 · `photo_camera` and G31
+
+**`photo_camera`** — Material Round, measured against its neighbours: same
+`0 0 24 24` viewBox, no own fill, same `ElementWrapper` path (20×20 at `m` in a
+`Button`, like every `m` glyph). **Registry 106 → 107**, by parser. The docs
+note calling 106 "re-derived at Gate 45" is misattributed: the same parser reads
+**103** at Gate 45's commit `67220d4` and 106 at Gate 50's `586c859`.
+
+**G31 — IN SCOPE AND CLOSED, for BOTH overlays.** The registration lives in the
+**MVP** (`MONARCH-MVP-DS-GAP-REGISTER.md`, "G31 is OPENED"), not in this repo —
+grep here finds nothing — and it names `Sheet` **and `Modal`**. The fix was the
+smallest item in the gate: deps `[isOpen, onClose]` → `[isOpen]`, Escape reads a
+ref synced in a layout effect. No API change. Six tests. **The obvious test was
+worthless** and would have passed against the bug: the old teardown focused the
+opener and the re-run immediately refocused the dialog, so `activeElement` ended
+correct. The tests assert the opener's **focus events** instead. The MVP's
+`useCallback` mitigations become redundant but harmless — removing them is
+Gate 63's, not this gate's.
+
+### 5 · Observed, not fixed
+
+- `--mapped-text-success-default` / `-information-default`: **2.56 / 2.61** on
+  white in light. `--mapped-text-error-default`: 4.16 on dark elevation.
+- `--mapped-icon-warning-default` / `border-warning-default`: **2.34** on white,
+  under the 3.0 non-text threshold.
+- **`CHANGELOG.md` has no v2.3.0 entry** (nor v2.1.0). Noted in v2.4.0, not
+  back-filled.
+- The roster paragraph's "61 test files / 542 tests" was already stale at HEAD
+  (**61 / 558** measured at Phase 0). After Gate 62: **62 / 579**.
+
+### 6 · Counts
+
+| | predicted before the first edit | final, after the §0 revert |
+|---|---|---|
+| test files | 61 → 62 | **62** |
+| tests | 558 + 23 = 581 (tokens 2, Icon 2, InlineMessage 13, Sheet 3, Modal 3) | **579** — the 2 token tests left with the revert; 581 was measured before it |
+| visual baselines | none exist in this repo → 0 | **0** |
+| generated files | `globals.css` 6 lines, all else identical | **all byte-identical to v2.3.0** |
+| component CSS files | 59 → 60, all registered | **60/60** |
+
+**Mutation proofs run exactly ONE test by title** (`-t`, file named): exit 1
+mutated, file restored and re-hashed identical, exit 0 restored. InlineMessage
+focus, dialog semantics and sibling operability; Sheet and Modal deps and stale
+Escape; `photo_camera` registration.
+
+**⚠️ The first proof run was invalid, and its own output said so.** Under
+`spawnSync(..., { shell: true })` on Windows the `-t` title was not quoted, so
+it split on spaces: vitest matched on the first word and treated the rest as
+file filters, and the "one test" runs reported e.g. `1 failed | 8 passed`. The
+exit codes were right and the proofs were still worthless. **Read the count
+line of a mutation run, not just its exit code.**
+
+**Tooling hazard on this machine:** from Git Bash, `node -e '...'` with `\n` in
+a string literal, and `sed` with backslash patterns, silently fail to match —
+the edit reports success and changes nothing. Several working copies here are
+CRLF (autocrlf smudge) while others are LF, so a pattern with a bare `\n` also
+misses on the CRLF ones. Use the Edit tool or a `.mjs` file with `\r?\n`, and
+confirm every scripted edit with `git diff`.
+
 ## Known open items
 - **Heading font-size in source**: Figma composites wire `{fontSize.N}` (static), not a
   responsive token. Resolved at build time by mapping heading keys → responsive vars.

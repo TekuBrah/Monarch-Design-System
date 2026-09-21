@@ -3,6 +3,53 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## v2.4.0
+
+Gate 62 — the four gaps the MVP had been routing around, plus the MVP's G31.
+Full derivation in CLAUDE.md's Gate 62 section.
+
+**Continuity note: there is no v2.3.0 entry below**, and no v2.1.0 entry either
+(the v2.2.0 entry already records the latter). v2.3.0 is tagged and shipped;
+this file simply never recorded it. Not back-filled here.
+
+### Added
+
+- **`InlineMessage`** — title, body, optional `actions`, in the page flow.
+  Tones `neutral` | `warning`; `isFramed` (default `true`). Never takes focus,
+  carries no dialog semantics, hides and inerts nothing; no live region.
+  Registered in `src/index.ts` and `src/styles/package.css`.
+- **`photo_camera`** in the `Icon` registry (Material Round). Registry 106 → 107.
+
+### No token value changed — Figma values are used as designed
+
+Ruled by Teku at Gate 62: colours are used exactly as designed in Figma, which
+already has tokens for them. An earlier draft of this release hand-edited
+`--mapped-text-warning-default` in the mapped JSON to clear AA; it was reverted,
+and `design-tokens/**` and every generated file are byte-identical to v2.3.0.
+
+Recorded, not fixed: at the Figma value the warning text token measures **2.22**
+on `--mapped-surface-subtlest-default` and **2.34** on white in light, and
+**4.22** on the dark card surface `#262626` (5.18 on dark subtlest). Changing it
+is a Figma change.
+
+### Fixed
+
+- **`Sheet` and `Modal` no longer restore focus when `onClose` changes
+  identity** (the MVP's G31). The open effect is keyed to `isOpen` only; Escape
+  reads the latest `onClose` through a ref. No API change.
+
+### Not changed — `--mapped-text-subtle-default`
+
+4.3285 on `--mapped-surface-subtlest-default` in light, reproduced. Left at the
+Figma value under the same ruling. `InlineMessage` sets its body in default text.
+
+### Minor, not major
+
+A new component, a new icon and an overlay focus fix are additive; no export,
+prop, type, default or token value was removed, renamed or changed. The G31
+change removes an unintended focus move and nothing depends on it.
+
+---
 ## v2.2.0
 
 ### HeaderBg and StatusBar now use Figma's FIXED row heights instead of hugging

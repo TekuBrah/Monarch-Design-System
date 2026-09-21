@@ -83,6 +83,20 @@ describe('Icon', () => {
     expect(svg).toHaveAttribute('fill', 'currentColor')
   })
 
+  // photo_camera — added at Gate 62 for a retake/capture control. Asserted by
+  // name for the same reason as storefront above, and for tint for the same
+  // reason too: Material Round ships it with no fill of its own.
+  it('renders the photo_camera capture glyph', () => {
+    const { container } = render(<Icon name="photo_camera" />)
+    expect(container.querySelector('svg')).not.toBeNull()
+  })
+
+  it('tints the photo_camera glyph through currentColor', () => {
+    const { container } = render(<Icon name="photo_camera" />)
+    const svg = container.querySelector('svg')
+    expect(svg).toHaveAttribute('fill', 'currentColor')
+  })
+
   it('renders the logo_monarch brand mark', () => {
     const { container } = render(<Icon name="logo_monarch" />)
     expect(container.querySelector('svg')).not.toBeNull()

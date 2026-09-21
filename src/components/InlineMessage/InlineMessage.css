@@ -1,0 +1,56 @@
+/* InlineMessage — Gate 62. There is no Figma component for this; the working
+   specification was the MVP's hand-rolled receipt advisory, read as a
+   requirements document. Every value below is a token, and every one already
+   has a consumer elsewhere in the system. */
+
+.mn-inline-message {
+  display: flex;
+  flex-direction: column;
+  /* Actions hug their label rather than stretching to the column width, which
+     would make an advisory action read as the surface's primary one. */
+  align-items: flex-start;
+  gap: var(--spacing-200); /* 8px */
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.mn-inline-message--framed {
+  padding: var(--spacing-300); /* 12px */
+  background: var(--mapped-surface-subtlest-default);
+  border: var(--brand-scale-25) solid var(--mapped-border-subtlest-default); /* 1px */
+  border-radius: var(--brand-scale-200); /* 8px */
+}
+
+.mn-inline-message__title,
+.mn-inline-message__body {
+  margin: 0;
+}
+
+.mn-inline-message__title {
+  color: var(--mapped-text-default-default);
+}
+
+/* The tone lives on the title only. The body stays in body text so a long
+   paragraph never has to be read in an accent colour.
+   Both halves are --mapped-* and flip together, so the pairing rule holds.
+   CONTRAST, MEASURED AT THE FIGMA VALUE (Gate 62): #ff8a47 on #f9f9f9 is 2.22
+   in light, under AA for the 16px semibold title; #cc6e39 on #131313 is 5.18
+   in dark. The token value is Figma's and is used as designed — by ruling, a
+   contrast shortfall is reported, never fixed by hand-editing the token. */
+.mn-inline-message--warning .mn-inline-message__title {
+  color: var(--mapped-text-warning-default);
+}
+
+/* DEFAULT, NOT SUBTLE, AND THAT IS A MEASUREMENT: --mapped-text-subtle-default
+   on --mapped-surface-subtlest-default is 4.33:1 in light, under AA for this
+   14px body. Raising the subtle token is an open decision (Gate 62, CLAUDE.md);
+   until it is taken, body copy on this surface uses default text. */
+.mn-inline-message__body {
+  color: var(--mapped-text-default-default);
+}
+
+.mn-inline-message__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-200); /* 8px */
+}

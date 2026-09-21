@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { axe } from 'jest-axe'
 import { Modal } from './Modal'
 
@@ -80,5 +80,67 @@ describe('Modal', () => {
       </Modal>,
     )
     expect(await axe(container)).toHaveNoViolations()
+  })
+})
+
+// G31 (Gate 62) — the open effect is keyed to OPENING, never to `onClose`
+// identity. The defect this guards was invisible to a "where is focus now"
+// assertion: the old teardown focused the opener and the re-run immediately
+// focused the dialog again, so focus ENDED in the right place while the opener
+// had been focused (and, in a browser, scrolled into view) on the way. The
+// assertion is therefore on the opener's focus EVENTS, not on activeElement.
+describe('Modal focus restore (G31)', () => {
+  function setup() {
+    const opener = document.createElement('button')
+    opener.textContent = 'Open'
+    document.body.appendChild(opener)
+    opener.focus()
+    const onOpenerFocus = vi.fn()
+    opener.addEventListener('focus', onOpenerFocus)
+    const first = vi.fn()
+    const view = render(
+      <Modal isOpen onClose={first} title="Confirm">
+        <p>Body</p>
+      </Modal>,
+    )
+    return { opener, onOpenerFocus, first, view }
+  }
+
+  it('does not refocus the opener when onClose changes identity while open', () => {
+    const { opener, onOpenerFocus, view } = setup()
+    expect(document.activeElement).not.toBe(opener)
+    onOpenerFocus.mockClear()
+    view.rerender(
+      <Modal isOpen onClose={() => {}} title="Confirm">
+        <p>Body</p>
+      </Modal>,
+    )
+    expect(onOpenerFocus).not.toHaveBeenCalled()
+    opener.remove()
+  })
+
+  it('calls the latest onClose on Escape after onClose changes identity', () => {
+    const { opener, first, view } = setup()
+    const latest = vi.fn()
+    view.rerender(
+      <Modal isOpen onClose={latest} title="Confirm">
+        <p>Body</p>
+      </Modal>,
+    )
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(latest).toHaveBeenCalledTimes(1)
+    expect(first).not.toHaveBeenCalled()
+    opener.remove()
+  })
+
+  it('still restores focus to the opener when it closes', () => {
+    const { opener, first, view } = setup()
+    view.rerender(
+      <Modal isOpen={false} onClose={first} title="Confirm">
+        <p>Body</p>
+      </Modal>,
+    )
+    expect(document.activeElement).toBe(opener)
+    opener.remove()
   })
 })

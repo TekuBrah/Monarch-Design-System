@@ -728,6 +728,25 @@ wrongly on a themed surface and nothing else would catch it.
 > A line-scoped `grep -c` over this file does **not** answer the same question —
 > it counts import lines and registry rows together.
 
+### `photo_camera` (added v2.4.0, Gate 62)
+
+The capture glyph, for a retake/capture control — the MVP's receipt retake
+button shipped with no glyph because the registry had none. Material Round, the
+base `photo_camera` and not `photo_camera_front` / `_back`, which name a
+specific lens. Measured against its neighbours, not assumed: the same
+`0 0 24 24` viewBox, the same 24×24 intrinsic size, no `fill` of its own (so it
+inherits `fill="currentColor"` from `Icon`, asserted in `Icon.test.tsx`), and
+the same `ElementWrapper` sizing path — rendered at `size="m"` inside a `Button`
+it measures 20×20 in the showcase, exactly like every other `m` glyph.
+
+> **THE REGISTRY COUNT IS NOW 107 — AND THE 106 BELOW WAS NOT A GATE 45
+> FIGURE.** Re-derived with the parser in the note above, per commit:
+> **103** at Gate 45's commit `67220d4`, **106** at Gate 50's `586c859`, **107**
+> after Gate 62 (71 Material Round + 36 custom). The note above says 106 was
+> "re-derived from disk at Gate 45" and dates it 2026-09-09; 106 is in fact the
+> Gate 50 tree, so the figure was updated in place without its attribution.
+> Left as written — Gate 62 removes nothing from this file — and corrected here.
+
 ### Size → token mapping
 
 | size | px | ElementWrapper size | `--brand-scale-*` token |
@@ -3252,6 +3271,20 @@ dialog on open and is **restored to the previously-focused element** on close;
 Tab is **trapped** within the dialog (Shift+Tab wraps at the first focusable,
 Tab wraps at the last). Close button carries `aria-label="Close"`.
 
+### Focus restore is keyed to CLOSING (v2.4.0, Gate 62 — closes the MVP's G31)
+
+The open effect's dependencies were `[isOpen, onClose]`, and its cleanup
+restores focus to the opener. So any consumer passing an inline arrow as
+`onClose` tore the effect down on every render while open, and each teardown
+focused the opener — scrolling it into view behind the scrim (measured in the
+MVP at 770px and 808px). The deps are now `[isOpen]`; Escape reads the latest
+`onClose` through a ref synced in a layout effect, so it never calls a stale
+one. No prop, type or default changed. `Sheet` carried the identical effect and
+was fixed identically. Tested in `Modal.test.tsx` under
+`Modal focus restore (G31)` — the opener's **focus events** are asserted, not
+`activeElement`, because the old code refocused the dialog straight after, so
+focus *ended* in the right place while the opener had been focused on the way.
+
 ### Known Figma inconsistencies / decisions
 
 - **Card background bound to a raw primitive, normalized.** Figma binds the
@@ -5204,6 +5237,14 @@ can be briefly absent. This is the cost of not using a `ResizeObserver`; if it
 ever bites in practice, the fix is RO plus a way to verify it, not a wider
 dependency array.
 
+**Focus restore is keyed to CLOSING (v2.4.0, Gate 62 — closes the MVP's G31).**
+Identical to `Modal`'s fix, recorded in full under that heading: the open
+effect's deps went from `[isOpen, onClose]` to `[isOpen]`, and Escape reads the
+latest `onClose` through a ref. Before, an inline-arrow `onClose` restored focus
+to the opener on every re-render while the sheet was open — measured in the MVP
+at 790px of page scroll behind an open sheet. Tested under
+`Sheet focus restore (G31)`.
+
 ### Accessibility
 
 `role="dialog"` + `aria-modal="true"`. `aria-labelledby` points at the title
@@ -5320,3 +5361,73 @@ Each is a departure from what `159:1856` draws, recorded as such.
   once content has scrolled). Real UX value on a tall sheet, but Figma
   authors no such state and inferred states are never added silently. A design
   question, not a defect.
+
+## Inline Message
+
+**Added v2.4.0, Gate 62. There is NO Figma node for this component.** Its
+working specification was the MVP's hand-rolled `ReceiptAdvisory.tsx` — a
+title, a body and one action, inline in a page, never blocking — read as a
+requirements document, not copied. What did not cross the boundary: the
+receipt copy, the retake-label logic, the PDF/photo noun switch, and the
+hardcoded `Button`. Every value is an existing token with an existing consumer.
+
+> **Checkpoint note.** CLAUDE.md's checkpoint discipline begins at "read the
+> Figma source"; with no source to read, the Gate 62 brief stood in for step 1
+> and the build, docs and showcase landed in one pass. If a Figma component is
+> drawn later, it supersedes this entry and any divergence is a DS change.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `tone` | `'neutral' \| 'warning'` | `'neutral'` | Colours the **title** only |
+| `title` | `string` | — | Required. Also names the group |
+| `children` | `ReactNode` | — | The body. A slot, same as `Toast`'s description |
+| `actions` | `ReactNode` | — | App composes real `Button`s; region absent when omitted |
+| `isFramed` | `boolean` | `true` | Paints surface + border + radius. `false` inside a container that already paints the surface |
+| `id`, `className` | `string` | — | |
+
+### Tone → token mapping
+
+| part | neutral | warning |
+|---|---|---|
+| title | `--mapped-text-default-default` | `--mapped-text-warning-default` |
+| body | `--mapped-text-default-default` | `--mapped-text-default-default` |
+| surface (framed) | `--mapped-surface-subtlest-default` | same |
+| border (framed) | `--mapped-border-subtlest-default`, `--brand-scale-25` | same |
+| radius / padding / gap | `--brand-scale-200` / `--spacing-300` / `--spacing-200` | same |
+
+**Body is default text, not subtle, and that is a measurement:**
+`--mapped-text-subtle-default` on `--mapped-surface-subtlest-default` is
+**4.3285** in light, under AA for the 14px body. See CLAUDE.md Gate 62 §2 for
+why the subtle token was not raised.
+
+**Rendered, both themes (framed, `getComputedStyle` in the showcase, rendered =
+computed exactly):** neutral title and body **10.5857** light, **12.5674** dark.
+Warning title, **at the Figma value** — `#ff8a47` on `#f9f9f9` **2.2216** light
+(under AA for this 16px title), `#cc6e39` on `#131313` **5.1820** dark.
+
+**Token values are used exactly as designed in Figma — ruled by Teku at Gate
+62.** An earlier Gate 62 draft re-bound `--mapped-text-warning-default` in the
+mapped JSON to clear AA; that edit was reverted on this ruling. The light-mode
+shortfall above is recorded, not worked around, and resolving it is a Figma
+change.
+
+### Why only two tones
+
+`neutral` and `warning` are the two the MVP has actually needed; the gate brief
+excluded expanding past measured need. Widening the union later is not a
+breaking change.
+
+**No leading tone glyph.** The MVP's advisory draws none and there is no Figma
+design for one; the tone is carried by the title's colour plus its words.
+
+### Accessibility — non-blocking by construction
+
+- `role="group"`, `aria-labelledby` → the title `<p>`. No landmark, no dialog.
+- **Never takes focus, hides nothing, inerts nothing.** Three tests, one per
+  failure mode (focus on mount; dialog/`aria-modal`/`inert`/`aria-hidden`;
+  surrounding controls still receive clicks), each mutation-proven at Gate 62.
+- **No live region.** It is usually present at render, and a live region would
+  announce static content as news. A consumer inserting one in response to an
+  event wraps it in its own `role="status"`; `Toast` is the transient component.

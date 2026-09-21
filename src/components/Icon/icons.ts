@@ -68,6 +68,7 @@ import StorefrontIcon from '@material-design-icons/svg/round/storefront.svg?reac
 import LinkOffIcon from '@material-design-icons/svg/round/link_off.svg?react'
 import ListAltIcon from '@material-design-icons/svg/round/list_alt.svg?react'
 import CreditCardIcon from '@material-design-icons/svg/round/credit_card.svg?react'
+import PhotoCameraIcon from '@material-design-icons/svg/round/photo_camera.svg?react'
 
 // Custom icons (Assets/icons-custom/) — normalized to currentColor via scripts/normalize-custom-icons.mjs
 import CIconAiinsights from '../../../Assets/icons-custom/icon_aiinsights.svg?react'
@@ -178,6 +179,11 @@ export const ICONS = {
   link:                   LinkIcon,
   link_off:               LinkOffIcon,
   list_alt:               ListAltIcon,
+  // The capture control for a photographed document (Gate 62). Material Round
+  // like every other Material entry: same 0 0 24 24 viewBox, no fill of its
+  // own, so it tints through the currentColor Icon sets. The base glyph, not
+  // photo_camera_front / _back, which name a specific lens.
+  photo_camera:           PhotoCameraIcon,
   // Ratings
   star:                   StarIcon,
   star_border:            StarBorderIcon,

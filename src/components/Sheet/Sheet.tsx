@@ -113,6 +113,18 @@ export function Sheet({
   const panelRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const previouslyFocused = useRef<HTMLElement | null>(null)
+  // G31 (Gate 62). The open effect below is keyed to OPENING, not to `onClose`
+  // changing identity. It used to list `onClose` as a dependency, so any
+  // consumer passing an inline arrow tore the effect down on every render
+  // while open — and the teardown restores focus to the opener, which scrolls
+  // it into view: the page jumped behind an open sheet (measured in the MVP at
+  // 790px). Restoring focus is a CLOSE behaviour, so only closing may run it.
+  // The latest callback is read through this ref instead, so Escape still
+  // calls the current `onClose` rather than the one captured at open.
+  const onCloseRef = useRef(onClose)
+  useLayoutEffect(() => {
+    onCloseRef.current = onClose
+  })
   const [isContentScrollable, setIsContentScrollable] = useState(false)
 
   // Region presence is derived from the region's own slots, never coupled to
@@ -171,7 +183,7 @@ export function Sheet({
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.stopPropagation()
-        onClose()
+        onCloseRef.current()
         return
       }
       // Focus trap: keep Tab cycling within the dialog.
@@ -200,7 +212,7 @@ export function Sheet({
       document.removeEventListener('keydown', onKeyDown, true)
       previouslyFocused.current?.focus?.()
     }
-  }, [isOpen, onClose])
+  }, [isOpen])
 
   if (!isOpen) return null
 
