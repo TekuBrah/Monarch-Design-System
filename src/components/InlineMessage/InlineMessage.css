@@ -26,19 +26,57 @@
   margin: 0;
 }
 
+/* TONE NEVER CHANGES TEXT COLOUR (Gate 62b). The title takes the same token in
+   every tone, and no tone rule below declares `color` on the title or body —
+   the tests read this file and fail if one does. Gate 62 set the warning title
+   to --mapped-text-warning-default (2.22:1 on #f9f9f9 in light); that rule is
+   gone. The tone is carried by the frame and the glyph instead. */
 .mn-inline-message__title {
   color: var(--mapped-text-default-default);
 }
 
-/* The tone lives on the title only. The body stays in body text so a long
-   paragraph never has to be read in an accent colour.
-   Both halves are --mapped-* and flip together, so the pairing rule holds.
-   CONTRAST, MEASURED AT THE FIGMA VALUE (Gate 62): #ff8a47 on #f9f9f9 is 2.22
-   in light, under AA for the 16px semibold title; #cc6e39 on #131313 is 5.18
-   in dark. The token value is Figma's and is used as designed — by ruling, a
-   contrast shortfall is reported, never fixed by hand-editing the token. */
-.mn-inline-message--warning .mn-inline-message__title {
-  color: var(--mapped-text-warning-default);
+/* ── Tone: warning ─────────────────────────────────────────────────────────
+   The category pattern (GitHub Primer's flash, Atlassian's section message):
+   text stays at body contrast, the frame and a leading glyph signal the tone.
+
+   No warning FILL. The mapped set has no subtle warning surface — the only
+   warning surface, --mapped-surface-warning-default, is the Warning.700 hue
+   fill, which body text cannot sit on. Tinting one with color-mix() would be a
+   token-source gap needing approval, so the surface stays subtlest.
+
+   CONTRAST, MEASURED AT THE FIGMA VALUE (Gate 62b): the warning border and
+   glyph are under the 3.0:1 non-text threshold in light. Recorded, not fixed:
+   the title's words carry the meaning, so the glyph and border are
+   supplementary. See CLAUDE.md Gate 62b for the figures. */
+.mn-inline-message--warning.mn-inline-message--framed {
+  border-color: var(--mapped-border-warning-default);
+}
+
+/* Glyph in its own column, content in a second, so a wrapping title or body
+   never runs back under the glyph. Grid, not a wrapper element, so the DOM of
+   the title/body/actions is identical to the neutral tone's. */
+.mn-inline-message--warning {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  justify-items: start;
+}
+
+.mn-inline-message--warning > :not(.mn-inline-message__icon) {
+  grid-column: 2;
+}
+
+/* Sized to the title's line box, so the 20px glyph centres on the title's
+   first line however the title wraps. */
+.mn-inline-message__icon {
+  grid-row: 1;
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  height: var(--responsive-font-headings-h6-line-height);
+}
+
+.mn-inline-message--warning .mn-inline-message__icon {
+  color: var(--mapped-icon-warning-default);
 }
 
 /* DEFAULT, NOT SUBTLE, AND THAT IS A MEASUREMENT: --mapped-text-subtle-default

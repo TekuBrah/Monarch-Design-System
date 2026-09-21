@@ -1,0 +1,25 @@
+## grep: version / package.json / CHANGELOG readers (excl node_modules, dist, scratchpad, *.md)
+.github/workflows/ci.yml:68:      # package.json. Do not restate it here.
+.github/workflows/ci.yml:131:      # invisible for four releases (v1.6.0 CHANGELOG, "Item 3"). A detector
+scripts/check-css-registration.mjs:11: *   (v1.6.0 CHANGELOG, "Item 3 · Badge had no CSS file"), reproducing
+scripts/check-css-registration.mjs:126:  console.log('  releases (v1.6.0 CHANGELOG, Item 3). Check each name above is deliberate.')
+src/components/Button/Button.css:152:     Measured after: 6.4187 / 7.7569 / 9.1362. See CHANGELOG v1.14.0, finding 2. */
+src/styles/package.css:6:   package.json exposes to consumers as `./styles.css`. globals.css and
+## exit 0
+## .github
+.github/workflows/ci.yml:43:          node-version: '24'
+.github/workflows/ci.yml:68:      # package.json. Do not restate it here.
+.github/workflows/ci.yml:79:            echo "which means the committed version was not produced by the pipeline."
+.github/workflows/ci.yml:131:      # invisible for four releases (v1.6.0 CHANGELOG, "Item 3"). A detector
+## package.json scripts
+{
+ "dev": "vite",
+ "build": "tsc -b && vite build",
+ "build:lib": "vite build --config vite.config.lib.ts",
+ "build:tokens": "node scripts/build-brand-colors.mjs && node scripts/build-alias-colors.mjs && node scripts/build-mapped.mjs && node scripts/build-responsive.mjs && node scripts/build-typography.mjs && node scripts/build-gradients.mjs && node scripts/build-shadows.mjs",
+ "prepare": "npm run build:lib",
+ "preview": "vite preview",
+ "check:css-registration": "node scripts/check-css-registration.mjs",
+ "test": "vitest run",
+ "test:watch": "vitest"
+}

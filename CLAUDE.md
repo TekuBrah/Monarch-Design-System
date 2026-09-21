@@ -813,6 +813,11 @@ passes on — **4.22** on the `#262626` card surfaces — and passes only on bla
 consumed the token before this gate** (grep: zero declarations; the MVP has one
 comment), so its first rendered consumer is `InlineMessage`'s warning title (§3).
 
+> **Correction (Gate 62b, 2026-09-22):** that consumer was removed. The warning
+> title now takes `--mapped-text-default-default`, so once again no component
+> consumes `--mapped-text-warning-default` (grep over `src/components`: zero
+> declarations). The diagnosis above is unchanged and still stands.
+
 ### 2 · Subtle text on subtlest — reproduced, left at the Figma value
 
 `--mapped-text-subtle-default` (slate-600 `#6b7786`) on
@@ -838,11 +843,23 @@ each mutation-proven. Registered in `src/index.ts` and `package.css` (detector
 servers also failed to connect this session — and that is recorded in the docs
 entry rather than skipped silently.
 
+> **Correction (Gate 62b, 2026-09-22):** "The title takes its tone's own text
+> token" is no longer true. Tone never changes text colour. Title and body take
+> `--mapped-text-default-default` in every tone, and the warning tone is carried
+> by `--mapped-border-warning-default` on the frame plus a leading `warning`
+> glyph in `--mapped-icon-warning-default`. See Gate 62b below.
+
 **Rendered in the showcase with `getComputedStyle`, rendered = computed:**
 neutral title and body 10.5857 light / 12.5674 dark. **Warning title at the
 Figma value: `#ff8a47` on `#f9f9f9` = 2.2216 light — under AA for its 16px
 semibold title — and `#cc6e39` on `#131313` = 5.1820 dark.** Reported, not
 worked around, per §0.
+
+> **Correction (Gate 62b, 2026-09-22):** the orange warning title was removed.
+> Measured the same way, the warning title now equals neutral's: 10.5857 light
+> and 12.5674 dark. The two figures above now describe the warning **border and
+> glyph** (the same token step, the same grounds), judged against 3.0:1, not
+> 4.5:1.
 
 ### 4 · `photo_camera` and G31
 
@@ -902,6 +919,175 @@ the edit reports success and changes nothing. Several working copies here are
 CRLF (autocrlf smudge) while others are LF, so a pattern with a bare `\n` also
 misses on the CRLF ones. Use the Edit tool or a `.mjs` file with `\r?\n`, and
 confirm every scripted edit with `git diff`.
+
+## Gate 62b — InlineMessage tone carried by the container, not the text
+
+This amends Gate 62's `InlineMessage` on branch `gate62`, built from `dc73367`
+(parent `586c859`, `v2.3.0`). The CHANGELOG entry is under **Unreleased**, and
+§1 explains why. The Gate 62 section above is left as written; where it is now
+wrong, a dated correction sits beneath the affected line.
+
+> **Correction (Gate 62b finish, 2026-09-22):** the CHANGELOG entry is no longer
+> under **Unreleased**. It is now headed `## v2.4.1`. See §7.
+
+### 0 · Standing rulings — both govern all future work
+
+- **Ruling A (Teku, 2026-09-21):** "Use colors exactly as I designed in Figma,
+  they already have tokens." Token values come only from Teku's Figma. Never edit
+  `design-tokens/**` and never hand-adjust a generated token file. When a token
+  fails a measurement, measure it and report it; do not change it. (This restates
+  Gate 62 §0 as a standing rule.)
+- **Ruling B (Teku, 2026-09-21):** where Teku did not design something in
+  Figma, the review thread's judgement applies instead of guessing at his intent.
+  `InlineMessage` has no Figma node, so its tone treatment is the review thread's
+  ruling: **tone never changes text colour.** It is carried by the container and
+  the icon, following the category standard (GitHub Primer's flash, Atlassian's
+  section message).
+
+### 1 · The brief's premise that v2.4.0 was untagged was false
+
+At session start `v2.4.0` was already an **annotated tag on `dc73367`**
+(2026-09-21 23:55:45), and it is **on `origin`**. `main` had been fast-forwarded
+to `dc73367` and pushed, and the checked-out branch was `main`, not `gate62`.
+`gate62`, `origin/gate62`, `main` and `origin/main` all pointed at the same
+commit, so switching to `gate62` changed no files. The consequence: this change
+cannot sit inside a released v2.4.0 without re-cutting a pushed tag. The version
+field was left at `2.4.0`, untouched. The release notes are in an unversioned
+CHANGELOG entry and the released v2.4.0 notes were not edited. **2.4.1 or a
+re-cut v2.4.0 is Teku's call.** Until that call is made, the tree's version field
+matches the tag but its `InlineMessage` does not. This is the same gap between
+the tag and the tree that Release hygiene warns about, so run the STANDING CHECK
+before any tag is cut.
+
+> **Correction (Gate 62b finish, 2026-09-22):** the call has been made. This
+> change ships as **v2.4.1**, the version field reads `2.4.1`, and the CHANGELOG
+> entry is versioned. v2.4.0 was not re-cut. See §7.
+
+### 2 · What each tone rendered, before and after
+
+| | Gate 62 | Gate 62b |
+|---|---|---|
+| neutral, framed | subtlest fill, subtlest border, no glyph | **unchanged** |
+| neutral, unframed | text only | **unchanged** |
+| warning, framed | **identical frame to neutral**; orange title | default-text title; `--mapped-border-warning-default` border; `warning` glyph |
+| warning, unframed | text only, orange title | default-text title; `warning` glyph (its only non-text signal) |
+
+At Gate 62 the only difference between the tones was the title's colour. Once
+that was removed, the unframed warning would have looked the same as an unframed
+neutral message. That is what made a glyph mandatory rather than optional.
+
+### 3 · Tokens bound, and the glyph
+
+- `--mapped-border-warning-default`: `border.warning.default`, `{Warning.500}`
+  light / `{Warning.600}` dark.
+- `--mapped-icon-warning-default`: `icon.Warning.default`, the same steps.
+- Both exist in `Mapped/Light.json` **and** `Dark.json`, read from the JSON and
+  not from `globals.css`.
+- **No warning fill.** The mapped set has no subtle warning surface.
+  `surface.warning.default` is `{Warning.700}` in both themes, a hue fill that
+  body text cannot sit on. A `color-mix()` tint would be a token-source gap that
+  needs approval, and none was requested.
+- Registry glyphs that could serve: `warning`, `error` and `info` (all Material
+  Round), plus the custom `icon_spending_alert`. **`warning` was chosen** because
+  `TOAST_DEFAULT_ICON.warning` already uses it, so both components draw the same
+  glyph for the same tone. Size `m`: 20×20, measured.
+- Layout: the warning root is a two-column grid with no wrapper element. The
+  glyph cell is `--responsive-font-headings-h6-line-height` (24px) tall, so the
+  glyph centres on the title's **first** line. Measured on a two-line unframed
+  title: glyph top +2px, title 48px tall.
+
+### 4 · Measurements, showcase, `getComputedStyle`, transitions finished, both themes
+
+| | light | dark |
+|---|---|---|
+| warning title, framed and unframed | `#363c43` on `#f9f9f9` **10.5857** | `#cfd5dc` on `#131313` **12.5674** |
+| warning body, framed and unframed | **10.5857** | **12.5674** |
+| border vs own surface / vs page | `#ff8a47` **2.2216** ❌ / **2.3390** ❌ | `#cc6e39` **5.1820** / **5.8569** |
+| glyph (framed) vs own / vs page | **2.2216** ❌ / **2.3390** ❌ | **5.1820** / **5.8569** |
+| glyph (unframed, `#f9f9f9` / `#131313` container) | **2.2216** ❌ | **5.1820** |
+
+All text clears 4.5 in both themes. The light non-text failures (border and
+glyph under 3.0) are **recorded, not fixed** under Ruling A. The title's words
+carry the meaning at body contrast, so the glyph and border are supplementary
+and are not the sole carrier of meaning. Gate 62's 2.34 on white reproduces as
+2.3390. The border rendered 0.8px because this pane's `devicePixelRatio` is
+1.25; that is not a component property.
+
+### 5 · Tests and proofs
+
+**579 → 584, 62 files**, exactly as predicted before the first edit. All five
+new tests are in `InlineMessage.test.tsx`:
+
+- **The text-colour guard (1 test).** Title and body colour for warning equal
+  neutral's, in both `isFramed` states. The CSS is read statically because jsdom
+  applies no stylesheet: the winning declaration is found by class-count
+  specificity, then source order.
+- **The frame (1 test).** The framed warning border binds
+  `--mapped-border-warning-default`, and neutral keeps subtlest.
+- **The glyph (2 tests, `it.each` over `isFramed`).** The glyph renders first in
+  the root, and its markup equals `<Icon name="warning" size="m" />`.
+- **Neutral (1 test).** Neutral renders no glyph.
+
+**One existing test was modified.** "carries no dialog semantics and hides
+nothing around it" queried every `[aria-hidden="true"]`, and the glyph's `<svg>`
+(which `Icon` marks `aria-hidden`) would trip it. It now excludes
+`.mn-inline-message__icon` and nothing else.
+
+**12 mutation proofs.** Each one: mutate → one test by title → exit 1 → restore
+→ sha256 identical → exit 0. All read `1 failed | 17 skipped` and all are
+assertion failures. The runner is `node vitest.mjs` spawned with an argument
+array: no shell and no `npx`.
+
+- Eight cover the new rules: warning title recoloured, warning body recoloured,
+  border reverted, glyph removed ×2, wrong glyph, wrong size, and neutral gaining
+  a glyph.
+- Gate 62's three `InlineMessage` proofs were re-run because
+  `InlineMessage.tsx` changed. The dialog test ran twice, once with an
+  `aria-hidden` placed *outside* the glyph, to prove the narrowed query is not
+  vacuous.
+- Gate 62's other five proofs (Sheet ×2, Modal ×2, `photo_camera`) mutate files
+  this gate did not touch. Their validity is derived, not re-run.
+
+### 6 · Tooling hazard, widened
+
+Gate 62 recorded that `node -e` and `sed` silently lose backslashes from Git
+Bash. **A QUOTED heredoc (`<<'EOF'`) sent through the agent's Bash tool loses
+them too:** each `\\` arrived as `\`, although a quoted heredoc should pass bytes
+through verbatim. Measured this gate, in a `.mjs` whose JS template literals
+then consumed one more level, a regex meant to reach the test file as
+`/\/\*[\s\S]*?\*\//g` arrived as `//*[sS]*?*//g`, and `\s+` arrived as `s+`.
+The first surfaced as a parse error. The second parsed and would have been a
+silently wrong regex. **Write any file that contains a backslash with the Write
+tool**, then grep it for `\`.
+
+### 7 · Versioned as v2.4.1 (Gate 62b finish, 2026-09-22)
+
+**The ruling (review thread): Gate 62b ships as `v2.4.1`.** Two reasons, both
+standing:
+
+- **Published tags never move.** `v2.4.0` is annotated (tag object `16beddac`),
+  points at `dc73367`, and is on `origin`. Re-cutting it would change what a
+  pushed name means for anyone who already fetched it. A correction after a
+  release gets a new tag.
+- **A visual correction to how an existing component applies existing tokens,
+  with no API change, is a patch.** No prop, type, value or default moved, and no
+  token value changed. `InlineMessage` only rebinds which existing tokens its
+  parts consume and adds a decorative glyph.
+
+What the finishing session changed: `npm version 2.4.1 --no-git-tag-version`
+(`package.json` one line; `package-lock.json` both root entries, two lines;
+nothing else in either file), the CHANGELOG heading renamed from `Unreleased —
+Gate 62b` to `## v2.4.1` (matching `## v2.4.0`, which carries no date), and this
+section. No component, test, token or generated file was touched. Nothing in the
+repo reads the version field or `CHANGELOG.md`; every grep hit is a comment.
+
+**Process note: Gate 62b ran from a superseded prompt.** The prompt it was given
+said v2.4.0 was unreleased; v2.4.0 had already been tagged and pushed. The
+session caught that from disk and did not move the tag, but it could only leave
+the version open. **Gate prompts now carry a version suffix, and the
+latest-dated file is the one to run.** If two prompts for the same gate are on
+hand, run the one with the latest date, and still check its premises against
+disk, as §1 did.
 
 ## Known open items
 - **Heading font-size in source**: Figma composites wire `{fontSize.N}` (static), not a

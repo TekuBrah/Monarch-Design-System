@@ -3,6 +3,39 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## v2.4.1
+
+Gate 62b — amends v2.4.0's `InlineMessage`. Gate 62b was briefed as an amendment
+made *before* v2.4.0 was tagged. It was not: `v2.4.0` is an annotated tag on
+`dc73367` and is pushed, and `main` had already been fast-forwarded to it. The
+review thread ruled that this ships as **v2.4.1**: published tags never move, and
+a visual correction to how an existing component applies existing tokens, with
+no API change, is a patch. The v2.4.0 notes below are left as released.
+
+### Changed
+
+- **`InlineMessage`: tone no longer changes text colour.** Ruled by the review
+  thread (no Figma node exists): title and body use the same text tokens in
+  every tone. The warning title drops `--mapped-text-warning-default`, which
+  measured 2.22:1 in light, and now matches neutral (10.5857 light / 12.5674
+  dark).
+- **Tone is carried by the container and a leading glyph.** A framed warning
+  takes `--mapped-border-warning-default`. In both `isFramed` states a warning
+  renders the registry's `warning` glyph (`size="m"`, the one `Toast` uses) in
+  `--mapped-icon-warning-default`. Without the glyph, an unframed warning would
+  have looked the same as an unframed neutral message. Neutral is unchanged.
+- There is no warning fill because the mapped set has no subtle warning surface.
+
+Recorded, not fixed (token values are Figma's): the warning border and glyph
+measure **2.2216** on the component's `#f9f9f9` surface and **2.3390** on the
+white page in light, under the 3.0:1 non-text threshold; in dark **5.1820** and
+**5.8569**. The text carries the meaning; the glyph and border are
+supplementary.
+
+No token value, generated file, prop, type or default changed. The API is
+unchanged, and `tone` keeps its values and default. Tests 579 → 584.
+
+---
 ## v2.4.0
 
 Gate 62 — the four gaps the MVP had been routing around, plus the MVP's G31.

@@ -1,0 +1,110 @@
+
+> @monarch/design-system@2.4.0 build:tokens
+> node scripts/build-brand-colors.mjs && node scripts/build-alias-colors.mjs && node scripts/build-mapped.mjs && node scripts/build-responsive.mjs && node scripts/build-typography.mjs && node scripts/build-gradients.mjs && node scripts/build-shadows.mjs
+
+✓ src/tokens/brand.ts
+✓ src/styles/globals.css
+
+Extracted 12 color scales: Slate, Blue, Gray, Red, Orange, Green, Teal, Purple, Cyan, Yellow, Lime, Violet
+Foundations: white, black
+Scale: 21 steps (25→1px … 1800→512px)
+✓ src/tokens/alias.ts
+✓ src/tokens/index.ts
+✓ src/styles/globals.css (alias block appended)
+
+Processed 11 alias groups (113 tokens):
+  Primary (12 steps) — e.g. 50 → --brand-blue-50
+  Error (11 steps) — e.g. 100 → --brand-red-100
+  Success (11 steps) — e.g. 100 → --brand-green-100
+  Information (11 steps) — e.g. 100 → --brand-teal-100
+  Warning (11 steps) — e.g. 100 → --brand-orange-100
+  Surface (12 steps) — e.g. 50 → --brand-gray-50
+  Foundations (2 steps) — e.g. white → --brand-white
+  Interactive (11 steps) — e.g. 100 → --brand-purple-100
+  Neutral (12 steps) — e.g. 50 → --brand-slate-50
+  Alpha light mode (10 steps) — e.g. 50 → #f9f9f90d
+  Alpha dark mode (10 steps) — e.g. 50 → #1313130d
+Loaded 113 alias vars from globals.css
+✓ src/tokens/mapped.ts
+✓ src/tokens/index.ts
+✓ src/styles/globals.css (mapped light + dark appended)
+
+191 tokens across groups: text, icon, surface, border, Blanket
+Loaded 21 scale vars from globals.css
+Spacing: 14 steps resolved
+Font: 30 tokens, 14 differ across breakpoints
+✓ src/styles/globals.css (spacing + responsive font appended)
+✓ src/tokens/responsive.ts
+✓ src/tokens/index.ts
+
+Spacing: 14 steps
+Font: 30 tokens — 14 responsive overrides in @media (min-width: 768px)
+  --responsive-font-headings-h1-text-size
+  --responsive-font-headings-h1-paragraph-spacing
+  --responsive-font-headings-h1-line-height
+  --responsive-font-headings-h2-text-size
+  --responsive-font-headings-h2-paragraph-spacing
+  --responsive-font-headings-h2-line-height
+  --responsive-font-headings-h3-text-size
+  --responsive-font-headings-h3-paragraph-spacing
+  --responsive-font-headings-h3-line-height
+  --responsive-font-headings-h4-text-size
+  --responsive-font-headings-h4-paragraph-spacing
+  --responsive-font-headings-h4-line-height
+  --responsive-font-copy-body-sm-paragraph-spacing
+  --responsive-font-copy-body-sm-line-height
+Loaded 30 responsive vars from globals.css
+Collected 22 styles (6 header, 16 body) — no collisions
+✓ src/styles/typography.css
+✓ src/tokens/typography.ts
+✓ src/tokens/index.ts
+
+Typography classes:
+  .type-header-h1               weight=600 size=var(--responsive-font-headings-h1-text-size)
+  .type-header-h2               weight=600 size=var(--responsive-font-headings-h2-text-size)
+  .type-header-h3               weight=600 size=var(--responsive-font-headings-h3-text-size)
+  .type-header-h4               weight=600 size=var(--responsive-font-headings-h4-text-size)
+  .type-header-h5               weight=600 size=var(--responsive-font-headings-h5-text-size)
+  .type-header-h6               weight=600 size=var(--responsive-font-headings-h6-text-size)
+  .type-body-lg                 weight=400 size=20px
+  .type-body-lg-medium          weight=500 size=20px
+  .type-body-lg-semibold        weight=600 size=20px
+  .type-body-lg-link            weight=400 size=20px
+  .type-body-m                  weight=400 size=16px
+  .type-body-m-medium           weight=500 size=16px
+  .type-body-m-semibold         weight=600 size=16px
+  .type-body-m-link             weight=400 size=16px
+  .type-body-sm                 weight=400 size=14px
+  .type-body-sm-medium          weight=500 size=14px
+  .type-body-sm-semibold        weight=600 size=14px
+  .type-body-sm-link            weight=400 size=14px
+  .type-body-caption            weight=400 size=12px
+  .type-body-caption-medium     weight=500 size=12px
+  .type-body-caption-semibold   weight=600 size=12px
+  .type-body-caption-link       weight=400 size=12px
+Collected 3 gradient(s): subtle, default, primary-default
+  Gradient.primary-default: stop 0 → from; position "0%" dropped — composed by the consumer
+  Gradient.primary-default: stop 1 → to; position "100%" dropped — composed by the consumer
+  Gradient.primary-default: angle "0deg" dropped — composed by the consumer
+✓ src/styles/globals.css (gradients appended)
+✓ src/tokens/gradients.ts
+✓ src/tokens/index.ts
+  --gradient-subtle: linear-gradient(0deg, #ffffff 0%, #ffffff00 100%)
+  --mapped-gradient-subtle: linear-gradient(0deg, var(--gradient-surface) 0%, transparent 100%)
+    → Nav/mobile/section [scrim]
+  --gradient-default: linear-gradient(0deg, #ffffff 10%, #ffffff80 100%)
+  --mapped-gradient-default: linear-gradient(0deg, var(--gradient-surface) 10%, color-mix(in srgb, var(--gradient-surface) 50%, transparent) 100%)
+    → For footer, during list of selections [scrim]
+  --mapped-gradient-primary-from: var(--mapped-surface-primary-default)
+  --mapped-gradient-primary-to: var(--mapped-surface-information-default)
+    → Brand band — primary to information [brand]
+Collected 3 shadow(s): medium, subtle, subtlest
+✓ src/styles/globals.css (shadows appended)
+✓ src/tokens/shadows.ts
+✓ src/tokens/index.ts
+  --shadow-medium: 0px 0px 24px 0px #00000040
+    → Navigation bar
+  --shadow-subtle: 0px 2px 8px 0px #00000026
+    → Side navigation / desktop
+  --shadow-subtlest: 0px 0px 10px 0px #00000008
+    → Cards

@@ -1,0 +1,10 @@
+
+ RUN  v4.1.10 D:/Claude/Design system test
+
+[BABEL] Note: The code generator has deoptimised the styling of D:\Claude\Design system test\Assets\logo\crypto\litecoin.svg as it exceeds the max of 500KB.
+
+ Test Files  62 passed (62)
+      Tests  584 passed (584)
+   Start at  00:09:48
+   Duration  30.04s (transform 18.19s, setup 53.17s, import 34.45s, tests 40.09s, environment 154.92s)
+

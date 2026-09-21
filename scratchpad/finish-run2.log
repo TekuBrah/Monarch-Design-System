@@ -1,0 +1,14 @@
+
+> @monarch/design-system@2.4.1 test
+> vitest run
+
+
+ RUN  v4.1.10 D:/Claude/Design system test
+
+[BABEL] Note: The code generator has deoptimised the styling of D:\Claude\Design system test\Assets\logo\crypto\litecoin.svg as it exceeds the max of 500KB.
+
+ Test Files  62 passed (62)
+      Tests  584 passed (584)
+   Start at  00:22:29
+   Duration  32.65s (transform 20.50s, setup 52.56s, import 37.68s, tests 37.05s, environment 176.71s)
+

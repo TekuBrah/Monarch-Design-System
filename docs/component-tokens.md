@@ -5380,7 +5380,7 @@ hardcoded `Button`. Every value is an existing token with an existing consumer.
 
 | Prop | Type | Default | Notes |
 |---|---|---|---|
-| `tone` | `'neutral' \| 'warning'` | `'neutral'` | Colours the **title** only |
+| `tone` | `'neutral' \| 'warning'` | `'neutral'` | Sets the frame's border and the leading glyph. **Never the text colour** (Gate 62b; at Gate 62 it coloured the title) |
 | `title` | `string` | — | Required. Also names the group |
 | `children` | `ReactNode` | — | The body. A slot, same as `Toast`'s description |
 | `actions` | `ReactNode` | — | App composes real `Button`s; region absent when omitted |
@@ -5389,13 +5389,35 @@ hardcoded `Button`. Every value is an existing token with an existing consumer.
 
 ### Tone → token mapping
 
+**Gate 62b (2026-09-22): tone is carried by the container and a leading glyph,
+never by the text.** Ruled by the review thread (there is no Figma node, so
+Ruling B applies): title and body use the same text tokens in every tone, the
+category pattern of GitHub Primer's flash and Atlassian's section message.
+
 | part | neutral | warning |
 |---|---|---|
-| title | `--mapped-text-default-default` | `--mapped-text-warning-default` |
+| title | `--mapped-text-default-default` | `--mapped-text-default-default` *(was `--mapped-text-warning-default` at Gate 62)* |
 | body | `--mapped-text-default-default` | `--mapped-text-default-default` |
-| surface (framed) | `--mapped-surface-subtlest-default` | same |
-| border (framed) | `--mapped-border-subtlest-default`, `--brand-scale-25` | same |
-| radius / padding / gap | `--brand-scale-200` / `--spacing-300` / `--spacing-200` | same |
+| surface (framed) | `--mapped-surface-subtlest-default` | same — **no warning fill**, see below |
+| border (framed) | `--mapped-border-subtlest-default`, `--brand-scale-25` | `--mapped-border-warning-default`, `--brand-scale-25` |
+| leading glyph | none | `Icon name="warning" size="m"` (20px), colour `--mapped-icon-warning-default`, both `isFramed` states |
+| glyph cell height | — | `--responsive-font-headings-h6-line-height` (the title's line box, 24px), so the glyph centres on the title's first line |
+| radius / padding / gap | `--brand-scale-200` / `--spacing-300` / `--spacing-200` | same; the gap is also the glyph→content column gap |
+
+Both warning tokens exist in `design-tokens/Mapped/Light.json` and `Dark.json`
+(`border.warning.default`: `{Warning.500}` light / `{Warning.600}` dark;
+`icon.Warning.default`: the same steps), and both are `--mapped-*` on
+`--mapped-*` grounds, so the pairing rule holds.
+
+**No warning fill, deliberately.** The mapped set has no subtle warning surface.
+The only one, `--mapped-surface-warning-default`, is the `Warning.700` hue fill
+that body text cannot sit on; a `color-mix()` tint would be a token-source gap
+needing approval. The surface stays `subtlest` in both tones.
+
+**Layout.** The warning root switches to a two-column grid (`auto` glyph column,
+`minmax(0, 1fr)` content column). No wrapper element is added, so the title,
+body and actions DOM is identical to the neutral tone's; neutral keeps its
+Gate 62 flex column untouched.
 
 **Body is default text, not subtle, and that is a measurement:**
 `--mapped-text-subtle-default` on `--mapped-surface-subtlest-default` is
@@ -5406,6 +5428,26 @@ why the subtle token was not raised.
 computed exactly):** neutral title and body **10.5857** light, **12.5674** dark.
 Warning title, **at the Figma value** — `#ff8a47` on `#f9f9f9` **2.2216** light
 (under AA for this 16px title), `#cc6e39` on `#131313` **5.1820** dark.
+
+> **Superseded at Gate 62b (2026-09-22).** The warning title no longer takes
+> that token. Re-measured the same way (showcase, `getComputedStyle`,
+> transitions finished, both themes), warning title **and** body now equal
+> neutral's in every state: **10.5857** light (`#363c43` on `#f9f9f9`),
+> **12.5674** dark (`#cfd5dc` on `#131313`), framed and unframed.
+>
+> Non-text signals, against the 3.0:1 threshold — **recorded, not fixed**
+> (Ruling A):
+>
+> | signal | theme | vs own surface | vs surface behind |
+> |---|---|---|---|
+> | border (framed) | light | `#ff8a47` on `#f9f9f9` **2.2216** ❌ | on page `#ffffff` **2.3390** ❌ |
+> | border (framed) | dark | `#cc6e39` on `#131313` **5.1820** | on page `#000000` **5.8569** |
+> | glyph, framed | light | **2.2216** ❌ | **2.3390** ❌ |
+> | glyph, framed | dark | **5.1820** | **5.8569** |
+> | glyph, unframed (in a `#f9f9f9` / `#131313` container) | light / dark | **2.2216** ❌ / **5.1820** | same ground |
+>
+> The title's words carry the meaning at body contrast, so the glyph and border
+> are supplementary. The light-mode shortfall belongs to the Figma warning ramp.
 
 **Token values are used exactly as designed in Figma — ruled by Teku at Gate
 62.** An earlier Gate 62 draft re-bound `--mapped-text-warning-default` in the
@@ -5422,12 +5464,25 @@ breaking change.
 **No leading tone glyph.** The MVP's advisory draws none and there is no Figma
 design for one; the tone is carried by the title's colour plus its words.
 
+> **Corrected at Gate 62b (2026-09-22):** the warning tone now renders a leading
+> glyph. Once the title returned to default text, an unframed warning had no
+> border and no fill left, and would have been indistinguishable from an
+> unframed neutral message. The glyph is `warning` from the existing registry,
+> the one `Toast` already uses for its warning appearance. No icon was drawn.
+> Neutral still renders none.
+
 ### Accessibility — non-blocking by construction
 
 - `role="group"`, `aria-labelledby` → the title `<p>`. No landmark, no dialog.
 - **Never takes focus, hides nothing, inerts nothing.** Three tests, one per
   failure mode (focus on mount; dialog/`aria-modal`/`inert`/`aria-hidden`;
   surrounding controls still receive clicks), each mutation-proven at Gate 62.
+  *Gate 62b:* the warning glyph's `<svg>` is `aria-hidden` (as `Icon` marks
+  every glyph), so the `aria-hidden` query in the second test now excludes
+  `.mn-inline-message__icon` and nothing else. All three were re-proven against
+  the Gate 62b file, including an `aria-hidden` placed outside the glyph.
+- **The glyph is decorative.** The group's accessible name remains the title
+  alone.
 - **No live region.** It is usually present at render, and a live region would
   announce static content as news. A consumer inserting one in response to an
   event wraps it in its own `role="status"`; `Toast` is the transient component.
