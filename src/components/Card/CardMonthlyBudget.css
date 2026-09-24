@@ -11,6 +11,24 @@
   padding: var(--brand-scale-400) var(--brand-scale-400) var(--brand-scale-500);
 }
 
+/* sizing='fill' — the container decides the width instead of the 343px Figma
+   box. Declared after the base rule on purpose: both selectors are single-class
+   (equal specificity), so source order is what lets this win. The --add-new
+   modifier below touches no width property, so the addNew state fills too.
+
+   `flex: 1 1 0` is load-bearing in a FLEX parent and inert in a GRID one.
+   Dropping width alone leaves the default `flex: 0 1 auto`, which sizes the
+   card to its CONTENT — not to the container. Grid items ignore flex
+   properties entirely, so one declaration serves both. `max-width: none` is
+   inert here (the base rule sets no cap) and is kept so the modifier matches
+   CardBalance / CardFeaturesAndEducation declaration for declaration.
+   Same reasoning as CardBalance; see docs/component-tokens.md. */
+.mn-card-monthly-budget--fill {
+  width: auto;
+  max-width: none;
+  flex: 1 1 0;
+}
+
 .mn-card-monthly-budget--add-new {
   align-items: center;
   background: none;

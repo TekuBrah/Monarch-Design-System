@@ -1311,6 +1311,7 @@ export default function App() {
   const [sideNavSelected, setSideNavSelected] = useState('home')
   const [sideNavCompact, setSideNavCompact] = useState(false)
   const [lastItemClicked, setLastItemClicked] = useState<string | null>(null)
+  const [openLegendRow, setOpenLegendRow] = useState<string | null>('groceries')
   const [toggleOn, setToggleOn] = useState(true)
   const [toggleLargeOn, setToggleLargeOn] = useState(false)
   const [cbChecked, setCbChecked] = useState(false)
@@ -1654,6 +1655,28 @@ export default function App() {
                 </table>
               </div>
             ))}
+
+            {/* tone="error" — tertiary only (Gate 66, G29) */}
+            <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+              tone="error" — tertiary only (Figma draws no other combination)
+            </p>
+            <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              {([
+                [undefined, 'default'],
+                ['hover',   'hover'],
+                ['pressed', 'pressed'],
+                ['focus',   'focus'],
+              ] as const).map(([ps, label]) => (
+                <Button key={label} variant="tertiary" tone="error" size="l" label="Delete receipt"
+                  leadingIcon={<Icon name="delete" size="m" />}
+                  previewState={ps}
+                />
+              ))}
+              <Button variant="tertiary" tone="error" size="l" label="Delete receipt"
+                leadingIcon={<Icon name="delete" size="m" />}
+                isDisabled
+              />
+            </div>
 
           </Section>
         </>
@@ -3064,7 +3087,22 @@ export default function App() {
                   availableAmount="RM 620.00"
                   spentAmount="RM 380.00"
                 />
+                <CardMonthlyBudget
+                  title="Entertainment"
+                  period="30 Aug - 20 Sept"
+                  percentage={35}
+                  amountLeft="RM 350"
+                  totalAmount="RM 1,000"
+                  availableAmount="RM 350"
+                  spentAmount="RM 650"
+                />
                 <CardMonthlyBudget state="addNew" />
+              </div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', margin: '1rem 0 0.5rem' }}>
+                sizing — fixed (343px) above; fill below, in a 440px flex row. Details buttons are named "Details for &#123;title&#125;".
+              </div>
+              <div style={{ display: 'flex', width: '440px' }}>
+                <CardMonthlyBudget sizing="fill" title="Groceries" period="1 Jul - 31 Jul" percentage={80} amountLeft="RM 80" totalAmount="RM 400" availableAmount="RM 80" spentAmount="RM 320" />
               </div>
             </div>
 
@@ -3449,6 +3487,31 @@ export default function App() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '320px' }}>
                 <ChartLegendItem variant="legend" title="Groceries" subtitle="32%" amount="RM320.00" />
                 <ChartLegendItem variant="contribution" title="Transfer" subtitle="Subtitle" amount="0" />
+              </div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', margin: '1rem 0 0.5rem' }}>
+                expanded — controlled disclosure (legend only). Click a row; the parent owns which one is open.
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '320px' }}>
+                {([
+                  ['bills', 'Bills & Utilities', '33.33%', 'RM 2,500.00', 'red'],
+                  ['groceries', 'Groceries', '24.00%', 'RM 1,800.00', 'purple'],
+                ] as const).map(([id, title, pct, amt, color]) => (
+                  <div key={id}>
+                    <ChartLegendItem
+                      title={title}
+                      subtitle={pct}
+                      amount={amt}
+                      iconColor={color}
+                      expanded={openLegendRow === id}
+                      onExpandedChange={next => setOpenLegendRow(next ? id : null)}
+                      controlsId={`legend-demo-${id}`}
+                    />
+                    {/* Always rendered, so aria-controls never dangles; hidden when collapsed. */}
+                    <div id={`legend-demo-${id}`} hidden={openLegendRow !== id} style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', padding: '0.5rem 0 0 3.5rem' }}>
+                      (the nested list is the consumer's — the DS ships no accordion)
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

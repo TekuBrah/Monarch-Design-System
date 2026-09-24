@@ -464,6 +464,7 @@ showcase's dark panel, or `ToastMobile`'s action slot on its colored surface).
 | Prop | Type | Default | Notes |
 |---|---|---|---|
 | `variant` | `ButtonVariant` | `'primary'` | Figma prop: `Type`. Renamed to avoid HTML `type` collision |
+| `tone` | `ButtonTone` | `'default'` | `'default'` \| `'error'`. **Added v2.5.0 (Gate 66, closes the MVP's G29).** Takes effect on `tertiary` only — see "Error tone" below |
 | `size` | `ButtonSize` | `'m'` | `'s'` \| `'m'` \| `'l'` |
 | `label` | `string` | `'Button'` | Visible text label |
 | `leadingIcon` | `ReactNode` | — | Optional icon before label |
@@ -484,6 +485,54 @@ showcase's dark panel, or `ToastMobile`'s action slot on its colored surface).
 | M padding | `--brand-scale-200` (v) `--brand-scale-300` (h) | 8px / 12px (confirmed from Figma) |
 | L padding | `--brand-scale-300` (v) `--brand-scale-400` (h) | 12px / 16px (inferred — not confirmed from Figma) |
 | Focus outline | `--brand-scale-50` offset + width | 2px ring, 2px offset |
+
+### Error tone (v2.5.0, Gate 66)
+
+**How Figma models it: as neither a variant value nor a property.** The DS
+file's `button` set (`148:986`) has exactly seven axes — Appearance
+(`Default` | `Inverse`), Size, Type (`Primary` | `Secondary` | `Tertiary`),
+State, Is Disabled, Icon left, Icon right — and no value or property name
+mentions error, destructive, danger or delete. The error look exists only as an
+instance override: the app file's "Delete receipt" (`casestudy_02`,
+`I1266:14285;1045:11001`, Flow 9's `Receipt add and link` section, inside its
+`Modal` / `Bottom Sheet`) is `Type=Tertiary, Size=L, Icon left=True`, with the
+label fill overridden to `text/error/default` and the `delete` glyph's fill to
+`icon/error/default`. Nothing else is overridden.
+
+So `tone` is a separate prop (the brief's default for an ambiguous model,
+following `InlineMessage`'s `tone`), and **only `tertiary` builds it** — the one
+combination Figma draws. On primary/secondary `tone="error"` is ignored and the
+markup is identical to `tone="default"` (tested).
+
+| part | token | note |
+|---|---|---|
+| label, every state | `--mapped-text-error-default` | Figma draws the default state only; an instance override survives a State swap, so hover/pressed keep it |
+| icon (`> .mn-element-wrapper`) | `--mapped-icon-error-default` | Its own rule: text/error and icon/error are **different steps** in the mapped JSON (light 600 / 500, dark 500 / 600), so the icon cannot inherit the label |
+| background, border, focus, disabled | unchanged Tertiary `--btn-*` | not overridden in Figma |
+
+**Deliberately NOT used:** `--mapped-text-error-default-hover/-pressed` and the
+icon equivalents. They exist, but Figma never binds them to a button; shifting
+onto them would be an inferred state. That is Teku's call if wanted.
+
+**Hover guard.** The block declares custom properties only; hover still flows
+through the single gated `@media (hover: hover)` rule, so the Gate 40 guard
+covers it with no rule of its own.
+
+**Contrast, measured in the showcase with `getComputedStyle`, both themes.** The
+button sits on `Modal`'s `--mapped-surface-elevation-default`. The label is
+`.type-body-sm-semibold` (14px/600), so 4.5 applies; the icon is judged at 3.0.
+
+| cell | light | dark |
+|---|---|---|
+| label on elevation (rest) | `#bc3f42` on `#ffffff` **5.3463** | `#eb4f52` on `#262626` **4.1600 ❌** |
+| label on page | 5.3463 | `#eb4f52` on `#000000` 5.7727 |
+| icon on elevation | `#eb4f52` **3.6378** | `#bc3f42` **2.8307 ❌** |
+| label on hover wash (composited over elevation) | on `#e6f1ff` 4.6820 | on `#3b3b3b` **3.0792 ❌** |
+| label on pressed wash (composited over elevation) | on `#cde2ff` **4.0526 ❌** | on `#505050` **2.2165 ❌** |
+
+Recorded, not fixed (Ruling A). Dark rest 4.16 reproduces Gate 62 §5's
+"`--mapped-text-error-default`: 4.16 on dark elevation" exactly. The dark wash is
+translucent, so its figures name their backdrop.
 
 ### Typography
 
@@ -4227,6 +4276,9 @@ and jest-axe passed both before and after.
 | `amount` | `string` | Required |
 | `hasChevron` | `boolean` | `legend` only |
 | `onClick` | `() => void` | Renders as `<button>` when set |
+| `expanded` | `boolean` | `legend` only. **Added v2.5.0 (Gate 66, G37)** — controlled disclosure; `undefined` = not a disclosure |
+| `onExpandedChange` | `(next: boolean) => void` | **Added v2.5.0** — receives `!expanded` |
+| `controlsId` | `string` | **Added v2.5.0** — rendered as `aria-controls`, disclosure only |
 | `className` | `string` | |
 
 | Element / variant | Token |
@@ -4238,7 +4290,45 @@ and jest-axe passed both before and after.
 | Amount, `legend` | `--mapped-text-default-default`, `.type-body-m-semibold` |
 | Amount, `contribution` | `--mapped-text-default-default`, `.type-body-m-medium` |
 | Chevron (`legend` only) | `--mapped-icon-subtle-default` |
+| Title, subtitle, amount — `expanded` | `--mapped-text-interactive-default` |
 | Focus ring | Same pattern as `ListItem` |
+
+### ChartLegendItem — `expanded` (v2.5.0, Gate 66, G37)
+
+**Source A has no expanded variant.** `list/chart legend` (`242:363`) is a single
+component, not a set; its properties are `title`, `titleInfo`, `amount`,
+`iconAfter` and a value string. **Source B is therefore the authority:** Flow
+10's drilldown (`casestudy_02` `1266:14337`), instance
+`I1266:14337;851:12473` (Groceries). Its overrides against the collapsed rows
+next to it:
+
+| part | collapsed | expanded (Source B) | built |
+|---|---|---|---|
+| title + subtitle wrapper (`242:366`) | title `text/default/default`, subtitle `text/subtle/default` | **`text/Interactive/default`** on the wrapper — both lines | `--mapped-text-interactive-default` on both |
+| amount (`242:376`) | `text/default/default` | **`text/Interactive/default`** | `--mapped-text-interactive-default` |
+| chevron (`242:369`) | `icon_chevron_expand_more`, fill `#6B7786` | **`icon_chevron_expand_less`**, fill raw `black` | glyph swapped; colour **left at `--mapped-icon-subtle-default`** |
+| background, padding, row geometry | — | no override | unchanged |
+
+`text/Interactive/default` is a bound variable (`#5e4db2`, `get_variable_defs`)
+and maps to the existing `text.Interactive.default` in both mapped JSONs
+(light `{Interactive.500}`, dark `{Interactive.400}`). **The chevron is the one
+unbound value**: swapping the icon instance dropped its colour override, so it
+exports the glyph's raw default fill. Adopting raw black would be a hex no token
+carries, so the chevron keeps its collapsed token — flagged, not decided.
+
+The **divider** Figma draws (1px `border/subtlest/default` top and bottom, 16px
+vertical padding) sits on a wrapper frame (`856:6141`) *outside* the legend
+instance, around the row and its transaction list. It is the MVP's composition,
+not the row's, and is not built here — the DS ships no accordion (Gate 59).
+
+Behaviour: `expanded` defined → the row is the same single `<button>` the
+`onClick` path already rendered (no nested interactive element), carrying
+`aria-expanded` and, when given, `aria-controls`. Activation calls `onClick`
+(if any) and then `onExpandedChange(!expanded)`. No internal state. `undefined`
+renders byte-identically to v2.4.1 (sha256-asserted for three renders).
+
+Measured, showcase, `getComputedStyle`: expanded title `#5e4db2` on `#ffffff`
+**6.6030** light, `#7e71c1` on `#000000` **5.0192** dark.
 
 ### Known Figma inconsistencies
 
@@ -4443,8 +4533,10 @@ that reason: any track at or under 172px demonstrates nothing.
 | Prop | Type | Notes |
 |---|---|---|
 | `state` | `'default' \| 'addNew'` | Default `'default'` |
+| `title` | `string` | Default `'Monthly Budget'`. **Added v2.5.0 (Gate 66, G35)** — also feeds the Details button's accessible name |
 | `period` | `string` | `default` only |
-| `onDetailsClick` | `() => void` | |
+| `onDetailsClick` | `() => void` | Button's accessible name is `"Details for {title}"` (v2.5.0, G38) |
+| `sizing` | `'fixed' \| 'fill'` | Default `'fixed'`. **Added v2.5.0 (Gate 66, G36)** — the `CardBalance` shape |
 | `percentage` | `number` | Drives `ProgressRing` |
 | `amountLeft` / `totalAmount` / `availableAmount` / `spentAmount` | `string` | `default` only |
 | `onAddNew` | `() => void` | `addNew` only |
@@ -4459,6 +4551,40 @@ that reason: any track at or under 172px demonstrates nothing.
 | Header title / dot / period | `--mapped-text-default-default` / `--mapped-text-subtle-default` / `--mapped-text-subtle-default` |
 | Details link | `--mapped-text-primary-default` |
 | Add-new icon button | `--mapped-icon-subtle-default` bg, `--mapped-text-primary-on-color` icon |
+
+### CardMonthlyBudget — `title`, `sizing`, Details name (v2.5.0, Gate 66)
+
+**`title` (G35).** In the DS component (`237:690`) the title is plain text, not
+a component property — only `period` and `state` are. Figma's Flow 10 overrides
+the text ("Entertainment", `casestudy_02` `I1266:14334;844:6330`) and nothing
+else: both sources bind the title to `body/caption-semibold` +
+`text/default/default`. The prop renders into the same span, so the style and
+colour cannot move with the text. *(Source disagreement worth knowing: the MCP
+code dump for that instance still prints "Monthly Budget" and "RM 0.00"; its
+rendered screenshot reads "Entertainment" and "RM 350". The dump omits some text
+overrides — trust the render.)*
+
+**Long titles.** Figma sets the header `whitespace-nowrap` and draws no
+truncation, so none was invented. Measured at 343px with a 30-character title
+("Weekend Entertainment & Travel"): the title and the period each wrap to two
+lines, the header grows 16 → 32px and the card 208 → 224px, nothing overflows
+horizontally, and Details stays on one line at the right edge. That wrapping is
+pre-existing behaviour, not new in this gate.
+
+**`sizing` (G36).** Copied from `CardBalance` — `.mn-card-monthly-budget--fill`
+declared after the base rule: `width: auto`, `max-width: none` (inert — the base
+sets no cap — kept for parity), `flex: 1 1 0`. There is no `min-width` to
+retain. Measured in the showcase's 440px flex row: fixed `343px`,
+`flex-grow 0 / basis auto`; fill **440px**, `flex-grow 1 / basis 0px`.
+
+**Details accessible name (G38).** Visible text stays "Details"; the name is
+`aria-label="Details for {title}"`, which starts with the visible label
+(WCAG 2.5.3). `aria-label` because the DS has **no visually-hidden utility**
+(grep for `sr-only` / `visually-hidden` over `src/`: zero), and this gate adds
+no global class. This is the one markup change on the default path: the default
+render now carries `aria-label="Details for Monthly Budget"`. Removing that one
+attribute, the default renders hash-identical to v2.4.1 (tested) — it changes an
+accessible name, not a pixel.
 
 ### CardGoals
 

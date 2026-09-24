@@ -35,6 +35,23 @@ export interface ChartLegendItemProps {
   /** `legend` only — trailing chevron. */
   hasChevron?: boolean
   onClick?: () => void
+  /**
+   * `legend` only — makes the row a disclosure. CONTROLLED: the parent owns
+   * which row is open; this component keeps no state of its own.
+   *
+   * `undefined` (the default) means the row is not a disclosure, and it renders
+   * exactly as it did before this prop existed. Defined, the row renders as a
+   * `<button>` carrying `aria-expanded`, the chevron points up when `true`, and
+   * the title, subtitle and amount take `--mapped-text-interactive-default` —
+   * Flow 10's expanded Groceries row (app file `1266:14337`). Ignored on
+   * `contribution`, which Figma never draws as a disclosure.
+   */
+  expanded?: boolean
+  /** Called with the NEGATED `expanded` value when the row is activated. */
+  onExpandedChange?: (next: boolean) => void
+  /** Rendered as `aria-controls` — the id of the region this row discloses.
+   *  Only emitted when `expanded` is defined. */
+  controlsId?: string
   className?: string
 }
 
@@ -49,10 +66,14 @@ export function ChartLegendItem({
   amount,
   hasChevron = true,
   onClick,
+  expanded,
+  onExpandedChange,
+  controlsId,
   className,
 }: ChartLegendItemProps) {
   const isLegend = variant === 'legend'
   const showIcon = isLegend || hasIcon
+  const isDisclosure = isLegend && expanded !== undefined
 
   const content = (
     <>
@@ -85,7 +106,9 @@ export function ChartLegendItem({
         >
           {amount}
         </span>
-        {isLegend && hasChevron && <Icon name="icon_chevron_expand_more" size="m" />}
+        {isLegend && hasChevron && (
+          <Icon name={isDisclosure && expanded ? 'icon_chevron_expand_less' : 'icon_chevron_expand_more'} size="m" />
+        )}
       </div>
     </>
   )
@@ -93,10 +116,30 @@ export function ChartLegendItem({
   const classes = [
     'mn-chart-legend-item',
     `mn-chart-legend-item--${variant}`,
+    isDisclosure && expanded && 'mn-chart-legend-item--expanded',
     className,
   ]
     .filter(Boolean)
     .join(' ')
+
+  // The disclosure reuses the same single <button> the onClick path renders —
+  // never a second interactive element nested inside the row.
+  if (isDisclosure) {
+    return (
+      <button
+        type="button"
+        className={classes}
+        aria-expanded={expanded}
+        aria-controls={controlsId}
+        onClick={() => {
+          onClick?.()
+          onExpandedChange?.(!expanded)
+        }}
+      >
+        {content}
+      </button>
+    )
+  }
 
   if (onClick) {
     return (

@@ -1089,6 +1089,98 @@ latest-dated file is the one to run.** If two prompts for the same gate are on
 hand, run the one with the latest date, and still check its premises against
 disk, as §1 did.
 
+## Gate 66 — Flow 10 primitives (G35–G38) and the Button error tone (G29), v2.5.0
+
+Built on `main` at `820736e` (`v2.4.1`), left uncommitted. Release notes in
+`CHANGELOG.md` v2.5.0; per-component derivation in `docs/component-tokens.md`
+(Button "Error tone", ChartLegendItem "`expanded`", CardMonthlyBudget
+"`title`, `sizing`, Details name"). This section keeps what a successor needs
+and would otherwise re-derive.
+
+### 0 · Figma was read through the REMOTE connector, not the local MCP
+
+The local desktop MCP at `127.0.0.1:3845` refused the connection
+(`ECONNREFUSED`, curl exit 7). The claude.ai Figma connector authenticated
+(`whoami` → Teku Cheong, `tekucheong@gmail.com`, pro plan) and reads files **by
+key**, so it is not subject to non-negotiable 3's active-tab trap: both files
+were read in one session with no tab switching. Source A = DS file
+`xhA5ARVgSeD3gA41lYDqST`; Source B = `casestudy_02` `v9MI8jxTaXiJA234Hkanlf`.
+Source B's `get_metadata` on its `Page 1` (`0:1`) fails with an SSE JSON parse
+error (response too large) — Flow 10 and Flow 9 live on page **`Flow for MVP`
+(`1266:14164`)**, not `0:1`; Flow 9 is the section `Receipt add and link | 28
+Jan 2026` (`1266:14277`).
+
+### 1 · What each primitive IS in Figma — do not re-derive
+
+- **Card title**: plain text in `237:690`, not a property. Both sources:
+  `body/caption-semibold`, `text/default/default`. No truncation anywhere.
+- **Chart legend expanded**: Source A has **no** expanded variant —
+  `list/chart legend` `242:363` is one component, not a set. Source B's
+  Groceries row overrides the title+subtitle wrapper **and** the amount to
+  `text/Interactive/default` (bound), swaps the glyph to
+  `icon_chevron_expand_less`, and leaves the chevron's fill **unbound raw black**.
+  The divider around the open row belongs to the screen, not the row.
+- **Error button**: the `button` set has no error value or property on any of
+  its seven axes. "Delete receipt" (`I1266:14285;1045:11001`) is
+  `Type=Tertiary, Size=L, Icon left=True`, label → `text/error/default`, `delete`
+  glyph → `icon/error/default`, default state only.
+
+### 2 · Source disagreements, recorded
+
+- **Source B's variable VALUES are stale against this repo.** Its
+  `text/error/default` resolves `#eb4f52` (Error.500) where `Mapped/Light.json`
+  says `{Error.600}` `#bc3f42`; its `text/primary/default` resolves `#046eff`,
+  the pre-Gate-36 value. The binding NAMES agree, so the build binds names and
+  takes values from this repo — but a colour read off Source B is not a colour
+  this DS renders.
+- Source B's legend rows show `font/copy/body/line-height` falling back to 20px
+  where Source A shows 24px — the same variable, so nothing was changed.
+- The MCP code dump for the "Entertainment" card still prints "Monthly Budget";
+  its screenshot shows "Entertainment". Trust the render.
+
+### 3 · Decisions taken inside the brief, each flagged for Teku
+
+1. **`tone`, not a fourth variant.** Figma models the error look as an instance
+   override only, which the brief routes to `tone?: 'default' | 'error'`.
+2. **Error hover/pressed keep `text/error/default`.** Figma draws no error
+   hover/pressed; an override survives a State swap in Figma, so this is the
+   reading that invents nothing. `-hover`/`-pressed` error tokens exist and were
+   left unused — switching is a one-block change if wanted.
+3. **The expanded chevron keeps `--mapped-icon-subtle-default`.** Figma's value
+   is unbound raw black; adopting it would be a hex no token carries.
+4. **Expanded recolours subtitle and amount too**, not just the title, because
+   Figma's override does (Ruling A). The brief named only the title.
+5. **`aria-label` for G38** — no visually-hidden utility exists in the DS.
+6. **Version bumped with `npm version 2.5.0 --no-git-tag-version`**, not by hand
+   as the brief said: Release hygiene above forbids hand-editing it, and the
+   result (3 lines across both files) is what a hand edit would have produced.
+
+### 4 · Proofs
+
+Default paths are asserted **byte-identical to v2.4.1 by sha256** of the
+rendered markup, hashes captured from the untouched tree before the first edit:
+3 `CardMonthlyBudget` renders (with G38's `aria-label` stripped — the one
+permitted difference), 3 `ChartLegendItem` renders, 2 `Button` renders.
+
+**Eight mutation proofs, one test each by title**, exit 1 mutated →
+restore → sha256 identical → exit 0; every one read `1 failed | N skipped`.
+**The first run of one was invalid and its count line said so**: `18 skipped`,
+exit 0 — `-t` is a REGEX, and a title containing `(bar the Details
+aria-label)` matched nothing. Re-run with a paren-free title, it read
+`1 failed | 17 skipped`. **Titles with regex metacharacters cannot be passed to
+`-t` verbatim.**
+
+**Test count prediction missed by one, and the miss was the baseline.**
+Predicted 51 for the three files; measured 52. `ChartLegendItem.test.tsx` held
+**7** tests at v2.4.1, not 6 (the `it.each` over two variants). The additions
+were exactly as predicted: 12 + 11 + 11 = 34. Suite: 584 → **618**, 62 files.
+
+### 5 · G3 (report only)
+
+`CardBalance.iconColor` first appears at tag **`v1.3.0`** (absent at `v1.2.0`),
+added in commit `364f8ca` ("Gate 2"). Whether that closes G3 as the MVP's
+register words it is for the register, which lives in the MVP.
+
 ## Known open items
 - **Heading font-size in source**: Figma composites wire `{fontSize.N}` (static), not a
   responsive token. Resolved at build time by mapping heading keys → responsive vars.
@@ -1506,6 +1598,12 @@ registered in `src/styles/package.css` — no longer a hand derivation, see the
 registration detector.
 
 Every figure in this paragraph was re-derived from disk at Gate 42, 2026-09-02.
+
+> **Gate 66 (v2.5.0), 2026-09-24:** the test figures above are stale. Measured
+> by `npm test`: **62 test files / 618 tests** (Gate 62 → 579, Gate 62b → 584,
+> Gate 66 → 618). Folder, component and CSS-file counts are unchanged by Gate 66
+> — it added props to `CardMonthlyBudget`, `ChartLegendItem` and `Button`, no
+> component, no `.css` file and no showcase `<Section>`.
 
 **✅ RESOLVED (Gate 40) — the showcase-section figures agree, and always did.**
 This entry used to warn that `47` and `55` "do not agree and the gap is 8, so do

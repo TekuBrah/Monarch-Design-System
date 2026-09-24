@@ -3,6 +3,51 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## v2.5.0
+
+Gate 66 — the four DS primitives Flow 10 needs (the MVP's G35–G38) plus the
+MVP's G29. Minor: every addition is an optional prop whose default reproduces
+v2.4.1. Full derivation in CLAUDE.md's Gate 66 section and
+`docs/component-tokens.md`.
+
+### Added
+
+- **`CardMonthlyBudget.title`** (G35) — default `'Monthly Budget'`, the
+  previously hard-coded string. Same span, same `.type-body-caption-semibold`
+  and `--mapped-text-default-default` as before.
+- **`CardMonthlyBudget.sizing`** (G36) — `'fixed'` (default, 343px) | `'fill'`,
+  copied from `CardBalance.sizing`: `.mn-card-monthly-budget--fill` sets
+  `width: auto`, `max-width: none`, `flex: 1 1 0`.
+- **`ChartLegendItem.expanded` / `onExpandedChange` / `controlsId`** (G37) —
+  a controlled disclosure on the `legend` variant. Defined, the row is its one
+  `<button>` with `aria-expanded` (+ `aria-controls`), the chevron becomes
+  `icon_chevron_expand_less` when open, and title, subtitle and amount take
+  `--mapped-text-interactive-default` — Flow 10's bound override. `undefined`
+  is byte-identical to v2.4.1. No internal state; no accordion.
+- **`Button.tone`** (G29) — `'default'` | `'error'`, new type `ButtonTone`.
+  Tertiary only, the one combination Figma draws: the label takes
+  `--mapped-text-error-default` and the icon `--mapped-icon-error-default`.
+  Everything else stays Tertiary. Ignored on primary/secondary.
+
+### Changed
+
+- **`CardMonthlyBudget`'s Details button is named "Details for {title}"** (G38)
+  via `aria-label`; the visible text is still "Details". This is the only
+  markup change on any default path — an accessible name, not a pixel.
+
+### Recorded, not fixed (token values are Figma's)
+
+- `Button tone="error"` label on `Modal`'s dark elevation `#262626`: **4.1600**
+  (fails 4.5; reproduces Gate 62 §5). Dark icon **2.8307** (fails 3.0). On the
+  Tertiary hover/pressed washes composited over elevation: light pressed
+  **4.0526**, dark hover **3.0792**, dark pressed **2.2165** — all under 4.5.
+  Light rest passes at **5.3463**.
+- The expanded legend row's chevron: Figma's swapped glyph carries no bound
+  colour (raw black), so it keeps `--mapped-icon-subtle-default`.
+
+No token value or generated file changed. Tests 584 → 618, files 62 → 62.
+
+---
 ## v2.4.1
 
 Gate 62b — amends v2.4.0's `InlineMessage`. Gate 62b was briefed as an amendment

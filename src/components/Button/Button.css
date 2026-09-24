@@ -181,6 +181,36 @@
   --btn-focus-ring:      var(--mapped-surface-interactive-on-color);
 }
 
+/* ── Error tone (tertiary only) ──────────────────────────────────── */
+/* Figma: a Tertiary instance ("Delete receipt", app file I1266:14285;1045:11001)
+   with two fill overrides — label → text/error/default, icon → icon/error/default.
+   Nothing else is overridden, so everything else stays Tertiary: no border, the
+   same hover/pressed wash, the same focus ring, the same disabled treatment.
+
+   Figma draws the DEFAULT state only. An instance override persists across a
+   State swap, so the label keeps text/error/default through hover and pressed —
+   bound here the same way rather than inventing a shift onto the -hover/-pressed
+   error tokens. Hover styling still flows through the one gated
+   `@media (hover: hover)` rule above; this block declares custom properties
+   only, so the touch-safe hover guard covers it with no rule of its own.
+
+   Declared AFTER the dark block: `[data-theme="dark"] .mn-btn--tertiary` and
+   `.mn-btn--tertiary.mn-btn--error` are both (0,2,0), so source order is what
+   lets this win in dark. Both tokens flip in the mapped layer themselves. */
+.mn-btn--tertiary.mn-btn--error {
+  --btn-text:            var(--mapped-text-error-default);
+  --btn-text-hover:      var(--mapped-text-error-default);
+  --btn-text-pressed:    var(--mapped-text-error-default);
+}
+
+/* The icon slot takes its own token: text/error and icon/error are different
+   steps (light 600 vs 500), so the icon cannot simply inherit the label colour.
+   Every DS <Icon> renders inside .mn-element-wrapper with fill="currentColor".
+   :not(:disabled) keeps disabled icons on --btn-text-disabled like the label. */
+.mn-btn--tertiary.mn-btn--error:not(:disabled) > .mn-element-wrapper {
+  color: var(--mapped-icon-error-default);
+}
+
 /* ── Size variants ───────────────────────────────────────────────── */
 .mn-btn--s {
   padding: var(--brand-scale-100);

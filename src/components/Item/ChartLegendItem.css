@@ -71,3 +71,16 @@ button.mn-chart-legend-item:focus-visible {
   color: var(--mapped-text-default-default);
   white-space: nowrap;
 }
+
+/* Expanded disclosure (`expanded={true}`, legend only). Flow 10's drilldown
+   (app file 1266:14337, the Groceries row) overrides the title+subtitle wrapper
+   AND the amount to `text/Interactive/default` — a bound Figma variable, so the
+   existing mapped token, not a new colour. The chevron is deliberately NOT
+   recoloured: Figma's expanded glyph carries no bound colour (the swapped
+   icon_chevron_expand_less exports its raw default fill), so it keeps the
+   trailing group's --mapped-icon-subtle-default. See docs/component-tokens.md. */
+.mn-chart-legend-item--expanded .mn-chart-legend-item__title,
+.mn-chart-legend-item--expanded .mn-chart-legend-item__subtitle,
+.mn-chart-legend-item--expanded .mn-chart-legend-item__amount {
+  color: var(--mapped-text-interactive-default);
+}
