@@ -1,8 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { axe } from 'jest-axe'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { DonutChart } from './DonutChart'
 import type { DonutSegment } from './DonutChart'
+import { environment, readGlobals, resolveValue } from '../../test/tokenCss'
 
 /**
  * TESTING BOUNDARY — stated, not left implicit.
@@ -141,5 +144,128 @@ describe('DonutChart', () => {
   it('has no axe violations when decorative', async () => {
     const { container } = render(<DonutChart segments={BUDGET} />)
     expect(await axe(container)).toHaveNoViolations()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Gate 70 — the ring keeps its hole (MVP G42), and wedges paint at /500.
+//
+// jsdom applies no stylesheet, so the paint a segment ends up with is derived
+// here from DonutChart.css: every rule whose selector is one compound of
+// classes the element carries, the highest class count winning and ties going
+// to source order. A CSS rule beats an SVG presentation attribute, so the
+// attribute counts only when no rule sets the property — that ordering is the
+// whole of G42. The browser measurement is the other half (CLAUDE.md, Gate 70).
+// ---------------------------------------------------------------------------
+
+const DONUT_CSS = readFileSync(resolve(process.cwd(), 'src/components/DonutChart/DonutChart.css'), 'utf8')
+const BADGE_CSS = readFileSync(resolve(process.cwd(), 'src/components/IconObject/IconObject.css'), 'utf8')
+const LIGHT = environment(readGlobals(), 'light')
+const DARK = environment(readGlobals(), 'dark')
+
+interface Rule { classes: string[]; decls: Map<string, string>; order: number }
+
+function rulesOf(css: string): Rule[] {
+  const clean = css.replace(/\/\*[\s\S]*?\*\//g, '')
+  return [...clean.matchAll(/([^{}]+)\{([^{}]*)\}/g)].flatMap((m, order) => {
+    const decls = new Map(
+      m[2].split(';').map(d => d.trim()).filter(Boolean)
+        .map(d => [d.slice(0, d.indexOf(':')).trim(), d.slice(d.indexOf(':') + 1).trim()] as [string, string]),
+    )
+    return m[1].split(',').map(s => s.trim())
+      .filter(s => /^(\.[\w-]+)+$/.test(s))
+      .map(s => ({ classes: s.split('.').filter(Boolean), decls, order }))
+  })
+}
+
+const DONUT_RULES = rulesOf(DONUT_CSS)
+
+/** The value `prop` takes on `el`: the winning stylesheet rule, else its attribute. */
+function painted(el: Element, prop: string): string | null {
+  let best: { spec: number; order: number; value: string } | undefined
+  for (const r of DONUT_RULES) {
+    const value = r.decls.get(prop)
+    if (value === undefined || !r.classes.every(c => el.classList.contains(c))) continue
+    if (!best || r.classes.length > best.spec || (r.classes.length === best.spec && r.order >= best.order)) {
+      best = { spec: r.classes.length, order: r.order, value }
+    }
+  }
+  return best ? best.value : el.getAttribute(prop)
+}
+
+/** `currentColor` resolved through the element's own `color` rule. */
+function paintColour(el: Element, prop: 'fill' | 'stroke'): string | null {
+  const v = painted(el, prop)
+  return v === 'currentColor' ? painted(el, 'color') : v
+}
+
+/** The twelve flat hues, read from IconObject's badge rules — `ai` is a gradient and has none. */
+const BADGE_HUES = rulesOf(BADGE_CSS).flatMap(r => {
+  const hue = /^mn-icon-object--([a-z]+)$/.exec(r.classes.length === 1 ? r.classes[0] : '')?.[1]
+  const bg = r.decls.get('background')
+  return hue && bg === `var(--brand-${hue}-400)` ? [hue] : []
+})
+
+const ONE: DonutSegment[] = [{ id: 'ent', label: 'Entertainment', value: 700, color: 'blue' }]
+
+describe('DonutChart — Gate 70', () => {
+  it('paints the single-segment ring with no fill, so the hole stays empty', () => {
+    const { container } = render(<DonutChart segments={ONE} />)
+    const ring = container.querySelector('circle')!
+    expect(ring).not.toBeNull()
+    expect(painted(ring, 'fill')).toBe('none')
+  })
+
+  it('strokes the single-segment ring in its hue at /500', () => {
+    const { container } = render(<DonutChart segments={ONE} />)
+    const ring = container.querySelector('circle')!
+    expect(painted(ring, 'stroke')).toBe('currentColor')
+    expect(paintColour(ring, 'stroke')).toBe('var(--brand-blue-500)')
+  })
+
+  it('leaves the ring a hole of innerRadius with the centre label over it', () => {
+    const { container } = render(
+      <DonutChart segments={ONE} centreLabel="RM 700.00" centreCaption="Spent" />,
+    )
+    const ring = container.querySelector('circle')!
+    const r = Number(ring.getAttribute('r'))
+    const sw = Number(ring.getAttribute('stroke-width'))
+    // The stroke spans r ± sw/2; its inner edge is the hole. 0.648 × 50 = 32.4.
+    expect(r - sw / 2).toBeCloseTo(32.4, 6)
+    expect(r + sw / 2).toBeCloseTo(50, 6)
+    // The label is a sibling of the SVG, centred on the chart — inside the hole.
+    const centre = screen.getByText('RM 700.00').closest('.mn-donut__centre')!
+    expect(centre.parentElement).toBe(container.firstChild)
+    const rule = DONUT_RULES.find(x => x.classes.join('.') === 'mn-donut__centre')!
+    expect([rule.decls.get('position'), rule.decls.get('top'), rule.decls.get('left'), rule.decls.get('transform')])
+      .toEqual(['absolute', '50%', '50%', 'translate(-50%, -50%)'])
+  })
+
+  it('keeps multi-segment wedges filled, at /500', () => {
+    const { container } = render(<DonutChart segments={BUDGET} />)
+    const wedges = [...paths(container)]
+    expect(wedges).toHaveLength(7)
+    for (const [i, w] of wedges.entries()) {
+      expect(w.classList.contains('mn-donut__segment--ring')).toBe(false)
+      expect(painted(w, 'fill')).toBe('currentColor')
+      expect(paintColour(w, 'fill')).toBe(`var(--brand-${BUDGET[i].color}-500)`)
+    }
+  })
+
+  it('maps every hue to /500 for wedges while badges stay /400, identical in both themes', () => {
+    expect(BADGE_HUES).toHaveLength(12)
+    for (const hue of BADGE_HUES) {
+      const rule = DONUT_RULES.find(x => x.classes.length === 1 && x.classes[0] === `mn-donut__segment--${hue}`)
+      expect(rule?.decls.get('color')).toBe(`var(--brand-${hue}-500)`)
+      const light = resolveValue(`var(--brand-${hue}-500)`, LIGHT)
+      expect(light).toMatch(/^#[0-9a-f]{6}$/i)
+      expect(resolveValue(`var(--brand-${hue}-500)`, DARK)).toBe(light)
+    }
+    // No hue class exists in the donut that the badges do not also have.
+    const donutHues = DONUT_RULES.flatMap(x => {
+      const m = /^mn-donut__segment--([a-z]+)$/.exec(x.classes.length === 1 ? x.classes[0] : '')
+      return m && x.decls.has('color') ? [m[1]] : []
+    })
+    expect(donutHues.sort()).toEqual([...BADGE_HUES].sort())
   })
 })

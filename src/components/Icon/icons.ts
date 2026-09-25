@@ -108,6 +108,7 @@ import CIconPdf from '../../../Assets/icons-custom/icon_pdf.svg?react'
 import CIconReceive from '../../../Assets/icons-custom/icon_receive.svg?react'
 import CIconScheduledPayments from '../../../Assets/icons-custom/icon_scheduled_payments.svg?react'
 import CIconShopping from '../../../Assets/icons-custom/icon_shopping.svg?react'
+import CIconSpend from '../../../Assets/icons-custom/icon_spend.svg?react'
 import CIconSpendingAlert from '../../../Assets/icons-custom/icon_spending_alert.svg?react'
 import CIconStocks from '../../../Assets/icons-custom/icon_stocks.svg?react'
 import CIconTrackSpending from '../../../Assets/icons-custom/icon_track_spending.svg?react'
@@ -238,6 +239,7 @@ export const ICONS = {
   icon_aimage:            CIconAimage,
   icon_track_spending:    CIconTrackSpending,
   icon_spending_alert:    CIconSpendingAlert,
+  icon_spend:             CIconSpend,
   icon_scheduled_payments: CIconScheduledPayments,
   icon_automatic_savings: CIconAutomaticSavings,
   // Custom — UI & Navigation

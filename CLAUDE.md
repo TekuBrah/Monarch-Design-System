@@ -1399,6 +1399,123 @@ Inline `style={` in `src/components` (non-test `.tsx`): **13 in 8 files,
 unchanged**. `:hover` in component CSS: 49 occurrences, 41
 `@media (hover: hover)` blocks, unchanged; the Gate 40 guard passes.
 
+## Gate 70 — the donut keeps its hole, wedges at /500, `icon_spend` (v2.6.0)
+
+Built on `main` at `21259e4` (`v2.5.1`) and left uncommitted. Release notes are
+in `CHANGELOG.md` v2.6.0, and component detail is in `docs/component-tokens.md`
+(DonutChart, and the Icon entry `icon_spend`). All three items came from the
+MVP's Gate 69, which put `DonutChart` on screen for the first time on the
+budget drilldown (`1266:14337`). Teku ruled on all three.
+
+### 1 · G42 — why a one-segment donut was a solid disc, and the mechanism
+
+A 360° wedge can't be drawn as an arc, so one segment renders as a `<circle>`
+with `fill="none"` and `stroke="currentColor"`. The base rule
+`.mn-donut__segment { fill: currentColor }` also matched that circle, and **any
+CSS rule outranks an SVG presentation attribute.** So the circle was filled as
+well as stroked, and the hole disappeared.
+
+**The fix is a modifier, `.mn-donut__segment--ring { fill: none }`, carried only
+by the circle.** It is declared after the base rule with equal specificity
+(0,1,0), so source order makes it win. That is the same convention as the
+`sizing` prop's `--fill`. Chosen over the alternatives for three reasons:
+
+- **The circle stays a `mn-donut__segment`.** The per-hue class still sets its
+  `color`, so one declaration per hue still drives both paint modes, as the
+  file's comment requires.
+- **Deleting the base `fill` rule was not an option.** The wedges need it.
+- **Giving the ring its own element class would have split the hue plumbing in
+  two** for no gain.
+
+The circle's `fill="none"` attribute stays as the fallback for a consumer that
+hasn't loaded the stylesheet. Wedges never carry `--ring`, which a test asserts.
+
+**Measured in the showcase** with a probe mounted inside the themed `div` at
+200px. **Mount it inside `div[data-theme]`:** a probe appended to `body` sits
+outside the theme and reads light in both passes, which the first attempt did.
+Transitions were finished first. Readings, both themes:
+
+| | light | dark |
+|---|---|---|
+| ring computed `fill` | `none` | `none` |
+| ring computed `stroke` | `rgb(4, 110, 255)` = blue-500 | same |
+| hole radius / farthest corner of centre text | 64.8 / 46.39px | same |
+| element under the centre point | `<svg>` (not the circle) | same |
+| page behind the centre | `rgb(255, 255, 255)` | `rgb(0, 0, 0)` |
+| centre label colour | `rgb(54, 60, 67)` | `rgb(207, 213, 220)` |
+
+**Controlled revert:** with both CSSOM copies of the `--ring` rule deleted, the
+computed fill went back to `rgb(4, 110, 255)` and the element under the centre
+point became the `circle`, which is G42 exactly. Reinserting the rules restored
+`none` / `svg`. So the fix is not inert. The seven showcase wedges measured
+filled at their `/500` hex values, with `fill` equal to `color`.
+
+### 2 · Wedges `/500`, badges `/400` — deliberately different
+
+Figma paints the donut wedges at `<Hue>/500` and the legend's `IconObject`
+badges at `<Hue>/400`. **Teku's ruling (25 Sept 2026): wedges follow Figma, and
+badges stay.** All twelve `.mn-donut__segment--<hue>` rules now bind
+`--brand-<hue>-500`. All twelve primitives exist in `globals.css` (lines 9–158,
+one per ramp), and no token value changed. `IconObject` and `ChartLegendItem`
+were not touched. A test derives the twelve hues from `IconObject.css`'s
+`/400` badge rules. It then asserts that the donut has exactly that hue set,
+each at `/500` and resolving to the same hex in both themes. **Do not "fix" the
+two steps back into agreement.**
+
+### 3 · `icon_spend` — source and export
+
+- **Source: the DS file, not `casestudy_02`.** Local MCP `get_metadata` with no
+  node returned the SELECTION: `235:679 icon_Spend`, a `symbol` (a component)
+  with one vector, `237:688`. `235:5710` (ProgressRing medium) resolved and
+  `1266:14337` returned "no node could be found", which confirms that the active
+  tab was the DS file.
+- **The remote connector was unavailable this session** because it needed OAuth,
+  so only the local server was read.
+- **Export:** the served SVG
+  (`/assets/63caa1d9cd6667e0e048ecdec89afbb5959dead5.svg`) has two paths with
+  `fill="black"` inside two wrapper `<g>`s. It was rewritten by script to the
+  house form: no `<g>`, root `fill="none"`, paths `fill="currentColor"`,
+  `viewBox="0 0 24 24"`, LF. **Both `d` strings are byte-identical to Figma's**,
+  compared by the script after writing. None of the other 36 custom assets
+  contains a `<g>`.
+- **Registry:** key `icon_spend`, beside `icon_spending_alert` under "Budgeting &
+  Insights". The import is alphabetical. The count went 107 → 108 by the parser
+  in `docs/component-tokens.md`.
+
+**⚠️ Tooling: the local Figma MCP's `get_design_context` takes ~212s on this
+file, and the harness aborts tool calls after 300s of silence.** It failed three
+times as a tool call (idle timeout, dropped transport, expired session). A direct
+JSON-RPC POST to `http://127.0.0.1:3845/mcp` with a 15-minute client timeout
+(`initialize` → `notifications/initialized` → `tools/call`) returned in 212s.
+The asset URL it names is then fetchable with `curl`. This is the likely cause of
+Gate 68's "dropped its transport twice" as well.
+
+### 4 · Tests and proofs
+
+**Predicted before the first run: 655 + 7 = 662 in 63 files.** That is
+`DonutChart.test.tsx` 12 → 17 and `Icon.test.tsx` 19 → 21. There is no new
+test file and **no existing assertion was changed or deleted**. The existing
+ring test queries `circle.mn-donut__segment--green`, which still matches.
+
+- **jsdom applies no CSS.** The new donut tests therefore resolve the paint
+  from `DonutChart.css`: a rule matches if its selector is one compound of
+  classes the element carries, the highest class count wins, and ties go to
+  source order. The SVG attribute counts only when no rule sets the property.
+  That ordering is G42 itself.
+- **The hole test is geometric.** The stroke's inner edge equals
+  `innerRadius × 50`, and the centre is an absolutely centred sibling of the
+  SVG. The browser table in §1 supplies the pixels.
+
+**Seven mutation proofs, one per new test**, each selected by an exact title that
+was regex-escaped (`/500` contains a slash) and anchored with `$`. Each read
+`1 failed | N skipped` mutated (16 for DonutChart, 20 for Icon), was restored
+sha256-identical, then read `1 passed | N skipped`. The runner spawns
+`node node_modules/vitest/vitest.mjs` with an argument array: no shell.
+
+**Gate 68's hash-pin normalisation was NOT retired.** Its trigger is "the next
+DS gate that touches `ProgressRing.test.tsx` / `CardMonthlyBudget.test.tsx`",
+and this gate touched neither. The trigger stands for the next gate that does.
+
 ## Known open items
 - **Heading font-size in source**: Figma composites wire `{fontSize.N}` (static), not a
   responsive token. Resolved at build time by mapping heading keys → responsive vars.

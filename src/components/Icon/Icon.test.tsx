@@ -97,6 +97,27 @@ describe('Icon', () => {
     expect(svg).toHaveAttribute('fill', 'currentColor')
   })
 
+  // icon_spend — added at Gate 70 (the MVP's G41) for the budget drilldown's
+  // Spent row. Taken from the DS Figma file's `icon_Spend` component (235:679);
+  // the key is lowercase like its neighbours. Typed as IconName so that
+  // dropping it from the registry fails `tsc -b` as well as this test, and
+  // checked against Figma's first path so a near-miss glyph cannot stand in.
+  it('renders the icon_spend glyph from Figma', () => {
+    const name: IconName = 'icon_spend'
+    const { container } = render(<Icon name={name} />)
+    const d = [...container.querySelectorAll('svg path')].map(p => p.getAttribute('d') ?? '')
+    expect(d).toHaveLength(2)
+    expect(d[0].startsWith('M16.948 9.95L14.998 8V14.587')).toBe(true)
+  })
+
+  // A custom asset carries its own path fills, unlike Material Round, so this
+  // asserts every path — a single hardcoded fill would tint wrongly.
+  it('tints the icon_spend glyph through currentColor', () => {
+    const { container } = render(<Icon name="icon_spend" />)
+    const fills = [...container.querySelectorAll('svg path')].map(p => p.getAttribute('fill'))
+    expect(fills).toEqual(['currentColor', 'currentColor'])
+  })
+
   it('renders the logo_monarch brand mark', () => {
     const { container } = render(<Icon name="logo_monarch" />)
     expect(container.querySelector('svg')).not.toBeNull()

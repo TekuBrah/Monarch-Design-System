@@ -3,6 +3,51 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## v2.6.0
+
+Gate 70 — the donut keeps its hole, wedges paint at /500, and `icon_spend`.
+Three items the MVP's Gate 69 found when it first put `DonutChart` on screen
+(the budget drilldown, Figma `1266:14337`). Teku ruled on all three. Full
+derivation in CLAUDE.md's Gate 70 section.
+
+### Added
+
+- **`icon_spend`** in the `Icon` registry (the MVP's G41), from the DS Figma
+  file's `icon_Spend` component (`235:679`). Asset
+  `Assets/icons-custom/icon_spend.svg`, with both path `d` strings
+  byte-identical to Figma's. Registry 107 → 108.
+
+### Fixed
+
+- **A one-segment `DonutChart` is a ring again, not a solid disc** (the MVP's
+  G42). The single-segment `<circle>` now carries `mn-donut__segment--ring`,
+  which sets `fill: none`. The base `fill: currentColor` rule had been
+  overriding the circle's `fill="none"` attribute. The centre label now sits
+  on the page background in both themes. Multi-segment wedges are unchanged
+  apart from their colour (below).
+
+### Changed
+
+- **Donut wedges paint at `--brand-<hue>-500`, one step darker than before**,
+  as Figma draws them. The legend's `IconObject` badges stay at `/400`, also
+  as Figma draws them, so a wedge and its badge now differ by one step on
+  purpose. Every donut on screen changes colour. The colours are still brand
+  primitives, identical in both themes.
+
+### Minor, not patch
+
+The new icon widens the `IconName` union, which is an addition to the public
+type. v2.3.0 (three icons and no other library change, `586c859`) and v2.4.0
+(a component and an icon) were both minors. No export, prop, type, default or token value was
+removed, renamed or changed, and no generated file moved.
+
+### Still deferred
+
+- The `SummaryItem` size prop that v2.5.1 deferred "to a later DS round
+  (v2.6.0)" is **not** in this release. `CardMonthlyBudget` still overrides the
+  summary amounts in compact.
+
+---
 ## v2.5.1
 
 Gate 68 — amount text that fits its slot. Patch: no prop, type, export or

@@ -796,6 +796,30 @@ it measures 20×20 in the showcase, exactly like every other `m` glyph.
 > Gate 50 tree, so the figure was updated in place without its attribution.
 > Left as written — Gate 62 removes nothing from this file — and corrected here.
 
+### `icon_spend` (added v2.6.0, Gate 70)
+
+The Spent glyph for the budget drilldown's info card (the MVP's G41), which
+draws `icon_budget`, `icon_duration`, `icon_wallet` and `icon_Spend` in one row.
+Until now the last one had no registry key, so the MVP drew that badge with its
+glyph slot empty.
+
+- **Source:** the DS Figma file's own component `icon_Spend`, symbol `235:679`
+  (vector `237:688`), read through the local desktop MCP with the DS file as the
+  active tab. It exists in the DS file, so the `casestudy_02` instance was not
+  needed.
+- **Asset:** `Assets/icons-custom/icon_spend.svg`. It is Figma's served SVG in the
+  house form: `viewBox="0 0 24 24"`, root `fill="none"`, no wrapper `<g>`, and
+  both paths `fill="currentColor"` where Figma served `fill="black"`. Both path
+  `d` strings are byte-identical to Figma's, checked by script. The first path
+  starts `M16.948 9.95L14.998 8V14.587`.
+- **Key:** `icon_spend`, lowercase like its neighbours, although Figma's layer is
+  `icon_Spend`.
+- **Not a rename of a near miss:** its path matches neither `icon_track_spending`
+  nor `icon_spending_alert`.
+
+> **THE REGISTRY COUNT IS NOW 108** (71 Material Round + 37 custom), by the
+> parser above, against 107 at `21259e4`.
+
 ### Size → token mapping
 
 | size | px | ElementWrapper size | `--brand-scale-*` token |
@@ -4784,6 +4808,25 @@ Exclude<IconObjectColor, 'ai'>`. Shipping a default sequence would mean
 inventing a categorical scale the design system does not have. `'ai'` is
 excluded by type rather than by documentation, so passing it is a compile error
 instead of a segment that renders unpainted.
+
+**Wedges paint at `/500`; the legend's `IconObject` badges stay at `/400`
+(v2.6.0, Gate 70).** Figma draws them one step apart. Teku ruled on
+25 Sept 2026 that the code follows Figma, so `.mn-donut__segment--<hue>` binds
+`--brand-<hue>-500`. The two steps are meant to differ: do not bring them back
+into agreement.
+
+**The single-segment ring always keeps its hole (v2.6.0, Gate 70, the MVP's
+G42).** A 360° wedge can't be drawn as an arc, so one segment renders as a
+stroked `<circle>`. `.mn-donut__segment { fill: currentColor }` used to fill that
+circle too: a CSS rule outranks the SVG `fill="none"` attribute, so the hole
+vanished. The circle now also carries `.mn-donut__segment--ring { fill: none }`.
+It is declared after the base rule and has equal specificity, so source order
+wins, and wedges never carry it. Measured in the showcase in both themes: the
+computed fill is `none`, the stroke is `#046eff` (blue-500), the hole radius is
+64.8px in a 200px chart, and the farthest corner of the centre text is 46.39px
+from the centre. The element under the centre point is the `<svg>`, not the
+circle. The centre therefore sits on the page background, white in light and
+black in dark.
 
 ### LineChart
 

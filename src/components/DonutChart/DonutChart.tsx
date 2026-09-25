@@ -172,8 +172,15 @@ export function DonutChart({
           // A 360° arc has identical start and end points and renders as
           // nothing. One segment is a ring: a circle with a stroke thick enough
           // to leave the hole.
+          //
+          // `--ring` is what keeps the hole. `.mn-donut__segment` sets
+          // `fill: currentColor` for the wedges, and a CSS rule outranks the
+          // `fill="none"` presentation attribute below, so without the modifier
+          // the circle is filled as well as stroked and the hole disappears
+          // (MVP G42, Gate 70). The attribute stays as the fallback for a
+          // consumer that has not loaded the stylesheet.
           <circle
-            className={`mn-donut__segment mn-donut__segment--${wedges[0].color}`}
+            className={`mn-donut__segment mn-donut__segment--ring mn-donut__segment--${wedges[0].color}`}
             cx={CX}
             cy={CY}
             r={(R_OUTER + rInner) / 2}
