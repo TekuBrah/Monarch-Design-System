@@ -1181,6 +1181,224 @@ were exactly as predicted: 12 + 11 + 11 = 34. Suite: 584 → **618**, 62 files.
 added in commit `364f8ca` ("Gate 2"). Whether that closes G3 as the MVP's
 register words it is for the register, which lives in the MVP.
 
+## Gate 68 — amount text that fits its slot (v2.5.1)
+
+Built on `main` at `72f3f2d` (`v2.5.0`), left uncommitted, then amended by a
+correction pass the same day (Teku's rulings A and C, §2 and §5). Release notes
+in `CHANGELOG.md` v2.5.1. The MVP's formatter always prints two decimals with
+grouping (`RM 4,140.33`, `-RM 1,234.56`); the ring and the summary were sized
+for Figma's `RM 700`. Patch release: no prop, type, export or token changed.
+
+### 1 · The font the thresholds are derived from — a change invalidates them
+
+`node_modules/@fontsource/poppins/files/poppins-latin-600-normal.woff2`,
+`@fontsource/poppins` **5.2.7**, SHA-256
+`f4e80d9dfd374d02989b87a27b5ed4cb78fbb177c27f1478e9a8b0afb7513149`. Read by
+parsing the WOFF2 `hmtx`/`cmap` directly (brotli via Node's zlib); the `.woff`
+of the same weight agrees glyph for glyph. Advances per 1000 em: `0` 646, `1`
+362, `2` 574, `3` 599, **`4` 661**, `5` 644, `6` 640, `7` 548, `8` 643, `9` 626,
+`R` 641, `M` 899, space **and** NBSP 238, `,` 254, `.` 260, `-` 583.
+`Intl.NumberFormat('en-MY', { style: 'currency' })` emits a **NBSP** after
+`RM`, not a space; the MVP builds `RM ` by hand with a space. Same advance, so
+both are covered.
+
+**Advance sums are accurate, not strictly conservative.** Measured in the
+showcase with the web font loaded, rendered widths exceed the advance sums by
+0 to **+0.012px** (layout rounding); no kerning applies between these glyphs
+(the font has `GPOS`, but not for these pairs). The tightest margin anywhere
+below is 0.08px, so no threshold moves. After a font bump, re-derive, and
+re-measure in a browser.
+
+### 2 · The ring ladders and thresholds (`src/components/ProgressRing/amountFit.ts`)
+
+**RULING A (Teku, Gate 68 correction): Figma is the authority for the ring's
+resting size.** `235:5710` (medium) draws the amount in **h6**, `235:5712`
+(large) in **h5** — the state Teku's trial left the component in. The first
+pass of this gate kept v2.5.0's h5 / h4 as the resting step; that was reversed.
+Every ring now rests one step smaller than v2.5.0.
+
+| ring | ladder |
+|---|---|
+| m | `type-header-h6` (rest) → `type-body-m-semibold` (last step) |
+| l | `type-header-h5` (rest) → `type-header-h6` (last step) |
+
+The step comes from string LENGTH, never a DOM measurement. Each `maxLength`
+is the longest length whose WIDEST en-MY RM string fits the limit — all `4`s,
+`Intl`'s commas, `.dd`, with or without `-`, whichever is wider:
+
+| len | widest | units | | len | widest | units |
+|---|---|---|---|---|---|---|
+| 9 | `RM 444.44` | 5343 | | 12 | `RM 44,444.44` | 6919 |
+| 10 | `-RM 444.44` | 5926 | | 13 | `RM 444,444.44` | 7580 |
+| 11 | `RM 4,444.44` | 6258 | | 14 | `-RM 444,444.44` | 8163 |
+
+Limit = inner stroke diameter (`0.9 × w − 8`) − 2 × `--brand-scale-100`:
+**m 129.8px** (137.8 − 8), **l 182.0px** (190 − 8).
+
+| ring | step | size | fits up to | at that length | one longer |
+|---|---|---|---|---|---|
+| m | h6 (rest) | 20 | **11** | 125.16 | 138.38 |
+| m | body-m-semibold | 16 | 13; takes 12–14 | 121.28 | 130.61 |
+| l | h5 (rest) | 24 | **13** | 181.92 | 195.91 |
+| l | h6 | 20 | takes 14 | 163.26 | — |
+
+**No step on either ladder has a desktop override**, so every threshold holds
+at every viewport. (The first pass had to derive `l`'s h4 at 32px because
+`--responsive-font-headings-h4-*` is 28/32 below 768px and 32/40 from 768px
+up; with h4 off the ladder that problem is gone. It still governs the `l`
+slot height, §3.) `type-body-lg-semibold` is NOT a step: 20px, 600, h6 line
+height — identical to `type-header-h6` at every width.
+
+Clearance to the inner edge, re-measured in the showcase on the final tree at
+**375 and 1024** (`clientWidth` 375 / 1009, this pane). Both widths agree to
+0.01px:
+
+| ring | string | step | each side | floor |
+|---|---|---|---|---|
+| m | `RM 4,444.44` (widest 11) | h6 | **6.32** | — |
+| m | `RM 999,999.99` | body-m-semibold | **10.50** | ≥ 4 ✓ |
+| m | `-RM 999,999.99` | body-m-semibold | **5.83** | ≥ 4 ✓ |
+| m | `-RM 444,444.44` (widest 14) | body-m-semibold | **3.59** | ≥ 2 ✓ |
+| l | `RM 444,444.44` (widest 13) | h5 | **4.04** | — |
+| l | `RM 999,999.99` | h5 | **7.40** | ≥ 4 ✓ |
+| l | `-RM 999,999.99` | h6 | **16.17** | ≥ 4 ✓ |
+| l | `-RM 444,444.44` (widest 14) | h6 | **13.37** | ≥ 2 ✓ |
+
+Before this gate `RM 4,140.33` on `m` rendered 139.69px at h5 — **0.94px into
+the stroke on each side, at every viewport**, because the ring is a fixed
+162px. The 430px screen was never clean. It now renders 116.40px at h6,
+clearing by 10.70.
+
+### 3 · The slot-height rule
+
+`.mn-progress-ring__amount` is a flex box, text centred, with a fixed `height`:
+`m` `--responsive-font-headings-h5-line-height` (**28**, Figma's 28px frame);
+`l` `--responsive-font-headings-h4-line-height` (**32** below 768px, **40**
+from 768px). **Figma's large frame is a raw, unbound 40px; that is h4's line
+height at Figma's scale, so the token binding stands** (ruled in the
+correction pass). The slot did NOT change when the resting step moved: the
+resting step no longer fills it (h6's 24 in 28; h5's 28 in 32 / 40) and is
+centred in it, exactly as Figma draws it. Every step's line height fits
+inside the slot at both breakpoints (asserted statically).
+
+Measured on the final tree at 375 and 1024: slot 28 (m) / 32 → 40 (l); the
+caption's and pill's tops **identical across every step**, both sizes
+(m −38 / +14 from the ring centre; l −48 / +16 at 375, −52 / +20 at 1024).
+Their LEFT edges vary by 0.008px — and vary identically between two strings at
+the SAME step, so it is the content column's width under `translate(-50%)`,
+not the step.
+
+**Why the test for this is structural.** jsdom applies no CSS and returns
+zero rects, so a `getBoundingClientRect` test would pass against anything.
+The suite asserts the two halves it can: the slot's declared height and each
+step's line height (static), and that stepping changes nothing in the markup
+but the amount's class. The geometry is the browser measurement above.
+
+### 4 · The summary: compact by container query, not by a prop
+
+`CardMonthlyBudget.css` makes the card a named inline-size container and, in
+`@container mn-card-monthly-budget (width < 327px)`, sets the body gap to
+`--brand-scale-400` and the summary amounts'
+`font-size`/`line-height` to `--responsive-font-copy-body-sm-*`.
+
+- **Threshold.** Text room = card − 32 padding − 162 ring − 24 gap − 32 badge
+  − 8 gap. `RM 4,444.44` needs 100.128px at 16px, so the card needs
+  **≥ 358.128px**. The query takes 359, the next whole pixel, so a 358px card
+  (a 390px phone) is compact — at 358 the text would wrap by 0.13px.
+- **Content box.** A container query measures the container's CONTENT box.
+  The card has 16px side padding, so 359px of card is **327px** in the query.
+  Writing `359px` there would be a 32px error.
+- **Compact holds 11 characters** (87.61px at 14px) down to a **338px** card;
+  measured, 337 wraps. 12+ characters may wrap. The card stayed 208px at
+  every width measured (the ring sets the height).
+- **Why not a prop.** Option 1 was possible: no raw value is duplicated (both
+  values are tokens, and body-sm-semibold differs from body-m-semibold only in
+  size and line height), and the Cascade contract governs token tiers, not a
+  parent's selectors. The cost is that the card reaches into
+  `.mn-summary-item__amount` from `CardMonthlyBudget.css` — the first
+  parent-to-child override and the first `@container` in the repo.
+  `container-type: inline-size` also zeroes the card's min-content
+  contribution: in a shrink-to-fit parent a `fill` card can shrink below its
+  content where it used to overflow. The MVP's `.mvp-budget` is a stretch flex
+  column, so it is unaffected.
+- **Test limits.** jsdom does not evaluate container queries; the tests read
+  the condition and the rules statically. The switch at 358/359 and the shared
+  size were measured in the showcase.
+
+**DEFERRED — DS round, v2.6.0 (Teku, Gate 68 correction).** In compact the DOM
+carries `type-body-m-semibold` while computing body-sm-semibold's size and
+line height, so the class on the element and the style it renders disagree.
+The fix is a `SummaryItem` size prop (optional, defaulted — a minor release),
+which would let the card pass the size down instead of overriding the child's
+class. **Not now.**
+
+### 5 · The pill — ruling C: the −0.33px case is ACCEPTED (Teku)
+
+`m` pill: `type-body-caption-semibold`, 8px side padding, 4px gap, 8px radius,
+spanning y = +14…+38 below the ring centre; inner radius 68.9px.
+
+| total | pill width | chord at +38 | square-corner overhang | rounded-corner clearance |
+|---|---|---|---|---|
+| `RM 999,999.99` | 119.41 | 114.95 | 2.23 / side | **+1.12** (clear) |
+| `RM 444,444.44` | 122.77 | 114.95 | 3.91 / side | **−0.33** (clips) |
+
+The pill does NOT clip at the literal ceiling; its rounded corner clears.
+It clips by 0.33px at the widest 13-character total. **Teku accepted that
+case: no mechanism, nothing to fix.** `-` totals are not modelled — a budget
+total is positive. The pill does not depend on the amount's step, so the
+correction pass left these figures unchanged.
+
+### 6 · Figma, both sources (2026-09-25)
+
+Local MCP: `get_metadata` returned the selection `235:5711` (the
+`235:5710`/`235:5712` set), identifying the DS file; `get_design_context` on
+it dropped its transport twice. Remote connector by key
+`xhA5ARVgSeD3gA41lYDqST` read both rings and `237:690`. Structure agrees.
+
+- **Resting size: reconciled by ruling A** (§2). Figma's h6 / h5 is the code's
+  resting step.
+- **Large slot:** Figma raw 40px; code the h4 line-height token (32 / 40) —
+  ruled to stand (§3).
+- Figma's content frame is 118px (medium) / 180px (large) wide, narrower than
+  the 129.8/182 limit; text overflows it with `whitespace-nowrap` in Figma.
+- Card summary: Figma `flex: 1 0 0`, text `nowrap`; code `flex: 1 1 auto`,
+  wraps. Pre-existing, unchanged.
+
+### 7 · Counts
+
+**Tests 618 → 655, files 62 → 63.** The first pass reached 657
+(`amountFit.test.ts` 12 new, `ProgressRing.test.tsx` 5 → 25,
+`CardMonthlyBudget.test.tsx` 18 → 25). The correction removed two
+`amountFit` boundary cases, because the m h5→h6 and l h4→h5 boundaries no
+longer exist: `amountFit.test.ts` **10**, the other two files unchanged.
+
+**Tests changed by the correction, none deleted beyond those two cases:**
+
+- **Assertions that follow ruling A:** the resting-step test (h6 / h5); four
+  class cases (`RM 0.00` and `RM 876.24` on each size); the clearance and
+  threshold `it.each` size arrays.
+- **The slot test** now compares the slot with the Figma frame's token, not
+  the resting step's line height. Those are no longer the same.
+- **Every markup pin that renders a ring,** including Gate 66's two
+  ring-bearing cards. These keep their original hashes and map exactly one
+  class back before hashing: the new resting class to the old one (m h6 → h5,
+  l h5 → h4). They still prove that nothing else in the markup moved.
+- **The boundary test's rows were reordered.** The ladder was second in each
+  row, so `%i` interpolated the ladder and the title rendered as
+  `length NaN takes 11`. Title-scoped mutation proofs therefore matched
+  nothing (`10 skipped`, exit 0). That exposed it.
+
+**29 mutation proofs across both passes.** The correction re-proved every
+changed test: 19 cases. Two of the 19 were first invalid, for the reason
+above, and were valid once re-run. Every valid proof read `1 failed | N skipped`
+when mutated, restored sha256-identical, and went green. The hash pins were
+mutated to a class OTHER than the old one. Reverting to v2.5.0's exact class
+would hash-match by construction, and the class tests pin that direction.
+
+Inline `style={` in `src/components` (non-test `.tsx`): **13 in 8 files,
+unchanged**. `:hover` in component CSS: 49 occurrences, 41
+`@media (hover: hover)` blocks, unchanged; the Gate 40 guard passes.
+
 ## Known open items
 - **Heading font-size in source**: Figma composites wire `{fontSize.N}` (static), not a
   responsive token. Resolved at build time by mapping heading keys → responsive vars.

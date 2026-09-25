@@ -3,6 +3,52 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## v2.5.1
+
+Gate 68 — amount text that fits its slot. Patch: no prop, type, export or
+token changed; two components change how they lay out text the consumer
+already passes, and the ring's resting size is brought into line with Figma —
+a visual correction with no API change, the same class of change v2.4.1 was.
+Full derivation in CLAUDE.md's Gate 68 section.
+
+### Changed
+
+- **`ProgressRing` rests at Figma's amount size.** `235:5710` (medium) draws
+  the amount in h6 and `235:5712` (large) in h5; v2.5.0 rendered h5 and h4.
+  Every ring now renders a smaller resting amount, as Figma does.
+- **`ProgressRing` steps its centre amount down when it would not fit inside
+  the stroke.** The step is chosen from the formatted string's LENGTH, never
+  from a DOM measurement, by `fitAmountClass()` in
+  `src/components/ProgressRing/amountFit.ts` (internal, not exported).
+  Ladders use existing type styles only:
+  - `m`: `type-header-h6` (<= 11 chars) → `type-body-m-semibold` (12+).
+  - `l`: `type-header-h5` (<= 13) → `type-header-h6` (14+).
+  The amount sits in a fixed-height slot with the text centred — Figma's 28px
+  (medium) and 40px (large) frames, bound to the h5 and h4 line-height tokens
+  (the large one is 32px below 768px) — so the caption and the pill never move
+  when the amount steps down. Apart from the resting class, a ring whose amount
+  fits renders byte-identically to v2.5.0.
+- **`CardMonthlyBudget` goes compact on narrow cards.** Below 359px of card
+  width the ring-to-summary gap drops to 16px and both summary amounts take
+  body-sm-semibold's size and line height together, so every amount under
+  RM 10,000 stays on one line in a 343px card. Pure CSS — a container query on
+  the card (`container: mn-card-monthly-budget / inline-size`). Cards 359px and
+  wider render exactly as before.
+
+### Known limits
+
+- Ring amounts over 14 characters (beyond RM 999,999.99 with a sign) take the
+  last step and are not promised to fit.
+- Compact summary amounts over 11 characters (RM 10,000 and up) may wrap, as
+  may 11-character amounts in cards narrower than 338px. Never clipped.
+- The `m` pill (`of {total}`) is not changed. At the widest 13-character total
+  its rounded corner crosses the inner stroke edge by 0.33px — accepted by
+  Teku. At `RM 999,999.99` it clears by 1.12px.
+- In compact, the summary amounts keep the `type-body-m-semibold` class while
+  computing body-sm-semibold's size and line height. A `SummaryItem` size prop
+  would make the DOM agree; deferred to a later DS round (v2.6.0).
+
+---
 ## v2.5.0
 
 Gate 66 — the four DS primitives Flow 10 needs (the MVP's G35–G38) plus the

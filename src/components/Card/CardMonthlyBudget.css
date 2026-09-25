@@ -9,6 +9,8 @@
   box-shadow: var(--shadow-subtlest);
   /* Figma: asymmetric padding — 16px top/sides, 20px bottom. */
   padding: var(--brand-scale-400) var(--brand-scale-400) var(--brand-scale-500);
+  /* Gate 68 — the query container for the compact summary rule below. */
+  container: mn-card-monthly-budget / inline-size;
 }
 
 /* sizing='fill' — the container decides the width instead of the 343px Figma
@@ -87,6 +89,30 @@
   gap: var(--brand-scale-400); /* 16px */
   flex: 1 1 auto;
   min-width: 0;
+}
+
+/* Gate 68 — COMPACT on narrow cards. Figma's spacing (24px ring gap, 16px
+   amounts) holds the widest under-RM-10,000 string, "RM 4,444.44", only when
+   the summary text gets >= 100.13px (6258 font units x 16 / 1000; Poppins 600,
+   advance sums — see ProgressRing/amountFit.ts for the font file and hash).
+   Text width = card - 32 padding - 162 ring - 24 gap - 32 badge - 8 gap, so the
+   card must be >= 358.13px. Below 359px the card goes compact: the gap drops to
+   16px and BOTH amounts take body-sm-semibold together (14px -> 87.61px, which
+   fits the 93px a 343px card leaves). A container query measures the CONTENT
+   box, so 359px of card is 327px here (359 - 2 x 16px padding).
+   The two declarations are body-sm-semibold's own tokens — the class sets the
+   same 600 weight and 0 letter-spacing body-m-semibold already carries, so only
+   size and line height differ. Wider cards match nothing here and render as
+   before. Strings over 11 characters may still wrap in compact; accepted. */
+@container mn-card-monthly-budget (width < 327px) {
+  .mn-card-monthly-budget__body {
+    gap: var(--brand-scale-400); /* 16px */
+  }
+
+  .mn-card-monthly-budget__summary .mn-summary-item__amount {
+    font-size: var(--responsive-font-copy-body-sm-text-size);
+    line-height: var(--responsive-font-copy-body-sm-line-height);
+  }
 }
 
 .mn-card-monthly-budget__add-new {

@@ -55,8 +55,26 @@
   color: var(--mapped-text-default-default);
 }
 
+/* Gate 68 — the amount steps down to a smaller existing type style when it
+   would not fit inside the stroke (ProgressRing.tsx + amountFit.ts). The SLOT
+   does not step: it is a fixed-height frame with the text centred, so the
+   caption above and the pill below never move. Figma draws exactly this: the
+   medium amount (h6) sits in a 28px frame, the large (h5) in a 40px frame. The
+   heights bind the h5 / h4 line-height tokens: 28px, and 32px below 768px /
+   40px from 768px — Figma's raw 40 is h4's line height at Figma's scale. */
 .mn-progress-ring__amount {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--mapped-text-default-default);
+}
+
+.mn-progress-ring--m .mn-progress-ring__amount {
+  height: var(--responsive-font-headings-h5-line-height); /* 28px */
+}
+
+.mn-progress-ring--l .mn-progress-ring__amount {
+  height: var(--responsive-font-headings-h4-line-height); /* 32px, 40px from 768px */
 }
 
 /* Custom pill — NOT the shared Badge component. Figma's spec differs from Badge's

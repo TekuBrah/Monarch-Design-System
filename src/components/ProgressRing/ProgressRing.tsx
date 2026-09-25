@@ -1,4 +1,5 @@
 import React, { useId } from 'react'
+import { PROGRESS_RING_AMOUNT_LADDERS, fitAmountClass } from './amountFit'
 import './ProgressRing.css'
 
 export type ProgressRingSize = 'm' | 'l'
@@ -51,7 +52,6 @@ const SIZES: Record<
   {
     w: number
     h: number
-    amountType: string
     captionType: string // caption row base (size + regular)
     captionEmphType: string // the % and • (size + semibold)
     pillType: string // the "of {total}" pill text
@@ -60,7 +60,6 @@ const SIZES: Record<
   m: {
     w: 162,
     h: 140,
-    amountType: 'type-header-h5',
     captionType: 'type-body-caption',
     captionEmphType: 'type-body-caption-semibold',
     pillType: 'type-body-caption-semibold',
@@ -68,7 +67,6 @@ const SIZES: Record<
   l: {
     w: 220,
     h: 190,
-    amountType: 'type-header-h4',
     captionType: 'type-body-m',
     captionEmphType: 'type-body-m-semibold',
     pillType: 'type-body-m',
@@ -87,7 +85,11 @@ export function ProgressRing({
   ariaLabel,
 }: ProgressRingProps) {
   const pct = Math.max(0, Math.min(100, value))
-  const { w, h, amountType, captionType, captionEmphType, pillType } = SIZES[size]
+  const { w, h, captionType, captionEmphType, pillType } = SIZES[size]
+  // Steps down to a smaller existing type style when the amount would not fit
+  // inside the stroke. The slot keeps the default step's height (ProgressRing.css),
+  // so the caption and pill never move. Thresholds + arithmetic: ./amountFit.ts.
+  const amountType = fitAmountClass(amount, PROGRESS_RING_AMOUNT_LADDERS[size])
   const maskId = `${useId()}-ring-fill`
   const pctText = percentageLabel ?? `${Math.round(pct)}%`
   const strokeW = 800 / w // viewBox units → 8px rendered stroke
