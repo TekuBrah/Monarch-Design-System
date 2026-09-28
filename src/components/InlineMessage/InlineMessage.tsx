@@ -15,19 +15,31 @@ import type { IconName } from '../Icon/Icon'
  * Figma design asked for orange text, and the review thread ruled it out.
  *
  * Adding a tone later widens the union, which is not a breaking change.
+ *
+ * `ai` (Gate 73, G45) is the one tone that paints its OWN fill — Figma's
+ * `❖ System message` `appearance=ai` variant (DS-consumed in `casestudy_02`,
+ * `1201:16589`): a Blue/400 → Blue/500 → Violet/500 gradient. Its text is
+ * therefore on-colour white, the token that belongs on a fixed hue fill, and it
+ * is still the same token for title and body. Figma designed that variant, so
+ * its colours come from Figma (Ruling A); the Gate 62b rule governs tones that
+ * sit on the neutral surface.
  */
-export type InlineMessageTone = 'neutral' | 'warning'
+export type InlineMessageTone = 'neutral' | 'warning' | 'ai'
 
 /* The leading glyph per tone. Neutral has none: it is the resting message and
    renders exactly as it did at Gate 62. `warning` is the registry glyph
-   `Toast` already uses for its warning appearance. */
+   `Toast` already uses for its warning appearance. `ai` is Figma's own glyph
+   on the variant, `icon_aiinsights`. */
 const TONE_ICON: Partial<Record<InlineMessageTone, IconName>> = {
   warning: 'warning',
+  ai: 'icon_aiinsights',
 }
 
 export interface InlineMessageProps {
   /** Sets the frame's border and the leading glyph — never the text colour.
-   *  Default `'neutral'` (no glyph). */
+   *  Default `'neutral'` (no glyph). `'ai'` is the exception that paints its
+   *  own gradient fill with on-colour text, and it ignores `isFramed`: the
+   *  gradient is always drawn. */
   tone?: InlineMessageTone
   /** The one-line statement — a string, so it can name the group. */
   title: string
@@ -39,7 +51,10 @@ export interface InlineMessageProps {
   actions?: React.ReactNode
   /** Paints the message's own surface, border and radius. Default true. Set
    *  false inside a container that already paints that surface, where a framed
-   *  box would be a card drawn on an identical ground. */
+   *  box would be a card drawn on an identical ground.
+   *
+   *  Ignored by `tone="ai"`: its gradient IS the tone, and its on-colour text
+   *  would be unreadable on the page without it. */
   isFramed?: boolean
   id?: string
   className?: string
@@ -97,7 +112,15 @@ export function InlineMessage({
         {title}
       </p>
       {children && <div className="mn-inline-message__body type-body-sm">{children}</div>}
-      {actions && <div className="mn-inline-message__actions">{actions}</div>}
+      {/* On the AI gradient, Figma draws the action as a `button` instance with
+          Appearance=Inverse. In this DS, Inverse IS dark mode (Button.css), so
+          the region is scoped dark — the ToastMobile precedent — and the
+          consumer's real <Button> renders Inverse with no new appearance. */}
+      {actions && (
+        <div className="mn-inline-message__actions" data-theme={tone === 'ai' ? 'dark' : undefined}>
+          {actions}
+        </div>
+      )}
     </div>
   )
 }

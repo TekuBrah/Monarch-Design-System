@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './AppShell.css'
 import { Section } from './Section'
 import { brand, alias, mapped, spacing, gradients, shadows } from '@monarch/design-system'
@@ -565,6 +565,53 @@ function SelectDemo() {
         />
       }
     />
+  )
+}
+
+// ── G43 demo: a Select inside a Modal card (overflow: clip) ──
+// The picker closes on an outside pointerdown via a contains() check — the
+// MVP's budget-form pattern, which a portalled menu would break. The menu is
+// fixed-positioned against the trigger, so it escapes the card's clip.
+function SelectInModalDemo() {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [selected, setSelected] = useState<string | null>(null)
+  const pickerRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!open) return
+    const onPress = (e: PointerEvent) => {
+      if (!pickerRef.current?.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('pointerdown', onPress, true)
+    return () => document.removeEventListener('pointerdown', onPress, true)
+  }, [open])
+  return (
+    <>
+      <Button variant="secondary" size="m" label="Open modal with a Select" onClick={() => setIsModalOpen(true)} />
+      <Modal isOpen={isModalOpen} onClose={() => { setOpen(false); setIsModalOpen(false) }} title="Pick a token">
+        <div ref={pickerRef} id="g43-picker">
+          <Select
+            label="Token"
+            ariaLabel="Token"
+            sizing="fill"
+            searchable={false}
+            value={selected ?? ''}
+            isOpen={open}
+            onOpenChange={setOpen}
+            isSelected={!!selected}
+            menuSlot={
+              <Menu
+                searchBar={false}
+                listAriaLabel="Tokens"
+                slotContent={SELECT_OPTIONS.map(o => (
+                  <MenuItem key={o} type="default" label={o} isSelected={selected === o} onSelect={() => { setSelected(o); setOpen(false) }} />
+                ))}
+              />
+            }
+          />
+        </div>
+      </Modal>
+    </>
   )
 }
 
@@ -1974,6 +2021,10 @@ export default function App() {
                 <div className="showcase-interactive__label">Interactive — click to open, type to filter (menu = example slot)</div>
                 <SelectDemo />
               </div>
+              <div className="showcase-interactive">
+                <div className="showcase-interactive__label">G43 — inside a Modal card (overflow: clip): the menu is fixed-positioned against the trigger, flips above when there is no room below, and stays in the DOM so a contains() outside-click still counts it as inside</div>
+                <SelectInModalDemo />
+              </div>
             </div>
           </Section>
         </>
@@ -2029,6 +2080,12 @@ export default function App() {
                   <SelectTransferDemo appearance="attention" />
                 </div>
               </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>sizing fill — 400px column (G19)</div>
+                <div id="select-transfer-fill-demo" style={{ width: '400px' }}>
+                  <SelectTransfer sizing="fill" label="Amount" placeholder="0.00" currencyLabel="MYR" currencyFlag={flag} ariaLabel="Fill" />
+                </div>
+              </div>
             </div>
           </Section>
         )
@@ -2059,6 +2116,12 @@ export default function App() {
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 <SelectWalletAccount labelCrypto="Crypto" labelWallet="Wallet" labelAmount="$0,000.00" labelAmtCrypto="0.00 ETH" isInvalid ariaLabel="Invalid" />
                 <SelectWalletAccount labelCrypto="Crypto" labelWallet="Wallet" labelAmount="$0,000.00" labelAmtCrypto="0.00 ETH" isDisabled ariaLabel="Disabled" />
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>sizing fill — 400px column (G19)</div>
+              <div id="select-wallet-fill-demo" style={{ width: '400px' }}>
+                <SelectWalletAccount sizing="fill" labelCrypto="Crypto" labelWallet="Wallet" labelAmount="$0,000.00" labelAmtCrypto="0.00 ETH" ariaLabel="Fill" />
               </div>
             </div>
             <div>
@@ -2535,6 +2598,13 @@ export default function App() {
                 No second box drawn on an identical ground.
               </InlineMessage>
             </div>
+            <InlineMessage
+              tone="ai"
+              title="Promotion available."
+              actions={<Button variant="tertiary" size="m" label="View" />}
+            >
+              RM69/month potential savings.
+            </InlineMessage>
           </div>
         </Section>
       )}
@@ -3074,6 +3144,15 @@ export default function App() {
             <div>
               <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>CardDataDisplay</div>
               <CardDataDisplay info="Category" content="Groceries" content2="12 transactions" />
+            </div>
+
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>CardDataDisplay — sizing fill + orientation horizontal, 343px column</div>
+              <div id="card-data-display-fill-demo" style={{ width: '343px', display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+                <CardDataDisplay sizing="fill" info="Current" content="U-Mobile" content2="RM 120.00" />
+                <CardDataDisplay sizing="fill" info="Monthly" content="RM 120.00" />
+                <CardDataDisplay sizing="fill" orientation="horizontal" info="Savings" content="RM 600/year" />
+              </div>
             </div>
 
             <div>

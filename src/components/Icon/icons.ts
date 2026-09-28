@@ -71,6 +71,7 @@ import CreditCardIcon from '@material-design-icons/svg/round/credit_card.svg?rea
 import PhotoCameraIcon from '@material-design-icons/svg/round/photo_camera.svg?react'
 
 // Custom icons (Assets/icons-custom/) — normalized to currentColor via scripts/normalize-custom-icons.mjs
+import CGolfCourse from '../../../Assets/icons-custom/golf_course.svg?react'
 import CIconAiinsights from '../../../Assets/icons-custom/icon_aiinsights.svg?react'
 import CIconAimage from '../../../Assets/icons-custom/icon_aimage.svg?react'
 import CIconAutomaticSavings from '../../../Assets/icons-custom/icon_automatic_savings.svg?react'
@@ -253,4 +254,10 @@ export const ICONS = {
   icon_pdf:               CIconPdf,
   icon_monarchacademy:    CIconMonarchacademy,
   logo_monarch:           CLogoMonarch,
+  // Gate 73 (G46): the DS Figma file's own `golf_course` component, Style=Round
+  // (5:3774). Teku chose Round over the Filled style Flow 11's Golf Lesson row
+  // draws, for consistency with the registry's other Material keys. A custom
+  // asset rather than the package import because the paths are Figma's own:
+  // Figma's Round vector is not byte-identical to @material-design-icons/round.
+  golf_course:            CGolfCourse,
 } as const

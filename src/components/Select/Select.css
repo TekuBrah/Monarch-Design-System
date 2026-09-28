@@ -159,11 +159,39 @@
   cursor: not-allowed;
 }
 
-/* === Menu — positioned below; the slot brings its own container/shadow/items === */
+/* === Menu — the slot brings its own container/shadow/items ===
+   G43 (Gate 73): `position: fixed` against the trigger, so an ancestor's
+   `overflow: clip` (the Modal card) or a scrolling ancestor no longer cuts the
+   menu off. Select.tsx measures the trigger and writes the four custom
+   properties below — continuous geometry, so it cannot be a finite set of
+   classes. The menu stays a DOM child of .mn-select (no portal); see the note
+   in Select.tsx for why, and for the one known limit (an ancestor with a
+   transform, filter or contain property becomes the containing block).
+
+   Width matches the trigger, as `left: 0; right: 0` did before. It opens
+   `--brand-scale-100` (4px) below the trigger, flips above only when the
+   content does not fit below and there is more room above, and its height is
+   capped to the space on the chosen side. The fallbacks only apply for the one
+   layout pass before the first measurement. */
 .mn-select__menu {
-  position: absolute;
-  top: calc(100% + var(--brand-scale-100)); /* 4px below the box */
-  left: 0;
-  right: 0;
+  position: fixed;
+  top: var(--mn-select-menu-top, auto);
+  left: var(--mn-select-menu-left, auto);
+  width: var(--mn-select-menu-width, auto);
+  max-height: var(--mn-select-menu-max-height, none);
   z-index: 10;
+}
+
+/* Scroll internally only when the content is taller than the space it was
+   given. Declared only then because `overflow: auto` clips to the padding box
+   even with nothing to scroll, which would cut off the slot's own shadow.
+   No visible scrollbar (non-negotiable 2): the bar is hidden, the scrolling is
+   not, and the slot's items stay keyboard-reachable by Tab. */
+.mn-select__menu[data-capped] {
+  overflow-y: auto;
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* legacy Edge */
+}
+.mn-select__menu[data-capped]::-webkit-scrollbar {
+  display: none;
 }

@@ -26,6 +26,11 @@ export interface SelectWalletAccountProps {
   ariaLabel?: string
   /** Showcase only — forces a visual state without interaction. */
   previewState?: 'hover'
+  /** Width behaviour. `'fixed'` (default) keeps the 320px Figma demo box;
+   *  `'fill'` takes the trigger to 100% of its container. Same prop and value
+   *  names, and the same `width: 100%` release, as `Select.sizing` (G15).
+   *  Closes gap G19 for this component. */
+  sizing?: 'fixed' | 'fill'
 }
 
 export function SelectWalletAccount({
@@ -44,6 +49,7 @@ export function SelectWalletAccount({
   id,
   ariaLabel,
   previewState,
+  sizing = 'fixed',
 }: SelectWalletAccountProps) {
   const autoId = useId()
   const controlId = id ?? autoId
@@ -62,6 +68,7 @@ export function SelectWalletAccount({
     isDisabled && 'mn-select-wallet-account--disabled',
     isInvalid && 'mn-select-wallet-account--invalid',
     previewState && `mn-select-wallet-account--${previewState}`,
+    sizing === 'fill' && 'mn-select-wallet-account--fill',
   ]
     .filter(Boolean)
     .join(' ')

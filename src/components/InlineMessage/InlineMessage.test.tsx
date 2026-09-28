@@ -63,7 +63,7 @@ function boundValue(rootClasses: string[], part: string | null, props: string[])
   return best?.value
 }
 
-const rootClasses = (tone: 'neutral' | 'warning', framed: boolean) =>
+const rootClasses = (tone: 'neutral' | 'warning' | 'ai', framed: boolean) =>
   ['mn-inline-message', `mn-inline-message--${tone}`, ...(framed ? ['mn-inline-message--framed'] : [])]
 
 describe('InlineMessage', () => {
@@ -223,6 +223,64 @@ describe('InlineMessage', () => {
     const { container } = render(
       <InlineMessage tone="warning" title="Couldn't read this photo" actions={<button>Retake photo</button>}>
         Try again with the receipt flat, in good light and in focus.
+      </InlineMessage>,
+    )
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  // ── G45 (Gate 73): the ai tone ────────────────────────────────────────────
+  // Figma `❖ System message` appearance=ai (casestudy_02 1201:16589). Every
+  // gradient stop is bound to a brand primitive; the text is on-colour.
+  const AI_GRADIENT =
+    'linear-gradient( 90deg, var(--brand-blue-400)   2.404%, var(--brand-blue-500)   28.942%, var(--brand-violet-500) 100% )'
+  const squash = (v: string | undefined) => v?.replace(/\s+/g, ' ')
+
+  it('applies the ai tone modifier', () => {
+    const { container } = render(<InlineMessage tone="ai" title="Maxis Promotion Available." />)
+    expect(container.firstChild).toHaveClass('mn-inline-message--ai')
+  })
+
+  it('paints the ai tone with the three bound brand stops, framed and unframed', () => {
+    for (const framed of [true, false]) {
+      const bg = boundValue(rootClasses('ai', framed), null, ['background', 'background-image'])
+      expect(`framed=${framed}: ${squash(bg)}`).toBe(`framed=${framed}: ${squash(AI_GRADIENT)}`)
+    }
+  })
+
+  it('binds the ai title and body to the on-colour text token, framed and unframed', () => {
+    for (const framed of [true, false]) {
+      for (const part of ['mn-inline-message__title', 'mn-inline-message__body']) {
+        const colour = boundValue(rootClasses('ai', framed), part, ['color'])
+        expect(`${part} framed=${framed}: ${colour}`).toBe(
+          `${part} framed=${framed}: var(--mapped-text-primary-on-color)`,
+        )
+      }
+    }
+  })
+
+  it('renders the leading icon_aiinsights glyph at size m in the ai tone', () => {
+    const { container } = render(<InlineMessage tone="ai" title="Maxis Promotion Available." />)
+    const root = container.firstChild as HTMLElement
+    const glyph = root.querySelector('.mn-inline-message__icon')
+    expect(root.firstElementChild).toBe(glyph)
+    const expected = render(<Icon name="icon_aiinsights" size="m" />).container.innerHTML
+    expect(glyph!.innerHTML).toBe(expected)
+  })
+
+  it('scopes only the ai actions region dark so a composed Button renders Inverse', () => {
+    const action = <button>View</button>
+    const ai = render(<InlineMessage tone="ai" title="Maxis" actions={action} />).container
+    expect(ai.querySelector('.mn-inline-message__actions')).toHaveAttribute('data-theme', 'dark')
+    for (const tone of ['neutral', 'warning'] as const) {
+      const other = render(<InlineMessage tone={tone} title="Maxis" actions={action} />).container
+      expect(other.querySelector('.mn-inline-message__actions')).not.toHaveAttribute('data-theme')
+    }
+  })
+
+  it('has no axe violations in the ai tone with an action', async () => {
+    const { container } = render(
+      <InlineMessage tone="ai" title="Maxis Promotion Available." actions={<button>View</button>}>
+        RM69/month Potential Savings.
       </InlineMessage>,
     )
     expect(await axe(container)).toHaveNoViolations()

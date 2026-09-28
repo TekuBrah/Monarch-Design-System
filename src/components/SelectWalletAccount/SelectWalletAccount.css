@@ -13,7 +13,18 @@
 .mn-select-wallet-account {
   position: relative;
   display: inline-block;
-  width: 320px; /* Figma demo width; caller-controllable */
+  width: 320px; /* Figma demo width; released by sizing='fill' below */
+}
+
+/* sizing='fill' — the container decides the width, closing gap G19 for this
+   component. The comment above used to call 320px "caller-controllable" while
+   the props exposed neither sizing nor className. Same shape as Select.sizing
+   (G15): `width: 100%`, not `auto`, because this is a hard `width` and `auto`
+   would size the box to its content. Equal specificity (0,1,0) with the base
+   rule, so source order is what makes it win. */
+.mn-select-wallet-account--fill {
+  width: 100%;
+  flex: 1 1 0;
 }
 
 .mn-select-wallet-account__control {

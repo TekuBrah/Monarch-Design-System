@@ -3,6 +3,78 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## v2.7.0
+
+Gate 73 — the Flow 11 (Finance → Plans) primitives. Six DS gaps the MVP's
+Flow 11 scope session found; the MVP re-pins to this tag at its Gate 74. Full
+derivation, Figma evidence and every judgement in CLAUDE.md's Gate 73 section.
+
+### Added
+
+- **`InlineMessage` `tone="ai"`** (G45) — Figma's `❖ System message`
+  `appearance=ai` (`casestudy_02` `1201:16589`). A Blue/400 → Blue/500 →
+  Violet/500 gradient (every stop a bound variable, composed from the existing
+  `--brand-*` primitives), on-colour title, body and `icon_aiinsights` glyph,
+  and the action to the right. The actions region is scoped
+  `data-theme="dark"`, so a composed `Button` renders Figma's Inverse
+  appearance. No new `Button` appearance. The ai tone ignores `isFramed`: its
+  gradient is always drawn. Neutral and warning are unchanged.
+- **`golf_course`** in the `Icon` registry (G46), from the DS Figma file's
+  `golf_course` component, **`Style=Round` (`5:3774`)**. Teku chose Round over
+  the Filled style Flow 11's Golf Lesson row draws, for consistency with the
+  registry's other Material keys. Asset `Assets/icons-custom/golf_course.svg`,
+  both path `d` strings byte-identical to Figma's (verified by script). A
+  custom asset rather than the package import, because Figma's Round vector is
+  not byte-identical to `@material-design-icons/svg/round`. Registry 108 → 109.
+- **`CardDataDisplay` `orientation` and `sizing`** (G5).
+  `orientation?: 'vertical' | 'horizontal'` (default `vertical`) adds Figma's
+  detached wide label-left, value-right row (`886:7320`).
+  `sizing?: 'fixed' | 'fill'` (default `fixed`, today's 164px box) releases the
+  width and the 300px cap under `fill`, keeping the 128px floor. Omitting both
+  renders the v2.6.0 markup exactly. `content2` is supported in the horizontal
+  row too, although Figma draws only one value there.
+- **`SelectTransfer.sizing` and `SelectWalletAccount.sizing`** (G19),
+  `'fixed' | 'fill'`, default `fixed` at 320px. Same shape as `Select.sizing`.
+
+### Fixed
+
+- **A `Select` menu is no longer clipped by a `Modal` card or a scrolling
+  ancestor** (G43). The open menu is `position: fixed` against its trigger,
+  at the trigger's width. It opens 4px below, flips above when the content does
+  not fit below and there is more room above, caps its height to the space
+  available and scrolls internally, follows the trigger on scroll and resize,
+  and closes when the trigger scrolls fully out of view. It is **not**
+  portalled: it stays a DOM child of the select, so outside-click checks, Tab
+  order and the `Modal` focus trap behave exactly as before.
+- **`IconObject` `size="xs"` `shape="square"` is a square again** (G47). The
+  16px square takes `border-radius/sm` (4px) as Figma draws it; the 8px radius
+  made it a circle.
+
+### Changed
+
+- **`IconObject` `s` and `m` squares take `border-radius/sm` (4px)**, as the DS
+  Figma set binds them (`289:1169`, `289:1145`); they were 8px. `l`, `xl` and
+  `xxl` stay at `border-radius/md` (8px). Every 20px and 24px square badge
+  renders with tighter corners. Widened into G47 by the review thread.
+
+### Minor, not patch
+
+The `IconName` union gains `golf_course`, `InlineMessageTone` gains `ai`, and
+four components gain optional props. All additions to the public types (the
+v2.3.0 and v2.6.0 precedent). No export, prop, type, default or token value was
+removed, renamed or changed, and no generated token file moved.
+
+### Still deferred
+
+- The `SummaryItem` size prop (deferred since v2.5.1) is still not in this
+  release.
+- **Open accessibility item — the AI banner ships as drawn (Teku's ruling).**
+  White text on each gradient stop, identical in both themes (every value is
+  theme-invariant): **Blue/400 3.34, Blue/500 4.49, Violet/500 3.03**, all
+  under 4.5:1. To be fixed in a later patch once Teku chooses darker stops in
+  Figma.
+
+---
 ## v2.6.0
 
 Gate 70 — the donut keeps its hole, wedges paint at /500, and `icon_spend`.

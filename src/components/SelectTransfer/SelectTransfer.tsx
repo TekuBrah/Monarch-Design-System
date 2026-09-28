@@ -34,6 +34,11 @@ export interface SelectTransferProps {
   ariaLabel?: string
   /** Showcase only — forces a visual state without interaction. */
   previewState?: 'hover' | 'focus'
+  /** Width behaviour. `'fixed'` (default) keeps the 320px Figma demo box;
+   *  `'fill'` takes the control to 100% of its container. Same prop and value
+   *  names, and the same `width: 100%` release, as `Select.sizing` (G15).
+   *  Closes gap G19 for this component. */
+  sizing?: 'fixed' | 'fill'
 }
 
 export function SelectTransfer({
@@ -56,6 +61,7 @@ export function SelectTransfer({
   id,
   ariaLabel,
   previewState,
+  sizing = 'fixed',
 }: SelectTransferProps) {
   const autoId = useId()
   const inputId = id ?? autoId
@@ -81,6 +87,7 @@ export function SelectTransfer({
     isInvalid && 'mn-select-transfer--invalid',
     isCurrencyOpen && 'mn-select-transfer--currency-open',
     previewState && `mn-select-transfer--${previewState}`,
+    sizing === 'fill' && 'mn-select-transfer--fill',
   ]
     .filter(Boolean)
     .join(' ')

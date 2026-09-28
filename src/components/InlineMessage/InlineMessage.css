@@ -92,3 +92,60 @@
   flex-wrap: wrap;
   gap: var(--spacing-200); /* 8px */
 }
+
+/* ── Tone: ai (Gate 73, G45) ───────────────────────────────────────────────
+   Figma: `❖ System message`, appearance=ai (casestudy_02 1201:16589; used at
+   I1266:14339;870:6776). Every stop is BOUND to a variable, and all three are
+   brand primitives the pipeline already emits:
+     Blue/400 2.404%  →  Blue/500 28.942%  →  Violet/500 100%, left to right.
+   Composed here from those primitives rather than as a new --mapped-gradient-*
+   token: Figma has no gradient style or variable for this fill (it is a
+   component fill with bound stops), so a pipeline token would be a token Figma
+   does not have, and the only way in is a hand edit to design-tokens/**, which
+   Ruling A forbids. Same composition IconObject's `ai` colour already uses.
+   Theme-invariant by construction: --brand-* never flips, and neither does the
+   on-colour text, so there is no dark block and the pair cannot drift.
+
+   CONTRAST, MEASURED AT THE FIGMA VALUES (Gate 73), both themes identical:
+   white on Blue/400 3.34, on Blue/500 4.49, on Violet/500 3.03 — under 4.5 for
+   this 14px body and 16px title at every stop. Recorded, not fixed (Ruling A).
+
+   Declared after --framed (equal specificity, 0,1,0) so the gradient, the
+   borderless edge and Figma's 8px padding win whatever isFramed says. */
+.mn-inline-message--ai {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--spacing-100); /* 4px — Figma: glyph to text */
+  row-gap: var(--spacing-100);    /* 4px — Figma: title to body */
+  padding: var(--spacing-200);    /* 8px — Figma scale/200 */
+  border: 0;
+  border-radius: var(--brand-scale-200); /* 8px = border-radius/md */
+  background: linear-gradient(
+    90deg,
+    var(--brand-blue-400)   2.404%,
+    var(--brand-blue-500)   28.942%,
+    var(--brand-violet-500) 100%
+  );
+}
+
+.mn-inline-message--ai .mn-inline-message__title,
+.mn-inline-message--ai .mn-inline-message__body {
+  grid-column: 2;
+  color: var(--mapped-text-primary-on-color);
+}
+
+/* Figma top-aligns the 20px glyph with the text column (items-start), not
+   centred on the title's line box as the warning glyph is. */
+.mn-inline-message--ai .mn-inline-message__icon {
+  align-self: start;
+  height: auto;
+  color: var(--mapped-icon-primary-on-color);
+}
+
+/* Figma: the action frame sits right of the text, centred on the message. */
+.mn-inline-message--ai .mn-inline-message__actions {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  align-self: center;
+}

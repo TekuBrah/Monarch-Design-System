@@ -41,4 +41,36 @@ describe('SelectTransfer', () => {
     const { container } = render(<SelectTransfer ariaLabel="Amount" currencyLabel="MYR" />)
     expect(await axe(container)).toHaveNoViolations()
   })
+
+  // G19 (Gate 73). Same shape as Select.sizing (G15). Asserted by class, never
+  // by pixels: jsdom applies no stylesheet, and any container at or under 320px
+  // renders both modes identically anyway.
+  describe('sizing', () => {
+    it('omits the transfer fill modifier by default', () => {
+      const { container } = render(<SelectTransfer ariaLabel="Amount" />)
+      expect(container.firstChild).toHaveClass('mn-select-transfer')
+      expect(container.firstChild).not.toHaveClass('mn-select-transfer--fill')
+    })
+
+    it('applies the transfer fill modifier when sizing is fill', () => {
+      const { container } = render(<SelectTransfer ariaLabel="Amount" sizing="fill" />)
+      expect(container.firstChild).toHaveClass('mn-select-transfer--fill')
+    })
+
+    it("treats an explicit transfer 'fixed' as identical to omitting the prop", () => {
+      const a = render(<SelectTransfer ariaLabel="Amount" sizing="fixed" />)
+      const explicit = (a.container.firstChild as HTMLElement).className
+      a.unmount()
+      const b = render(<SelectTransfer ariaLabel="Amount" />)
+      expect(explicit).toBe((b.container.firstChild as HTMLElement).className)
+    })
+
+    it.each(APPEARANCES)('composes transfer fill alongside the %s appearance', appearance => {
+      const { container } = render(
+        <SelectTransfer ariaLabel="Amount" appearance={appearance} sizing="fill" />,
+      )
+      expect(container.firstChild).toHaveClass(`mn-select-transfer--${appearance}`)
+      expect(container.firstChild).toHaveClass('mn-select-transfer--fill')
+    })
+  })
 })

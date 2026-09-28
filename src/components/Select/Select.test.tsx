@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { axe } from 'jest-axe'
 import { Select } from './Select'
@@ -93,6 +93,107 @@ describe('Select', () => {
     it('has no axe violations when filling', async () => {
       const { container } = render(<Select ariaLabel="Account" sizing="fill" />)
       expect(await axe(container)).toHaveNoViolations()
+    })
+  })
+
+  // G43 (Gate 73). jsdom has no layout, so the geometry the component reads is
+  // stubbed: the viewport height, the trigger's rect, a clipping ancestor's
+  // rect and the menu's natural content height. The gap token does not resolve
+  // in jsdom (no stylesheet), so it reads as 0 here; the browser measurement
+  // in CLAUDE.md Gate 73 covers the real 4px.
+  describe('menu placement (G43)', () => {
+    let trigger = { top: 100, bottom: 148, left: 16, width: 343 }
+    let clip = { top: 0, bottom: 800 }
+    let natural = 200
+
+    beforeEach(() => {
+      trigger = { top: 100, bottom: 148, left: 16, width: 343 }
+      clip = { top: 0, bottom: 800 }
+      natural = 200
+      Object.defineProperty(document.documentElement, 'clientHeight', { configurable: true, get: () => 800 })
+      Object.defineProperty(document.documentElement, 'clientWidth', { configurable: true, get: () => 375 })
+      Object.defineProperty(HTMLElement.prototype, 'scrollHeight', {
+        configurable: true,
+        get(this: HTMLElement) {
+          return this.classList.contains('mn-select__menu') ? natural : 0
+        },
+      })
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        if (this.classList.contains('mn-select')) {
+          const { top, bottom, left, width } = trigger
+          return { top, bottom, left, right: left + width, width, height: bottom - top, x: left, y: top, toJSON: () => ({}) } as DOMRect
+        }
+        if (this.dataset.testid === 'clip') {
+          return { top: clip.top, bottom: clip.bottom, left: 0, right: 375, width: 375, height: clip.bottom - clip.top, x: 0, y: clip.top, toJSON: () => ({}) } as DOMRect
+        }
+        return { top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect
+      })
+    })
+
+    afterEach(() => {
+      vi.restoreAllMocks()
+      delete (document.documentElement as unknown as Record<string, unknown>).clientHeight
+      delete (document.documentElement as unknown as Record<string, unknown>).clientWidth
+      delete (HTMLElement.prototype as unknown as Record<string, unknown>).scrollHeight
+    })
+
+    const open = (onOpenChange = () => {}) =>
+      render(
+        <div data-testid="clip" style={{ overflow: 'auto' }}>
+          <Select ariaLabel="Category" isOpen onOpenChange={onOpenChange} menuSlot={<button>Groceries</button>} />
+        </div>,
+      )
+    const menuOf = (c: HTMLElement) => c.querySelector('.mn-select__menu') as HTMLElement
+    const prop = (el: HTMLElement, name: string) => el.style.getPropertyValue(name)
+
+    it('keeps the open menu a DOM child of the select root, not portalled', () => {
+      const { container } = open()
+      const root = container.querySelector('.mn-select') as HTMLElement
+      expect(root.contains(menuOf(container))).toBe(true)
+    })
+
+    it('places the menu below the trigger at the trigger width', () => {
+      const menu = menuOf(open().container)
+      expect(menu.dataset.placement).toBe('below')
+      expect(prop(menu, '--mn-select-menu-top')).toBe('148px')
+      expect(prop(menu, '--mn-select-menu-left')).toBe('16px')
+      expect(prop(menu, '--mn-select-menu-width')).toBe('343px')
+      expect(prop(menu, '--mn-select-menu-max-height')).toBe('652px')
+      expect(menu.dataset.capped).toBeUndefined()
+    })
+
+    it('flips the menu above when it does not fit below and there is more room above', () => {
+      trigger = { top: 600, bottom: 648, left: 16, width: 343 }
+      natural = 300
+      const menu = menuOf(open().container)
+      expect(menu.dataset.placement).toBe('above')
+      expect(prop(menu, '--mn-select-menu-top')).toBe('300px')
+      expect(prop(menu, '--mn-select-menu-max-height')).toBe('600px')
+    })
+
+    it('caps the menu height to the space available and marks it scrollable', () => {
+      trigger = { top: 300, bottom: 348, left: 16, width: 343 }
+      natural = 1000
+      const menu = menuOf(open().container)
+      expect(menu.dataset.placement).toBe('below')
+      expect(prop(menu, '--mn-select-menu-max-height')).toBe('452px')
+      expect(menu.dataset.capped).toBe('true')
+    })
+
+    it('follows the trigger when an ancestor scrolls', () => {
+      const { container, getByTestId } = open()
+      trigger = { top: 60, bottom: 108, left: 16, width: 343 }
+      fireEvent.scroll(getByTestId('clip'))
+      expect(prop(menuOf(container), '--mn-select-menu-top')).toBe('108px')
+    })
+
+    it('closes when the trigger scrolls fully out of a clipping ancestor', () => {
+      const onOpenChange = vi.fn()
+      const { getByTestId } = open(onOpenChange)
+      clip = { top: 0, bottom: 400 }
+      trigger = { top: 450, bottom: 498, left: 16, width: 343 }
+      fireEvent.scroll(getByTestId('clip'))
+      expect(onOpenChange).toHaveBeenCalledWith(false)
     })
   })
 })

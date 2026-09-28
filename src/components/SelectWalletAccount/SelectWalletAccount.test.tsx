@@ -51,4 +51,36 @@ describe('SelectWalletAccount', () => {
     const { container } = render(<SelectWalletAccount ariaLabel="Wallet" />)
     expect(await axe(container)).toHaveNoViolations()
   })
+
+  // G19 (Gate 73). Same shape as Select.sizing (G15). Asserted by class, never
+  // by pixels: jsdom applies no stylesheet, and any container at or under 320px
+  // renders both modes identically anyway.
+  describe('sizing', () => {
+    it('omits the wallet fill modifier by default', () => {
+      const { container } = render(<SelectWalletAccount ariaLabel="Wallet" />)
+      expect(container.firstChild).toHaveClass('mn-select-wallet-account')
+      expect(container.firstChild).not.toHaveClass('mn-select-wallet-account--fill')
+    })
+
+    it('applies the wallet fill modifier when sizing is fill', () => {
+      const { container } = render(<SelectWalletAccount ariaLabel="Wallet" sizing="fill" />)
+      expect(container.firstChild).toHaveClass('mn-select-wallet-account--fill')
+    })
+
+    it("treats an explicit wallet 'fixed' as identical to omitting the prop", () => {
+      const a = render(<SelectWalletAccount ariaLabel="Wallet" sizing="fixed" />)
+      const explicit = (a.container.firstChild as HTMLElement).className
+      a.unmount()
+      const b = render(<SelectWalletAccount ariaLabel="Wallet" />)
+      expect(explicit).toBe((b.container.firstChild as HTMLElement).className)
+    })
+
+    it.each(APPEARANCES)('composes wallet fill alongside the %s appearance', appearance => {
+      const { container } = render(
+        <SelectWalletAccount ariaLabel="Wallet" appearance={appearance} sizing="fill" />,
+      )
+      expect(container.firstChild).toHaveClass(`mn-select-wallet-account--${appearance}`)
+      expect(container.firstChild).toHaveClass('mn-select-wallet-account--fill')
+    })
+  })
 })

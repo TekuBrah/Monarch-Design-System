@@ -17,6 +17,22 @@
   border-radius: var(--brand-scale-200); /* 8px = border-radius/md */
 }
 
+/* G47 (Gate 73). The three smallest squares take border-radius/sm (4px), as
+   Figma binds them; Large (32px) and up keep border-radius/md (8px) above.
+     xs 16px — the DS set has no XS variant (xs extends the ramp down in code,
+               v1.3.0), so the source is the app instance that draws it:
+               casestudy_02 I1266:14342;901:8394, Flow 11's education checklist.
+               At 8px a 16px square rendered as a circle.
+     s  20px — DS set 221:20, Size=Small, Shape=Square (289:1169).
+     m  24px — DS set 221:20, Size=Medium, Shape=Square (289:1145).
+   s and m were widened into this rule by the review thread's ruling (Gate 73
+   follow-up). Equal specificity (0,2,0) beats the (0,1,0) rule above. */
+.mn-icon-object--square.mn-icon-object--xs,
+.mn-icon-object--square.mn-icon-object--s,
+.mn-icon-object--square.mn-icon-object--m {
+  border-radius: var(--brand-scale-100); /* 4px = border-radius/sm */
+}
+
 /* === Sizes (outer container) === */
 /* xs extends the existing ratio scale downward with a token that already
    exists (--brand-scale-400 = 16px). No new token was introduced. */

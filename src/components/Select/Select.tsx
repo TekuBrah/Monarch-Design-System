@@ -1,6 +1,86 @@
-import React, { useId, useState, useRef } from 'react'
+import React, { useId, useState, useRef, useLayoutEffect, useEffect } from 'react'
 import { Icon } from '../Icon'
 import './Select.css'
+
+/* G43 (Gate 73) — the open menu is drawn with `position: fixed` against its
+   trigger, so an ancestor's `overflow: clip` (the Modal card) or a scrolling
+   ancestor no longer cuts it off.
+
+   It is NOT portalled, and that is Teku's ruling (Gate 73), superseding the
+   review thread's portal ruling. The menu stays a DOM child of `.mn-select`, so
+   everything a consumer can observe apart from position is unchanged: a
+   `contains()` outside-click check still counts the menu as inside (the MVP's
+   budget form relies on exactly that), Tab still reaches the menu items in
+   document order, the Modal focus trap still includes them, and a consumer's
+   descendant CSS selector still reaches the slot.
+
+   KNOWN LIMIT: `position: fixed` is positioned against the viewport only while
+   no ancestor has a `transform`, `filter` or `contain` property; any of those
+   becomes the containing block and would clip the menu again. Modal and Sheet
+   have none today. */
+interface MenuGeometry {
+  top: number
+  left: number
+  width: number
+  maxHeight: number
+  placement: 'below' | 'above'
+  /** True when the content is taller than the space it was given. */
+  capped: boolean
+}
+
+/** The trigger is "in view" while any part of it is inside the viewport and
+ *  inside every ancestor that clips its overflow. An unrendered trigger (all
+ *  zero rect, e.g. jsdom) is never treated as scrolled away. */
+function isInView(el: HTMLElement, rect: DOMRect): boolean {
+  if (rect.width === 0 && rect.height === 0) return true
+  const vw = document.documentElement.clientWidth
+  const vh = document.documentElement.clientHeight
+  let top = 0
+  let left = 0
+  let bottom = vh || Infinity
+  let right = vw || Infinity
+  for (let a = el.parentElement; a && a !== document.documentElement; a = a.parentElement) {
+    const s = getComputedStyle(a)
+    // The shorthand is read too: not every engine expands it into the longhands.
+    const values = [s.overflowX, s.overflowY, ...(s.overflow || '').split(' ')].filter(Boolean)
+    if (values.every(v => v === 'visible')) continue
+    const r = a.getBoundingClientRect()
+    top = Math.max(top, r.top)
+    left = Math.max(left, r.left)
+    bottom = Math.min(bottom, r.bottom)
+    right = Math.min(right, r.right)
+  }
+  return rect.bottom > top && rect.top < bottom && rect.right > left && rect.left < right
+}
+
+/** Below by default; above only when the content does not fit below AND there
+ *  is more room above. Height is capped to the chosen side's space. `gap` is
+ *  applied between trigger and menu and again at the viewport edge. */
+function placeMenu(rect: DOMRect, natural: number, gap: number): MenuGeometry {
+  const vh = document.documentElement.clientHeight
+  const below = Math.max(0, vh - rect.bottom - 2 * gap)
+  const above = Math.max(0, rect.top - 2 * gap)
+  const flip = natural > below && above > below
+  const maxHeight = flip ? above : below
+  const height = Math.min(natural, maxHeight)
+  return {
+    top: flip ? rect.top - gap - height : rect.bottom + gap,
+    left: rect.left,
+    width: rect.width,
+    maxHeight,
+    placement: flip ? 'above' : 'below',
+    capped: natural > maxHeight,
+  }
+}
+
+const sameGeometry = (a: MenuGeometry | null, b: MenuGeometry) =>
+  !!a &&
+  a.top === b.top &&
+  a.left === b.left &&
+  a.width === b.width &&
+  a.maxHeight === b.maxHeight &&
+  a.placement === b.placement &&
+  a.capped === b.capped
 
 export type SelectAppearance = 'standard' | 'subtle'
 
@@ -79,6 +159,50 @@ export function Select({
   const setOpen = (o: boolean) => (onOpenChange ? onOpenChange(o) : setUncontrolledOpen(o))
   const showMenu = open && !!menuSlot
 
+  // G43 — measure the trigger and place the fixed menu against it, before
+  // paint, on every render while open (the slot's content can change height
+  // as the user types), and again on any scroll or resize.
+  const rootRef = useRef<HTMLDivElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const [geometry, setGeometry] = useState<MenuGeometry | null>(null)
+  const closeRef = useRef(() => setOpen(false))
+  useLayoutEffect(() => {
+    closeRef.current = () => setOpen(false)
+  })
+  const updateRef = useRef(() => {})
+  updateRef.current = () => {
+    const root = rootRef.current
+    const menu = menuRef.current
+    if (!root || !menu) return
+    const rect = root.getBoundingClientRect()
+    if (rect.width === 0 && rect.height === 0) return
+    // Scrolled fully out of a clipping ancestor or the viewport: close rather
+    // than leave a menu floating over content its trigger is no longer beside.
+    if (!isInView(root, rect)) {
+      closeRef.current()
+      return
+    }
+    const gap = parseFloat(getComputedStyle(menu).getPropertyValue('--brand-scale-100')) || 0
+    const next = placeMenu(rect, menu.scrollHeight, gap)
+    setGeometry(prev => (sameGeometry(prev, next) ? prev : next))
+  }
+  useLayoutEffect(() => {
+    if (showMenu) updateRef.current()
+  })
+  useEffect(() => {
+    if (!showMenu) {
+      setGeometry(null)
+      return
+    }
+    const onChange = () => updateRef.current()
+    window.addEventListener('scroll', onChange, true)
+    window.addEventListener('resize', onChange)
+    return () => {
+      window.removeEventListener('scroll', onChange, true)
+      window.removeEventListener('resize', onChange)
+    }
+  }, [showMenu])
+
   const className = [
     'mn-select',
     `mn-select--${appearance}`,
@@ -92,7 +216,7 @@ export function Select({
     .join(' ')
 
   return (
-    <div className={className} data-preview={previewState}>
+    <div ref={rootRef} className={className} data-preview={previewState}>
       <div
         className="mn-select__control"
         onClick={() => {
@@ -142,7 +266,25 @@ export function Select({
         </button>
       </div>
       {showMenu && (
-        <div id={menuId} className="mn-select__menu">
+        <div
+          ref={menuRef}
+          id={menuId}
+          className="mn-select__menu"
+          data-placement={geometry?.placement}
+          data-capped={geometry?.capped || undefined}
+          // Continuous geometry, so it cannot be a finite set of classes: the
+          // custom-property pattern, read by .mn-select__menu in Select.css.
+          style={
+            geometry
+              ? ({
+                  '--mn-select-menu-top': `${geometry.top}px`,
+                  '--mn-select-menu-left': `${geometry.left}px`,
+                  '--mn-select-menu-width': `${geometry.width}px`,
+                  '--mn-select-menu-max-height': `${geometry.maxHeight}px`,
+                } as React.CSSProperties)
+              : undefined
+          }
+        >
           {menuSlot}
         </div>
       )}

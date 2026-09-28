@@ -118,6 +118,24 @@ describe('Icon', () => {
     expect(fills).toEqual(['currentColor', 'currentColor'])
   })
 
+  // golf_course — added at Gate 73 (G46) for Flow 11's Golf Lesson row. Taken
+  // from the DS Figma file's `golf_course` Style=Round (5:3774), Teku's choice
+  // over the Filled style the row draws; checked against Figma's second path
+  // so neither the Filled glyph nor the package's Round file can stand in.
+  it('renders the golf_course glyph from Figma', () => {
+    const name: IconName = 'golf_course'
+    const { container } = render(<Icon name={name} />)
+    const d = [...container.querySelectorAll('svg path')].map(p => p.getAttribute('d') ?? '')
+    expect(d).toHaveLength(2)
+    expect(d[1].startsWith('M10.5 17.728V8.67802L14.72 6.52802')).toBe(true)
+  })
+
+  it('tints the golf_course glyph through currentColor', () => {
+    const { container } = render(<Icon name="golf_course" />)
+    const fills = [...container.querySelectorAll('svg path')].map(p => p.getAttribute('fill'))
+    expect(fills).toEqual(['currentColor', 'currentColor'])
+  })
+
   it('renders the logo_monarch brand mark', () => {
     const { container } = render(<Icon name="logo_monarch" />)
     expect(container.querySelector('svg')).not.toBeNull()

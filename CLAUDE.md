@@ -1516,6 +1516,293 @@ sha256-identical, then read `1 passed | N skipped`. The runner spawns
 DS gate that touches `ProgressRing.test.tsx` / `CardMonthlyBudget.test.tsx`",
 and this gate touched neither. The trigger stands for the next gate that does.
 
+## Gate 73 — Flow 11 primitives (v2.7.0)
+
+Built on `main` at `6487399` (`v2.6.0`), left uncommitted — Claude Code made
+no git writes (see Git workflow). Release notes in `CHANGELOG.md` v2.7.0. Six
+gaps the MVP's Flow 11 (Finance → Plans) scope session found; the MVP's
+register owns the IDs. Phase 0 reproduced every baseline figure the brief
+gave: 662 tests / 63 files, 13 `style={` in 8 files, 49 `:hover` / 41
+`@media (hover: hover)`, 60/60 registration, zero token drift, 27 tags.
+
+### 0 · Figma, and how it was read
+
+**Local desktop MCP only.** The remote connector needed OAuth this session.
+The active tab was a THIRD file at session start (frame `109:12355`, "32
+Financial Clarity & Control") — neither source resolved (`1266:14338` and
+`235:5710` both "no node could be found"). Teku switched tabs twice on
+request; each switch was confirmed by the same pair of probes in reverse.
+
+**`get_design_context` through the tool times out at 300s** (Gate 70 recorded
+this). The direct JSON-RPC route has a SECOND trap: Node's global `fetch`
+(undici) aborts the response body at 300s with `UND_ERR_BODY_TIMEOUT`, so
+Gate 70's recipe fails on a slow call unless it uses `node:http` with
+`req.setTimeout(0)`. In `casestudy_02` design-context calls returned in 1–2s;
+in the DS file one call ran past 17 minutes without returning.
+**`get_variable_defs` on a single node returned instantly in both files and is
+the fast way to read a binding** — used for every G47 and G48 reading below.
+`get_design_context` rejects instance IDs (`I…;…`); pass the underlying node
+ID (e.g. `870:6776`), which resolves in the file that owns it.
+
+### 1 · G45 — `InlineMessage` `tone="ai"`
+
+- **Figma:** `❖ System message`, component set `1201:16583` in `casestudy_02`,
+  variant `appearance=ai` = **`1201:16589`** (it resolves; the brief could not
+  resolve it). Used at `I1266:14339;870:6776`. Sibling variants: information,
+  Success, Warning, Error, Discovery — so Figma models ONE appearance axis,
+  which is why `ai` is a `tone` value and not a second prop.
+- **Fill:** `to right`, **Blue/400 2.404% → Blue/500 28.942% → Violet/500
+  100%**, every stop a bound variable (`get_variable_defs`: `Blue/400`
+  `#368bff`, `Blue/500` `#046eff`, `Violet/500` `#df5af6` — identical to
+  `--brand-*` on disk). Padding `scale/200` 8, radius `border-radius/md` 8, no
+  border. Glyph `icon_aiinsights` 20px, `icon/primary/on-color`. Title
+  `body/m-semibold`, body `body/sm`, both `text/primary/on-color`. 4px glyph →
+  text and title → body.
+- **Why no `--mapped-gradient-*` token, against the brief's instruction.** The
+  only input to that pipeline is `Brand/Value.json`'s `Gradient` group, which
+  holds Token Studio's export of Figma gradient STYLES — and Figma has no style
+  or variable for this fill (the design context lists text styles only). A
+  token would therefore be one Figma does not have, added by hand-editing
+  `design-tokens/**`, which Ruling A forbids. The `brand` kind also accepts
+  exactly two `{family}` stops resolving to mapped surfaces, not three brand
+  primitives with positions. Composed in `InlineMessage.css` from the three
+  `--brand-*` vars instead — `IconObject`'s `ai` colour already does exactly
+  this. Nothing hard-coded, no token invented, `build:tokens` diff empty.
+- **The action is a real `button` instance** — `Type=Tertiary,
+  Appearance=Inverse, Size=M` in the variant; the Plans-tab instance overrides
+  it to label-only, 12/4 padding, 28 tall. **In this DS, Inverse IS dark mode**
+  (`Button.css`), so the actions region carries `data-theme="dark"` in the ai
+  tone only (the `ToastMobile` precedent) and the consumer's own `<Button>`
+  renders Inverse. **No new `Button` appearance was added.** The 28px override
+  is a screen-level choice: the DS `m` renders 38 tall, `s` is 4px all round.
+- **`isFramed` is ignored by `ai`**: white text with no gradient would be
+  unreadable. Documented in both the `tone` and `isFramed` doc comments.
+  Neutral and warning render byte-identically (the `data-theme` attribute is
+  `undefined`, so React omits it — asserted).
+- **⚠️ OPEN ACCESSIBILITY ITEM — shipped as drawn (Teku's ruling, Gate 73
+  follow-up).** White text on each stop, identical in both themes (every value
+  is theme-invariant): Blue/400 **3.34**, Blue/500 **4.49**, Violet/500
+  **3.03**. Violet/500 is the lightest stop, and the View action sits over it.
+  Under 4.5 for the 14px body and the 16px title everywhere. To be fixed in a
+  later patch once Teku chooses darker stops in Figma. Also recorded in
+  `CHANGELOG.md` v2.7.0 under Still deferred.
+- **Accepted by the review thread:** composing the gradient in CSS from the
+  three `--brand-*` primitives, rather than adding a pipeline token.
+- **Computed, both themes:** background `linear-gradient(90deg, rgb(54,139,255)
+  2.404%, rgb(4,110,255) 28.942%, rgb(223,90,246) 100%)`, padding 8, radius 8,
+  border 0; title, body, glyph and the tertiary action's label all
+  `rgb(255,255,255)`; glyph 20px.
+
+### 2 · G46 — `golf_course`
+
+The DS file has the whole Material set as components: `golf_course` is
+**`5:3769`** with Filled / Outlined / Round / Sharp / Two Tone.
+**`casestudy_02`'s `868:12490` is a copy** (same frame, same coordinates). The
+Golf Lesson row (`I868:6276`) draws **`Style=Filled`**.
+
+**RULING (Teku, Gate 73 follow-up): Round, not Filled, for registry
+consistency** — every other Material key in the registry is Round. Registered
+from DS **`5:3774` (`Style=Round`)**: it serves asset `c3f4a699…`, the same
+content-addressed asset as the app copy's Round symbol `868:12493`. Both `d`
+strings written to `Assets/icons-custom/golf_course.svg` and compared back by
+script (identical). House form as `icon_spend`. **Registry 108 → 109** (71
+Material Round + 38 custom), by the parser.
+
+**Still a custom asset, not the package import:** Figma's Round vector is NOT
+byte-identical to `@material-design-icons/svg/round/golf_course.svg` — it is
+drawn as two cubic-bezier paths where the package uses a `<circle>` plus
+relative arcs, and it sits ~0.3px higher. The brief required Figma's own
+paths. *(The first pass registered Filled, `5:3770`; that asset was replaced.)*
+
+### 3 · G47 — `IconObject` square radius at `xs`, `s` and `m`
+
+**Figma's square radius, read per size from the DS set `221:20`
+(`get_variable_defs`):**
+
+| size | px | Figma | code before | code after |
+|---|---|---|---|---|
+| xs | 16 | *(no DS variant)* app instance: `border-radius/sm` 4 | 8 | **4** |
+| Small | 20 | `border-radius/sm` 4 (`289:1169`) | 8 | **4** |
+| Medium | 24 | `border-radius/sm` 4 (`289:1145`) | 8 | **4** |
+| Large | 32 | `border-radius/md` 8 (`289:1121`) | 8 | 8 |
+| Xl | 40 | `border-radius/md` 8 (`289:1097`) | 8 | 8 |
+| XXL | 56 | `border-radius/md` 8 (`389:384`) | 8 | 8 |
+
+**The DS set has no XS variant** (xs was extended down in code at v1.3.0), so
+the only Figma source for 16px is the app instance `I1266:14342;901:8394`:
+`border-radius/sm`. The first pass changed `xs` only, per the brief; **the
+review thread then widened G47 to `s` and `m`** from the bindings above. One
+rule, `.square.xs, .square.s, .square.m` at (0,2,0), binds `--brand-scale-100`
+(4px); `l` and up keep the (0,1,0) `--brand-scale-200` rule. The test is an
+`it.each` over all six sizes, so a size drifting either way fails by name.
+
+### 4 · G5 — `CardDataDisplay` `orientation` + `sizing`
+
+- **Figma:** the wide row is a DETACHED `card/data display` at
+  **`886:7320`**, used on **`1266:14341` and `1266:14342`** (311×56) — **not
+  on `1266:14343`**, which carries four ordinary 163.5×80 instances. A wrapping
+  flex row, justify-between, centred, `gap-y` 8, padding 16, radius md,
+  subtlest fill; label `text/subtle/default` at **body 16/24 semibold** (not
+  the caption the vertical card uses), grows (`flex: 1 0 0`) and may wrap;
+  value `text/default/default`, nowrap.
+- **`orientation?: 'vertical' | 'horizontal'`** (default vertical);
+  horizontal moves the label to `type-body-m-semibold`.
+- **`sizing?: 'fixed' | 'fill'` — NOT Fixed/Hug/Fill as the brief said.** The
+  DS vocabulary is `'fixed' | 'fill'` in five components (`CardBalance`,
+  `CardFeaturesAndEducation`, `CardMonthlyBudget`, `Field`, `Select`) and the
+  sizing-prop rule above says copy that shape; no Flow 11 frame hugs. Fill:
+  `width: auto; max-width: none; flex: 1 1 0`, 128px floor kept. **Accepted by
+  the review thread.**
+- **Token-source gap, NOT applied:** Figma gives the label a raw
+  `min-width: 100px` (off-ramp, 96/128). The gap protocol needs approval before
+  a flagged literal is used, so it is omitted; the label's floor is its longest
+  word. **Dropping it was accepted by the review thread.**
+- **`content2` is supported in horizontal, although Figma does not draw it**
+  (Figma's row has one value). It renders as a third item in the same wrapping
+  row, following the value and wrapping under it when the row is too narrow.
+  Documented in the prop's doc comment and `docs/component-tokens.md`.
+- **Arithmetic and measurement:** two fill tiles + 16 gap in 343 →
+  (343 − 16) / 2 = **163.5** each, measured 163.5 / 163.5, `max-width: none`;
+  horizontal row **343 × 56**, label x 16, value 16 from the right edge, one
+  line. Both themes (label `#6b7786` / `#8695a7`, value `#363c43` / `#cfd5dc`).
+  Omitting both props renders the v2.6.0 markup byte-for-byte (asserted).
+  Subtle-on-subtlest is 4.33 in light (Gate 62 §2) — same pair as before.
+
+### 5 · G19 — `SelectTransfer.sizing`, `SelectWalletAccount.sizing`
+
+`'fixed' | 'fill'`, the `Select.sizing` (G15) shape exactly: `--fill` is
+`width: 100%; flex: 1 1 0`, after the base rule. Default 320. Measured 400 in
+a 400 column, 320 fixed, both themes.
+
+### 6 · G43 — the `Select` menu, fixed in place (NOT portalled)
+
+**RULING (Teku, Gate 73) — supersedes the review thread's portal ruling.**
+The portal would have broken the one real consumer: the MVP's
+`BudgetFormModal` closes the category picker on `pointerdown` via
+`categoryRef.contains(target)`, and a portalled menu is outside that ref, so
+every tap on a category would close the menu before it landed. Tab order into
+the menu and the `Modal` focus trap (`getFocusable(card)`) would also lose it.
+
+**Mechanism:** `.mn-select__menu` is `position: fixed`, placed by
+`Select.tsx` through four custom properties (`--mn-select-menu-top/-left/
+-width/-max-height`, the custom-property pattern — **one new `style={}`
+site**). Width = the trigger's. Opens `--brand-scale-100` below; flips above
+only when the content does not fit below AND there is more room above; height
+capped to the chosen side's space (gap applied at the trigger and the viewport
+edge); `overflow-y: auto` + hidden scrollbar ONLY when capped
+(`data-capped`), because `overflow: auto` clips the slot's shadow even with
+nothing to scroll. Re-measured before paint on every render while open, and
+on window `scroll` (capture) / `resize`. **Closes** (via `onOpenChange(false)`)
+when the trigger is fully outside the viewport or any overflow-clipping
+ancestor.
+
+**KNOWN LIMIT (recorded per Teku's ruling):** a `position: fixed` element is
+positioned against the viewport only while no ancestor has a `transform`,
+`filter` or `contain` property — any of those becomes its containing block and
+would clip it again. **`Modal` and `Sheet` have none today.**
+
+**Unchanged, as ruled:** Select has no Escape or outside-click handling of its
+own, before or after — `Modal` owns Escape and the consumer owns outside
+click. All 13 pre-existing `Select` tests pass unmodified.
+
+**Measured in the showcase `Modal` (`#g43-picker`), 1009 wide:** trigger
+452 bottom, card 452 bottom, menu **456 → 700** at width 343, `elementFromPoint`
+at the menu's bottom edge hits `.mn-menu` (painted, not clipped). A real
+pointer click on an item selected it and closed the menu under a
+`contains()` outside-click listener. Menu focusable counted inside the Modal
+trap (1 of 4; `offsetParent` of a fixed element's CHILD is not null); menu
+follows the input in document order. At 375×520: **flipped above**, menu
+233 → 457, trigger top 461. At 375×200: capped at 173px, `overflow-y: auto`,
+`scrollbar-width: none`, `clientWidth` = `offsetWidth` = 343 (no gutter),
+scrolls. Escape still closed the `Modal`.
+
+### 7 · G48 — no change, no ID
+
+The DS main component `list/chart legend` **`261:413`** binds the title
+`text/subtle/default` (`261:401`), the subtitle subtle (`261:402`) and the
+amount `text/default/default` (`261:404`) — exactly what `ChartLegendItem`'s
+`contribution` variant renders. `1266:14344`'s Recent Contributions rows show
+the title at `text/default/default` through an INSTANCE OVERRIDE.
+
+**RULING (review thread, Gate 73 follow-up): the app's `text/default/default`
+override is a Figma inconsistency, and the DS keeps its main component's
+`text/subtle/default` binding.** No code change; no G48.
+
+### 8 · Tests and proofs
+
+**Predicted in writing before the full run:** 662 + SelectTransfer 6 +
+SelectWalletAccount 5 + Select 6 + InlineMessage 6 + CardDataDisplay 7 +
+IconObject 1 + Icon 2 = **695 in 63 files. Measured 695 / 63.** No existing
+test's body or assertion was modified. Two pre-existing lines outside test
+bodies did change: `Select.test.tsx`'s vitest import (adds `vi`,
+`beforeEach`, `afterEach`) and `InlineMessage.test.tsx`'s `rootClasses`
+helper type (adds `'ai'`).
+
+**33 mutation proofs, one per new test** (runner: `node vitest.mjs` by argv,
+exact title regex-escaped and `$`-anchored, mutate → `1 failed | N skipped` →
+restore → sha256 identical → `1 passed | N skipped`). **32 valid first time;
+one was not:** the ai-tone axe test's first mutation (a dangling
+`aria-labelledby` on the `role="group"`) read `1 passed` — axe does not flag
+that — so it proved nothing. Re-run with `role="list"` on the ai actions
+region (`aria-required-children`): `1 failed | 23 skipped`, valid.
+
+### 9 · Figures
+
+| | predicted | measured |
+|---|---|---|
+| tests / files | 695 / 63 | **695 / 63** |
+| `style={` in non-test component `.tsx` | 14 in 9 | **14 in 9** |
+| `:hover` / `@media (hover: hover)` | 49 / 41 | **49 / 41** |
+| component CSS registered | 60/60 | **60/60** |
+| `build:tokens` diff | empty | **empty** |
+| icon registry | 109 | **109** (71 + 38) |
+| public `.d.ts` | additions only | **additions only** |
+
+**Personal-data audit — the brief's negative control is wrong about one
+string.** `BEVERAGE` is absent from the tree (0 files). `12.22` is **not**: 4
+tracked files, all present at HEAD and none personal — three SVG path
+coordinates (`icon_grocery_1`, `icon_monarchacademy`, `icon_spend`) and
+`package-lock.json`'s `>=v12.22.7`. In the files this gate changed, the only
+occurrences are this paragraph (which names both strings) and that
+pre-existing lockfile line (the gate changed only the lockfile's two version
+lines). No component, test, asset, showcase or CHANGELOG change carries either.
+
+**Session hazard, recorded:** a `taskkill //IM node.exe` issued to clear two
+hung Figma fetches is not scoped to one process and may have ended unrelated
+`node.exe` processes on the machine. Use `TaskStop` on the background task ID
+instead.
+
+### 10 · Follow-up pass (review thread rulings, same gate)
+
+Rulings applied: G46 → Round (§2); G47 widened to `s` and `m` (§3); the AI
+banner ships as drawn, recorded as an open accessibility item (§1, and
+`CHANGELOG.md` Still deferred); G48 recorded as a Figma inconsistency (§7);
+the CSS-composed gradient, the `fixed | fill` vocabulary and the dropped 100px
+floor accepted (§1, §4). `docs/component-tokens.md` DID list values for all
+three components, and was updated: `CardDataDisplay` (the two props, the
+horizontal and fill rows, `content2`), `Inline Message` (the `ai` tone row, a
+"Tone: ai" table with the open contrast item, and the `isFramed` note) and
+`Icon Object` (the shape table split by size). The Icon registry's prose list
+in that file was not asked for and was not changed.
+
+**Written before re-verifying:**
+
+| | predicted | measured |
+|---|---|---|
+| `npx tsc -b --force` | exit 0 | **exit 0** |
+| tests / files | 695 − 1 (the single G47 test, replaced) + 6 (one per size) = **700 / 63** | **700 / 63** |
+| mutation proofs | **7**: the 6 new G47 cases + the golf-path test (its assertion changed) | **8, all valid** — the golf tint test was re-proved too, because its asset file changed. Each `1 failed \| N skipped` mutated (30 for IconObject, 22 for Icon), sha-identical restore, `1 passed` |
+| public `.d.ts` | additions only; same symbols as the first pass, plus doc-comment lines | **additions only**, the same 5 files; 6 `-` lines, all superseded (3 signatures, 1 union, 2 comment lines) |
+| `style={}` / hover | 14 in 9 / 49, 41 (unchanged) | **14 in 9 / 49, 41** |
+| `build:tokens` diff | empty | **empty** |
+| CSS registration | 60/60 | **60/60** |
+| personal-data audit, newly changed files | no hits outside §9's own paragraph | **none outside §9's paragraph** |
+
+**The first G47 proof attempt threw before writing anything:** `IconObject.css`
+is CRLF in this working copy, and a `\n` pattern did not match (the hazard
+Gate 62 §6 records). The runner's `finally` restored the original, the file's
+sha256 was unchanged, and the patterns were rewritten as `\r?\n` regexes.
+
 ## Known open items
 - **Heading font-size in source**: Figma composites wire `{fontSize.N}` (static), not a
   responsive token. Resolved at build time by mapping heading keys → responsive vars.
@@ -2387,9 +2674,10 @@ per-component stops for the next one.
 
 ## Git workflow
 
-**Branch creation is Claude Code's, when a step calls for it** — e.g.
-`git checkout -b phase/5.4-gap-resolution`, created off `main` as the first
-action of the step.
+**Claude Code makes no git writes of any kind — not even a branch** (Teku,
+25 Sept 2026). Teku commits directly on `main` in Sourcetree. Claude Code does
+not create, switch or delete branches; it edits the working tree on whatever
+Teku has checked out and leaves it dirty for review.
 
 **Staging, committing, pushing and tagging are Teku's alone, via Sourcetree.**
 Not "pushing only" — *all of them*. Claude Code leaves the working tree dirty at
@@ -2403,6 +2691,10 @@ supersedes the earlier "you may stage and commit locally", which contradicted
 the roadmap's own standing rule ("Claude Code never pushes. No commits, no PRs,
 no remotes"). The MVP repo's `CLAUDE.md` carries the same rule, deliberately —
 the two repos agree.
+
+> **Correction (Gate 73, 2026-09-28):** the first sentence of the paragraph
+> above is no longer true. Since 25 Sept 2026 Claude Code makes no git writes
+> at all, branch creation included; see the first paragraph of this section.
 
 ### Release hygiene — the version field is part of the release
 

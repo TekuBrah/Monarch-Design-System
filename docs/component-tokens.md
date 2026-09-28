@@ -1439,7 +1439,8 @@ untouched, so no existing call site changes. Verified 16px in both themes.
 | shape | token | value |
 |---|---|---|
 | `circle` | `--brand-scale-1800` | 512px → always circular |
-| `square` | `--brand-scale-200` | 8px |
+| `square`, `l` / `xl` / `xxl` | `--brand-scale-200` | 8px = `border-radius/md` |
+| `square`, `xs` / `s` / `m` | `--brand-scale-100` | 4px = `border-radius/sm` — **v2.7.0 (Gate 73, G47)**; was 8px, which made the 16px square a circle. Figma: `s` `289:1169`, `m` `289:1145` (DS set `221:20`); `xs` has no DS variant, source is the app instance `I1266:14342;901:8394` |
 
 ### Icon color inheritance
 
@@ -4543,7 +4544,9 @@ that reason: any track at or under 172px demonstrates nothing.
 | Prop | Type | Notes |
 |---|---|---|
 | `info` | `string` | Required |
-| `content` / `content2` | `string` | `content2` optional — second value line |
+| `content` / `content2` | `string` | `content2` optional — second value line. Supported in both orientations; Figma's horizontal row draws only one value, so in `horizontal` a `content2` is a third item in the same wrapping row |
+| `orientation` | `'vertical' \| 'horizontal'` | Default `'vertical'`. **Added v2.7.0 (Gate 73, G5)** — `horizontal` is Figma's detached wide row, `casestudy_02` `886:7320` (311×56) |
+| `sizing` | `'fixed' \| 'fill'` | Default `'fixed'`. **Added v2.7.0 (Gate 73, G5)** — the `CardBalance` shape |
 | `className` | `string` | |
 
 | Element | Token |
@@ -4551,6 +4554,9 @@ that reason: any track at or under 172px demonstrates nothing.
 | Container | `--mapped-surface-subtlest-default`, padding `--brand-scale-400` (16px, on-ramp), width 164px (min 128 / max 300) |
 | Info | `--mapped-text-subtle-default`, `.type-body-caption-semibold` (Figma's outer wrapper applies semibold to every line, including the label — preserved faithfully rather than "correcting" it to regular) |
 | Content | `--mapped-text-default-default`, `.type-body-m-semibold` |
+| Container, `horizontal` | Same fill, padding and radius; a wrapping row, `justify-content: space-between`, centred, row gap `--brand-scale-200` (8px) |
+| Info, `horizontal` | `--mapped-text-subtle-default`, **`.type-body-m-semibold`** (Figma draws the label at the value's size); grows (`flex: 1 0 0`) and may wrap. Figma's raw `min-width: 100px` is NOT applied (off-ramp; dropped, accepted by the review thread) |
+| Container, `sizing="fill"` | `width: auto`, `max-width: none`, `flex: 1 1 0`; the 128px floor is kept. Two fill cards + 16px gap in 343 = 163.5 each (measured) |
 
 ### CardMonthlyBudget
 
@@ -5549,11 +5555,11 @@ hardcoded `Button`. Every value is an existing token with an existing consumer.
 
 | Prop | Type | Default | Notes |
 |---|---|---|---|
-| `tone` | `'neutral' \| 'warning'` | `'neutral'` | Sets the frame's border and the leading glyph. **Never the text colour** (Gate 62b; at Gate 62 it coloured the title) |
+| `tone` | `'neutral' \| 'warning' \| 'ai'` | `'neutral'` | Sets the frame's border and the leading glyph. **Never the text colour** (Gate 62b; at Gate 62 it coloured the title) — except `'ai'` (added v2.7.0, Gate 73), which paints its own gradient and uses on-colour text; see "Tone: ai" below |
 | `title` | `string` | — | Required. Also names the group |
 | `children` | `ReactNode` | — | The body. A slot, same as `Toast`'s description |
 | `actions` | `ReactNode` | — | App composes real `Button`s; region absent when omitted |
-| `isFramed` | `boolean` | `true` | Paints surface + border + radius. `false` inside a container that already paints the surface |
+| `isFramed` | `boolean` | `true` | Paints surface + border + radius. `false` inside a container that already paints the surface. **Ignored by `tone="ai"`**, whose gradient is always drawn |
 | `id`, `className` | `string` | — | |
 
 ### Tone → token mapping
@@ -5639,6 +5645,31 @@ design for one; the tone is carried by the title's colour plus its words.
 > unframed neutral message. The glyph is `warning` from the existing registry,
 > the one `Toast` already uses for its warning appearance. No icon was drawn.
 > Neutral still renders none.
+
+> **Gate 73 (v2.7.0):** a third tone, `ai`, was added — this time with a Figma
+> source. See "Tone: ai" below.
+
+### Tone: ai (v2.7.0, Gate 73, G45)
+
+**Figma:** `❖ System message` (`casestudy_02` `1201:16583`), variant
+`appearance=ai` **`1201:16589`**; used at `I1266:14339;870:6776`. Unlike
+neutral and warning, this tone has a Figma node, so Ruling A governs it.
+
+| part | ai |
+|---|---|
+| surface | `linear-gradient(90deg, --brand-blue-400 2.404%, --brand-blue-500 28.942%, --brand-violet-500 100%)` — every stop a bound Figma variable; composed from the primitives (no gradient token, accepted by the review thread) |
+| border | none |
+| title / body | `--mapped-text-primary-on-color` (`.type-body-m-semibold` / `.type-body-sm`) |
+| leading glyph | `Icon name="icon_aiinsights" size="m"` (20px), `--mapped-icon-primary-on-color`, top-aligned |
+| actions | right column, centred; the region carries `data-theme="dark"` so a composed `Button` renders Figma's Inverse appearance |
+| padding / radius / gaps | `--spacing-200` (8) / `--brand-scale-200` (8) / `--spacing-100` (4) glyph→text and title→body |
+| `isFramed` | ignored — the gradient is always drawn |
+
+**⚠️ OPEN ACCESSIBILITY ITEM — shipped as drawn (Teku's ruling, Gate 73).**
+White text on each stop, identical in both themes (every value is
+theme-invariant): **Blue/400 3.34, Blue/500 4.49, Violet/500 3.03.** All under
+4.5 for the 14px body and the 16px title. To be fixed in a later patch once
+Teku chooses darker stops in Figma.
 
 ### Accessibility — non-blocking by construction
 

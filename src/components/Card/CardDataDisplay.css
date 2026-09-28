@@ -23,3 +23,42 @@
   color: var(--mapped-text-default-default);
   white-space: nowrap;
 }
+
+/* orientation='horizontal' (Gate 73, G5) — Figma's detached wide row,
+   casestudy_02 886:7320 (311×56): a wrapping flex row, label left and value
+   right (justify-between), centred, 8px between wrapped lines, same 16px
+   padding / 8px radius / subtlest fill as the vertical card. The label grows
+   and may wrap (break-word); the value never wraps.
+   TOKEN-SOURCE GAP, NOT APPLIED: Figma gives the label a raw, unbound
+   `min-width: 100px`, off the --brand-scale ramp (96 / 128). The gap protocol
+   needs approval before a flagged literal is used, so the floor is omitted and
+   the label's floor is its longest word instead. Figma Variables fix pending.
+   CONTRAST (recorded, not fixed — Ruling A): the label is subtle text on
+   subtlest, 4.33:1 in light, the same pair the vertical caption already uses
+   (CLAUDE.md Gate 62 §2). */
+.mn-card-data-display--horizontal {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: center;
+  justify-content: space-between;
+  column-gap: 0;
+  row-gap: var(--brand-scale-200); /* 8px */
+}
+
+.mn-card-data-display--horizontal .mn-card-data-display__info {
+  flex: 1 0 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/* sizing='fill' (Gate 73, G5) — the CardBalance / CardFeaturesAndEducation
+   shape: release `width` and the 300px cap, KEEP the 128px floor, and
+   `flex: 1 1 0` so two cards in a flex row split it evenly (2 × 163.5 + 16 =
+   343). Declared after the base rule at equal specificity (0,1,0), so source
+   order is what makes it win. */
+.mn-card-data-display--fill {
+  width: auto;
+  max-width: none;
+  flex: 1 1 0;
+}
