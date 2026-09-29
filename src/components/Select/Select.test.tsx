@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { axe } from 'jest-axe'
 import { Select } from './Select'
 import type { SelectAppearance } from './Select'
@@ -106,10 +106,33 @@ describe('Select', () => {
     let clip = { top: 0, bottom: 800 }
     let natural = 200
 
+    // R7 needs the re-check frame under test control, not on a real clock:
+    // the whole point is that the SECOND reading decides, so the test has to
+    // choose what the trigger's rect says when that frame runs. `cancel`
+    // genuinely removes the callback, so `flushFrames()` after a cancel runs
+    // nothing — which is what proves the cancel, in two of the tests below.
+    let frames: Map<number, FrameRequestCallback>
+    let nextFrameId = 0
+    const flushFrames = () => {
+      const pending = [...frames.values()]
+      frames.clear()
+      pending.forEach(cb => act(() => cb(0)))
+    }
+
     beforeEach(() => {
       trigger = { top: 100, bottom: 148, left: 16, width: 343 }
       clip = { top: 0, bottom: 800 }
       natural = 200
+      frames = new Map()
+      nextFrameId = 0
+      vi.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+        const id = ++nextFrameId
+        frames.set(id, cb)
+        return id
+      })
+      vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(id => {
+        frames.delete(id)
+      })
       Object.defineProperty(document.documentElement, 'clientHeight', { configurable: true, get: () => 800 })
       Object.defineProperty(document.documentElement, 'clientWidth', { configurable: true, get: () => 375 })
       Object.defineProperty(HTMLElement.prototype, 'scrollHeight', {
@@ -187,13 +210,100 @@ describe('Select', () => {
       expect(prop(menuOf(container), '--mn-select-menu-top')).toBe('108px')
     })
 
-    it('closes when the trigger scrolls fully out of a clipping ancestor', () => {
-      const onOpenChange = vi.fn()
-      const { getByTestId } = open(onOpenChange)
+    // REWRITTEN at Gate 73-B (R7), and this is a REVERSAL of the assertion,
+    // not a relocation of it.
+    //
+    // OLD, one test: `closes when the trigger scrolls fully out of a clipping
+    //   ancestor` — scrolled the trigger out and asserted
+    //   `expect(onOpenChange).toHaveBeenCalledWith(false)`.
+    // NEW, five tests below: the DS must NEVER call `onOpenChange` from
+    //   geometry, and asserts `not.toHaveBeenCalled()` for the same scroll.
+    //
+    // What the old test pinned is the defect R7 withdraws: with a controlled
+    // consumer the DS was dismissing its own menu with no user action, on
+    // every render while open as well as on scroll and resize. Out of view now
+    // HIDES — the menu stays open and stays mounted — and a single reading is
+    // never enough to act on, which is what made the MVP flake.
+    const outOfView = () => {
       clip = { top: 0, bottom: 400 }
       trigger = { top: 450, bottom: 498, left: 16, width: 343 }
+    }
+    const backInView = () => {
+      clip = { top: 0, bottom: 800 }
+      trigger = { top: 100, bottom: 148, left: 16, width: 343 }
+    }
+    const isHidden = (c: HTMLElement) =>
+      menuOf(c).classList.contains('mn-select__menu--out-of-view')
+
+    it('never closes itself when the trigger scrolls out of a clipping ancestor', () => {
+      const onOpenChange = vi.fn()
+      const { container, getByTestId } = open(onOpenChange)
+      outOfView()
       fireEvent.scroll(getByTestId('clip'))
-      expect(onOpenChange).toHaveBeenCalledWith(false)
+      flushFrames()
+      expect(onOpenChange).not.toHaveBeenCalled()
+      // Still mounted, still a child of the root: a `contains()` outside-click
+      // check and the Modal focus trap must see exactly what they saw before.
+      expect(menuOf(container)).not.toBeNull()
+    })
+
+    it('never closes itself when the trigger reads out of view on resize', () => {
+      const onOpenChange = vi.fn()
+      const { container } = open(onOpenChange)
+      outOfView()
+      fireEvent(window, new Event('resize'))
+      flushFrames()
+      expect(onOpenChange).not.toHaveBeenCalled()
+      expect(menuOf(container)).not.toBeNull()
+    })
+
+    it('does not hide on a single out-of-view reading that the next frame contradicts', () => {
+      const { container, getByTestId } = open()
+      outOfView()
+      fireEvent.scroll(getByTestId('clip'))
+      // The re-check is still pending — nothing may have hidden yet.
+      expect(isHidden(container)).toBe(false)
+      expect(frames.size).toBe(1)
+      // An in-view reading clears the state at once AND cancels the frame.
+      // Asserting the pending count is what makes the cancel load-bearing:
+      // without it the stale callback would simply re-measure, read in-view
+      // and do nothing, so `isHidden` alone would stay false either way and
+      // prove nothing.
+      backInView()
+      fireEvent.scroll(getByTestId('clip'))
+      expect(frames.size).toBe(0)
+      flushFrames()
+      expect(isHidden(container)).toBe(false)
+    })
+
+    it('hides, while staying open, only when a second reading agrees, and clears when back in view', () => {
+      const onOpenChange = vi.fn()
+      const { container, getByTestId } = open(onOpenChange)
+      outOfView()
+      fireEvent.scroll(getByTestId('clip'))
+      flushFrames() // second reading, still out of view
+      expect(isHidden(container)).toBe(true)
+      // Hidden is not closed: open state never moved.
+      expect(onOpenChange).not.toHaveBeenCalled()
+      expect(menuOf(container)).not.toBeNull()
+
+      backInView()
+      fireEvent.scroll(getByTestId('clip'))
+      expect(isHidden(container)).toBe(false)
+    })
+
+    it('does not error when unmounted with a re-check still pending', () => {
+      const { getByTestId, unmount } = open()
+      outOfView()
+      fireEvent.scroll(getByTestId('clip'))
+      expect(frames.size).toBe(1)
+      unmount()
+      // Asserted on the pending count, not just on "it did not throw": React
+      // nulls the ref on unmount, so a surviving callback would return early
+      // and throw nothing regardless. The count is what proves the teardown
+      // actually cancelled it.
+      expect(frames.size).toBe(0)
+      expect(() => flushFrames()).not.toThrow()
     })
   })
 })

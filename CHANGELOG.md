@@ -3,6 +3,134 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## v2.8.0
+
+Gate 73-B — the dropdown-in-a-form pattern, and the withdrawal of v2.7.0's
+`Select` self-close. Two new components, one shared header across both
+overlays, and a visible change to every screen that renders a `Modal` or a
+`Sheet`. Full derivation, Figma evidence and every measurement in CLAUDE.md's
+Gate 73-B section.
+
+### Added
+
+- **`OverlayHeader`** — the one header `Modal` and `Sheet` both render, from
+  Figma's `<header>` component set `249:177` (six variants across
+  `Header` / `Icon right` / `Icon left`, every one 375 x 64). The title is
+  **always centred**: an absent icon still reserves its control's full
+  footprint as an empty, `aria-hidden`, non-focusable slot, which is Figma's
+  own mechanism — the single-icon variants each carry a real empty `Frame 446`
+  at the missing icon's position. A long title truncates with an ellipsis on
+  one line and the 64px height does not grow. Props: `title`, `titleId`,
+  `titleLeading` (centres with the title), `leading` / `trailing` (edge slots),
+  `onBack` / `backLabel`, `onClose` / `closeLabel`.
+- **`OptionList`** — a flat, full-bleed column of option rows for an overlay's
+  content slot. No background, no radius, no padding, no shadow: it sits
+  directly on the overlay surface, so rows run the panel's whole width and a
+  selected row's tint reaches both edges. `selectionMode="multiple"` (default)
+  keeps a checkbox on every row and does not dismiss; `selectionMode="single"`
+  fires `onChange` and `onDismiss` in one action, so one tap returns to the
+  form, and there is no confirm button. It is not an overlay and knows nothing
+  about `Modal` or `Sheet`. Composes the real `MenuItem`.
+- **`Modal.onBack` / `Modal.backLabel`, `Sheet.onBack` / `Sheet.backLabel`** —
+  a back control at the left of the header, for turning an overlay's content
+  into a dedicated selection view and returning to the form.
+- **`Modal.contentPadding` / `Sheet.contentPadding`** (`'default'` | `'none'`)
+  — releases the content region's SIDE padding so a full-bleed child can reach
+  both edges. Sides only: the vertical spacing, the sheet's bottom scroll
+  affordance and its headerless top inset are untouched. The default is
+  unchanged, so no existing consumer moves.
+
+### Changed
+
+- **Header icons are neutral, not blue. This changes existing screens.** Figma
+  binds both icon slots of `249:177` to `icon/default/default` (`#363c43`), the
+  same value as the title's `text/default/default`. `Modal` and `Sheet`
+  previously drew their close control as a tertiary `IconButton`, which
+  resolves to the primary blue. Measured after the change, both themes: the
+  back control, the close control and the title all render `rgb(54, 60, 67)` in
+  light and `rgb(207, 213, 220)` in dark. Blue stays reserved for actions that
+  change data — the filter sheet's `Reset` still comes through `headerAction`
+  as the consumer's own control and is unaffected.
+- **`Sheet`'s separate left-aligned header is retired.** Both overlays now
+  render `OverlayHeader`. Every existing behaviour is preserved: `Modal`'s
+  focus trap and Escape, `Sheet`'s `headerAction` (still before the ✕),
+  `showCloseButton`, the `hasHeader` derivation, and both overlays'
+  `headerIconLeft` — which keeps its own placement in each (`Modal` centres it
+  with the title, `Sheet` puts it in the leading slot). The
+  `.mn-modal__header*`, `.mn-modal__title*`, `.mn-sheet__header*` and
+  `.mn-sheet__title` rules are gone; a consumer styling those class names
+  directly would be affected.
+- **`MenuItem`'s checkbox and radio rows are now 48px tall, not 55px and 51px
+  — a defect correction against Figma, and it changes rendered height.**
+  `.mn-menu-item__control` was a block box wrapping an inline-block control, so
+  it established an inline formatting context: the control sat on a baseline
+  and the line box reserved descender space the design never asked for. The
+  nested `Checkbox` measured a correct 24 while the wrapper measured 31.
+  Figma draws 48 in both places it draws these rows — the picker view
+  (`casestudy_02` `1484:19479`, 343 x 48) and the Menu dropdown's own option
+  rows (`1484:19300`'s items, 295 x 48) — so this was a defect in both, not a
+  design difference. Fixed on the component itself rather than scoped to
+  `OptionList`, so it cannot render two heights. **Affected: `MenuItem`
+  `type="checkbox"` (55 → 48) and `type="radio"` (51 → 48), and anything
+  composing them, including `Menu` and any `Select` whose `menuSlot` holds
+  those types.** Re-verified in the showcase: `Menu`'s own panels are unchanged
+  at 254 / 200 / 254 because its rows are all `type="default"`; `Select` and
+  `DatePicker` render no `MenuItem` rows there and their sections are unchanged
+  at 934.58 and 945.58. `type="default"` (44), `type="crypto"` (68) and
+  `type="account"` (58) row heights are all unchanged — `account`'s row is
+  driven by its Avatar, not by the control wrapper.
+- **`MenuItem`'s checkbox and radio rows now have an accessible name.** Both
+  types render their only text inside an `aria-hidden` + `inert` wrapper, so
+  the row announced nothing and failed axe `aria-toggle-field-name`. The row
+  now takes `aria-label={label}` for those two types only; the other three are
+  named by their own visible content and are deliberately left alone.
+
+### Fixed
+
+- **`Select` no longer closes its own menu (withdraws part of v2.7.0's G43).**
+  In v2.7.0 the geometry code called `setOpen(false)` when it read the trigger
+  as out of view — on every render while open, and on every `scroll` and
+  `resize`. With a controlled consumer that fired `onOpenChange(false)` with no
+  user action at all, and it produced a roughly 1-in-12 non-deterministic
+  screenshot in the MVP (85,275 px and 60,131 px diffs, identical each time;
+  the trace shows the menu open at the last setup step and gone at capture).
+  v2.6.0 had no such path. **No code path driven by geometry, scroll, resize or
+  render may now call `setOpen` or `onOpenChange`** — open state is the
+  consumer's. Out of view HIDES instead: the menu stays open and stays mounted
+  (so a consumer's `contains()` outside-click check and the `Modal` focus trap
+  still see exactly what they saw before) and is made invisible and
+  non-interactive by `.mn-select__menu--out-of-view`
+  (`visibility: hidden; pointer-events: none`). A single out-of-view reading is
+  never acted on: one `requestAnimationFrame` re-measure must agree before
+  anything hides, and an in-view reading clears the state at once and cancels
+  the pending frame. The frame is cancelled on close and on unmount.
+  Everything else in G43 is unchanged — fixed positioning, flip above, height
+  cap, internal scroll, not portalled.
+
+### Convention
+
+- **A wrapper around a fixed-size icon or control is a flex box with
+  `align-items: center`, never an inline formatting context.** An inline-block
+  child sits on a text baseline, so the line box reserves descender space below
+  it and the wrapper renders taller than its child. Measured: a 24px `Checkbox`
+  in a block wrapper produced a 31px wrapper and a 55px row against Figma's 48.
+  Recorded in CLAUDE.md as a DS convention. A sweep of `src/components`
+  (63 `.tsx`, 62 `.css`) for other wrappers holding a fixed-size child without
+  a flex or grid context found **no further instances** — the three candidates
+  it surfaced (`.mn-menu__search`, `.mn-header-bg__search`,
+  `.mn-status-bar__time`) all measure a 0px gap, because their children are
+  block-level `.mn-field` elements or there is no element child at all.
+
+### Not changed
+
+- No token was added, moved or rebound; `npm run build:tokens` produces an
+  empty diff. `OptionList`'s selected tint comes from `MenuItem`, which already
+  carries the approved `color-mix(in srgb, var(--mapped-border-primary-default)
+  10%, transparent)` resolution for Figma's raw `Blue/50` — re-verified at this
+  gate by reading `1484:19481`'s own variable definitions.
+- No new `style={` site in `src/components`.
+
+---
 ## v2.7.0
 
 Gate 73 — the Flow 11 (Finance → Plans) primitives. Six DS gaps the MVP's

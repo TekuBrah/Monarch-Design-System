@@ -49,6 +49,8 @@ import { MenuItem } from '@monarch/design-system'
 import { Menu } from '@monarch/design-system'
 import { Modal } from '@monarch/design-system'
 import { Sheet } from '@monarch/design-system'
+import { OverlayHeader } from '@monarch/design-system'
+import { OptionList } from '@monarch/design-system'
 import { ProgressBar } from '@monarch/design-system'
 import { ProgressRing } from '@monarch/design-system'
 import { Slider } from '@monarch/design-system'
@@ -1061,6 +1063,125 @@ function ProgressRingDemo() {
 
 // ── Modal interactive demo (open/close toggle; footer composes real Buttons) ──
 
+/* Gate 73-B. The four icon combinations at Figma's 375, each over a centre
+   rule, so R2 is visible rather than asserted: the title's midpoint sits on
+   the line in every row, including the one whose title truncates. */
+const OVERLAY_HEADER_CASES: { name: string; props: Record<string, unknown> }[] = [
+  { name: 'neither', props: {} },
+  { name: 'left only', props: { onBack: () => {} } },
+  { name: 'right only', props: { onClose: () => {} } },
+  { name: 'both', props: { onBack: () => {}, onClose: () => {} } },
+]
+
+function OverlayHeaderDemo() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      {OVERLAY_HEADER_CASES.map(c => (
+        <div key={c.name}>
+          <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)', marginBottom: '0.25rem' }}>
+            {c.name}
+          </div>
+          <div
+            data-overlay-header-case={c.name}
+            style={{ position: 'relative', width: 375, background: 'var(--mapped-surface-elevation-default)', border: '1px solid var(--mapped-border-subtlest-default)' }}
+          >
+            <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 1, background: 'var(--mapped-border-error-default)', opacity: 0.5 }} />
+            <OverlayHeader title="Select a Merchant" {...c.props} />
+          </div>
+        </div>
+      ))}
+      <div>
+        <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)', marginBottom: '0.25rem' }}>
+          long title — truncates, stays centred, height unchanged
+        </div>
+        <div
+          data-overlay-header-case="long"
+          style={{ position: 'relative', width: 375, background: 'var(--mapped-surface-elevation-default)', border: '1px solid var(--mapped-border-subtlest-default)' }}
+        >
+          <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 1, background: 'var(--mapped-border-error-default)', opacity: 0.5 }} />
+          <OverlayHeader
+            title="Select a Merchant from a very long list of merchant names"
+            onBack={() => {}}
+            onClose={() => {}}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const MERCHANTS = [
+  { id: 'm1', label: 'Merchant One' },
+  { id: 'm2', label: 'Merchant Two' },
+  { id: 'm3', label: 'Merchant Three' },
+  { id: 'm4', label: 'Merchant Four' },
+]
+
+function OptionListDemo() {
+  const [many, setMany] = useState<string[]>(['m2'])
+  const [one, setOne] = useState<string[]>(['m1'])
+  const [dismissals, setDismissals] = useState(0)
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [picked, setPicked] = useState<string[]>([])
+
+  const surface: React.CSSProperties = {
+    width: 343,
+    background: 'var(--mapped-surface-elevation-default)',
+    border: '1px solid var(--mapped-border-subtlest-default)',
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+        <div>
+          <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)', marginBottom: '0.25rem' }}>
+            selectionMode=&quot;multiple&quot; — rows keep checkboxes, selecting does not dismiss
+          </div>
+          <div style={surface} data-option-list-case="multiple">
+            <OptionList options={MERCHANTS} value={many} onChange={setMany} ariaLabel="Merchants, multiple" />
+          </div>
+        </div>
+        <div>
+          <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)', marginBottom: '0.25rem' }}>
+            selectionMode=&quot;single&quot; — one tap changes and requests dismiss ({dismissals})
+          </div>
+          <div style={surface} data-option-list-case="single">
+            <OptionList
+              options={MERCHANTS}
+              selectionMode="single"
+              value={one}
+              onChange={setOne}
+              onDismiss={() => setDismissals(n => n + 1)}
+              ariaLabel="Merchants, single"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="showcase-interactive">
+        <div className="showcase-interactive__label">
+          The pattern this gate exists for — a Sheet whose content IS the selection view:
+          back arrow left, close right, <code>contentPadding=&quot;none&quot;</code> so rows reach both edges
+        </div>
+        <Button variant="primary" size="m" label="Choose merchants" onClick={() => setSheetOpen(true)} />
+        <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--mapped-text-subtle-default)', marginTop: '0.75rem' }}>
+          picked: {picked.length ? picked.join(', ') : '(none)'}
+        </div>
+        <Sheet
+          isOpen={sheetOpen}
+          onClose={() => setSheetOpen(false)}
+          onBack={() => setSheetOpen(false)}
+          title="Select a Merchant"
+          contentPadding="none"
+          actions={<Button variant="primary" size="l" label="Save" onClick={() => setSheetOpen(false)} />}
+        >
+          <OptionList options={MERCHANTS} value={picked} onChange={setPicked} ariaLabel="Merchants" />
+        </Sheet>
+      </div>
+    </div>
+  )
+}
+
 function ModalDemo() {
   const [open, setOpen] = useState(false)
   const [insightOpen, setInsightOpen] = useState(false)
@@ -1334,6 +1455,8 @@ const SIDEBAR_CATEGORIES: { name: string; items: SidebarSection[] }[] = [
     { slug: 'element-wrapper', label: 'Element Wrapper' },
   ] },
   { name: 'Overlays', items: [
+    { slug: 'overlay-header', label: 'Overlay Header' },
+    { slug: 'option-list', label: 'Option List' },
     { slug: 'modal', label: 'Modal' },
     { slug: 'sheet', label: 'Sheet' },
     { slug: 'blanket', label: 'Blanket' },
@@ -3619,6 +3742,28 @@ export default function App() {
             </div>
           </Section>
         </>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Overlay Header ─────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <Section id="overlay-header" title="Overlay Header" description="The one header Modal and Sheet both render (Figma 249:177). The title is always centred — an absent icon still reserves its control's footprint — and a long title truncates without the 64px height growing. Both controls take the neutral icon colour; blue stays for actions that change data.">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
+            <OverlayHeaderDemo />
+          </div>
+        </Section>
+      )}
+
+      {tab === 'components' && <hr style={HR} />}
+
+      {/* ── Option List ────────────────────────────────────────────── */}
+      {tab === 'components' && (
+        <Section id="option-list" title="Option List" description="A flat, full-bleed column of option rows for an overlay's content slot — no panel, no radius, no shadow, so the selected tint reaches both edges. Not an overlay itself: it knows nothing about Modal or Sheet.">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '900px' }}>
+            <OptionListDemo />
+          </div>
+        </Section>
       )}
 
       {tab === 'components' && <hr style={HR} />}

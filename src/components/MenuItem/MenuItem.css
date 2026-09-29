@@ -143,7 +143,21 @@
 /* === Nested Checkbox/Radio (types "checkbox" / "radio", and Account's trailing dot) ===
    inert + aria-hidden: the row (role="option") owns selection semantics —
    these render the checked/unchecked glyph only, never take focus or clicks. */
+/* Gate 73-B — DEFECT CORRECTION, and the case the DS convention is named for.
+   This wrapper was a block box holding an inline-block control, so it
+   established an INLINE formatting context: the control sat on a baseline and
+   the line box reserved descender space below it. Measured before the fix, in
+   the showcase: the nested Checkbox measured a correct 24, this wrapper
+   measured 31, and the row therefore rendered 12 + 31 + 12 = 55. Figma draws
+   48 — both in the picker view (casestudy_02 1484:19479, 343 x 48) and in the
+   Menu dropdown's own option rows (1484:19300's items, 295 x 48), so this was
+   a defect against the source in both places, not a design difference.
+   `display: flex` establishes a flex context instead, where there is no
+   baseline and no descender to reserve, and the wrapper collapses to its
+   control's real 24. */
 .mn-menu-item__control {
+  display: flex;
+  align-items: center;
   flex: 1 0 0;
   min-width: 0;
   pointer-events: none;

@@ -77,36 +77,15 @@
   flex: 1 1 auto;
 }
 
-/* --- Header (optional region) ------------------------------------------- */
-/* Left-aligned title + close, unlike Modal's spacer-centred title. */
-.mn-sheet__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  box-sizing: border-box;
-  padding: var(--brand-scale-600) var(--brand-scale-400) var(--brand-scale-400); /* 24 / 16 / 16 */
-}
-
-.mn-sheet__header-lead,
-.mn-sheet__header-trail {
-  display: flex;
-  align-items: center;
-  /* Figma authors no right-side action slot, so it specifies no gap for one.
-     Mirrors the lead group's 4px rather than inventing a value. `gap` collapses
-     to nothing when a slot is empty — no residual space. */
-  gap: var(--brand-scale-100); /* 4px */
-  min-width: 0;
-}
-
-.mn-sheet__header-trail {
-  flex-shrink: 0;
-}
-
-.mn-sheet__title {
-  margin: 0;
-  color: var(--mapped-text-default-default);
-}
+/* --- Header (optional region) -------------------------------------------
+   R1 (Gate 73-B): the header is `OverlayHeader`, shared with Modal, and owns
+   its own padding, centring and colour. Sheet's own LEFT-ALIGNED header is
+   retired — that was the whole point of the ruling, so the rules that drew it
+   (`.mn-sheet__header`, `__header-lead`, `__header-trail`, `__title`) are
+   deleted rather than left behind. They are not merely unused: `.mn-sheet__header`
+   set `display: flex`, and at equal specificity (0,1,0) with Sheet.css imported
+   after OverlayHeader.css it would have overridden the grid that holds the
+   title centred. Keeping them as dead weight would have broken R2. */
 
 /* --- Content (always present, the sole scrolling region) ----------------- */
 .mn-sheet__content {
@@ -169,6 +148,24 @@
    scroll shadow), with no error and no failing test. */
 .mn-sheet__content--headerless {
   padding-top: var(--brand-scale-400); /* 16px */
+}
+
+/* R6 (Gate 73-B) — contentPadding='none'. Releases the SIDE padding only, so a
+   full-bleed child (OptionList) runs the panel's whole width and its selected
+   tint reaches both edges.
+
+   Deliberately NOT the `padding` shorthand: the bottom affordance padding and
+   the headerless top inset above are both real behaviours this must not erase,
+   and a shorthand would silently take all four sides. Longhands leave the
+   vertical axis exactly as it was in every combination.
+
+   Equal specificity with .mn-sheet__content (0,1,0), so source ORDER is what
+   makes it win, and it is declared after --headerless so the two compose on
+   different axes rather than competing. The default is unchanged: omit the
+   prop and no modifier is emitted. */
+.mn-sheet__content--flush {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 /* --- Actions (optional region) ------------------------------------------- */

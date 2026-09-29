@@ -195,3 +195,22 @@
 .mn-select__menu[data-capped]::-webkit-scrollbar {
   display: none;
 }
+
+/* R7 (Gate 73-B) — the trigger has scrolled fully out of the viewport or out of
+   a clipping ancestor. The menu is HIDDEN, not closed: it stays open, stays
+   mounted and keeps its position in the DOM, so a consumer's `contains()`
+   outside-click check and the Modal focus trap still see exactly what they saw
+   before. Only paint and pointer input are withdrawn.
+
+   `visibility: hidden` rather than `display: none`, deliberately: it keeps the
+   element measurable, so the geometry code can place it correctly the instant
+   the trigger scrolls back into view, and it removes the subtree from the
+   accessibility tree and the Tab order without changing layout. `pointer-events`
+   is then belt-and-braces for a partially-composited frame.
+
+   This is a modifier class, not an inline style — no new `style={` site and no
+   new token, per R8. */
+.mn-select__menu--out-of-view {
+  visibility: hidden;
+  pointer-events: none;
+}

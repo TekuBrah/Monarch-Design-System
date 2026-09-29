@@ -73,6 +73,17 @@ export function MenuItem({
       id={id}
       role="option"
       aria-selected={isSelected}
+      /* The `checkbox` and `radio` types render their ONLY text inside an
+         `aria-hidden` + `inert` wrapper (the nested Checkbox/Radio carries the
+         label so it stays clickable and correctly positioned), which left the
+         row with no accessible name at all — axe `aria-toggle-field-name`.
+         The other three types render a visible label outside that wrapper and
+         are named by their own content, so they must NOT also take an
+         aria-label: that would override richer content (type="crypto" and
+         type="account" announce more than `label` alone).
+         Found at Gate 73-B by OptionList, the first component to put these two
+         types under axe — MenuItem's own axe test covers `default` only. */
+      aria-label={type === 'checkbox' || type === 'radio' ? label : undefined}
       tabIndex={tabIndex}
       data-type={type}
       data-preview={previewState}

@@ -25,42 +25,13 @@
   /* No drop shadow — Figma's Modal card has none; the Blanket scrim provides the depth. */
 }
 
-.mn-modal__header {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr; /* empty | title (centered) | close */
-  align-items: center;
-  padding: var(--brand-scale-600) var(--brand-scale-400) var(--brand-scale-400); /* 24 / 16 / 16 */
-}
-
-/* The centred cell holds the optional leading icon AND the title, so the pair
-   centres as one unit. Measured from Figma (header 1321:12708, 343 wide): the
-   icon+title group is 147 wide at x=98, leaving 98 on both sides. Putting the
-   icon in the empty left track instead would have left-aligned it and broken
-   that. Both side tracks stay 1fr, so centring holds regardless of the icon. */
-.mn-modal__title-group {
-  grid-column: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--brand-scale-100); /* 4px — Figma: icon at x=0 (24 wide), title at x=28 */
-  min-width: 0;
-}
-
-.mn-modal__title {
-  margin: 0;
-  text-align: center;
-  color: var(--mapped-text-default-default);
-}
-
-.mn-modal__header-side {
-  display: flex;
-  align-items: center;
-}
-
-.mn-modal__header-side--end {
-  grid-column: 3;
-  justify-self: end;
-}
+/* --- Header ---------------------------------------------------------------
+   R1 (Gate 73-B): the header is `OverlayHeader`, shared with Sheet, and owns
+   its own padding and centring. The rules that used to live here
+   (`.mn-modal__header`, `__title-group`, `__title`, `__header-side`) are gone
+   rather than kept as dead weight — `.mn-overlay-header*` replaces all four.
+   The `1fr auto 1fr` grid they used is NOT what OverlayHeader ships: see the
+   centring note in OverlayHeader.css for why fixed tracks replaced it. */
 
 .mn-modal__content {
   display: flex;
@@ -70,6 +41,19 @@
   width: 100%;
   /* Sides only — header/footer own the vertical spacing above/below. */
   padding: 0 var(--brand-scale-400);
+}
+
+/* R6 (Gate 73-B) — contentPadding='none'. Releases the SIDE padding only, so a
+   full-bleed child (OptionList) runs the panel's whole width and its selected
+   tint reaches both edges. The vertical spacing is untouched, because it is
+   owned by the header and footer regions, not by this one.
+
+   Equal specificity with .mn-modal__content (0,1,0), so source ORDER is what
+   makes it win — the same mechanism `sizing='fill'` uses across the DS. The
+   default is unchanged: omit the prop and no modifier is emitted. */
+.mn-modal__content--flush {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .mn-modal__footer {

@@ -1,0 +1,37 @@
+/* OptionList — R5 (Gate 73-B).
+   Source: casestudy_02 `Intention` 1484:19402, content frame 1484:19409,
+   rows 1484:19479-19485. */
+
+/* CONTENT ONLY. The absences below are the component, not an oversight, and
+   each one is the defect it exists to avoid:
+
+     no background      — it sits directly ON the overlay surface
+     no border-radius   — a radius here would redraw the inner panel's corners
+     no padding         — rows must reach both edges of the overlay
+     no box-shadow      — `Menu` carries one; a second shadow inside an overlay
+                          is the box-within-a-box `Now` (1484:19112) shows
+
+   `Menu` is the component that has all four (426px wide, 12px vertical
+   padding, 8px radius, elevation fill, two-layer shadow) and it is exactly
+   what Figma's defect column nests at x=16. OptionList replaces it in this
+   position; it does not wrap it.
+
+   Rows are full-bleed because `.mn-menu-item` is already `width: 100%` and
+   nothing here insets them. Measured in Figma: every `<item>` is x=0 and 343
+   wide inside a 343 content frame — zero inset on both sides — against the
+   defect's 311 wide at x=16.
+
+   NO `overflow` DECLARATION, deliberately. The enclosing overlay's content
+   region already owns scrolling (`.mn-sheet__content`), and `overflow: auto`
+   here would clip the row's own selected tint at the region's padding box and
+   introduce a second scroll container inside the sheet's only scrolling one. */
+.mn-option-list {
+  display: flex;
+  flex-direction: column;
+  /* 2px. Measured, not chosen: rows sit at y = 0, 50, 100, 150, 200, 250, 300
+     and are 48 tall, so the pitch is 50 and the gap is 2. Figma's own
+     `Scale/50` variable reads 2 in the row's variable definitions. */
+  gap: var(--brand-scale-50);
+  box-sizing: border-box;
+  width: 100%;
+}

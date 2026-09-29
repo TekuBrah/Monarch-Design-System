@@ -2,8 +2,7 @@ import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'reac
 import { createPortal } from 'react-dom'
 import './Sheet.css'
 import { Blanket } from '../Blanket'
-import { IconButton } from '../IconButton'
-import { Icon } from '../Icon'
+import { OverlayHeader } from '../OverlayHeader'
 
 export interface SheetProps {
   /** Controlled open state. */
@@ -18,8 +17,19 @@ export interface SheetProps {
   title?: string
   /** Optional node before the title. Figma models this as a boolean (`iconLeft`)
    *  bound to one icon; exposed here as a real slot so each instance can supply
-   *  its own — the `Link` lesson. */
+   *  its own — the `Link` lesson.
+   *  Since R1 (Gate 73-B) this maps to `OverlayHeader.leading` — the LEADING
+   *  SLOT, at the left edge of the header, not beside a left-aligned title.
+   *  Modal's prop of the same name maps to `titleLeading` instead; both names
+   *  keep working and each keeps its own placement. */
   headerIconLeft?: React.ReactNode
+  /** Renders a back control at the left of the header, and fires this on
+   *  activation. Rendered BEFORE `headerIconLeft` in the same slot, so
+   *  supplying both is not a silent no-op for either. Added at Gate 73-B for
+   *  the dropdown-in-a-form pattern — see `Modal.onBack`. */
+  onBack?: () => void
+  /** Accessible name for the back control. */
+  backLabel?: string
   /** Optional node on the right of the header, rendered BEFORE the ✕ — the
    *  same position `HeaderDefault` gives `actionLabel`/`onAction`. */
   headerAction?: React.ReactNode
@@ -77,6 +87,14 @@ export interface SheetProps {
    * `sizing` on Sheet has only one dimension it could mean.
    */
   sizing?: 'hug' | 'fill'
+  /** R6 (Gate 73-B) — side padding on the content region.
+   *  `'default'` keeps the 16px sides every existing consumer already gets.
+   *  `'none'` drops them so a full-bleed child (`OptionList`) can run the
+   *  panel's whole width and its selected tint can reach both edges.
+   *  Only the SIDES are released — the bottom affordance padding and the
+   *  headerless top inset are untouched, so neither the scroll affordance nor
+   *  the headerless case changes. */
+  contentPadding?: 'default' | 'none'
   id?: string
   className?: string
 }
@@ -97,6 +115,8 @@ export function Sheet({
   onClose,
   title,
   headerIconLeft,
+  onBack,
+  backLabel,
   headerAction,
   children,
   actions,
@@ -105,6 +125,7 @@ export function Sheet({
   showCloseButton = true,
   ariaLabel,
   sizing = 'hug',
+  contentPadding = 'default',
   id,
   className,
 }: SheetProps) {
@@ -130,8 +151,9 @@ export function Sheet({
   // Region presence is derived from the region's own slots, never coupled to
   // one child: supplying only `headerIconLeft` or only `headerAction` must not
   // be a silent no-op.
-  const hasHeader = Boolean(title || headerIconLeft || headerAction)
-  const hasHeaderTrail = Boolean(headerAction || showCloseButton)
+  // `onBack` joins the derivation for the same reason the other three are in
+  // it: supplying only a back control must not be a silent no-op.
+  const hasHeader = Boolean(title || headerIconLeft || headerAction || onBack)
 
   if (import.meta.env.DEV && isOpen && !title?.trim() && !ariaLabel?.trim()) {
     // Fail loud on the COMPUTED name, not on prop presence. A type can only
@@ -235,35 +257,29 @@ export function Sheet({
           .join(' ')}
       >
         {hasHeader && (
-          <div className="mn-sheet__header">
-            <div className="mn-sheet__header-lead">
-              {headerIconLeft}
-              {title && (
-                <h2 id={titleId} className="mn-sheet__title type-body-m-semibold">
-                  {title}
-                </h2>
-              )}
-            </div>
-            {hasHeaderTrail && (
-              <div className="mn-sheet__header-trail">
-                {headerAction}
-                {showCloseButton && (
-                  <IconButton
-                    variant="tertiary"
-                    size="s"
-                    ariaLabel="Close"
-                    icon={<Icon name="close" size="l" />}
-                    onClick={onClose}
-                  />
-                )}
-              </div>
-            )}
-          </div>
+          <OverlayHeader
+            title={title}
+            titleId={titleId}
+            leading={headerIconLeft}
+            trailing={headerAction}
+            onBack={onBack}
+            backLabel={backLabel}
+            // `showCloseButton` keeps its exact meaning: the control renders
+            // only when it is true. It is NOT auto-suppressed by the presence
+            // of `onBack` — keying one control's presence off an unrelated
+            // prop is the silent behaviour this prop's own doc comment warns
+            // against.
+            onClose={showCloseButton ? onClose : undefined}
+          />
         )}
 
         <div
           ref={contentRef}
-          className={['mn-sheet__content', !hasHeader && 'mn-sheet__content--headerless']
+          className={[
+            'mn-sheet__content',
+            !hasHeader && 'mn-sheet__content--headerless',
+            contentPadding === 'none' && 'mn-sheet__content--flush',
+          ]
             .filter(Boolean)
             .join(' ')}
           /* Hiding the scrollbar removes the only pointer affordance, so the

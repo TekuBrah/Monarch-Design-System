@@ -9,6 +9,18 @@ import type { SheetProps } from './Sheet'
 // it is flagged as a candidate for deeper testing later, same as Modal and
 // Blanket. Region presence and the header slot combinations ARE covered, since
 // those are the G8-class defect this component exists not to reproduce.
+// REWRITTEN at Gate 73-B (R1) — four header-presence tests below.
+// `renders no header region when no header slot is supplied`, the
+// `renders the header region with %s` matrix, `never points aria-labelledby at
+// a title that was not rendered` and `keeps an accessible name when
+// headerIconLeft is the only header content` all probed `.mn-sheet__header`.
+// R1 retires Sheet's own header, so that class no longer exists and they now
+// probe `.mn-overlay-header`. Every assertion is otherwise byte-identical —
+// same expectation, same direction, new element name.
+// The first of the four is the one that matters: it asserts ABSENCE, so
+// against the new markup it would have kept PASSING while testing nothing at
+// all. A vacuous pass is the failure mode this repo keeps paying for, so it
+// was repointed even though it was green.
 describe('Sheet', () => {
   it('renders nothing when closed', () => {
     const { container } = render(
@@ -50,7 +62,7 @@ describe('Sheet', () => {
         Body
       </Sheet>,
     )
-    expect(baseElement.querySelector('.mn-sheet__header')).toBeNull()
+    expect(baseElement.querySelector('.mn-overlay-header')).toBeNull()
     expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument()
     expect(screen.getByRole('dialog', { name: 'Choose a source' })).toBeInTheDocument()
   })
@@ -69,7 +81,7 @@ describe('Sheet', () => {
         Body
       </Sheet>,
     )
-    expect(baseElement.querySelector('.mn-sheet__header')).not.toBeNull()
+    expect(baseElement.querySelector('.mn-overlay-header')).not.toBeNull()
     expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument()
   })
 
@@ -82,7 +94,7 @@ describe('Sheet', () => {
       </Sheet>,
     )
     const dialog = screen.getByRole('dialog')
-    expect(baseElement.querySelector('.mn-sheet__header')).not.toBeNull()
+    expect(baseElement.querySelector('.mn-overlay-header')).not.toBeNull()
     expect(dialog).not.toHaveAttribute('aria-labelledby')
     expect(dialog).toHaveAccessibleName('Choose a source')
   })
@@ -93,7 +105,12 @@ describe('Sheet', () => {
         Body
       </Sheet>,
     )
-    const trail = baseElement.querySelector('.mn-sheet__header-trail')!
+    // REWRITTEN at Gate 73-B (R1). Old: the order was read out of
+    // `.mn-sheet__header-trail`, Sheet's own trailing group. New: the same
+    // order is read out of `.mn-overlay-header__side--end`, the shared
+    // header's trailing slot. The ASSERTION IS UNCHANGED — `headerAction`
+    // still renders before the ✕ — only the element it is read from moved.
+    const trail = baseElement.querySelector('.mn-overlay-header__side--end')!
     const order = Array.from(trail.querySelectorAll('button')).map(b => b.textContent || b.getAttribute('aria-label'))
     expect(order).toEqual(['Reset', 'Close'])
   })
@@ -203,9 +220,17 @@ describe('Sheet', () => {
       </Sheet>,
     )
     expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument()
-    expect(baseElement.querySelector('.mn-sheet__header')).not.toBeNull()
-    // Nothing left for the trail to hold, so it is not rendered at all.
-    expect(baseElement.querySelector('.mn-sheet__header-trail')).toBeNull()
+    expect(baseElement.querySelector('.mn-overlay-header')).not.toBeNull()
+    // REWRITTEN at Gate 73-B (R2), and this one is a REVERSAL, not a
+    // relocation. Old: `expect(...('.mn-sheet__header-trail')).toBeNull()` —
+    // "nothing left for the trail to hold, so it is not rendered at all".
+    // New: the trailing slot MUST still render, because R2 requires the empty
+    // side to keep occupying the control's footprint so the title stays
+    // centred. What the old test asserted is now exactly the defect.
+    const trail = baseElement.querySelector('.mn-overlay-header__side--end')!
+    expect(trail).not.toBeNull()
+    expect(trail).toHaveAttribute('aria-hidden', 'true')
+    expect(trail.querySelector('button')).toBeNull()
   })
 
   it('keeps an accessible name when headerIconLeft is the only header content', async () => {
@@ -221,7 +246,7 @@ describe('Sheet', () => {
         Body
       </Sheet>,
     )
-    expect(baseElement.querySelector('.mn-sheet__header')).not.toBeNull()
+    expect(baseElement.querySelector('.mn-overlay-header')).not.toBeNull()
     expect(screen.getByRole('dialog')).toHaveAccessibleName('Receipt options')
     expect(spy).not.toHaveBeenCalledWith(expect.stringContaining('no accessible name'))
     expect(await axe(baseElement)).toHaveNoViolations()

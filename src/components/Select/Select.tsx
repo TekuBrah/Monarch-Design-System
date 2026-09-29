@@ -17,7 +17,13 @@ import './Select.css'
    KNOWN LIMIT: `position: fixed` is positioned against the viewport only while
    no ancestor has a `transform`, `filter` or `contain` property; any of those
    becomes the containing block and would clip the menu again. Modal and Sheet
-   have none today. */
+   have none today.
+
+   R7 (Gate 73-B) WITHDREW ONE PART OF G43: the geometry code no longer closes
+   the menu. No code path driven by geometry, scroll, resize or render may call
+   `setOpen` or `onOpenChange` — open state is the consumer's. Out of view
+   hides instead; see the note on `isOutOfView` below. Everything else above is
+   unchanged. */
 interface MenuGeometry {
   top: number
   left: number
@@ -165,10 +171,32 @@ export function Select({
   const rootRef = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
   const [geometry, setGeometry] = useState<MenuGeometry | null>(null)
-  const closeRef = useRef(() => setOpen(false))
-  useLayoutEffect(() => {
-    closeRef.current = () => setOpen(false)
-  })
+  // R7 (Gate 73-B) — SELECT NEVER CLOSES ITSELF.
+  //
+  // v2.7.0 called setOpen(false) from here when the trigger read out of view.
+  // With a controlled consumer that fires onOpenChange(false) with no user
+  // action at all, and because this runs on EVERY render while open as well as
+  // on scroll and resize, a single transient measurement could dismiss a menu
+  // the user had just opened. It produced a roughly 1-in-12 non-deterministic
+  // screenshot in the MVP (85,275 px and 60,131 px diffs, identical each time;
+  // the trace showed the menu open at the last setup step and gone at capture).
+  // v2.6.0 had no such path.
+  //
+  // Out of view now HIDES rather than closes: the menu stays open, stays
+  // mounted and keeps its place in the DOM and the Tab order's document order,
+  // but is made invisible and non-interactive by a modifier class. Open state
+  // belongs to the consumer; visibility is ours.
+  const [isOutOfView, setIsOutOfView] = useState(false)
+  // A single out-of-view reading is not enough to act on — it can be a
+  // transient during layout, which is exactly what made the MVP flake. One
+  // requestAnimationFrame re-measure has to agree before anything hides.
+  const recheckRef = useRef<number | null>(null)
+  const cancelRecheck = () => {
+    if (recheckRef.current !== null) {
+      cancelAnimationFrame(recheckRef.current)
+      recheckRef.current = null
+    }
+  }
   const updateRef = useRef(() => {})
   updateRef.current = () => {
     const root = rootRef.current
@@ -176,12 +204,27 @@ export function Select({
     if (!root || !menu) return
     const rect = root.getBoundingClientRect()
     if (rect.width === 0 && rect.height === 0) return
-    // Scrolled fully out of a clipping ancestor or the viewport: close rather
-    // than leave a menu floating over content its trigger is no longer beside.
     if (!isInView(root, rect)) {
-      closeRef.current()
+      // Confirm on the next frame before hiding. Only one frame is ever in
+      // flight; a reading while one is pending does not queue a second, and
+      // once hidden no further frame is scheduled — otherwise every render
+      // while out of view would leave one pending forever.
+      if (!isOutOfView && recheckRef.current === null) {
+        recheckRef.current = requestAnimationFrame(() => {
+          recheckRef.current = null
+          const el = rootRef.current
+          if (!el) return
+          if (!isInView(el, el.getBoundingClientRect())) setIsOutOfView(true)
+        })
+      }
+      // No geometry update while out of view: the last good placement is kept
+      // so the menu is correct the moment it comes back.
       return
     }
+    // An in-view reading clears the state at once and cancels a pending frame,
+    // so a scroll that leaves and returns within one frame never hides.
+    cancelRecheck()
+    setIsOutOfView(false)
     const gap = parseFloat(getComputedStyle(menu).getPropertyValue('--brand-scale-100')) || 0
     const next = placeMenu(rect, menu.scrollHeight, gap)
     setGeometry(prev => (sameGeometry(prev, next) ? prev : next))
@@ -191,7 +234,9 @@ export function Select({
   })
   useEffect(() => {
     if (!showMenu) {
+      cancelRecheck()
       setGeometry(null)
+      setIsOutOfView(false)
       return
     }
     const onChange = () => updateRef.current()
@@ -200,6 +245,9 @@ export function Select({
     return () => {
       window.removeEventListener('scroll', onChange, true)
       window.removeEventListener('resize', onChange)
+      // Cancel on close AND on unmount — a frame that fires after teardown
+      // would call setState on an unmounted component.
+      cancelRecheck()
     }
   }, [showMenu])
 
@@ -269,7 +317,9 @@ export function Select({
         <div
           ref={menuRef}
           id={menuId}
-          className="mn-select__menu"
+          className={['mn-select__menu', isOutOfView && 'mn-select__menu--out-of-view']
+            .filter(Boolean)
+            .join(' ')}
           data-placement={geometry?.placement}
           data-capped={geometry?.capped || undefined}
           // Continuous geometry, so it cannot be a finite set of classes: the

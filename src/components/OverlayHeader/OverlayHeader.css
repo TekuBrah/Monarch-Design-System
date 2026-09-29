@@ -1,0 +1,118 @@
+/* OverlayHeader — Figma component set `<header>` 249:177.
+   Shared by Modal and Sheet (R1, Teku 29 Sept 2026). */
+
+/* R2 — THE CENTRING MECHANISM, and the reason it is a grid rather than a flex
+   row with `space-between`.
+
+   The two side tracks are a FIXED, IDENTICAL width. Because they are equal and
+   do not depend on their contents, the middle track is centred in the header
+   by construction — in all four icon combinations (neither / left / right /
+   both) and at every title length. Nothing about the title or the slot content
+   can move it, so `|title centre - header centre|` is 0 by arithmetic, not by
+   a layout that happens to balance.
+
+   The rejected alternative was `1fr auto 1fr`, which is what Modal shipped
+   before this component existed. Those tracks are `minmax(auto, 1fr)`: they are
+   equal only while free space exists to flex them. Give one side wider content
+   than the other (Sheet's `headerAction` is a text Link) or a title long enough
+   to squeeze them, and each track falls back to its own min-content — unequal,
+   so the title drifts off centre exactly when a long title makes it most
+   visible. A fixed track cannot do that.
+
+   The track is --brand-scale-800 (32px) because R2 pins the empty slot to the
+   CONTROL's footprint, not the 24px glyph: 24 glyph + 2 x 4 control padding.
+   Figma reserves the same space with a real empty frame (`Frame 446`, 24 x 24)
+   on whichever side has no icon — see the note in OverlayHeader.tsx. */
+.mn-overlay-header {
+  display: grid;
+  grid-template-columns: var(--brand-scale-800) minmax(0, 1fr) var(--brand-scale-800);
+  align-items: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--brand-scale-600) var(--brand-scale-400) var(--brand-scale-400); /* 24 / 16 / 16 — Figma Scale/600, Scale/400 */
+}
+
+/* R3 — the header height does not grow with the title.
+   Figma: 375 x 64, icons 24 tall at y=24. 24 (top) + 24 (row) + 16 (bottom)
+   = 64. The row is pinned to the GLYPH's 24px height, not the control's 32px
+   hit area, which is what keeps the total at Figma's 64 while the control
+   still offers a 32px target: the control is centred in this 24px box and
+   overflows it by 4px above and below, into the padding. The slot is not a
+   clipping context, so that overflow is visible and hittable. */
+.mn-overlay-header__side {
+  display: flex;
+  align-items: center;
+  height: var(--brand-scale-600); /* 24px */
+}
+
+.mn-overlay-header__side--start {
+  justify-content: flex-start;
+}
+
+.mn-overlay-header__side--end {
+  justify-content: flex-end;
+}
+
+/* The centred cell holds the optional leading node AND the title, so the pair
+   centres as one unit — Modal's existing `headerIconLeft` behaviour, preserved.
+   `min-width: 0` lets the title truncate instead of forcing the track wider;
+   the track is already `minmax(0, 1fr)` for the same reason. */
+.mn-overlay-header__title-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--brand-scale-100); /* 4px — Figma Scale/100 */
+  min-width: 0;
+}
+
+/* R3 — a long title truncates with an ellipsis and stays centred. One line
+   only (`nowrap`), so the 24px row and therefore the 64px header height hold
+   at any title length. */
+.mn-overlay-header__title {
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  color: var(--mapped-text-default-default);
+}
+
+/* R4 — header controls are NEUTRAL, not blue.
+   Figma binds both icon slots of 249:177 to `icon/default/default` (#363c43),
+   the same value as the title's `text/default/default`. This is a deliberate,
+   visible change to existing screens: Modal and Sheet previously drew the
+   close as a tertiary IconButton, which resolves to the primary blue. Blue
+   stays reserved for actions that change data — the filter sheet's `Reset`,
+   which still comes through the `trailing` slot as the consumer's own control.
+
+   Not an IconButton: `ButtonVariant` is 'primary' | 'secondary' | 'tertiary'
+   and none of the three is neutral, so reusing it could not satisfy R4
+   without adding a variant Figma does not model. */
+.mn-overlay-header__control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: var(--brand-scale-100); /* 4px — 24px glyph + 8 = the 32px hit area */
+  border: none;
+  border-radius: var(--brand-scale-200);
+  background: none;
+  color: var(--mapped-icon-default-default);
+  cursor: pointer;
+}
+
+/* Accessibility baseline: visible focus, never the browser default alone.
+   Same outline shape and token as every other control in the DS (Button.css).
+   The RING stays primary — R4 governs the resting icon colour, not the focus
+   affordance, and a neutral ring would be the weaker signal of the two. */
+.mn-overlay-header__control:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+  outline-offset: var(--brand-scale-50);
+}
+
+/* NO hover or pressed rule, deliberately. 249:177's three axes are
+   `Header` / `Icon right` / `Icon left` — it models no interaction state at
+   all, and CLAUDE.md's standing rule is that a state Figma does not define is
+   never added silently. Adding one is a question for Teku, not a default. */

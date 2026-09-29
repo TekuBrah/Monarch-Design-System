@@ -1803,6 +1803,375 @@ is CRLF in this working copy, and a `\n` pattern did not match (the hazard
 Gate 62 §6 records). The runner's `finally` restored the original, the file's
 sha256 was unchanged, and the patterns were rewritten as `\r?\n` regexes.
 
+## Gate 73-B — `OverlayHeader`, `OptionList`, neutral header icons, `Select` self-close withdrawn (v2.8.0)
+
+Built on `main` at `9fecbd1` (`v2.7.0`), left uncommitted — Claude Code made no
+git writes. Release notes in `CHANGELOG.md` v2.8.0. Teku ruled R1–R8 on
+29 Sept 2026; two further rulings were taken mid-gate and are recorded in §7.
+
+**Phase 0 reproduced every baseline the brief gave, exactly:** HEAD
+`9fecbd10bc80fb412103c5f41f2b70eacbc62ba8` = `v2.7.0^{}`, clean tree, 0
+untracked, **28 tags**, `package.json` 2.7.0, `tsc -b --force` exit 0,
+`build:tokens` diff empty, **700 tests / 63 files**.
+
+### 0 · Figma, and how it was read
+
+**Local desktop MCP only** — the remote connector needs OAuth, which a
+non-interactive session cannot run. Non-negotiable 3 was followed in both
+directions, and it mattered: the DS file was active at session start
+(`get_metadata` with no node returned the SELECTION, `249:177`, which both
+identified the file and handed over the exact node to read), and
+`1484:19402` returned "no node could be found". After Teku switched tabs the
+probes reversed — `1484:19402` resolved and `249:177` did not.
+
+`get_metadata` is the fast, reliable read here and supplied **every** geometric
+figure below; `get_design_context` was never called, so Gate 70's 212s /
+300s-timeout hazard was not hit at all. `get_variable_defs` on a single node
+again returned instantly and supplied every token binding.
+
+### 1 · What Figma actually says — and where the brief's numbers came from
+
+**`<header>` component set `249:177`, all six variants measured.** Every one is
+**375 × 64**, icons **24 × 24 at x=16 and x=335** (right edge 359 = 375 − 16),
+y=24 → padding **24 top / 16 bottom / 16 sides**.
+
+| variant | name | icons | title frame | spacer |
+|---|---|---|---|---|
+| `207:3849` | Header=True, right only | right `335` | x=149.5 w=76 | `Frame 446` x=**16** |
+| `815:8261` | Header=Header4, both | `16`, `335` | x=149.5 w=76 | — |
+| `815:8290` | Header=Header6, left only | left `16` | x=149.5 w=76 | `Frame 446` x=**335** |
+| `249:178` | Header=False, right only | right `335` | hidden | `Frame 446` x=16 |
+| `815:8267` | Header=Header3, both | `16`, `335` | hidden | — |
+| `815:8296` | Header=Header5, left only | left `16` | hidden | `Frame 446` x=335 |
+
+**R2's empty slot is Figma's own mechanism, not an invention.** Each
+single-icon variant carries a real empty 24 × 24 frame named `Frame 446` at the
+missing icon's exact position. The title frame sits at x=149.5 and is 76 wide
+in EVERY variant, so its centre is **187.5 = 375 / 2** exactly, in all of them.
+
+**The `Header` axis is really "title on/off", duplicated three times.** Its six
+values pair up per icon combination — True/False, Header4/Header3,
+Header6/Header5 — and the second of each pair simply hides the title frame.
+**There is no variant with BOTH icons absent**, so R2's fourth combination is
+an extension beyond the source; it is covered by the same mechanism and is
+measured below.
+
+**Bindings (`get_variable_defs` on `815:8261`):** `icon/default/default`
+**`#363c43`**, `text/default/default` **`#363c43`** — identical, which is R4 at
+source. Title `body/m-semibold`. `Scale/600` 24, `Scale/400` 16, `Scale/100` 4.
+No token gap; R8 satisfied for the header.
+
+**The picker view, `casestudy_02`.** `Frame 537` (`1484:19292`) draws the
+defect and the spec side by side at the same scale, which is what makes the
+comparison exact:
+
+| | `Now` (defect) `1484:19112` | `Intention` (spec) `1484:19402` |
+|---|---|---|
+| sheet | 343 × 624 | 343 × 564 |
+| header instance | `1488:19154` 343 × 64 | `1488:19175` 343 × 64 |
+| content | `<Menu>` `1484:19296` **inset x=16, 311 wide**, with `Slot {Options}` inside it | seven `<item>` at **x=0, 343 wide** |
+| footer | two buttons, 311 wide at x=16, 16px apart | identical |
+
+Rows `1484:19479`–`19485`: **343 × 48** at y = 0, 50, 100, … — pitch 50 on a 48
+row, so the gap is **2px**. Each holds a `Checkbox` instance at **x=16**, y=12,
+315 wide (the 12px right inset is `MenuItem`'s own padding, which is why it is
+315 and not 327). The selected row's tint is `Blue/50` **`#e6f1ff`**, a RAW
+BRAND PRIMITIVE — confirmed by reading `1484:19481`'s own variable definitions,
+where the plausibly-named `surface/primary/default-subtle-selected` is an
+unrelated grey `#f2f2f2`. That is the finding `MenuItem.css` already records
+and already resolves; see §3.
+
+**`1488:19175` (the picker's header instance) is 343 wide with its right icon
+at x=303 and its title frame at x=98 w=147 — centre 171.5 = 343 / 2.** So
+centring holds at both widths, which is what a fixed-equal-side-track grid
+produces and a flexible one does not (§2).
+
+**Where the brief's figures came from, and why they looked wrong.** The brief
+gave "Header 343 × 64 … icons at x=16 and x=303" while naming `249:177`. Those
+numbers are the **343-wide instance** `1488:19175`, not the component set,
+which is 375 with its right icon at 335. Both are internally consistent; the
+brief attached the instance's numbers to the component set's node id. The row,
+gap and footer figures it gave are all confirmed exactly.
+
+**Known authoring oddity, confirmed and not a build input.** The brief flags
+that `815:8290` is labelled icon-left-only but its left slot holds a close
+glyph. The screenshot shows it is broader than that: **every icon slot in all
+six variants holds a close (×) glyph**, left slots included. The icon is an
+instance swap, so none of it affects what is built.
+
+### 2 · R2 as built — fixed tracks, and why `1fr auto 1fr` is not enough
+
+`.mn-overlay-header` is
+`grid-template-columns: var(--brand-scale-800) minmax(0, 1fr) var(--brand-scale-800)`.
+The two side tracks are FIXED and IDENTICAL, so the middle track is centred by
+arithmetic rather than by a layout that happens to balance. The slot is 32px
+because R2 pins it to the CONTROL's footprint (24 glyph + 2 × 4 padding), not
+the 24px glyph.
+
+**The rejected alternative is what `Modal` actually shipped**, and the
+difference is measured, not argued. `1fr` is `minmax(auto, 1fr)`: the tracks
+are equal only while there is free space to flex them. Measured live in the
+showcase on the long-title case with a "Reset" node in the trailing slot —
+i.e. exactly `Sheet`'s `headerAction`:
+
+| grid | title-centre offset | height |
+|---|---|---|
+| `32px minmax(0,1fr) 32px` (shipped) | **0** | 64 |
+| `1fr auto 1fr` (what Modal shipped) | **21.875px** | 64 |
+
+**Measured live, both the four icon combinations and a truncating title** —
+header width 375, height 64, both slots 32 in every case:
+
+| case | header | title-centre offset | truncated |
+|---|---|---|---|
+| neither icon | 375 × 64 | **0.000** | no |
+| left only | 375 × 64 | **0.000** | no |
+| right only | 375 × 64 | **0.000** | no |
+| both icons | 375 × 64 | **0.000** | no |
+| long title | 375 × **64** | **0.000** | **yes** |
+
+**Controlled revert, so the mechanism is not inert.** Removing the START slot
+from the DOM moves the title centre by **155.5px**; re-inserting it returns it
+to 0. Removing the END slot moves it by **0** — auto-placement still lands the
+title-group in column 2, so on that side the fixed TRACK is what centres it and
+the element is R2's stated contract rather than the load-bearing part. Say this
+accurately: the empty slot is load-bearing on the leading side only.
+
+**Height is 64 because the row is pinned to the GLYPH's 24px, not the control's
+32px hit area.** 24 + 24 + 16 = 64. The control is centred in that 24px box and
+overflows it by 4px above and below into the padding, which is not a clipping
+context — so the 32px target survives at Figma's height. **The glyph therefore
+sits 4px inboard of Figma's x** (20 / 331 against 16 / 335), which is the
+pre-existing consequence of a 32px hit area inside 16px padding and is
+unchanged from what `Modal` already shipped.
+
+### 3 · R5 as built — `OptionList` composes `MenuItem`, which closes R8
+
+`OptionList` is a `role="listbox"` column with `gap: var(--brand-scale-50)`
+(2px) and **no** background, radius, padding or shadow — the four absences ARE
+the component, and each is one of the things `Menu` has and the defect view
+nests at x=16.
+
+**It composes the real `MenuItem` rather than re-implementing a row, and that
+is what keeps R8 satisfied.** Figma's selected tint is a raw `Blue/50`
+(§1); `MenuItem.css` already carries that exact finding and its approved
+token-source-gap resolution,
+`color-mix(in srgb, var(--mapped-border-primary-default) 10%, transparent)`.
+Re-implementing the row would have re-opened a token gap that was already
+closed. `MenuItem--checkbox` also already measures what Figma draws: padding
+12/12/12/**16** over a 24px control — the 16px control inset, and the 12px
+right padding that explains Figma's 315-wide checkbox in a 343 row.
+
+**Measured live:** list 343, row **343**, inset **0** on both sides, gap **2**,
+computed padding `0px`, background `rgba(0,0,0,0)`, radius `0px`, shadow
+`none`, control inset **16**. The selected row's tint computes
+`color(srgb 0.0156863 0.431373 1 / 0.1)` and spans the full **343 in both
+themes** — it reaches both edges, which is the whole point of the ruling.
+
+**`selectionMode='single'` renders `MenuItem type="radio"`, and that is a
+decision taken inside the brief — FLAGGED FOR TEKU.** Figma draws no
+single-select picker, so this is a reading, not a source. `radio` was chosen
+over `default` because `default` is a 44px row with a 12px inset, which would
+make single mode a different SHAPE from the one Figma actually draws, whereas
+`radio` shares `checkbox`'s geometry exactly.
+
+### 4 · R7 as built — `Select` never closes itself
+
+The `closeRef` path is deleted. No code path driven by geometry, scroll, resize
+or render calls `setOpen` or `onOpenChange`. Out of view sets
+`.mn-select__menu--out-of-view` (`visibility: hidden; pointer-events: none`) —
+a modifier class, so no new token and no new `style={` site.
+
+`visibility`, not `display: none`, deliberately: it keeps the element
+measurable so the geometry code can place it correctly the instant the trigger
+returns, and it removes the subtree from the a11y tree and the Tab order
+without changing layout.
+
+**A single out-of-view reading is never acted on.** One
+`requestAnimationFrame` re-measure must agree; an in-view reading clears the
+state at once AND cancels the pending frame; the frame is cancelled on close
+and on unmount. Only one frame is ever in flight, and none is scheduled once
+already hidden — otherwise every render while out of view would leave one
+pending forever.
+
+**Two of these tests were written wrong first, and would have proved nothing.**
+"An in-view reading cancels the frame" and "unmount with a re-check pending"
+both originally asserted only that nothing hid / nothing threw. Neither would
+fail if the cancel were dropped: the stale callback simply re-measures, reads
+in-view, and does nothing, and React nulls the ref on unmount so the callback
+returns early rather than throwing. Both now assert the **pending-frame count**
+(`frames.size`), which is what makes the cancel load-bearing — and the "drop
+the cancel" mutations only became valid proofs after that change.
+
+### 5 · The `MenuItem` row-height defect — found here, ruled on, fixed
+
+`OptionList`'s Figma source draws 48px rows; the DS rendered **55** (checkbox)
+and **51** (radio). Cause and rule are recorded as a DS convention under
+Component rules (THE WRAPPER RULE) rather than as a note on this fix.
+
+**Teku's precondition was met before the fix was applied**: the Menu dropdown's
+own option rows are drawn at **48** too (`1484:19300`'s items, 295 × 48, pitch
+56 = an 8px gap), so this is a defect correction against the source in both
+places, not a design change.
+
+**Every height that changed, measured in the showcase across 46 rendered rows,
+before and after, with the CSSOM rule confirmed loaded after a full reload:**
+
+| | row before | row after | control wrapper before → after |
+|---|---|---|---|
+| `checkbox` | 55 | **48** | 31 → **24** |
+| `radio` | 51 | **48** | 27 → **24** |
+| `account` | 58 | 58 (unchanged) | 27 → 24 |
+| `default` | 44 | 44 (unchanged) | *(no wrapper)* |
+| `crypto` | 68 | 68 (unchanged) | *(no wrapper)* |
+
+`account`'s ROW does not move because its height is driven by its Avatar, not
+by the control wrapper.
+
+**Menu, Select and DatePicker re-verified, as instructed.** All three are
+**unchanged**: `Menu`'s panels stay 254 / 200 / 254 and its section 1055.58,
+`Select`'s section 934.58, `DatePicker`'s 945.58. The reason is that the
+showcase's `Menu` rows are all `type="default"`, and neither `Select` nor
+`DatePicker` renders a `MenuItem` at rest — the only checkbox/radio rows in the
+showcase live in the `MenuItem` and `OptionList` sections. **The toggle was
+proven effective in the same pass** (checkbox row 48 ↔ 55 ↔ 48), so "unchanged"
+is a real reading and not an inert probe.
+
+A second, separate `MenuItem` defect surfaced with it: **`checkbox` and `radio`
+rows had no accessible name**, because both render their only text inside an
+`aria-hidden` + `inert` wrapper. `MenuItem`'s own axe test covers `type="default"`
+only, which is exactly how it shipped. Fixed with `aria-label={label}` for
+those two types, and the axe hole closed with an `it.each` over both.
+
+### 6 · Tests
+
+**700 → 735, 63 → 65 files**, and the arithmetic was written before the run:
+700 + 16 (`OverlayHeader`, new file) + 12 (`OptionList`, new file) + 4
+(`Select`: −1 removed, +5 added) + 3 (`MenuItem`) = **735**. Measured 735 / 65.
+
+**Rewrites, each named with its old and new assertion, in `CHANGELOG.md` and in
+comments at each site.** Ten were forced by R1 (class-name queries against
+markup that no longer exists) and one by R7. Two are REVERSALS rather than
+relocations, and they are the ones that matter:
+
+- `Sheet` › `renders the close button by default and suppresses it on request`.
+  Old: `expect(...('.mn-sheet__header-trail')).toBeNull()` — "nothing left for
+  the trail to hold, so it is not rendered at all". New: the trailing slot MUST
+  still render, `aria-hidden`, with no button. **What the old test asserted is
+  now exactly the defect R2 forbids.**
+- `Select` › `closes when the trigger scrolls fully out of a clipping ancestor`
+  → replaced by five tests asserting `onOpenChange` is **never** called.
+
+One rewrite was green against the new markup and was repointed anyway:
+`Sheet` › `renders no header region when no header slot is supplied` asserts
+ABSENCE, so probing a class that no longer exists would have kept passing while
+testing nothing.
+
+**47 mutation proofs, one per new or rewritten test, all valid.** Runner spawns
+`node node_modules/vitest/vitest.mjs` with an argument array (no shell, no
+`npx`), selects one test by an exact regex-escaped `$`-anchored title, and every
+proof reads `1 failed | N skipped` mutated, restores sha256-identical, and reads
+`1 passed | N skipped` restored.
+
+**Two were INVALID on the first run and their own count line said so** — both
+read `Tests  no tests` with exit code 1. The mutations had broken module
+COLLECTION rather than tripping an assertion: one added a nested `@media` that
+the test's own flat CSS scan cannot parse, so its module-scope helper threw at
+import; the other renamed `<h2>` without its closing tag, a JSX parse error.
+Re-run with collection-safe mutations (an EMPTY at-rule; both tags renamed
+together), both read `1 failed | 15 skipped` with a real `AssertionError`.
+**This is Gate 62's lesson recurring in a new shape: read the count line, not
+the exit code — and an exit code of 1 from a file that never loaded is not a
+proof.**
+
+**Two tautological assertions were caught and rewritten before shipping.** The
+centring arithmetic was first written
+`pad + slot + (W - 2*pad - 2*slot) / 2 - W / 2`, which cancels to 0 for every
+input and asserts nothing. It now computes the two edges from their OWN tracks
+(`padding-left + track 1` against `padding-right + track 3`), so it is 0 only
+while the sides genuinely reserve the same space.
+
+**Geometry is computed from the CSS, not read from the DOM, and that is
+deliberate.** `vitest.config.ts` sets no `test.css`, so no stylesheet is applied
+in jsdom and every rect is zero — a `getBoundingClientRect` centring test would
+compare 0 with 0 and pass against an implementation with no side slots at all.
+Centring is therefore proved in two halves that must BOTH hold: the DOM half
+(both slots render, in all four combinations) and the CSS half (the two tracks
+are equal, resolved through `globals.css`). The browser measurements in §2 are
+the other half of the record.
+
+`parseBlocks` from `src/test/tokenCss.ts` is deliberately NOT used for this: it
+keeps only custom properties, because it exists to read generated token CSS.
+Both new test files do their own flat scan, and `OverlayHeader.test.tsx`
+asserts its CSS has no at-rules so that the assumption the scan rests on cannot
+rot silently.
+
+**One jsdom artefact, recorded.** `OptionList`'s tests activate the ROW, not the
+label text: jsdom does not implement `inert`, so a click on the nested
+Checkbox/Radio label synthesizes a second click on the associated input which
+bubbles to the row and fires the handler TWICE. In a browser the `inert` wrapper
+makes that subtree non-interactive and the click lands once.
+
+### 6a · Tooling hazard — `String.replace` ate the file, silently
+
+Gate 62 §6 records that `node -e`, `sed` and even a quoted heredoc lose
+backslashes here. **Add a second one, from the opposite direction: the
+REPLACEMENT string, not the pattern.**
+
+Inserting this section with
+`s.replace(anchor, () => section)` is safe; `s.replace(anchor, section)` is
+not. In a replacement STRING, `$&`, `` $` ``, `$'` and `$1` are special. This
+section's own prose contains `` `$` `` (writing about a `$`-anchored regex),
+which JavaScript read as `` $` `` — *the entire portion of the string before
+the match* — and spliced a second copy of most of `CLAUDE.md` into the middle
+of the file. It threw nothing, the grep for the new heading still found it
+once, and the file still looked plausible.
+
+**What caught it was `git diff --numstat`: 2190 insertions where the inserted
+text was 385 lines.** Nothing else in the checklist would have. So: pass a
+FUNCTION as the replacement whenever the replacement text is prose you did not
+hand-audit for `$`, and check the numstat against the line count of what you
+meant to insert.
+
+### 7 · Decisions taken inside the brief, each flagged for Teku
+
+1. **`MenuItem type="radio"` for single mode** (§3) — Figma draws no
+   single-select picker.
+2. **`headerAction` stays in the trailing slot and may extend leftward past its
+   32px track** when it is wider than one control, which is what a text `Link`
+   like `Reset` is. The fixed track means this never moves the title; the cost
+   is that a long TRUNCATED title and a wide trailing node can overlap. Holding
+   R2 was ruled the priority, since it is the "VERY IMPORTANT" requirement and
+   the alternative sacrifices centring exactly when a long title makes the drift
+   most visible (§2's 21.875px).
+3. **`contentPadding: 'default' | 'none'`**, a string union rather than a
+   boolean, matching the `sizing` prop shape the DS already uses. Implemented
+   with `padding-left` / `padding-right` LONGHANDS, never the shorthand, so the
+   sheet's bottom affordance padding and headerless top inset survive.
+4. **`OverlayHeader` renders its own controls rather than composing
+   `IconButton`.** `ButtonVariant` is `'primary' | 'secondary' | 'tertiary'`
+   and none of the three is neutral, so R4 could not be met through
+   `IconButton` without adding a variant Figma does not model.
+5. **No hover or pressed rule on the header controls.** `249:177` models no
+   interaction state on any of its three axes, and the standing rule is that a
+   state Figma does not define is never added silently. `:focus-visible` IS
+   added — that is the accessibility baseline, not an inferred state — and its
+   ring stays primary, because R4 governs the resting icon colour, not the
+   focus affordance.
+
+### 8 · Figures
+
+| | predicted | measured |
+|---|---|---|
+| tests / files | 735 / 65 | **735 / 65** |
+| mutation proofs | one per new or rewritten test | **47, all valid** (2 after re-run) |
+| `npx tsc -b --force` | exit 0 | **exit 0** |
+| `build:tokens` diff | empty | **empty** |
+| CSS registration | 62/62 | **62/62** |
+| `style={` in non-test component `.tsx` | 14 in 9, unchanged | **14 in 9** |
+| `:hover` / `@media (hover: hover)` | unchanged | **49 / 41** |
+| component folders / CSS files | 51 → 53 / 60 → 62 | **53 / 62** |
+
 ## Known open items
 - **Heading font-size in source**: Figma composites wire `{fontSize.N}` (static), not a
   responsive token. Resolved at build time by mapping heading keys → responsive vars.
@@ -2464,6 +2833,43 @@ When a new component is added, the same three things are true every time:
   are `'fixed'`, not `'hug'`.** The default is a literal fixed width (161px /
   109px), not a hug-contents box, so Figma's `hug` would name behaviour neither
   component has. A second vocabulary for one prop is the wart worth avoiding.
+- **THE WRAPPER RULE (added v2.8.0): a wrapper around a fixed-size icon or
+  control is a flex box with `align-items: center`, never an inline formatting
+  context.** A block-level wrapper whose child is inline-block puts that child
+  on a text baseline, so the line box reserves descender space *below* it and
+  the wrapper renders taller than the thing it wraps. Nothing about this is
+  visible in the markup, nothing fails, and no token is involved — the row is
+  simply the wrong height, and the design source is the only place the
+  discrepancy shows.
+
+  *Measured, Gate 73-B.* `.mn-menu-item__control` was `flex: 1 0 0` with no
+  `display`, so it was a block box holding an inline-block `Checkbox`. The
+  nested `Checkbox` measured a correct **24**; the wrapper measured **31**; the
+  row therefore rendered `12 + 31 + 12 = `**`55`** against Figma's **48**. The
+  fix is `display: flex; align-items: center` on the wrapper — a flex context
+  has no baseline and no descender to reserve, so it collapses to the control's
+  real 24 and the row lands on 48. Same cause, smaller magnitude, on the radio
+  row: 27 → 24, and 51 → 48.
+
+  The rule is about the WRAPPER, not the control: `MenuItem`'s `default` and
+  `crypto` rows were always correct because they wrap nothing. Fix it on the
+  component so it renders ONE height — never scoped to a parent, which is the
+  parent-to-child override Gate 68 deferred as a thing to stop doing.
+
+  A sweep of `src/components` at Gate 73-B (63 non-test `.tsx`, 62 `.css`,
+  looking for wrappers holding `Icon` / `Checkbox` / `Radio` / `Avatar` /
+  `ElementWrapper` / `Logo` / `IconObject` without a flex or grid context)
+  found **no further instances**. Three candidates surfaced and all three are
+  false positives, each measured at a **0px** gap: `.mn-menu__search`
+  (`Menu.css:22`) and `.mn-header-bg__search` (`HeaderBg.css:118`) wrap a
+  block-level `div.mn-field`, which forms no line box, and
+  `.mn-status-bar__time` (`StatusBar.css:21`) has no element child at all.
+  **A modifier class is not a finding** — the first pass of that sweep reported
+  9 hits, six of which were modifiers (`--checkbox`, `--radio`, `--account`,
+  `--title`, `--greeting`, `--placeholder`) on elements whose BASE class
+  already established the context. Check every class an element carries, not
+  each class alone.
+
 - **Token-source gap protocol** — when Figma specifies a value with no
   corresponding token (missing opacity/tint, or a px value off the
   `--brand-scale` ramp), do not invent a fallback silently. Get explicit

@@ -2,8 +2,7 @@ import React, { useEffect, useId, useLayoutEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import './Modal.css'
 import { Blanket } from '../Blanket'
-import { IconButton } from '../IconButton'
-import { Icon } from '../Icon'
+import { OverlayHeader } from '../OverlayHeader'
 
 export interface ModalProps {
   /** Controlled open state. */
@@ -14,9 +13,20 @@ export interface ModalProps {
   title?: string
   /** Optional node before the title, inside the centred group — same name and
    *  same `ReactNode` shape as `Sheet`'s, so the two overlays don't carry two
-   *  names for one slot. Positioned differently because the headers differ:
-   *  Modal centres icon+title as a unit, Sheet left-aligns them. */
+   *  names for one slot. Positioned differently because the two overlays put
+   *  it in different places: Modal centres icon+title as a unit (it maps to
+   *  `OverlayHeader.titleLeading`), Sheet puts it in the leading slot (it maps
+   *  to `OverlayHeader.leading`). Both names keep working — R1 (Gate 73-B). */
   headerIconLeft?: React.ReactNode
+  /** Renders a back control at the left of the header, and fires this on
+   *  activation. Omit it and the leading slot stays empty and inert — but it
+   *  still occupies the control's full footprint, so the title stays centred
+   *  (R2). Added at Gate 73-B for the dropdown-in-a-form pattern: a `Select`
+   *  inside an overlay turns the overlay's content into a selection view, and
+   *  back returns to the form. */
+  onBack?: () => void
+  /** Accessible name for the back control. */
+  backLabel?: string
   /** Main content — any app-provided nodes. This is the flexible middle slot:
    *  the Modal is a generic container, so whatever a feature needs goes here. */
   children?: React.ReactNode
@@ -26,6 +36,13 @@ export interface ModalProps {
   closeOnScrimClick?: boolean
   /** Accessible name when there's no visible `title`. */
   ariaLabel?: string
+  /** R6 (Gate 73-B) — side padding on the content region.
+   *  `'default'` keeps the 16px sides every existing consumer already gets.
+   *  `'none'` drops them so a full-bleed child (`OptionList`) can run the
+   *  panel's whole width and its selected tint can reach both edges.
+   *  Only the SIDES are released: the header and footer still own the vertical
+   *  spacing, so a flush content region does not change the panel's height. */
+  contentPadding?: 'default' | 'none'
   id?: string
   className?: string
 }
@@ -43,10 +60,13 @@ export function Modal({
   onClose,
   title,
   headerIconLeft,
+  onBack,
+  backLabel,
   children,
   footer,
   closeOnScrimClick = true,
   ariaLabel,
+  contentPadding = 'default',
   id,
   className,
 }: ModalProps) {
@@ -124,30 +144,25 @@ export function Modal({
         tabIndex={-1}
         className="mn-modal__card"
       >
-        <div className="mn-modal__header">
-          <span className="mn-modal__header-side" aria-hidden="true" />
-          <div className="mn-modal__title-group">
-            {headerIconLeft}
-            {title ? (
-              <h2 id={titleId} className="mn-modal__title type-body-m-semibold">
-                {title}
-              </h2>
-            ) : (
-              <span className="mn-modal__title" aria-hidden="true" />
-            )}
-          </div>
-          <span className="mn-modal__header-side mn-modal__header-side--end">
-            <IconButton
-              variant="tertiary"
-              size="s"
-              ariaLabel="Close"
-              icon={<Icon name="close" size="l" />}
-              onClick={onClose}
-            />
-          </span>
-        </div>
+        <OverlayHeader
+          title={title}
+          titleId={titleId}
+          titleLeading={headerIconLeft}
+          onBack={onBack}
+          backLabel={backLabel}
+          onClose={onClose}
+        />
 
-        <div className="mn-modal__content">{children}</div>
+        <div
+          className={[
+            'mn-modal__content',
+            contentPadding === 'none' && 'mn-modal__content--flush',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
+          {children}
+        </div>
 
         {footer && <div className="mn-modal__footer">{footer}</div>}
       </div>

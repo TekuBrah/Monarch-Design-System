@@ -47,7 +47,12 @@ describe('Modal', () => {
         Body
       </Modal>,
     )
-    const group = baseElement.querySelector('.mn-modal__title-group')!
+    // REWRITTEN at Gate 73-B (R1). Old element `.mn-modal__title-group`, new
+    // element `.mn-overlay-header__title-group`; Modal's own header markup is
+    // retired in favour of the shared `OverlayHeader`. The ASSERTION IS
+    // UNCHANGED — `headerIconLeft` still shares the centred cell with the
+    // title, in that order, and the title still names the dialog.
+    const group = baseElement.querySelector('.mn-overlay-header__title-group')!
     expect(group).toBeInTheDocument()
     expect(group.textContent).toBe('leadSmart insights')
     // The title still names the dialog — the wrapper must not break labelling.
@@ -62,8 +67,14 @@ describe('Modal', () => {
         Body
       </Modal>,
     )
-    const group = baseElement.querySelector('.mn-modal__title-group')!
-    const title = baseElement.querySelector('h2.mn-modal__title')!
+    // REWRITTEN at Gate 73-B (R1). Old elements `.mn-modal__title-group` and
+    // `h2.mn-modal__title`; new elements `.mn-overlay-header__title-group` and
+    // `h2.mn-overlay-header__title`. The ASSERTION IS UNCHANGED and still does
+    // the same job — with no icon the centred cell holds exactly one child,
+    // that child is the <h2>, it still carries `type-body-m-semibold`, and the
+    // dialog is still labelled by its id.
+    const group = baseElement.querySelector('.mn-overlay-header__title-group')!
+    const title = baseElement.querySelector('h2.mn-overlay-header__title')!
     expect(group.children).toHaveLength(1)
     expect(group.firstElementChild).toBe(title)
     expect(title).toHaveClass('type-body-m-semibold')
