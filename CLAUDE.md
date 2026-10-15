@@ -2172,6 +2172,191 @@ meant to insert.
 | `:hover` / `@media (hover: hover)` | unchanged | **49 / 41** |
 | component folders / CSS files | 51 → 53 / 60 → 62 | **53 / 62** |
 
+## Gate 86 — a tap hook on the `HeaderBg` avatar (v2.9.0)
+
+Built on `main` at `b5b7b29` (`v2.8.0`) and left uncommitted. Claude Code made
+no git writes. Release notes are in `CHANGELOG.md` v2.9.0, and the props and
+token rows are in `docs/component-tokens.md` under Header. The MVP needs a
+settings screen that opens from Margaret's profile picture. Teku ruled
+(Decision 3A, 9 Oct 2026) that the hook lands in the DS properly rather than
+as an overlay button in the MVP. This gate covers that one subject.
+
+### 0 · Premises, re-derived from disk
+
+- **HEAD and tags.** HEAD = `v2.8.0^{}` = `main` = `origin/main`, with a clean
+  tree. There are **29 tags**, all `vX.Y.Z`. `v2.9.0` is absent locally and
+  on `origin`. The version field read `2.8.0` in both files.
+- **CI has EIGHT steps, not seven**: Checkout, Set up Node, Install, token
+  pipeline, drift check, CSS registration, Typecheck, Test. The two setup
+  steps have no local equivalent, and the other six were run in order with
+  each exit code captured. Baseline: **735 tests / 65 files**, all 0, and
+  `git status` stayed empty after `build:tokens`.
+- **There is no visual (pixel) suite.** No Playwright, no image snapshots.
+  `check-tokens.mjs` and `check-ds-linkage.mjs` do not exist here; they live
+  in the MVP (see Commands).
+- **`dist/` is not tracked.** `.gitignore` lists `dist/`, and
+  `git ls-files dist` is empty. A git-tag install builds it through
+  `"prepare": "npm run build:lib"` (`package.json:27`), so a release has no
+  built output to regenerate.
+
+### 1 · Figma — every avatar state is undesigned
+
+Read through the claude.ai connector (`whoami` → Teku Cheong). The local
+`figma-desktop` server refused with ECONNREFUSED this session too.
+
+- **DS file `xhA5ARVgSeD3gA41lYDqST`.** `Header/bg` `219:2813` has three
+  variants on a `Type` axis only: `128:4886`, `390:639` and `219:2814`.
+  There is no state axis. The avatar is a 32 × 32 instance (`390:644` →
+  `I390:644;128:3532`; compact `220:2851`). The Avatar sets `103:3084` and
+  `103:3094` carry a `Size` axis only. Bindings read from variant `103:3085`
+  (Size=M 32): `Border Radius/round`, `border/subtlest/default`,
+  `surface/Default/default` and `icon/subtle/default`. None is a state.
+- **Case-study file `v9MI8jxTaXiJA234Hkanlf` has SEVEN pages.**
+  `get_metadata` with no node lists only `0:1`. That list is incomplete:
+  `use_figma` lists `0:1`, `298:13`, `1266:14164`, `1266:14272`,
+  `1266:14163`, `1186:12718` and `447:3691`. `0:1` overflows `get_metadata`
+  and `use_figma` alike; reduced to counts, it holds 44 top-level frames of
+  research slides and no settings or profile frame. Every page was searched
+  by name and text. **No avatar pressed, hover or focus frame exists.** No
+  settings, profile or account screen exists either. The nearest matches
+  are named here so nobody re-searches:
+  - Onboarding_09: `1266:14353`, with copies at `381:6283` and `891:9580`
+    ("Choose the settings that make the app most comfortable"). This is
+    onboarding preferences, not a screen the avatar opens.
+  - A desktop sidebar "Settings" nav item: `I466:6869;465:33167`, page
+    `447:3691`.
+  - `1360:18985` "Settings ---": a strip of Figma-panel screenshots, not an
+    app screen.
+- **The home (`1266:14402`) and overview (`1266:14331`) headers** draw the
+  avatar at rest only.
+
+### 2 · API as shipped
+
+```ts
+type HeaderBgAvatarTapProps =
+  | { onAvatarClick?: undefined; avatarAriaLabel?: undefined }
+  | { onAvatarClick: () => void; avatarAriaLabel: string }
+export type HeaderBgProps = HeaderBgBaseProps & HeaderBgAvatarTapProps
+```
+
+The names follow the repo's existing pattern. Event props are
+`on<Thing>Click`, as in `HeaderBg`'s own `onNotificationsClick`; `Button` and
+`IconButton` use `onClick`. Name props are `<thing>AriaLabel`, as in
+`iconAriaLabel`, `searchAriaLabel` and `moreAriaLabel`; `IconButton` uses
+`ariaLabel`. **`HeaderBgProps` changed from an `interface` to a type alias.**
+`interface X extends HeaderBgProps` no longer compiles. A read-only grep of the
+MVP's `src` found no reference to `HeaderBgProps`. `HeaderBgBaseProps` and the
+union are not exported, because `Header/index.ts` was outside the edit list.
+
+### 3 · No handler, no change — and the proof of it
+
+Before the first edit, `renderToStaticMarkup` was captured for **22 prop
+combinations**:
+
+- every render in `HeaderBg.test.tsx` and the showcase;
+- variant × four avatar sources;
+- each variant with every other optional prop.
+
+That gives 18 distinct strings. The full strings are kept outside the repo,
+in the gate hand-over. `HeaderBg.avatar.test.tsx` pins each case's sha256.
+Without a handler, the component returns the same `<Avatar size="m"
+src={avatarSrc} name={avatarName} />` expression it always did. It passes no
+`alt`, so `alt ?? name ?? ''` resolves exactly as before.
+
+**Hazard, for anyone writing a markup pin around an `<img>`:** React 19's
+`renderToStaticMarkup` hoists `<link rel="preload" as="image" href="…"/>` to
+the front of any root that renders an `<img src>`. A standalone `Avatar`
+render therefore does NOT appear verbatim inside a `HeaderBg` render. The
+first draft of the "changes nothing else" test failed on exactly that. It now
+strips that exact prefix, after asserting it is present.
+
+### 4 · States (all undesigned), hit area, layout
+
+| | treatment | source in the DS |
+|---|---|---|
+| focus | `--brand-scale-50` solid `--mapped-border-primary-default`, offset `--brand-scale-50`; `border-radius: 50%` | the notify button's own `:focus-visible` in this file, declaration for declaration; the radius follows Avatar.css's circle |
+| hover | `--mapped-surface-overlay-hover` on a `::before`, inside `@media (hover: hover)` | Tag's `overlay` appearance |
+| pressed | `--mapped-surface-overlay-label-pressed` on `:active` | Tag's `overlay` appearance |
+
+Tag's `overlay` is the DS's one control drawn over imagery, and its three
+tokens are **theme-invariant** (light block and dark block identical). That is
+the property `HeaderBg`'s photo chrome already depends on. This is a choice
+taken inside the brief, flagged for Teku; the alternatives are in the release
+hand-over.
+
+- **Hit area: 48px.** It comes from `::after` at
+  `inset: calc(-1 * var(--brand-scale-200))`, i.e. 32 + 2 × 8, out of flow.
+  There is no 6px ramp step, so 44 was not reachable with a token. The DS had
+  no 44px precedent to copy: `OverlayHeader`'s controls are 32px, and the
+  sibling notify button is a bare 24px.
+- **Layout.** The button is a flex box (THE WRAPPER RULE) with zero padding.
+
+Measured live in the showcase (1265 `clientWidth`, DPR 1.25, transitions
+finished):
+
+- **Layout.** With the button unwrapped in place, the header, row, group,
+  avatar, greeting and notify rects were **identical** to the wrapped ones.
+- **Hit area.** `elementFromPoint` hits the button 7px outside the avatar on
+  every side and misses at 9px.
+- **Keyboard.** Real Enter and Space presses moved the tap counter 0 → 2.
+- **Focus.** `:focus-visible` matched after the keypresses. The outline
+  computed `rgb(4, 110, 255)`, the same as the notify button's token.
+- **Hover.** A real pointer hover computed the wash at
+  `rgba(13, 15, 17, 0.7)`.
+- **Tokens by theme.** The hover, pressed and focus tokens read identical
+  under `data-theme="dark"`. The toggle was proven effective by
+  `--mapped-surface-page` flipping from white to black.
+
+`:active` was **not** observed live, because the harness cannot hold a pointer
+down. The CSSOM confirmed the rule loaded, and the test pins its token.
+
+The demo's initials avatar renders 33.6px, not 32: that is `.mn-avatar--initials`'
+1px content-box border at DPR 1.25. It is pre-existing, the same with or
+without the button, and not this gate's concern.
+
+### 5 · Tests and proofs
+
+**735 → 779, 65 → 66 files.** All 44 are in the one new file. Existing test
+files are unedited.
+
+- **24, no-handler pins.** One test checks the hash set; 22 pin each case;
+  one asserts "no avatar button".
+- **14, with a handler.**
+  - "native button" ×3
+  - "adds only the wrapper and `alt=""`" ×3
+  - click, native-and-focusable, and decorative image
+  - "name from the label alone" ×4, one per avatar source
+  - axe
+- **1, the type test.** Two `@ts-expect-error` lines, compiled by `tsc -b`.
+- **5, CSS.** focus, pressed, hover, rest, and hit area.
+
+jsdom does not turn Enter or Space into a click, so the keyboard test asserts
+the preconditions: a native, enabled, focusable `<button>`. The keypress itself
+is the browser measurement above.
+
+**Mutation proofs: a negative control and 45 mutations, M1–M45.** The
+negative control reported NO PROOF, as required. All 45 mutations proved.
+Every vitest proof read `1 failed | 43 skipped`, and each failed AT its
+target assertion's line. Every mutation is type-valid. The driver, the full
+table and the log are in the gate hand-over, not in the repo. The negative control ran first, and the
+run selects one test by an exact, regex-escaped, `$`-anchored title. It typechecks every mutation and refuses one that does
+not compile. The two type-test proofs are proofs BY typecheck: each makes one
+`@ts-expect-error` unused, and `tsc -b` must fail with TS2578 at that line.
+Each restore was sha256-identical and re-read `1 passed`. **One false STOP on
+the first run:** M1 deletes a line above its own assertion, so the assertion
+moves from line 157 to 156. The driver compared against 157. The target line
+was corrected; the assertion is unchanged.
+
+### 6 · Tooling hazard, new
+
+- **`grep -c $'\r$'` from Git Bash is not a line-ending scan.** It reported
+  106 CRLF lines in `HeaderBg.tsx`, a file that holds 106 bare LFs and no CR
+  at all (byte scan, agreeing with `git ls-files --eol`).
+- **This gate's working-copy line endings.** `HeaderBg.tsx` and the new test
+  are LF. `HeaderBg.css`, `package.json`, the lock file, `CHANGELOG.md`, this
+  file, `docs/component-tokens.md` and `showcase/App.tsx` are CRLF. Every edit
+  kept its file's endings, verified by byte scan.
+
 ## Known open items
 - **Heading font-size in source**: Figma composites wire `{fontSize.N}` (static), not a
   responsive token. Resolved at build time by mapping heading keys → responsive vars.

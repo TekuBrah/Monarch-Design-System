@@ -8,7 +8,7 @@ import './HeaderBg.css'
 
 export type HeaderBgVariant = 'default' | 'noSearchBar' | 'compact'
 
-export interface HeaderBgProps {
+interface HeaderBgBaseProps {
   variant?: HeaderBgVariant
   /** Full-bleed background — swappable slot (image, gradient, video, etc). */
   background: React.ReactNode
@@ -26,6 +26,25 @@ export interface HeaderBgProps {
   className?: string
 }
 
+/** The avatar tap hook (v2.9.0). Both props or neither — a handler with no
+ *  accessible name, or a name with nothing to name, is a type error. */
+type HeaderBgAvatarTapProps =
+  | {
+      onAvatarClick?: undefined
+      avatarAriaLabel?: undefined
+    }
+  | {
+      /** Renders the avatar inside a native `<button type="button">`. Omit it and
+       *  the avatar renders exactly as it did before this prop existed. */
+      onAvatarClick: () => void
+      /** The button's accessible name. Required with `onAvatarClick`; the
+       *  consumer supplies the words. The avatar image inside is `alt=""`, so
+       *  the name is announced once. */
+      avatarAriaLabel: string
+    }
+
+export type HeaderBgProps = HeaderBgBaseProps & HeaderBgAvatarTapProps
+
 export function HeaderBg({
   variant = 'default',
   background,
@@ -38,10 +57,26 @@ export function HeaderBg({
   onSearchChange,
   hasNotification = true,
   onNotificationsClick,
+  onAvatarClick,
+  avatarAriaLabel,
   className,
 }: HeaderBgProps) {
   const isCompact = variant === 'compact'
   const showSearch = variant === 'default'
+
+  // No handler, no button: the bare Avatar below is the v2.8.0 markup exactly.
+  const avatar = onAvatarClick ? (
+    <button
+      type="button"
+      className="mn-header-bg__avatar"
+      aria-label={avatarAriaLabel}
+      onClick={onAvatarClick}
+    >
+      <Avatar size="m" src={avatarSrc} name={avatarName} alt="" />
+    </button>
+  ) : (
+    <Avatar size="m" src={avatarSrc} name={avatarName} />
+  )
 
   const notifyButton = (
     <button
@@ -75,14 +110,14 @@ export function HeaderBg({
 
         {isCompact ? (
           <div className="mn-header-bg__row mn-header-bg__row--title">
-            <Avatar size="m" src={avatarSrc} name={avatarName} />
+            {avatar}
             <span className="mn-header-bg__title type-body-m-semibold">{title}</span>
             {notifyButton}
           </div>
         ) : (
           <div className="mn-header-bg__row mn-header-bg__row--greeting">
             <div className="mn-header-bg__greeting-group">
-              <Avatar size="m" src={avatarSrc} name={avatarName} />
+              {avatar}
               <span className="mn-header-bg__greeting type-header-h6">{greeting}</span>
             </div>
             {notifyButton}

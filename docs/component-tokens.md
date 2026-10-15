@@ -4050,6 +4050,8 @@ Two components: `HeaderBg` (mobile screen header, background-image slot) and `He
 | `searchValue` / `onSearchChange` | `string` / `(value: string) => void` | `default` variant only |
 | `hasNotification` | `boolean` | Default `true` — shows the badge dot |
 | `onNotificationsClick` | `() => void` | |
+| `onAvatarClick` | `() => void` | **v2.9.0.** Optional. When passed, the avatar renders inside a native `<button type="button">` (`.mn-header-bg__avatar`). Omitted, the avatar markup is v2.8.0's, byte for byte |
+| `avatarAriaLabel` | `string` | **v2.9.0.** The button's accessible name. TypeScript requires it whenever `onAvatarClick` is passed and rejects it without one. The consumer supplies the words; the avatar image inside the button is `alt=""` so the name is announced once |
 | `className` | `string` | |
 
 ### HeaderBg — variant → token mapping
@@ -4066,6 +4068,10 @@ Two components: `HeaderBg` (mobile screen header, background-image slot) and `He
 | Content row height | **`50px` raw literal** (Gate 45-B, v2.2.0) — Figma `390:642` → `390:643` is a FIXED `h-[50px]`. No `--brand-scale-*` step equals 50 (nearest 1100/48, 1200/56) and `get_variable_defs` on `390:639` returns no variable resolving to 50, so it is unbound in Figma too. Flagged FAIL-LOUD in `HeaderBg.css`; see *Fixed row heights* below |
 | Content bottom padding | `--brand-scale-250` (10px) on `.header-bg__content` — see inconsistency note below |
 | Focus ring | `--mapped-border-primary-default` outline, `--brand-scale-50` (Tab.css pattern) |
+| Avatar button, focus *(v2.9.0, undesigned)* | The notify button's ring, declaration for declaration: `--brand-scale-50` solid `--mapped-border-primary-default`, offset `--brand-scale-50`. `border-radius: 50%` so the ring follows the circle |
+| Avatar button, hover *(v2.9.0, undesigned)* | `--mapped-surface-overlay-hover` on a `::before` wash over the avatar, inside `@media (hover: hover)` only. This is Tag's `overlay` treatment |
+| Avatar button, pressed *(v2.9.0, undesigned)* | `--mapped-surface-overlay-label-pressed` on the same wash, on `:active`. This is Tag's `overlay` treatment, and it is theme-invariant |
+| Avatar button, hit area *(v2.9.0)* | `::after` at `inset: calc(-1 * var(--brand-scale-200))`: 32 + 2 × 8 = **48px**, absolutely positioned, so it is out of flow |
 
 ### HeaderDefault props
 
@@ -4151,6 +4157,30 @@ it with `min-height: env(safe-area-inset-top)` now gets `max(44px, inset)` where
 it previously got `max(40px, inset)`, so its standalone header changes only
 where the inset is under 44px; the 18px gained on the content row applies
 unconditionally. Nothing downstream was changed by this gate.
+
+### Avatar tap hook (Gate 86, v2.9.0)
+
+`onAvatarClick` + `avatarAriaLabel`. These follow the DS's existing naming:
+`on<Thing>Click` as in `onNotificationsClick`, and `<thing>AriaLabel` as in
+`iconAriaLabel`, `searchAriaLabel` and `moreAriaLabel`. The pair is a
+discriminated union: pass both or neither. A `@ts-expect-error` test that `tsc -b` compiles holds that rule.
+
+- **No handler means no change.** The bare `<Avatar>` renders exactly as in
+  v2.8.0. The test file pins the `renderToStaticMarkup` sha256 of 22 prop
+  combinations, captured from the unedited v2.8.0 component.
+- **With a handler,** the only markup difference is the wrapping
+  `<button type="button" class="mn-header-bg__avatar" aria-label="…">` and
+  `alt=""` on the photo. A test asserts this against the no-handler render.
+- **Layout.** The button is a flex box (THE WRAPPER RULE) with no padding, so
+  it is exactly the avatar's box. Measured in the showcase: header, row,
+  avatar, greeting and notify rects are identical with and without the button.
+- **Hit area: 48px**, from an absolutely positioned `::after`. Its right edge
+  lands exactly on the greeting's left edge (the group's 8px gap), so it
+  overlaps nothing.
+- **States: all three undesigned in Figma** (`Header/bg` `219:2813` has a
+  `Type` axis only, and the Avatar sets `103:3084` / `103:3094` have `Size`
+  only). Each reuses a treatment the DS already ships for that state; see
+  the token table above.
 
 ### Known Figma inconsistencies
 

@@ -526,6 +526,28 @@ function BlanketDemo() {
   )
 }
 
+// ── HeaderBg avatar tap demo (owns its tap count) ─────────────────────────────
+
+function HeaderBgAvatarDemo() {
+  const [taps, setTaps] = useState(0)
+  return (
+    <div>
+      <div style={{ width: '375px', maxWidth: '100%' }}>
+        <HeaderBg
+          variant="noSearchBar"
+          avatarName="Margaret Tan"
+          onAvatarClick={() => setTaps(t => t + 1)}
+          avatarAriaLabel="Open settings"
+          background={<div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, #1a1f6e 0%, #2a4dbd 40%, #4f7fe0 70%, #cfa64a 100%)' }} />}
+        />
+      </div>
+      <p data-testid="header-bg-avatar-taps" style={{ color: 'var(--mapped-text-subtle-default, #888)', fontSize: '0.8rem', marginTop: '0.75rem' }}>
+        Avatar taps: {taps}
+      </p>
+    </div>
+  )
+}
+
 // ── Select interactive demo (owns query / open / selection state) ─────────────
 
 const SELECT_OPTIONS = ['Eurorack', 'Ethereum', 'Bitcoin', 'Solana', 'Polygon']
@@ -4027,6 +4049,10 @@ export default function App() {
                   background={<div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, #1a1f6e 0%, #2a4dbd 40%, #4f7fe0 70%, #cfa64a 100%)' }} />}
                 />
               </div>
+            </div>
+            <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>HeaderBg — onAvatarClick (v2.9.0)</div>
+              <HeaderBgAvatarDemo />
             </div>
           </div>
 

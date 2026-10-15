@@ -3,6 +3,59 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## v2.9.0
+
+Gate 86 adds a tap hook on `HeaderBg`'s avatar. It is a minor release: one
+optional prop pair is added, and without it `HeaderBg` renders v2.8.0's markup
+byte for byte. The full derivation, the Figma evidence and every measurement
+are in CLAUDE.md's Gate 86 section.
+
+### Added
+
+- **`HeaderBg.onAvatarClick` + `HeaderBg.avatarAriaLabel`.** When the handler
+  is passed, the profile avatar renders inside a native
+  `<button type="button" class="mn-header-bg__avatar">`, and `avatarAriaLabel`
+  is the button's accessible name. TypeScript requires the label whenever the
+  handler is passed and rejects it without one, because the pair is a
+  discriminated union. The consumer supplies the label's words. The avatar
+  photo inside the button is `alt=""`, so the name is announced once. The
+  button is the avatar's own 32 × 32 box: a flex wrapper with no padding.
+  Header, row, avatar, greeting and notify rects measured identical with and
+  without it.
+- **A 48px hit area** (32 + 2 × `--brand-scale-200`), from an absolutely
+  positioned `::after`. It is out of flow, so it cannot move the layout. Its
+  right edge meets the greeting's left edge and overlaps nothing.
+- **Hover, pressed and focus states. Figma draws none of them; this is
+  undesigned work, flagged.** `Header/bg` (`219:2813`) has a `Type` axis only,
+  and the Avatar sets have a `Size` axis only. Each state reuses an existing
+  DS treatment:
+  - **Focus** uses the notify button's `:focus-visible` ring, declaration for
+    declaration.
+  - **Hover and pressed** use Tag's `overlay` washes:
+    `--mapped-surface-overlay-hover` and
+    `--mapped-surface-overlay-label-pressed`. They sit on a `::before` over
+    the avatar and are theme-invariant, as everything on this header's photo
+    is.
+  - **Hover is behind `@media (hover: hover)`**, so it cannot stick after a
+    tap. The Gate 40 guard covers it.
+
+### Changed (types only)
+
+- **`HeaderBgProps` is now a type alias, not an `interface`**: an
+  intersection of the existing props with the avatar union. Every existing
+  prop is unchanged. One consequence: `interface X extends HeaderBgProps` no
+  longer compiles, because an interface cannot extend a union. A read-only
+  grep of the MVP's `src` finds no reference to `HeaderBgProps`.
+
+### Not changed
+
+- No token was added, moved or rebound. `npm run build:tokens` produces an
+  empty diff.
+- No new `style={` site in `src/components`.
+- Without `onAvatarClick`, nothing changes. 22 prop combinations are pinned
+  by sha256 against markup captured from the unedited v2.8.0 component.
+
+---
 ## v2.8.0
 
 Gate 73-B — the dropdown-in-a-form pattern, and the withdrawal of v2.7.0's

@@ -115,6 +115,71 @@
   right: 0;
 }
 
+/* ── Avatar tap target (v2.9.0, Gate 86) ─────────────────────────────────
+   Rendered ONLY when onAvatarClick is passed; without it the bare Avatar is
+   the v2.8.0 markup and none of these rules match anything.
+
+   UNDESIGNED WORK, flagged. Neither Figma file draws an avatar state:
+   Header/bg 219:2813 has a Type axis only (128:4886, 390:639, 219:2814) and
+   the Avatar sets (103:3084, 103:3094) a Size axis only. Each state below
+   reuses a treatment the DS already ships for the same state:
+   - focus: this component's own notify button, declaration for declaration
+     (outline colour, width and offset); the radius follows the circle.
+   - hover / pressed: Tag's overlay appearance (Tag.css), the DS's one
+     control drawn over imagery. Those tokens are theme-invariant, as
+     everything over this header's photo must be (see .mn-header-bg). */
+.mn-header-bg__avatar {
+  position: relative;
+  /* THE WRAPPER RULE: a flex box, so the 32px Avatar sits on no text
+     baseline and the button is exactly 32 × 32 — the layout v2.8.0 had. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  /* Same literal Avatar.css uses for the circle the outline follows. */
+  border-radius: 50%;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* Hit area: 32 + 2 × 8 = 48px (= --brand-scale-1100), above the 44px floor.
+   Absolutely positioned, so it is out of flow and cannot move the layout;
+   the 8px outset ends exactly at the greeting's left edge (8px group gap). */
+.mn-header-bg__avatar::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--brand-scale-200)); /* -8px */
+}
+
+/* The wash sits over the photo, inside the circle; transparent at rest. */
+.mn-header-bg__avatar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .mn-header-bg__avatar:hover::before {
+    background: var(--mapped-surface-overlay-hover);
+  }
+}
+
+/* After the hover rule at equal specificity, so pressed wins while both match. */
+.mn-header-bg__avatar:active::before {
+  background: var(--mapped-surface-overlay-label-pressed);
+}
+
+.mn-header-bg__avatar:focus-visible {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
+  outline-offset: var(--brand-scale-50);
+}
+
 .mn-header-bg__search {
   width: 100%;
   padding: 0 var(--brand-scale-400);
