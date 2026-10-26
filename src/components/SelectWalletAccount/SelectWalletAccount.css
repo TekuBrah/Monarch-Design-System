@@ -6,9 +6,12 @@
    matching Figma's own annotation; no glow ring on this trigger (confirmed
    absent from every Typing/Selected read — unlike Select/SelectTransfer).
 
-   The trigger never shows a logo, confirmed across all 14 variants via
-   screenshot — logos appear only in the dropdown's option rows (not yet
-   built; deferred with Menu/Option). */
+   The trigger shows a leading element only when Figma's `icon left` boolean
+   is on, and it defaults to off — so all 14 variants draw none at rest, which
+   is what the screenshot this comment used to cite showed. The slot itself
+   (an `<element>` Size=XXL 40, first child of the left group) is in every
+   variant, and Flow 4 turns it on for the From/To account avatars. Built at
+   Gate 91 (G54) as `leadingSlot`; see `.mn-select-wallet-account__leading`. */
 
 .mn-select-wallet-account {
   position: relative;
@@ -51,6 +54,18 @@
   min-width: 0;
   align-items: center;
   gap: var(--brand-scale-200);
+}
+/* G54 leading slot: Figma `<element>` Size=XXL 40, before the name stack in
+   `Frame 322` (gap Scale/200, which __main above already supplies). A flex
+   box per THE WRAPPER RULE, so a 40px child sits on no text baseline and the
+   slot is exactly 40px. Vertically centred by __main's align-items. */
+.mn-select-wallet-account__leading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--brand-scale-1000); /* 40px */
+  height: var(--brand-scale-1000);
 }
 .mn-select-wallet-account__stack {
   display: flex;

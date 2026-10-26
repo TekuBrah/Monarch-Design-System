@@ -1,0 +1,39 @@
+/* FormField — Figma `Input` (191:11583), Type=Default (58:2198) and
+   Type=Transfer (191:11584). Vertical auto-layout throughout, no padding.
+
+   The root and body take the container's width (Figma: the message frame is
+   FILL). Items align to the start, so the label and the messages hug their
+   content as Figma draws them. A control fills the row only when it is given
+   `sizing="fill"`; its own default width is kept otherwise. */
+
+.mn-form-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--brand-scale-250); /* 10px = Scale/250, Type=Default */
+}
+
+.mn-form-field--transfer {
+  gap: var(--brand-scale-300); /* 12px = Scale/300, Type=Transfer */
+}
+
+/* The label row. A flex box, not an inline context, so the inline-flex Label
+   inside it sits on no text baseline (THE WRAPPER RULE). */
+.mn-form-field__label {
+  display: flex;
+}
+
+/* Type=Transfer: `Frame 442` is FILL with its Label centred. */
+.mn-form-field--transfer .mn-form-field__label {
+  align-self: stretch;
+  justify-content: center;
+}
+
+/* `Frame 441`: the control, then the error line, then the helper line. */
+.mn-form-field__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  gap: var(--brand-scale-100); /* 4px = Scale/100 */
+}

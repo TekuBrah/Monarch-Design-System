@@ -3,6 +3,89 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## v2.10.0
+
+Gate 91 adds the transfer flow's components. It is a minor release and every
+change is additive: three new components, one new optional prop, two glyphs.
+No existing component's default render changes. Outside a `FormField`, and
+without the new `leadingSlot` prop, `Field`, `SelectTransfer` and
+`SelectWalletAccount` render v2.9.0's markup byte for byte, and 82 render paths
+are pinned by sha256 to prove it. The full derivation, the Figma evidence and
+every measurement are in CLAUDE.md's Gate 91 section.
+
+### Added
+
+- **`FormField`** (G57, with `FieldMessage`). Mirrors Figma `Input`
+  (`191:11583`): a visible label, ONE control, then an error line and/or a
+  helper line. Props: `label`, `type: 'default' | 'transfer'`, `error?`,
+  `helper?`, `children`. `default` draws `Label` size S, root gap Scale/250;
+  `transfer` draws `Label` size M centred, root gap Scale/300. Control and
+  messages are 4px (Scale/100) apart. The label is the real `Label` in its
+  `subtle` tone, because Figma's `Input` overrides Label's text colour to
+  `text/subtle/default` on every instance.
+- **The wrapper hands the control its accessibility wiring.** `Field`,
+  `SelectTransfer` and `SelectWalletAccount` read a context that only
+  `FormField` provides:
+  - the name. The two text inputs are named by the wrapper's label
+    (`aria-labelledby`). The wallet trigger, a `<button>`, is named by the
+    wrapper's label followed by its own existing name.
+  - the description. `aria-describedby` points at the messages shown, error
+    first.
+  - `aria-invalid="true"` while the error line shows, on the two inputs only.
+    `button` does not support `aria-invalid` in ARIA 1.2, so the wallet
+    trigger relies on the described-by error line.
+  - inside a `FormField`, neither text control renders its own visible label.
+    Figma's case study turns the inner label off in the same place.
+- **`FieldMessage`**. Mirrors `<Error message>` (`279:4741`) and
+  `<Helper message>` (`279:4770`). Props: `tone: 'error' | 'helper'`,
+  `children`, `id?`. A row of a 16px glyph (`error` / `help_outline`) and the
+  text (`body/caption-semibold` + `text/error/default`, or `body/caption` +
+  `text/subtle/default`). It has no role and no live region: a control
+  announces it through `aria-describedby`.
+- **`TransferAmount`** (G55). Mirrors `<Transfer amount>` (`191:12003`), all
+  four variants. Props: `type: 'currency' | 'crypto'`,
+  `items: { title, amount, amountDetails? }[]`. Single or Multiple comes from
+  the number of items. It renders a `<dl>`, with one `<div>` per row holding a
+  `<dt>` and a `<dd>`. Crypto rows fill the width with `details • amount`, and
+  the `•` is `aria-hidden`.
+- **`SelectWalletAccount.leadingSlot`** (G54). Figma's `icon left` boolean
+  (default off): a 40px, `aria-hidden` slot before the name stack. The
+  trigger's accessible name never reads from it.
+- **Two glyphs** (G56): `people` and `qr_code_scanner`, Material Round package
+  imports. The registry goes from 109 to 111 (73 Material + 38 custom),
+  counted by parser in a new test.
+
+### Fixed (comments only)
+
+- `SelectWalletAccount.tsx` and `.css` said the trigger "never shows a logo".
+  That is true of the 14 variants at rest and false of the component, which
+  has the `icon left` boolean. Both comments now say so.
+- `Icon.test.tsx` called the registry "106-entry". It is now 111, pinned by a
+  test.
+
+### Recorded, not fixed
+
+- **Figma defects on `<Transfer amount>`'s `•` separator: two foreign
+  bindings.** Its fill is `Neutral02` and its text style is
+  `Mcfont/Caption/2`. Both are REMOTE, from another library. They map to
+  `--mapped-text-subtle-default` and `type-body-caption`.
+- **The row gap in `<Transfer amount>` is 4px and unbound in Figma.** It
+  ships as `--brand-scale-100`.
+- **Error text contrast in dark** is recorded in CLAUDE.md's Gate 91 section.
+  The 3.81:1 figure carried from Gate 26 did not reproduce.
+- **Not built:** the hidden `*` and the hidden trailing element in both message
+  components, and `Frame 445`, a hidden `<Transfer amount>` inside
+  `Input` Type=Transfer that Flow 4 never shows.
+
+### Not changed
+
+- No token was added, moved or rebound. `npm run build:tokens` produces an
+  empty diff.
+- No new `style={` site in `src/components`.
+- `Label`, `Avatar`, `MenuItem` and every other existing component are
+  untouched.
+
+---
 ## v2.9.0
 
 Gate 86 adds a tap hook on `HeaderBg`'s avatar. It is a minor release: one

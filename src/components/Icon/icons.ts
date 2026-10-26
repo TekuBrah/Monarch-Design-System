@@ -69,6 +69,8 @@ import LinkOffIcon from '@material-design-icons/svg/round/link_off.svg?react'
 import ListAltIcon from '@material-design-icons/svg/round/list_alt.svg?react'
 import CreditCardIcon from '@material-design-icons/svg/round/credit_card.svg?react'
 import PhotoCameraIcon from '@material-design-icons/svg/round/photo_camera.svg?react'
+import PeopleIcon from '@material-design-icons/svg/round/people.svg?react'
+import QrCodeScannerIcon from '@material-design-icons/svg/round/qr_code_scanner.svg?react'
 
 // Custom icons (Assets/icons-custom/) — normalized to currentColor via scripts/normalize-custom-icons.mjs
 import CGolfCourse from '../../../Assets/icons-custom/golf_course.svg?react'
@@ -169,6 +171,10 @@ export const ICONS = {
   person:                 PersonIcon,
   account_circle:         AccountCircleIcon,
   group:                  GroupIcon,
+  // Gate 91 (G56): the transfer flow's recipients glyph. The DS Figma file's
+  // `people` Style=Round (5:1557) matches the package Round file segment for
+  // segment, so it ships as a plain package import, not a custom asset.
+  people:                 PeopleIcon,
   login:                  LoginIcon,
   logout:                 LogoutIcon,
   notifications:          NotificationsIcon,
@@ -181,6 +187,11 @@ export const ICONS = {
   link:                   LinkIcon,
   link_off:               LinkOffIcon,
   list_alt:               ListAltIcon,
+  // Gate 91 (G56): the transfer flow's scan-to-pay glyph. The DS Figma file's
+  // `qr_code_scanner` Style=Round (5:20271) matches the package Round file once
+  // three implicit close-path segments are ignored, so it ships as a package
+  // import too.
+  qr_code_scanner:        QrCodeScannerIcon,
   // The capture control for a photographed document (Gate 62). Material Round
   // like every other Material entry: same 0 0 24 24 viewBox, no fill of its
   // own, so it tints through the currentColor Icon sets. The base glyph, not

@@ -1,4 +1,5 @@
 import React, { useId } from 'react'
+import { useFormFieldContext } from '../FormField/FormFieldContext'
 import './Field.css'
 
 export type FieldAppearance = 'standard' | 'subtle'
@@ -58,11 +59,19 @@ export function Field({
 }: FieldProps) {
   const autoId = useId()
   const inputId = id ?? autoId
+  // Gate 91: inside a FormField (R91D-7) the wrapper's label names the input
+  // and its messages describe it, so the floating `label` is not rendered and
+  // the input is wired to the wrapper instead. Outside one this is `null` and
+  // every expression below reduces to its v2.9.0 value (R91D-8, hash-pinned
+  // in Field.formField.test.tsx). The compact branch has no input to wire and
+  // ignores it.
+  const formField = useFormFieldContext()
+  const showLabel = !!label && !formField
 
   const className = [
     'mn-field',
     `mn-field--${appearance}`,
-    label && !isCompact && 'mn-field--labeled',
+    showLabel && !isCompact && 'mn-field--labeled',
     isCompact && 'mn-field--compact',
     isDisabled && 'mn-field--disabled',
     isInvalid && 'mn-field--invalid',
@@ -95,7 +104,7 @@ export function Field({
       <div className="mn-field__main">
         {leadingIcon && <span className="mn-field__icon">{leadingIcon}</span>}
         <div className="mn-field__stack">
-          {label && (
+          {showLabel && (
             <label htmlFor={inputId} className="mn-field__label type-body-caption">
               {label}
               {isRequired && <span className="mn-field__required"> *</span>}
@@ -112,8 +121,10 @@ export function Field({
             disabled={isDisabled}
             required={isRequired}
             aria-required={isRequired || undefined}
-            aria-invalid={isInvalid || undefined}
-            aria-label={label ? undefined : ariaLabel}
+            aria-invalid={isInvalid || formField?.hasError || undefined}
+            aria-label={label || formField ? undefined : ariaLabel}
+            aria-labelledby={formField?.labelId}
+            aria-describedby={formField?.describedBy}
             onChange={e => onChange?.(e.target.value)}
           />
         </div>

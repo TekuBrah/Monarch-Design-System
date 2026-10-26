@@ -1,0 +1,69 @@
+/* TransferAmount — Figma `<Transfer amount>` (191:12003), four variants:
+   Single×Crypto 191:12002, Multiple×Crypto 191:12031, Single×Currency
+   191:12724, Multiple×Currency 191:13514. All values read from the component
+   set; nothing is inferred. */
+
+.mn-transfer-amount {
+  display: flex;
+  flex-direction: column;
+  gap: var(--brand-scale-200); /* 8px = Scale/200, between rows */
+  margin: 0; /* the UA stylesheet gives <dl> a block margin */
+}
+
+/* currency: rows HUG, aligned to the start (Figma MIN). */
+.mn-transfer-amount--currency {
+  align-items: flex-start;
+}
+
+/* `<transfer details>`: a horizontal row, items centred. Its 4px gap is
+   UNBOUND in Figma (no variable on itemSpacing, in all four variants); the
+   ramp step that equals it is --brand-scale-100. Recorded as a token-source
+   gap for the Figma side: it should bind Scale/100. */
+.mn-transfer-amount__row {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-100); /* 4px, unbound in Figma */
+}
+
+/* crypto: rows FILL, title and amount pushed apart (Figma SPACE_BETWEEN). */
+.mn-transfer-amount--crypto .mn-transfer-amount__row {
+  justify-content: space-between;
+}
+
+/* Every text node in all four variants is auto-width in Figma (HUG), so it
+   never wraps; nowrap keeps a long title or amount on one line, as drawn. */
+.mn-transfer-amount__title,
+.mn-transfer-amount__value {
+  white-space: nowrap;
+}
+
+.mn-transfer-amount__title {
+  color: var(--mapped-text-subtle-default); /* body/caption, text/subtle/default */
+}
+
+/* `Frame 444` (crypto) — details, separator, amount, gap Scale/50. Currency
+   draws the amount alone; the same box holds it. */
+.mn-transfer-amount__value {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-50); /* 2px = Scale/50 */
+  margin: 0; /* the UA stylesheet indents <dd> */
+}
+
+.mn-transfer-amount__amount {
+  color: var(--mapped-text-default-default); /* body/sm-semibold, text/default/default */
+}
+
+.mn-transfer-amount__details {
+  color: var(--mapped-text-subtle-default); /* body/sm-semibold, text/subtle/default */
+}
+
+/* FIGMA-DEFECT, two foreign bindings on one node. The `•` separator's fill is
+   `Neutral02` and its text style is `Mcfont/Caption/2`, both REMOTE (from
+   another library), not Monarch tokens. Mapped to the Monarch pair with the
+   same role and metrics: text/subtle/default (the details' own colour) and
+   body/caption (Mcfont/Caption/2 is 12/16 Poppins Regular, as body/caption
+   is). Needs a Figma fix: rebind both to Monarch variables. */
+.mn-transfer-amount__separator {
+  color: var(--mapped-text-subtle-default);
+}

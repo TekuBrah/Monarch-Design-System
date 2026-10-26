@@ -2284,6 +2284,17 @@ the property `HeaderBg`'s photo chrome already depends on. This is a choice
 taken inside the brief, flagged for Teku; the alternatives are in the release
 hand-over.
 
+> **Review-thread rulings, 15 Oct 2026 (recorded at Gate 91, which deletes
+> nothing above).** Two rulings on this gate are named here by content, so
+> nobody needs the handoff labels to find them:
+>
+> - **The avatar's hover and pressed treatment ships as built.** Its visual
+>   weight is accepted: the two Tag `overlay` washes in the table above are
+>   not re-tuned.
+> - **The avatar tap-hook demo lives in `HeaderBg`'s own showcase story**, the
+>   Header section's "HeaderBg — onAvatarClick (v2.9.0)" row in
+>   `showcase/App.tsx`. It does not get a section of its own.
+
 - **Hit area: 48px.** It comes from `::after` at
   `inset: calc(-1 * var(--brand-scale-200))`, i.e. 32 + 2 × 8, out of flow.
   There is no 6px ramp step, so 44 was not reachable with a token. The DS had
@@ -2356,6 +2367,208 @@ was corrected; the assertion is unchanged.
   are LF. `HeaderBg.css`, `package.json`, the lock file, `CHANGELOG.md`, this
   file, `docs/component-tokens.md` and `showcase/App.tsx` are CRLF. Every edit
   kept its file's endings, verified by byte scan.
+
+## Gate 91 — transfer components: `FormField`, `FieldMessage`, `TransferAmount`, `leadingSlot`, two glyphs (v2.10.0)
+
+Built on `main` at `4806dd7` (`v2.9.0`) and left uncommitted. Claude Code
+made no git writes. Release notes are in `CHANGELOG.md` v2.10.0, and the props
+and token tables are in `docs/component-tokens.md` (Form Field, Field Message,
+Transfer Amount, the Gate 91 notes under Field, Select / Transfer, Select /
+Wallet Account and Icon). This is the RESUMED build. The first Gate 91 session
+stopped with zero edits on the question of where field messages live. The
+review thread ruled on it (R91D-7), and this session built from that ruling.
+
+### 0 · Rulings
+
+| | ruling |
+|---|---|
+| R91D-1 | One release, v2.10.0, semver minor, all additive |
+| R91D-2 | `TransferAmount` ships all four Figma variants |
+| R91D-4 | Glyphs are Material Round package imports. Only `people` and `qr_code_scanner`; `check_circle` was already registered |
+| R91D-5 | Nothing beyond the closed list. A further missing component or variant is a STOP |
+| R91D-6 | Token colours only from Teku's Figma bindings (Ruling A, 21 Sept) |
+| R91D-7 | Field messages belong to the FORM ROW, as Figma `Input` (`191:11583`) models them: one wrapper, `FormField`, holding a label, one control, and an error and/or helper line. Per-control message props were rejected as three copies of one layout (Teku, 9 Oct: "Do it properly, dont create technical debt") |
+| R91D-8 | No existing component's default render changes. Every existing render path of `Field`, `SelectWalletAccount` and `SelectTransfer` stays sha256-identical to v2.9.0 outside a `FormField` and without the new prop |
+
+There is no R91D-3. The brief numbered none.
+
+Gap IDs: **G54** `SelectWalletAccount.leadingSlot`. **G55** `TransferAmount`.
+**G56** `people`, `qr_code_scanner`. **G57** field messages, via
+`FieldMessage` + `FormField`.
+
+### 1 · How the wrapper wires a control — the decisions a successor would re-derive
+
+- **Context, not cloneElement.** `FormField` provides
+  `{ labelId, describedBy, hasError }` through `FormFieldContext`
+  (`src/components/FormField/FormFieldContext.ts`). It is not in the package
+  barrel. The three controls call `useFormFieldContext()`, which is `null`
+  outside a wrapper, and every new expression then reduces to its v2.9.0
+  value. A context read is not a `useId` call, so no generated id moves.
+- **`aria-labelledby`, not `<label for>`, for all three controls.** The brief
+  asked for `<label for>` on native inputs. `Label` renders a `<div>`, and a
+  `<label>` may hold phrasing content only, so wrapping it is invalid HTML.
+  Giving `Label` an `as` prop was outside §2. The wrapper's
+  `div.mn-form-field__label` carries the id instead. Cost: clicking the label
+  does not focus a text input. The computed name is unchanged.
+- **The wallet `<button>` is named by `aria-labelledby="<labelId> <own id>"`.**
+  A self-reference resolves to the button's own `aria-label`, so the name is
+  the visible label followed by the existing name (WCAG 2.5.3):
+  `button "From Main Account — 6235474597 • MN"`. dom-accessibility-api
+  resolves it that way, and the test pins it.
+- **`aria-invalid` from the wrapper only on the textbox and the combobox.**
+  `button` does not support it in ARIA 1.2. `SelectWalletAccount.isInvalid`
+  still sets it on the button, as it did at v2.9.0. That is unchanged,
+  pre-existing, and axe passes it.
+- **The wrapper never repaints the control.** Figma's DS `Input` draws its
+  error line beside a `Field` at `Is Invalid=False`, so the red border stays
+  on the control's own `isInvalid`.
+- **Inside a `FormField` a control renders no visible label of its own.** The
+  case study hides `Select / Transfer`'s caption (`Label#41:8` false). The DS
+  `Input`'s DEFAULT control is `Field` `Label=True`, so the DS file draws two
+  labels. That disagreement is recorded, and the brief's rule was followed.
+- **"merged with any the consumer passed" had nothing to merge.** None of the
+  three controls accepts an `aria-describedby` prop at v2.9.0, and adding one
+  would be outside the closed list (R91D-5).
+
+### 2 · Figma (remote connector, both files by key; read-only)
+
+`whoami` → Teku Cheong. The local desktop MCP refused with ECONNREFUSED. The
+remote connector read both files with no tab switching. Every value the
+stopped session reported was re-read and **holds**. The re-read added:
+
+- **The `Input`'s Label is overridden to `text/subtle/default`** in both
+  variants and in every case-study instance. `Label`'s own main component
+  binds `text/default/default`. Built as `<Label tone="subtle">`.
+- **Every case-study Label has `elemBeforelabel`, `elemAfterlabel` and
+  `Is required` off.** The DS component shows a `help_outline` after-element
+  by default. None is rendered.
+- **`Frame 445` (`191:13564`)** is a hidden frame inside Type=Transfer holding
+  a `<Transfer amount>` Single×Currency (`191:13555`). No case-study `Input`
+  contains it, because Flow 4 draws "Your new balance" as a sibling. **Not
+  built.** Compose `TransferAmount` beside the `FormField`.
+- **`<transfer details>` rows are cross-axis CENTRED** (16px title in a 20px
+  row). Figma text is auto-width, so the code sets `white-space: nowrap`. The
+  first showcase pass wrapped a long crypto row onto two lines, and that is
+  how this was found.
+- `Select / Wallet Account` `189:5871`: 14 variants, `icon left` default
+  false, `<element>` `49:4365` XXL 40 hidden in every variant. The glyphs
+  `5:1557` and `5:20271` resolve as `people` / `qr_code_scanner`
+  Style=Round.
+
+### 3 · R91D-8, proved
+
+Before the first source edit, `renderToStaticMarkup` was captured for **82
+cases** (Field 27, SelectTransfer 28, SelectWalletAccount 27). They cover
+every render in the control's test file, every render in
+`showcase/App.tsx`, and a prop matrix. The cases live in
+`src/test/formControlCases.tsx`. The sha256 values are pinned in
+`<Control>.formField.test.tsx`. The full strings are outside the repo, in the
+hand-over. All 82 passed after every batch. Components that use `Field`
+internally (`Menu`, `HeaderBg`) also pass unchanged, including Gate 86's own
+22 hash pins.
+
+### 4 · Measured (showcase, both themes, transitions finished)
+
+- **FormField.** Root gap 10 / 12, body gap 4. The transfer label is centred
+  (137.3px in 343). Label text `#6b7786` light / `#8695a7` dark,
+  `600 14px/20px` (S) and `600 16px/24px` (M).
+- **FieldMessage.** Glyph 16 × 16. Error glyph `#eb4f52` / text `#bc3f42` in
+  light; glyph `#bc3f42` / text `#eb4f52` in dark (the token steps swap per
+  theme). Helper `#6b7786` / `#8695a7`.
+- **leadingSlot.** 40 × 40, 4px from the top of the 48px group (Figma
+  y = 4), stack 8px to its right. An initials `Avatar` `l` measures 41.6 at
+  DPR 1.25 because of its 1px border. That artefact is pre-existing (Gate 86
+  saw it at `m`).
+- **TransferAmount.** Rows 20px. Currency "Your new balance RM 25,428.59" =
+  205.13px, hugging. Crypto rows fill, with the amount flush right.
+- **Contrast, Ruling A (measured, not changed).** Error text: light 5.3463 on
+  white. Dark 5.7727 on black and **4.1600 on `#262626`** (fails 4.5 for 12px
+  text; Gate 62 §5 already records it). **The 3.81:1 dark figure carried from
+  Gate 26 did not reproduce** on any surface measured. Error glyph 3.6378
+  light / 3.9279 dark (≥ 3.0). Helper text 4.5572 light / 6.8706 dark.
+
+### 5 · Findings, recorded and not fixed
+
+- **`<Transfer amount>` separator: two foreign bindings** (`figma-defect`):
+  fill `Neutral02` and text style `Mcfont/Caption/2`, both REMOTE. They map to
+  `--mapped-text-subtle-default` + `type-body-caption`.
+- **The 4px row gap is unbound** in all four variants. It ships as
+  `--brand-scale-100`.
+- **Hidden extras not built:** the `*` text and the trailing `<element>` in
+  both message components.
+- **`Avatar` is a `<div>`**, so a leading avatar puts a `<div>` inside the
+  wallet `<button>`. A button may hold phrasing content only. Browsers and
+  axe accept it. `MenuItem type="account"` has the same nesting.
+- **The stopped report's §2.5 still stands:** the 19B confirmation step and
+  the success page are undrawn in Figma.
+
+### 6 · Counts
+
+| | v2.9.0 | v2.10.0 |
+|---|---|---|
+| tests / files | 779 / 66 | **975 / 72** |
+| component folders / CSS files | 53 / 62 | **56 / 65** (65/65 registered) |
+| icon registry | 109 | **111** (73 + 38) |
+| `style={` in non-test component `.tsx` | 14 in 9 | **14 in 9** |
+| `:hover` / `@media (hover: hover)` in component CSS | 50 / 42 | **50 / 42** |
+| `build:tokens` diff | — | **empty** |
+
+**The added tests:**
+
+| file | added |
+|---|---|
+| `Field.formField.test.tsx` | 40 |
+| `SelectTransfer.formField.test.tsx` | 41 |
+| `SelectWalletAccount.formField.test.tsx` | 47 |
+| `FormField.test.tsx` | 23 |
+| `FieldMessage.test.tsx` | 17 |
+| `TransferAmount.test.tsx` | 23 |
+| `Icon.test.tsx` | +5 (23 → 28) |
+
+No existing test was edited or deleted. `Icon.test.tsx` gained the five tests,
+three imports (`readFileSync`, `resolve`, `ICONS`), and a corrected prose count in a comment.
+
+Each count's source:
+
+- **`:hover` = 50 / 42 at v2.9.0.** Gate 73's table says 49 / 41. Gate 86
+  added one of each, and this gate adds none.
+- **No mutation proofs were run here.** Phase B runs them from
+  `MUTATION-PLAN.md` in the hand-over.
+
+### 7 · Tooling notes
+
+- **Two helper modules were added under `src/test/`.**
+  `componentCss.ts` is the brace-depth stylesheet scan Gate 86 wrote inline,
+  lifted out so the three new component tests share one copy.
+  `formControlCases.tsx` holds the 82 hash-pin cases. Neither has `.test.` in
+  its name, so vitest does not collect it.
+- **`document.getAnimations().forEach(a => a.finish())` THROWS on this
+  showcase.** At least one animation has an infinite end (the Loader).
+  Wrap each `finish()` in try/catch.
+- **`npm version 2.10.0 --no-git-tag-version` kept CRLF** in both files (byte
+  scan) and changed exactly 3 lines.
+
+### 8 · Phase B record, and the fix pass before the commit
+
+- **193 of the 195 planned mutations proved**, each failing at the planned
+  line. **M037 and M143 survived as weak mutations**, not weak tests: S037 and
+  S143, alternative type-valid mutations, killed the same two tests.
+- **M037** (`Field`'s `aria-labelledby` pointed at a missing id): axe accepts
+  the placeholder as a name when no message exists, so the `none` axe case
+  passes. Run against the WHOLE `Field.formField.test.tsx`, the mutation fails
+  11 of 40, the first at line 78 (`is named by the wrapper label, which is in
+  the name in full`). A lost wrapper label is already caught; **no test was
+  added.**
+- **M143** (`helperId` set to the error id): the whole `FormField.test.tsx`
+  passed 22 of 22. `gives two FormFields distinct ids` compares ids across two
+  instances and never examines a collision inside one. **One test added:**
+  `gives the error line and the helper line distinct ids within one FormField`.
+  Mutated, it fails at the distinctness assertion (line 145). A second
+  mutation, the error id listed twice in `aria-describedby`, fails it at line
+  146. Restored, it passes. The suite is 975 tests in 72 files.
+- **Corrections made in this fix pass:** the `Icon.test.tsx` import count above
+  (two to three), and the retired 3.81:1 figure in `FieldMessage.css`'s header
+  comment (now 5.77:1 on black and 4.16:1 on `#262626`).
 
 ## Known open items
 - **Heading font-size in source**: Figma composites wire `{fontSize.N}` (static), not a

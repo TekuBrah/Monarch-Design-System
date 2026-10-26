@@ -914,6 +914,26 @@ For IconButton: the icon slot always expects `size="l"` (24px) since IconButton 
 
 ---
 
+### `people` and `qr_code_scanner` (Gate 91, v2.10.0, G56)
+
+Both are added as `@material-design-icons/svg/round/<name>.svg?react` package
+imports, the registry's existing form for Material entries.
+
+- **Source.** The DS Figma file's `people` Style=Round (`5:1557`) and
+  `qr_code_scanner` Style=Round (`5:20271`).
+- **Geometry, as reported by the stopped first Gate 91 session and not
+  re-derived by the resumed one.** Figma's Round vectors match package
+  0.14.15 segment by segment. `people`: 32 segments, worst delta 3.6e-15.
+  `qr_code_scanner`: 110 segments, identical once three explicit close-path
+  `Z`s, which the package omits, are ignored.
+- **Registry: 109 → 111** (73 Material Round + 38 custom). `Icon.test.tsx`
+  now counts this with a parser over `icons.ts` and checks it against
+  `Object.keys(ICONS)`. Its prose comment, which still read "106-entry", is
+  corrected in the same file.
+- **Showcase.** `people` is under "People & Comms" and `qr_code_scanner` is
+  under "App & Content". Both measured 20 × 20, tinted through
+  `currentColor`.
+
 ## Avatar
 
 **Figma node:** 102:2756 (Parts frame — Default + Label subsections)
@@ -2214,6 +2234,27 @@ Label: `.type-body-caption` (12px). Input/placeholder: `.type-body-m` (16px).
 
 ---
 
+### Inside a `FormField` (Gate 91, v2.10.0)
+
+`Field` reads `FormField`'s context. Outside a `FormField` it renders v2.9.0's
+markup byte for byte: 27 render paths are pinned by sha256 in
+`Field.formField.test.tsx`. Inside one:
+
+| | outside (unchanged) | inside a `FormField` |
+|---|---|---|
+| visible `label` | floating label rendered | **not rendered**, and no `mn-field--labeled`. The wrapper's label replaces it |
+| accessible name | `<label for>` or `ariaLabel` | `aria-labelledby` = the wrapper's label. `ariaLabel` is dropped |
+| `aria-describedby` | none | the ids of the messages shown, error first |
+| `aria-invalid` | `isInvalid` | `isInvalid` **or** an error line is present |
+| visual invalid state | `isInvalid` | `isInvalid` only. Figma's `Input` draws its error line beside a `Field` at `Is Invalid=False`, so the wrapper never repaints the control |
+| compact | role="img" box | unchanged. It has no input to wire |
+
+**Figma disagreement, recorded.** `Input`'s default control is `Field`
+`Label=True` (`39:1085`), so the DS file draws the wrapper's label and the
+Field's floating label together. The rule here is that a control inside a
+`FormField` renders no second visible label. The case study never puts `Field`
+inside an `Input`.
+
 ## Select
 
 **Figma node:** 42:949 (`Select` component set)
@@ -2469,6 +2510,24 @@ responsibility.
   out at ~300s; single-variant sequential calls succeed reliably. All ten
   Attention state variants plus the Standard/Subtle base were read this way.
 
+### Inside a `FormField` (Gate 91, v2.10.0)
+
+`SelectTransfer` reads `FormField`'s context. Outside a `FormField` it renders
+v2.9.0's markup byte for byte: 28 render paths are pinned by sha256 in
+`SelectTransfer.formField.test.tsx`. Inside one:
+
+- **The caption `label` is not rendered**, in every appearance. Flow 4's
+  amount (`I1266:14392;1057:11149;191:11587`) sets `Label#41:8` false inside
+  `Input` Type=Transfer, so the wrapper's "Transfer Amount" is the only
+  label.
+- **The amount combobox is named by `aria-labelledby`**, pointing at the
+  wrapper's label. `ariaLabel` is dropped.
+- **`aria-describedby`** lists the messages shown, error first.
+- **`aria-invalid="true"` while an error line shows.** `combobox` supports
+  it. The visual invalid state stays on `isInvalid`.
+- **The currency button is not touched.** It keeps its own name, "Choose
+  currency", and is not described by the field's messages.
+
 ## Select / Wallet Account
 
 **Figma node:** 189:5871 (`Select / Wallet Account`)
@@ -2596,6 +2655,182 @@ handles both the visual and interactive disabled state natively.
   twice on a wrong premise (once inside the box, once beside it). The "logo
   belongs to the Menu/Option item rows" prediction has since been confirmed —
   see the crypto-type `MenuItem` composition noted above.
+
+### `leadingSlot` (Gate 91, v2.10.0, G54)
+
+> **Correction (Gate 91):** the "Corrected finding" above is wrong about the
+> component, and right only about its 14 variants at rest. `icon left`
+> (`icon left#39:29`) is a real BOOLEAN property of the set `189:5871`, and
+> it defaults to **false**. Every variant carries the slot: an `<element>`
+> Size=XXL 40 (`49:4365`), the first child of `Frame 322`, hidden while the
+> boolean is off. Flow 4 turns it on for both account pickers
+> (`1266:14392`, `1266:14393`, `1266:14388`): Margaret's photo on From,
+> Rachum's photo on To. The earlier `logoSlot` was removed on the premise that
+> no instance ever shows it, and the case study now shows one.
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `leadingSlot` | `React.ReactNode` | — | Rendered as `<span class="mn-select-wallet-account__leading" aria-hidden="true">` inside `__main`, before `__stack`. Pass a 40px node, e.g. `<Avatar size="l" />` |
+
+| part | value | token |
+|---|---|---|
+| slot box | 40 × 40, flex, centred, `flex-shrink: 0` | `--brand-scale-1000` |
+| slot → stack gap | 8px | `--brand-scale-200` (the existing `__main` gap, Figma `Scale/200`) |
+| vertical position | centred in the 48px group (Figma y = 4) | `__main`'s `align-items: center` |
+
+- **The accessible name never reads from the slot.** The slot is
+  `aria-hidden`, and the button's name still comes from `ariaLabel` or
+  `labelCrypto — labelWallet`.
+- **Measured in the showcase:** slot 40 × 40, 4px from the top of a 48px
+  group, stack 8px to its right.
+- **Without the prop, the markup is v2.9.0's byte for byte.** 27 render paths
+  are pinned in `SelectWalletAccount.formField.test.tsx`.
+- **Recorded:** `Avatar` renders a `<div>`, so a consumer's avatar puts a
+  `<div>` inside the trigger `<button>`. A button may hold phrasing content
+  only, so that HTML is non-conforming. Browsers and axe accept it.
+  `MenuItem type="account"` has the same nesting inside its row. Changing
+  `Avatar` is outside Gate 91.
+- **Recorded:** an initials `Avatar` `l` measures 41.6px at DPR 1.25, against
+  the slot's 40. Its 1px border sits outside the content box. The same
+  artefact Gate 86 measured on `m`, and pre-existing.
+
+### Inside a `FormField` (Gate 91, v2.10.0)
+
+- **Name:** `aria-labelledby` lists the wrapper's label id, then the button's
+  own id. A self-reference resolves to the button's `aria-label`, so the name
+  is "From Main Account — 6235474597 • MN": the visible label first, then the
+  existing name (WCAG 2.5.3).
+- **Description:** `aria-describedby` lists the messages shown, error first.
+- **No `aria-invalid` from the wrapper.** `button` does not support it in
+  ARIA 1.2, so the described-by error line carries the meaning. The existing
+  `isInvalid` prop is unchanged and still sets it, as it did at v2.9.0.
+
+## Form Field
+
+**Figma node:** `191:11583` (`Input`): `58:2198` Type=Default and
+`191:11584` Type=Transfer. Built at Gate 91 (v2.10.0, G57) under ruling
+R91D-7: field messages belong to the form row, not to each control, as
+Teku's Figma models them.
+
+A label, ONE control, then an error line and/or a helper line. The control
+reads the wrapper's label id, message ids and error state from a context that
+only `FormField` provides. That is the composition Chakra (`Field.Root` +
+`Field.HelperText` / `Field.ErrorText`) and React Aria (`TextField` +
+`description` / `FieldError`) publish.
+
+### Nested components
+
+`Label` (the real component, `tone="subtle"`), `FieldMessage` ×2, and the
+swapped control. Figma's `Instance#191:3` swap defaults to `Field` `39:1085`,
+and its preferred values are the `Field` set only. The case study swaps in
+`Select / Wallet Account` (From) and `Select / Transfer` (amount). All three
+read the context.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `label` | `string` | — (required) | The visible label |
+| `type` | `'default' \| 'transfer'` | — (required) | Figma `Type` |
+| `error` | `ReactNode` | — | Shown when present. `''`, `null` and `false` count as absent |
+| `helper` | `ReactNode` | — | Shown below the error line when both are present |
+| `children` | `ReactElement` | — (required) | Exactly one control, passed WITHOUT its own `label` |
+
+### Layout → token mapping
+
+| part | Type=Default | Type=Transfer | token |
+|---|---|---|---|
+| root gap (label → body) | 10px | 12px | `--brand-scale-250` / `--brand-scale-300` |
+| label | `Label` size S, start-aligned | `Label` size M, centred | — |
+| label colour | `text/subtle/default` | same | `Label tone="subtle"` → `--mapped-text-subtle-default` |
+| body gap (control → error → helper) | 4px | 4px | `--brand-scale-100` |
+| messages | start-aligned, hug | start-aligned, hug (Figma `counterAlign MIN`) | — |
+
+The label wrapper and the body are flex boxes (THE WRAPPER RULE). A control
+fills the row only with its own `sizing="fill"`. Its default width is kept
+otherwise.
+
+### Accessibility
+
+- **Name.** `aria-labelledby`, not `<label for>`. `Label` renders a `<div>`,
+  and a `<label>` may hold phrasing content only, so wrapping it would be
+  invalid HTML. Changing `Label` was outside the gate. The cost: clicking the
+  label does not focus a text input. The computed name is the same.
+- **Description.** `aria-describedby` = error id, then helper id, only for
+  the messages shown. None is added without a message.
+- **Invalid.** `aria-invalid="true"` on the two inputs (textbox, combobox)
+  while the error line shows. Not on the wallet `button` (unsupported in ARIA
+  1.2).
+- **Computed names inside a `FormField`** (testing-library):
+  `textbox "Amount"`, `combobox "Transfer Amount"`,
+  `button "From Main Account — 6235474597 • MN"`.
+- **No live region.** Messages are announced through `aria-describedby`.
+- axe passes on every control × {no message, helper, error, both}.
+
+### Known Figma notes
+
+- **`Frame 445` (`191:13564`) is not built.** It is a hidden frame inside
+  Type=Transfer holding a `<Transfer amount>` Single×Currency. No case-study
+  instance of `Input` contains it. Flow 4 draws "Your new balance" as a
+  sibling of the `Input`, so compose `TransferAmount` beside the
+  `FormField`.
+- **Label overridden in Figma.** `Label`'s own text is `text/default/default`.
+  `Input` overrides it to `text/subtle/default` in both variants and in every
+  case-study instance.
+- **The case study hides Label's before/after elements and its asterisk**
+  (`elemBeforelabel`, `elemAfterlabel`, `Is required` all false), although the
+  DS component shows the after-element by default. None is rendered.
+- **The DS default control draws two labels.** `Field` `Label=True` inside the
+  wrapper. See the Field entry's Gate 91 note.
+
+## Field Message
+
+**Figma nodes:** `279:4741` (`<Error message>`), `279:4770`
+(`<Helper message>`). Built at Gate 91 (v2.10.0, G57).
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `tone` | `'error' \| 'helper'` | — (required) | |
+| `children` | `ReactNode` | — (required) | The message |
+| `id` | `string` | — | Passed to the root, for `aria-describedby`. `FormField` supplies one |
+
+### Tone → token mapping
+
+| tone | glyph (16px, `Icon size="s"`) | glyph token | text style | text token |
+|---|---|---|---|---|
+| error | `error` | `--mapped-icon-error-default` | `.type-body-caption-semibold` | `--mapped-text-error-default` |
+| helper | `help_outline` | `--mapped-icon-subtle-default` | `.type-body-caption` | `--mapped-text-subtle-default` |
+
+Row: flex, `align-items: center`, gap `--brand-scale-100` (Scale/100). The
+glyph colour is set on the root and reaches the `<svg>` through
+`currentColor`. The text sets its own token.
+
+### Accessibility
+
+No `role` and no `aria-live`. The control announces the message through
+`aria-describedby`, so a live region would announce it twice. The glyph's
+`<svg>` is `aria-hidden`.
+
+### Measured (showcase, `getComputedStyle`, both themes)
+
+| | light | dark |
+|---|---|---|
+| error text on page | `#bc3f42` on `#ffffff` **5.3463** | `#eb4f52` on `#000000` **5.7727** |
+| error text on `#262626` (elevation / page-secondary) | — | **4.1600** ❌ (under 4.5 for 12px) |
+| error glyph on page | `#eb4f52` **3.6378** | `#bc3f42` **3.9279** |
+| helper text on page | `#6b7786` **4.5572** | `#8695a7` **6.8706** |
+
+Ruling A: measured and recorded, not changed. **The 3.81:1 dark figure
+carried from Gate 26 does not reproduce** on any surface measured here. The
+failing dark cell is 4.16, on `#262626`, which CLAUDE.md's Gate 62 §5 already
+records.
+
+### Not built
+
+Figma's hidden `*` text and hidden trailing `<element>`. Both are
+`visible: false` in both components and are never shown in any instance.
 
 ## Text area
 
@@ -4396,6 +4631,65 @@ Measured, showcase, `getComputedStyle`: expanded title `#5e4db2` on `#ffffff`
 - **The label is now status-coloured, which diverges from the base Figma component.** `Item/list` Type=Crypto gives its `Amount info` text `text/subtle/default` (gray), while `Homepage_Crypto` overrides that same node (`…;708:3624;153:1851`) to `text/error/default` for the decline and `text/success/default` for every rise. Adopted the screen's treatment, by decision — the base component's gray default is what the screen is correcting, and a trend whose number is gray is the weaker design.
 
 ---
+
+## Transfer Amount
+
+**Figma node:** `191:12003` (`<Transfer amount>`), four variants:
+`191:12002` Single×Crypto, `191:12031` Multiple×Crypto, `191:12724`
+Single×Currency, `191:13514` Multiple×Currency. Built at Gate 91 (v2.10.0,
+G55). Case study: `I1266:14392;1057:11151` ("Your new balance" /
+"RM 25,428.59").
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `type` | `'currency' \| 'crypto'` | — (required) | Figma `Type` |
+| `items` | `{ title: string; amount: string; amountDetails?: string }[]` | — (required) | One row per item. Figma's `Rows` (Single / Multiple, drawn as 4) comes from the count. `title` is the React key, so keep titles unique |
+
+`amountDetails` renders in `crypto` only, and only when given. Figma ties the
+details text and the separator to one boolean (`{Amount details}#191:16`).
+
+### Markup
+
+`<dl class="mn-transfer-amount mn-transfer-amount--{type}">`, then one
+`<div class="__row">` per item holding `<dt class="__title">` and
+`<dd class="__value">`. That is the valid way to group name-value pairs in a
+`<dl>`. The `•` separator (U+2022) is `aria-hidden`.
+
+### Token mapping
+
+| part | value | token |
+|---|---|---|
+| row stack gap | 8px | `--brand-scale-200` (Scale/200) |
+| row gap | 4px, **unbound in Figma** | `--brand-scale-100` |
+| row alignment | currency: hug, start (MIN). crypto: fill, `space-between` | — |
+| row cross-axis | centred | — |
+| title | `.type-body-caption` | `--mapped-text-subtle-default` |
+| amount | `.type-body-sm-semibold` | `--mapped-text-default-default` |
+| details (crypto) | `.type-body-sm-semibold` | `--mapped-text-subtle-default` |
+| details → • → amount gap | 2px | `--brand-scale-50` (Scale/50) |
+| separator | `.type-body-caption` | `--mapped-text-subtle-default` |
+| text wrapping | none (Figma text is auto-width) | `white-space: nowrap` |
+| `<dl>` / `<dd>` UA margins | reset to 0 | — |
+
+### Figma defects (`figma-defect`), recorded, not fixed
+
+- **The separator has two foreign bindings.** Fill `Neutral02` (`#6b7280`,
+  collection "Color Scheme") and text style `Mcfont/Caption/2` (12/16 Poppins
+  Regular) are both REMOTE, from another library. They map to the Monarch
+  pair with the same role and metrics: `--mapped-text-subtle-default` and
+  `type-body-caption`. Figma should rebind both to Monarch variables.
+- **The 4px row gap is unbound** in all four variants. It ships as
+  `--brand-scale-100`, the ramp step equal to it. Figma should bind it to
+  `Scale/100`.
+
+### Measured (showcase, both themes)
+
+Rows 20px tall. Titles 16px tall, centred (2px offset). Currency rows hug:
+"Your new balance RM 25,428.59" = 205.13px. Crypto rows fill their column,
+with the amount flush right. Light: title `#6b7786`, amount `#363c43`. Dark:
+title `#8695a7`, amount `#cfd5dc`. Separator follows the title in both.
 
 ## Card
 

@@ -1,0 +1,34 @@
+/* FieldMessage — Figma `<Error message>` (279:4741) and `<Helper message>`
+   (279:4770). Both are a horizontal row, gap Scale/100, items centred: a 16px
+   `<element>` glyph, then the message text.
+
+   `color` on the ROOT is the GLYPH's token: Icon's <svg> takes
+   fill="currentColor", so the glyph inherits it. The text sets its own token
+   on its own element, because Figma binds glyph and text separately
+   (icon/... vs text/...). */
+
+.mn-field-message {
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-100); /* 4px = Scale/100 */
+}
+
+/* error: glyph icon/error/default, text text/error/default (body/caption-semibold).
+   Recorded, not fixed (Ruling A): --mapped-text-error-default measures 5.77:1
+   on the black dark page and 4.16:1 on #262626, which fails AA for 12px text.
+   Measured at Gate 91 and recorded for the DS round in CLAUDE.md's Gate 91
+   section; the 3.81:1 figure carried from Gate 26 did not reproduce. */
+.mn-field-message--error {
+  color: var(--mapped-icon-error-default);
+}
+.mn-field-message--error .mn-field-message__text {
+  color: var(--mapped-text-error-default);
+}
+
+/* helper: glyph icon/subtle/default, text text/subtle/default (body/caption). */
+.mn-field-message--helper {
+  color: var(--mapped-icon-subtle-default);
+}
+.mn-field-message--helper .mn-field-message__text {
+  color: var(--mapped-text-subtle-default);
+}

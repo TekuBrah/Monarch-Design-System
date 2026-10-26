@@ -1,5 +1,6 @@
 import React, { useId, useRef, useState } from 'react'
 import { Icon } from '../Icon'
+import { useFormFieldContext } from '../FormField/FormFieldContext'
 import './SelectTransfer.css'
 
 export type SelectTransferAppearance = 'standard' | 'subtle' | 'attention'
@@ -71,6 +72,13 @@ export function SelectTransfer({
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false)
   const open = isOpen ?? uncontrolledOpen
   const setOpen = (o: boolean) => (onOpenChange ? onOpenChange(o) : setUncontrolledOpen(o))
+  // Gate 91: inside a FormField (R91D-7) the wrapper's label names the amount
+  // input and its messages describe it, so the caption `label` is not rendered
+  // (Figma's case study turns it off, `Label#41:8` false). `combobox` supports
+  // `aria-invalid`, so the error line sets it. Outside a FormField this is
+  // `null` and the markup is v2.9.0's (R91D-8, hash-pinned).
+  const formField = useFormFieldContext()
+  const showLabel = !!label && !formField
 
   const isAttention = appearance === 'attention'
   const amountTypeClass = isAttention ? 'type-header-h5' : 'type-body-lg'
@@ -107,8 +115,10 @@ export function SelectTransfer({
       aria-expanded={open}
       aria-controls={showMenu ? menuId : undefined}
       aria-autocomplete="list"
-      aria-invalid={isInvalid || undefined}
-      aria-label={label ? undefined : ariaLabel}
+      aria-invalid={isInvalid || formField?.hasError || undefined}
+      aria-label={label || formField ? undefined : ariaLabel}
+      aria-labelledby={formField?.labelId}
+      aria-describedby={formField?.describedBy}
       onChange={e => onAmountChange?.(e.target.value)}
     />
   )
@@ -147,7 +157,7 @@ export function SelectTransfer({
       >
         {isAttention ? (
           <span className="mn-select-transfer__stack">
-            {label && (
+            {showLabel && (
               <label htmlFor={inputId} className={`mn-select-transfer__label ${labelTypeClass}`}>
                 {label}
               </label>
@@ -162,7 +172,7 @@ export function SelectTransfer({
           <>
             <div className="mn-select-transfer__main">
               <span className="mn-select-transfer__stack">
-                {label && (
+                {showLabel && (
                   <label htmlFor={inputId} className={`mn-select-transfer__label ${labelTypeClass}`}>
                     {label}
                   </label>

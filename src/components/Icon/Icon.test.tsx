@@ -1,12 +1,15 @@
 import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
 import { axe } from 'jest-axe'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { Icon } from './Icon'
 import type { IconName, IconSize } from './Icon'
+import { ICONS } from './icons'
 
 const SIZES: IconSize[] = ['xs', 's', 'm', 'l']
 
-// Deviation, flagged: IconName is a 106-entry asset REGISTRY, not a variant
+// Deviation, flagged: IconName is a 111-entry asset REGISTRY, not a variant
 // axis. Enumerating it would be inventory testing, not smoke — so a
 // representative sample is used and IconSize is iterated in full instead
 // (same reasoning as Logo's LogoName exclusion in Batch 1).
@@ -18,6 +21,12 @@ const SIZES: IconSize[] = ['xs', 's', 'm', 'l']
 // 101 as fact when opening G16, so a comment nobody re-derived became an
 // external figure. It is a dated prose count with no gate behind it; do not
 // trust it without re-running the parser.
+//
+// Gate 91 (v2.10.0) corrected it again: the "106-entry" above had gone stale
+// at Gates 62 (photo_camera), 70 (icon_spend) and 73 (golf_course), and G56
+// adds people and qr_code_scanner. The parser now reads 111 = 73 Material
+// Round + 38 custom, and the registry-count test below pins it, so the next
+// drift fails a test instead of a comment.
 const SAMPLE_NAMES: IconName[] = ['add', 'close', 'check', 'edit', 'refresh', 'search']
 
 // Icon renders a decorative, aria-hidden <svg> inside an unclassed
@@ -134,6 +143,32 @@ describe('Icon', () => {
     const { container } = render(<Icon name="golf_course" />)
     const fills = [...container.querySelectorAll('svg path')].map(p => p.getAttribute('fill'))
     expect(fills).toEqual(['currentColor', 'currentColor'])
+  })
+
+  // people and qr_code_scanner — added at Gate 91 (G56) for the transfer flow.
+  // Both are Material Round package imports, so they carry no fill of their
+  // own and tint through the currentColor Icon sets. Typed as IconName so that
+  // dropping either from the registry fails `tsc -b` as well as these tests.
+  it.each<IconName>(['people', 'qr_code_scanner'])('renders the %s glyph', name => {
+    const { container } = render(<Icon name={name} />)
+    expect(container.querySelector('svg path')).not.toBeNull()
+  })
+
+  it.each<IconName>(['people', 'qr_code_scanner'])('tints the %s glyph through currentColor', name => {
+    const { container } = render(<Icon name={name} />)
+    expect(container.querySelector('svg')).toHaveAttribute('fill', 'currentColor')
+  })
+
+  // The registry count, by parser over icons.ts AND by the runtime object, so
+  // a key added or dropped anywhere changes a number this test names.
+  it('registers 111 icons: 73 Material Round imports and 38 custom assets', () => {
+    const src = readFileSync(resolve(__dirname, 'icons.ts'), 'utf8')
+    const material = src.match(/^import \w+ from '@material-design-icons\/svg\/round\/[a-z0-9_]+\.svg\?react'/gm) ?? []
+    const custom = src.match(/^import \w+ from '\.\.\/\.\.\/\.\.\/Assets\/icons-custom\/[a-z0-9_]+\.svg\?react'/gm) ?? []
+    const body = src.slice(src.indexOf('export const ICONS = {'), src.indexOf('} as const'))
+    const keys = body.match(/^\s+[a-z0-9_]+:\s+\w+,/gm) ?? []
+    expect([material.length, custom.length, keys.length]).toEqual([73, 38, 111])
+    expect(Object.keys(ICONS)).toHaveLength(keys.length)
   })
 
   it('renders the logo_monarch brand mark', () => {
