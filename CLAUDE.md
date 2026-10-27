@@ -2578,9 +2578,10 @@ edits, because Figma's item is not a hug item. The review thread ruled both of
 that report's briefs on 27 Oct 2026, and this RESUMED build follows those
 rulings. Both reports are in `D:\Claude\_handoffs\gate92-ds\`:
 `BUILD-REPORT.md` is the §1 stop, `RESUME-BUILD-REPORT.md` is this build.
-**There is no `CHANGELOG.md` entry and no `docs/component-tokens.md` row**,
-because R92D-8's closed list names neither. Drafts of both are in the
-hand-over, for Teku to apply or drop.
+`CHANGELOG.md` (the v2.11.0 entry) and `docs/component-tokens.md` (the
+Navigation correction note, update note, `width` section and hug token
+row) were added after the build, insert-only, outside R92D-8's original
+closed list (ruling R92D-12).
 
 ### 0 · Rulings
 
@@ -2592,6 +2593,10 @@ hand-over, for Teku to apply or drop.
 | R92D-8 | One minor release, `2.10.0` → `2.11.0`. Closed list: the label rule, the item field and its CSS, a showcase demo, tests, the version, this section |
 | R92D-9 | The mutation negative control must typecheck, run, leave its target passing, and report NO PROOF |
 | R92D-10 | Record corrections: the main bar is in `1266:14402` / `1266:14331`, not `1266:14390`; `BottomNavItem` is a data interface; the DS has no Storybook; there is no 64 floor |
+| R92D-11 | "All 98 rows" corrected: the 8 zero-item rows render no label; the computed property that changes is `text-wrap-mode` (Chromium reports no `white-space` longhand). Accepted, not a stop |
+| R92D-12 | `CHANGELOG.md` (v2.11.0 entry) and `docs/component-tokens.md` (Navigation notes, `width` section, hug token row) are part of this release, inserted after the build, insert-only, fixed before the commit. R92D-8's closed list was wrong to omit them |
+| R92D-13 | R92D-7 is implemented in the markup (the hug class is never emitted in a fill bar) rather than by a scoped selector. Accepted: it makes "no effect in fill" provable byte for byte |
+| R92D-14 | The three corrections above and rows R92D-11 to R92D-13 missed the v2.11.0 commit (a Sourcetree re-stage silently failed) and ship in v2.11.1, a documentation-only patch. Published tags are never moved. v2.11.0's code, tests and pins are exactly the tree Phase B verified |
 
 ### 1 · What Figma says — do not re-derive
 
@@ -2660,9 +2665,9 @@ byte, and confirmed that vitest renders all 49 to the same markup as
 | any other property | none | **none**. In each of the 10 rows only "Scan QR"'s label moves (48 × 32 → 50.078 × 16) and its icon re-centres above it. Item boxes do not move |
 
 Eight NEW paths were appended as rows 49–56, so the first 49 stay comparable
-one to one. Two of them hash to existing v2.10.0 pins, by construction: a hug
-item in a fill bar equals the plain fill markup, and explicit `'fixed'` on
-every item equals the plain hug markup.
+one to one. Three of them hash to existing v2.10.0 pins, by construction: a hug
+item in a fill bar equals the plain fill markup (two rows), and explicit
+`'fixed'` on every item equals the plain hug markup.
 
 `dist/index.js` 5,613,694 → **5,613,773** B (+79); `dist/index.css` 158,926 →
 **158,982** B (+56).
@@ -2692,8 +2697,8 @@ the thread rejected.
 
 - **R92D-8's closed list omits `CHANGELOG.md` and
   `docs/component-tokens.md`**, which every release before this one updated.
-  Nothing in the repo reads either, so nothing fails. Drafts are in the
-  hand-over (`CHANGELOG-DRAFT.md`, `COMPONENT-TOKENS-DRAFT.md`).
+  Nothing in the repo reads either, so nothing fails. Both
+  documents were then inserted (34 / 0 and 27 / 0).
 - **"The label's computed `white-space` changes in all 98 rows"** is true of
   every label, but 8 of the 98 rows render no item and so no label.
 - A fixed item whose label is wider than 48px still spills past its padding,

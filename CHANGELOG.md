@@ -3,6 +3,34 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## v2.11.1
+
+Documentation only. v2.11.0 was committed and tagged without a staged fix to
+CLAUDE.md's Gate 92 DS section (a Sourcetree re-stage silently failed), and a
+published tag is never moved, so the correction ships as a patch. No code,
+CSS, token or test changed, so everything Phase B verified at v2.11.0 still
+holds, and `build:lib` emits the same byte sizes.
+
+### Changed
+
+- **Three statements in CLAUDE.md's Gate 92 DS section corrected.**
+  - The section said there is no `CHANGELOG.md` entry and no
+    `docs/component-tokens.md` row, and that drafts of both were left in the
+    hand-over. Both were added after the build. It now says so (R92D-12).
+  - The findings list repeated the drafts claim. It now says both documents
+    were inserted.
+  - The pins paragraph said two of the eight new render paths hash to
+    existing v2.10.0 pins. Three do: a hug item in a fill bar (two rows)
+    and explicit `'fixed'` on every item.
+
+### Added
+
+- **Rulings R92D-11 to R92D-14 recorded** in CLAUDE.md's Gate 92 DS table.
+  The v2.11.0 commit message cites "R92D-5 to R92D-13"; R92D-11 to R92D-13
+  were missing from the tree it describes, and this release records them
+  along with R92D-14, which explains why they ship here.
+
+---
 ## v2.11.0
 
 Gate 92 DS addresses G59. It is a minor release because it adds one optional
