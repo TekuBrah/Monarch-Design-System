@@ -3171,6 +3171,23 @@ export default function App() {
               </div>
             </div>
             <div>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>BottomNavigation — per-item width (v2.11.0)</div>
+              <p style={{ color: 'var(--mapped-text-subtle-default)', fontSize: '0.75rem', margin: '0 0 0.75rem', maxWidth: '375px' }}>
+                The case study's two-item pill. <code>Recipients</code> is <code>width: 'hug'</code> and
+                selected, so it is as wide as its label plus padding. <code>Scan QR</code> stays fixed, and
+                its label stays on one line and spills past the padding, as Figma draws it.
+              </p>
+              <div style={{ width: '375px', maxWidth: '100%' }}>
+                <BottomNavigation
+                  barWidth="hug"
+                  items={[
+                    { id: 'recipients', icon: 'people', label: 'Recipients', isSelected: true, width: 'hug' },
+                    { id: 'scan-qr', icon: 'qr_code_scanner', label: 'Scan QR' },
+                  ]}
+                />
+              </div>
+            </div>
+            <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)' }}>SideNavigation</div>
                 <label style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--mapped-text-subtle-default)', display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer' }}>

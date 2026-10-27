@@ -2570,6 +2570,173 @@ Each count's source:
   (two to three), and the retired 3.81:1 figure in `FieldMessage.css`'s header
   comment (now 5.77:1 on black and 4.16:1 on `#262626`).
 
+## Gate 92 DS — one-line bar labels and per-item hug, G59 (v2.11.0)
+
+Built on `main` at `49550d5` (`v2.10.0`) and left uncommitted. Claude Code
+made no git writes. The first Gate 92 DS session stopped at its §1 with zero
+edits, because Figma's item is not a hug item. The review thread ruled both of
+that report's briefs on 27 Oct 2026, and this RESUMED build follows those
+rulings. Both reports are in `D:\Claude\_handoffs\gate92-ds\`:
+`BUILD-REPORT.md` is the §1 stop, `RESUME-BUILD-REPORT.md` is this build.
+**There is no `CHANGELOG.md` entry and no `docs/component-tokens.md` row**,
+because R92D-8's closed list names neither. Drafts of both are in the
+hand-over, for Teku to apply or drop.
+
+### 0 · Rulings
+
+| | ruling |
+|---|---|
+| R92D-5 | Bar labels never wrap, by default: `white-space: nowrap` on `.mn-bottom-nav__label`. No truncation and no clipping. This is a deliberate default change, permitted because it is Figma's own component behaviour and the §1 probe measured its full effect |
+| R92D-6 | Per-item hug, as Figma models it: an optional field on the `BottomNavItem` data, default `'fixed'`. A hug item is its label plus the item's bound padding (`Scale/200` both sides), with no floor and no ceiling. An unmarked item renders exactly as before |
+| R92D-7 | In a `fill` bar the per-item field has no effect |
+| R92D-8 | One minor release, `2.10.0` → `2.11.0`. Closed list: the label rule, the item field and its CSS, a showcase demo, tests, the version, this section |
+| R92D-9 | The mutation negative control must typecheck, run, leave its target passing, and report NO PROOF |
+| R92D-10 | Record corrections: the main bar is in `1266:14402` / `1266:14331`, not `1266:14390`; `BottomNavItem` is a data interface; the DS has no Storybook; there is no 64 floor |
+
+### 1 · What Figma says — do not re-derive
+
+- **DS file, `nav/button/mobile` `80:3045`**: both variants (`80:3044`
+  Default, `80:3093` Selected) are **FIXED 62 × 62**, padding 8 on every side
+  (`Scale/200`), and bind **no min or max width**. The label is auto-width
+  (`WIDTH_AND_HEIGHT`) with truncation off, and the item does not clip.
+  **No Figma setting on this component lets a label wrap.**
+- **Case study `1266:14391`, the `/transfer` pill**: HUG 190 × 62.
+  "Recipients" (Selected) is **HUG 80, by instance override**. Its sibling
+  "Scan QR" (Default) stays **FIXED 62**, and its 51px label overflows the 46px
+  content box by 2.5px on each side, on one line.
+- **The main bar is in `1266:14402` (home) and `1266:14331` (overview)**, four
+  FIXED 62 items each. `1266:14390` holds no bar (an image and a bottom sheet).
+- **So hug is a per-instance choice, not a component property, and the
+  divergence was the wrap, not the width.** Before this gate the DS label had
+  no `white-space` rule, so "Scan QR" broke at its space onto two lines (48 ×
+  32). No other bar label in the system had a space, which is why nobody had
+  seen it.
+
+### 2 · API as shipped
+
+```ts
+export interface BottomNavItem {
+  id: string
+  icon: IconName
+  label: string
+  isSelected?: boolean
+  width?: 'fixed' | 'hug'   // new; default 'fixed'
+}
+```
+
+- **The name is `width`, beside `isSelected`.** It mirrors this component's
+  own `barWidth` (bar width, item width), and `'hug'` is the word `barWidth`
+  already uses. It is **not `sizing`**: across the DS `sizing` means
+  `'fixed' | 'fill'`, and a fill value would mean nothing on one item.
+  `BottomNavigationProps` did not change.
+- **CSS.** `.mn-bottom-nav__item--hug { width: auto }`, declared after the base
+  `.mn-bottom-nav__item` rule with equal specificity, so source order wins. No
+  `min-width` or `max-width` anywhere on the item. Height stays 64.
+- **R92D-7 is enforced in the markup, not the stylesheet.** The modifier is
+  added only when `barWidth !== 'fill'`. A `width: auto` item in a fill bar is
+  not inert: `flex: 1 1 0` ignores `width` for the flex basis, but
+  `min-width: auto` takes the content size once no width is specified, so a
+  hug item would gain a larger automatic minimum. Gating in TSX makes "no
+  effect" provable: a hug item in a fill bar hashes to the v2.10.0 fill pin.
+- **The label.** `.mn-bottom-nav__label { white-space: nowrap }`. Chromium does
+  not list the `white-space` shorthand in `getComputedStyle`. The change shows
+  up as the longhand **`text-wrap-mode: wrap → nowrap`**, so a computed-style
+  census must look for the longhand.
+
+### 3 · Pins, v2.10.0 → v2.11.0
+
+The §1 session pinned every existing render path from the v2.10.0 build:
+**49 markup paths** (`renderToStaticMarkup` + sha256) and **98 computed rows**
+(49 × light and dark, full `getComputedStyle` plus every rect, headless
+Chromium). Before the first edit this build reproduced both exactly, byte for
+byte, and confirmed that vitest renders all 49 to the same markup as
+`dist/index.js`.
+
+| check | allowed by R92D-5 | measured |
+|---|---|---|
+| markup, 49 paths | identical | **0 differ** |
+| label `text-wrap-mode` | changes in every row | **every label in all 98 rows** (324 label elements in 90 rows; the other 8 rows are zero-item renders with no label) |
+| boxes | move in exactly 10 rows | **exactly the 10**: the MVP `/transfer` bar, and the matrix "two items" and "long labels" cases under `barWidth` omitted and `hug`, × 2 themes |
+| any other property | none | **none**. In each of the 10 rows only "Scan QR"'s label moves (48 × 32 → 50.078 × 16) and its icon re-centres above it. Item boxes do not move |
+
+Eight NEW paths were appended as rows 49–56, so the first 49 stay comparable
+one to one. Two of them hash to existing v2.10.0 pins, by construction: a hug
+item in a fill bar equals the plain fill markup, and explicit `'fixed'` on
+every item equals the plain hug markup.
+
+`dist/index.js` 5,613,694 → **5,613,773** B (+79); `dist/index.css` 158,926 →
+**158,982** B (+56).
+
+### 4 · Measured
+
+Headless Chromium (the MVP's installed Playwright 1.62.1, read-only), DPR 1,
+Poppins 400 and 600 loaded (`document.fonts.check` true). Light and dark read
+identically.
+
+| the `/transfer` pill, `barWidth="hug"` | item | label | lines | Figma |
+|---|---|---|---|---|
+| Recipients, `width: 'hug'`, selected | **79.672 × 64** | 63.672, inset 8 | **1** | 80 |
+| Scan QR, fixed | **64 × 64** | 50.078, spills 1.04 past each padding | **1** | 62 |
+| pill | **191.672 × 64** | — | — | 190 |
+
+Predicted from §1's natural widths: 79.67 / 64 / 191.67. **Every figure is
+within 0.01px of the prediction.** The +1.67px against Figma's 190 is the
+approved 62 → 64 item rounding. The −0.33px on Recipients is the font's
+63.672 against Figma's 64-wide label.
+
+No floor: a hug "Home" measures **52.25** (36.25 + 16). Both pill items hug:
+193.75, which is the bar-wide hug that §1's Decision C would have produced and
+the thread rejected.
+
+### 5 · Findings, recorded and not fixed
+
+- **R92D-8's closed list omits `CHANGELOG.md` and
+  `docs/component-tokens.md`**, which every release before this one updated.
+  Nothing in the repo reads either, so nothing fails. Drafts are in the
+  hand-over (`CHANGELOG-DRAFT.md`, `COMPONENT-TOKENS-DRAFT.md`).
+- **"The label's computed `white-space` changes in all 98 rows"** is true of
+  every label, but 8 of the 98 rows render no item and so no label.
+- A fixed item whose label is wider than 48px still spills past its padding,
+  as Figma draws it. "Scan QR" spills 1.04px each side (Figma 2.5px) and
+  "Transfer" 0.45px (1.39px when selected). Nothing is clipped, and the 64px item box holds both.
+
+### 6 · Tests and counts
+
+| | v2.10.0 | v2.11.0 |
+|---|---|---|
+| tests / files | 975 / 72 | **990 / 73** |
+| component folders / CSS files | 56 / 65 | **56 / 65** (65/65 registered) |
+| `style={` in non-test component `.tsx` | 14 in 9 | **14 in 9** |
+| `:hover` / `@media (hover: hover)` in component CSS | 50 / 42 | **50 / 42** |
+| `build:tokens` diff | — | **empty** |
+
+All 15 new tests are in one new file, `BottomNavigation.width.test.tsx`. No
+existing test file was edited.
+
+- **2, the label (R92D-5).** The default label rule declares `nowrap`; no item
+  or label rule truncates or clips.
+- **6, the field (R92D-6, R92D-7).**
+  - An unmarked item renders no modifier and no new attribute, ×2: omitted and
+    explicit `'fixed'`.
+  - A hug item carries the modifier, and only it, ×2: `barWidth` omitted and
+    `'hug'`.
+  - The hug rule is `width: auto` after the base rule, with no min or max width.
+  - A hug item in a fill bar carries no modifier, the fill rule is
+    `flex: 1 1 0`, and the markup hashes to the v2.10.0 fill pin.
+- **7, the pins.** Seven existing renders keep their v2.10.0 sha256: the test
+  file's render, two showcase renders, the MVP's two bars, and two matrix
+  cases.
+
+**No mutation proofs were run here.** Phase B runs them from `MUTATION-PLAN.md`
+in the hand-over. The plan has a negative control and one mutation per new test.
+
+### 7 · G59
+
+**Addressed by v2.11.0. Closing it is for the MVP's register, where it lives.**
+The wrap is fixed in the default, so the MVP's `/transfer` "Scan QR" is one
+line with no MVP change. The MVP widens "Recipients" by passing
+`width: 'hug'` on that one item (`MVP-NOTES.md` in the hand-over).
+
 ## Known open items
 - **Heading font-size in source**: Figma composites wire `{fontSize.N}` (static), not a
   responsive token. Resolved at build time by mapping heading keys → responsive vars.

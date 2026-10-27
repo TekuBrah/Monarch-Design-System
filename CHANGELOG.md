@@ -3,6 +3,40 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## v2.11.0
+
+Gate 92 DS addresses G59. It is a minor release because it adds one optional
+field. One default render changes on purpose: bar labels no longer wrap. The
+full derivation, the Figma evidence and every measurement are in CLAUDE.md's
+Gate 92 DS section.
+
+### Changed
+
+- **`BottomNavigation` labels never wrap** (R92D-5). `.mn-bottom-nav__label`
+  gains `white-space: nowrap`, as Figma's `nav/button/mobile` (`80:3045`) draws
+  its label: auto-width, truncation off, no clipping. A label wider than its
+  64px item now stays on one line and spills past the item's padding, centred,
+  as Figma's own "Scan QR" does. Of the 49 pinned v2.10.0 render paths, the
+  markup is identical in all 49. Boxes move only where a spaced label sat in a
+  fixed item (5 cases, both themes). The MVP's `/transfer` "Scan QR" goes from
+  two lines to one.
+
+### Added
+
+- **`BottomNavItem.width?: 'fixed' | 'hug'`** (R92D-6), default `'fixed'`. A
+  `'hug'` item is its label plus its `--brand-scale-200` padding, with no floor
+  and no ceiling, via `.mn-bottom-nav__item--hug { width: auto }`. This is the
+  per-item hug Figma's case study draws by instance override on "Recipients" in
+  `1266:14391`. An unmarked item renders exactly as in v2.10.0.
+  - **No effect in a `barWidth="fill"` bar** (R92D-7). There the modifier is
+    never applied, and the markup is v2.10.0's fill markup byte for byte.
+  - Measured, both themes: the two-item pill renders Recipients 79.672, Scan QR
+    64, pill 191.672 (Figma 80 / 62 / 190).
+- A showcase demo of that pill in the Navigation section.
+- 15 tests in `BottomNavigation.width.test.tsx`. The suite goes from 975 to 990
+  tests, in 73 files.
+
+---
 ## v2.10.0
 
 Gate 91 adds the transfer flow's components. It is a minor release and every

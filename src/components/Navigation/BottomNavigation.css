@@ -65,6 +65,17 @@
   color: var(--mapped-icon-subtle-default);
 }
 
+/* Gate 92 (v2.11.0): an item marked `width: 'hug'` drops the fixed 64px width,
+   so it is as wide as its content (the one-line label) plus the item's own
+   `--brand-scale-200` padding. Figma binds no min or max width, so none is set
+   here. Declared after the base rule with equal specificity, so source order
+   wins. The component never puts this class on an item inside a fill bar,
+   where `flex: 1 1 0` sizes every item and a hug item would otherwise change
+   the flex item's automatic minimum width. Height is unchanged. */
+.mn-bottom-nav__item--hug {
+  width: auto;
+}
+
 .mn-bottom-nav__item:focus-visible {
   outline: var(--brand-scale-50) solid var(--mapped-border-primary-default);
   outline-offset: var(--brand-scale-50);
@@ -74,8 +85,14 @@
   color: var(--mapped-icon-primary-default);
 }
 
+/* Gate 92 (v2.11.0): a bar label never wraps. Figma's label is auto-width
+   (WIDTH_AND_HEIGHT) with truncation off, in the component and in every
+   case-study bar, so a label wider than its item stays on one line and spills
+   past the item's padding, centred. Figma's own "Scan QR" does exactly that.
+   No truncation and no clipping, because Figma draws neither. */
 .mn-bottom-nav__label {
   color: var(--mapped-text-subtle-default);
+  white-space: nowrap;
 }
 
 .mn-bottom-nav__item--selected .mn-bottom-nav__label {

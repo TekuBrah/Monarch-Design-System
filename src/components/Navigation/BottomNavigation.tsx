@@ -7,6 +7,12 @@ export interface BottomNavItem {
   icon: IconName
   label: string
   isSelected?: boolean
+  /** 'fixed' (default) keeps the 64px item (Figma's 62, rounded to the ramp).
+      'hug' sizes the item to its label plus its own padding, with no floor and
+      no ceiling: Figma's case study widens one item this way, by instance
+      override, and binds no min or max width. Per item, as Figma models it.
+      No effect inside a `barWidth="fill"` bar, where fill sizes every item. */
+  width?: 'fixed' | 'hug'
 }
 
 export interface BottomNavigationProps {
@@ -43,6 +49,7 @@ export function BottomNavigation({
             className={[
               'mn-bottom-nav__item',
               item.isSelected && 'mn-bottom-nav__item--selected',
+              item.width === 'hug' && barWidth !== 'fill' && 'mn-bottom-nav__item--hug',
             ]
               .filter(Boolean)
               .join(' ')}

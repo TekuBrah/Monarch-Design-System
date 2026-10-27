@@ -4155,6 +4155,11 @@ new control, not an inferred state on an existing one.
 | `className` | `string` | Lands on the **root**, not the bar — which is why `barWidth` exists |
 | `barWidth` | `'hug' \| 'fill'` | Default `'hug'`. **Added v1.5.0** — see below |
 
+> **Correction (Gate 92 DS, v2.11.0):** the `items` row above is stale. A
+> `BottomNavItem` is now `{ id, icon, label, isSelected?, width? }`, where
+> `width: 'fixed' | 'hug'`, default `'fixed'`. **Added v2.11.0** — see
+> "`width` on an item" below.
+
 ### `barWidth` (added v1.5.0)
 
 `'hug'` is today's behaviour, unchanged: the bar is a content-hugged flex row,
@@ -4199,6 +4204,27 @@ sets `overflow` on the item, so nothing clips — and `fill` resolves it (conten
 box ≥ 49.75px). Not fixed because changing item padding would move every `hug`
 baseline downstream for no visible gain.
 
+> **Update (Gate 92 DS, v2.11.0):** labels no longer wrap at all.
+> `.mn-bottom-nav__label` is `white-space: nowrap`, as Figma's label is
+> auto-width with truncation off. The "Transfer" overflow above still holds
+> (0.45px each side, 1.39px when selected), and so does "Scan QR"'s (1.04px each
+> side). Nothing clips.
+
+### `width` on an item (added v2.11.0)
+
+`'fixed'` (default) keeps the 64px item. `'hug'` adds `.mn-bottom-nav__item--hug`
+`{ width: auto }`, so the item is its label plus `--brand-scale-200` padding on
+each side, with no min or max width, because Figma binds none. Figma's DS
+component is FIXED 62. The case study widens one item, "Recipients" in
+`1266:14391`, by instance override, so the choice is per item. In a
+`barWidth="fill"` bar the modifier is never applied.
+
+| `/transfer` pill, `barWidth="hug"` | measured | Figma |
+|---|---|---|
+| Recipients, `'hug'`, selected | 79.672 × 64 | 80 × 62 |
+| Scan QR, fixed | 64 × 64 | 62 × 62 |
+| pill | 191.672 × 64 | 190 × 62 |
+
 ### BottomNavigation — variant → token mapping
 
 | Element / state | Token |
@@ -4207,6 +4233,7 @@ baseline downstream for no visible gain.
 | Bar shadow | `--shadow-medium` (Figma `Dropshadow_medium`) |
 | Bar radius | `--brand-scale-800` (32px) |
 | Item tap target | `--brand-scale-1300` (64px) — Figma specifies 62px, off the ramp (56/64); rounded to nearest |
+| Item, `width: 'hug'` | `width: auto`; padding stays `--brand-scale-200` (8px), so width = label + 16 |
 | Item icon/label, default | `--mapped-icon-subtle-default` / `--mapped-text-subtle-default`, `.type-body-caption` |
 | Item icon/label, selected | `--mapped-icon-primary-default` / `--mapped-text-primary-default`, `.type-body-caption-semibold` |
 | Focus ring | `--mapped-border-primary-default` outline, `--brand-scale-50` width/offset (Tab.css pattern) |
