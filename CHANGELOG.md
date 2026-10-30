@@ -3,6 +3,46 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## v2.12.0
+
+Gate 93 DS. `SelectWalletAccount` now closes its own menu when the user
+dismisses it, and returns focus to the trigger after a pick. It is a minor
+release: new behaviour, no new prop, and no default render changes. Of the 132
+pinned render paths, the markup and the computed style are identical in every
+one. The rulings, the live measurements and the tests are in CLAUDE.md's
+Gate 93 DS section.
+
+### Added
+
+- **User-driven dismissal in `SelectWalletAccount`**, on by default (R93D-2).
+  Each close is a request through `onOpenChange(false)`, or the internal state
+  when uncontrolled, so a controlled consumer still decides.
+  - **Escape** closes the menu while focus is inside the component: the
+    trigger, the search field or an option (R93D-5). The key is claimed, so
+    inside a `Modal` or `Sheet` the first Escape closes the menu and the second
+    closes the dialog. An Escape with focus elsewhere is left alone.
+  - **A press outside** the component closes the menu. Focus is not moved; it
+    lands where the user pressed (R93D-6).
+  - **Focus leaving** the component closes the menu, for example Tab past its
+    last option or Shift+Tab from the trigger (R93D-7). Focus is not moved.
+    Moving between the search field and the options does not close it, and
+    neither does focus falling to the page body.
+- 14 tests in `SelectWalletAccount.dismiss.test.tsx`. The suite goes from 990
+  to 1,004 tests, in 74 files.
+
+### Fixed
+
+- **A pick returns focus to the trigger** (R93D-8). In v2.11.1 a pick that
+  closed the menu dropped focus to `<body>`. Closing on pick stays the
+  consumer's job, as before.
+
+### Unchanged
+
+- No geometry, scroll, resize or render path closes the menu (R7, Gate 73-B).
+- `Select`, `SelectTransfer`, `DatePicker` and `TimePicker` behave as before.
+  They have the same gap, which is recorded for a later DS round (R93D-4).
+
+---
 ## v2.11.1
 
 Documentation only. v2.11.0 was committed and tagged without a staged fix to

@@ -1,4 +1,4 @@
-import React, { useId, useState } from 'react'
+import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { Icon } from '../Icon'
 import { useFormFieldContext } from '../FormField/FormFieldContext'
 import './SelectWalletAccount.css'
@@ -76,6 +76,80 @@ export function SelectWalletAccount({
   // v2.9.0's (R91D-8, hash-pinned).
   const formField = useFormFieldContext()
 
+  // Gate 93 (v2.12.0): user-driven dismissal. Every close below is a request
+  // through `setOpen`, so a controlled consumer still decides. None is driven
+  // by geometry, scroll, resize or render (R7, Gate 73-B). The listeners exist
+  // only while the menu is shown, so a closed render adds nothing (R93D-10).
+  const rootRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+  // The latest setOpen, read through a ref so the listeners never re-attach
+  // when its identity changes (the G31 pattern, Gate 62).
+  const setOpenRef = useRef(setOpen)
+  useLayoutEffect(() => {
+    setOpenRef.current = setOpen
+  })
+  const focusWasInMenu = useRef(false)
+  useEffect(() => {
+    if (!showMenu) return
+    const root = rootRef.current
+    if (!root) return
+    const close = () => setOpenRef.current(false)
+    // Used by the two closes that must not move focus. Focus is on its way to
+    // where the user put it, so the close effect must not pull it back to the
+    // trigger. In Chrome, React commits these closes in a microtask that runs
+    // BEFORE the new target's focusin, so without this the close effect sees
+    // focus on <body> and steals it, aborting the browser's own move
+    // (measured live, Gate 93; jsdom does not reproduce the ordering).
+    const closeLeavingFocus = () => {
+      focusWasInMenu.current = false
+      close()
+    }
+    // R93D-6: a press outside the root closes. Focus is not moved.
+    const onPointerDown = (e: PointerEvent) => {
+      if (!root.contains(e.target as Node)) closeLeavingFocus()
+    }
+    // R93D-5: Escape closes only while focus is inside the root. Window
+    // CAPTURE runs before Modal/Sheet's document-capture listener, and
+    // stopPropagation keeps the same Escape from also closing the dialog.
+    // Focus return is left to the close effect below (R93D-9).
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || !root.contains(document.activeElement)) return
+      e.stopPropagation()
+      e.preventDefault()
+      close()
+    }
+    const onFocusIn = (e: FocusEvent) => {
+      focusWasInMenu.current = !!menuRef.current?.contains(e.target as Node)
+    }
+    // R93D-7: focus moving from inside the root to somewhere outside it
+    // closes, and focus is not moved. A null relatedTarget (focus falling to
+    // <body>) never closes.
+    const onFocusOut = (e: FocusEvent) => {
+      const next = e.relatedTarget
+      if (!root.contains(e.target as Node) || !(next instanceof Node)) return
+      if (!root.contains(next)) closeLeavingFocus()
+    }
+    document.addEventListener('pointerdown', onPointerDown, true)
+    window.addEventListener('keydown', onKeyDown, true)
+    document.addEventListener('focusin', onFocusIn, true)
+    document.addEventListener('focusout', onFocusOut, true)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown, true)
+      window.removeEventListener('keydown', onKeyDown, true)
+      document.removeEventListener('focusin', onFocusIn, true)
+      document.removeEventListener('focusout', onFocusOut, true)
+    }
+  }, [showMenu])
+  // R93D-8 / R93D-9, the one focus path: if focus was inside the menu when it
+  // closed and fell to <body>, hand it back to the trigger.
+  useEffect(() => {
+    if (showMenu || !focusWasInMenu.current) return
+    focusWasInMenu.current = false
+    const active = document.activeElement
+    if (!active || active === document.body) triggerRef.current?.focus()
+  }, [showMenu])
+
   const className = [
     'mn-select-wallet-account',
     `mn-select-wallet-account--${appearance}`,
@@ -91,8 +165,9 @@ export function SelectWalletAccount({
     .join(' ')
 
   return (
-    <div className={className} data-preview={previewState}>
+    <div ref={rootRef} className={className} data-preview={previewState}>
       <button
+        ref={triggerRef}
         type="button"
         id={controlId}
         className="mn-select-wallet-account__control"
@@ -133,7 +208,7 @@ export function SelectWalletAccount({
         </span>
       </button>
       {showMenu && (
-        <div id={menuId} className="mn-select-wallet-account__menu">
+        <div ref={menuRef} id={menuId} className="mn-select-wallet-account__menu">
           {menuSlot}
         </div>
       )}

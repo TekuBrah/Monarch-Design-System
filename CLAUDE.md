@@ -2742,6 +2742,150 @@ The wrap is fixed in the default, so the MVP's `/transfer` "Scan QR" is one
 line with no MVP change. The MVP widens "Recipients" by passing
 `width: 'hug'` on that one item (`MVP-NOTES.md` in the hand-over).
 
+## Gate 93 DS — `SelectWalletAccount` dismissal and focus return (v2.12.0)
+
+Built on `main` at `c644746` (`v2.11.1`) and left uncommitted. Claude Code
+made no git writes. Release notes are in `CHANGELOG.md` v2.12.0.
+`docs/component-tokens.md` is not touched, because no token changed. The §1
+investigation is `D:\Claude\_handoffs\gate93-ds\INVESTIGATION.md`, and this
+build's report is `build\BUILD-REPORT.md` in the same folder.
+
+### 0 · Rulings
+
+| | ruling |
+|---|---|
+| R93D-1 | No API A. Joint Account's mark is `Avatar/photo/Placeholder` (DS `192:8180`), a member of Figma's `Avatar/photo/*` photo family, swapped into `<element>` the same way Margaret's photo is. The DS draws that family through `src`, so `MenuItem type="account" avatarSrc={…}` and `leadingSlot={<Avatar size="l" src={…} />}` draw it today. The asset is MVP-owned. Consumers omit `avatarName` so `alt=""`. The raw `#77c3cc` fill is image content, so the token rule does not apply; its white glyph's 2.01:1 is a decorative mark beside a text label that names the account, so WCAG 1.4.11 does not require 3:1. Fallback A2 (`MenuItem` `leadingSlot`) is NOT built, and `MenuItem` is not edited |
+| R93D-2 | `SelectWalletAccount` owns user-driven dismissal, on by default, with no new prop (React Aria Popover and Radix Select precedent). No consumer relies on the menu staying open |
+| R93D-3 | G43 and R7 reconciled (§2) |
+| R93D-4 | Scope: `SelectWalletAccount` only. The same gap elsewhere is a finding (§3), not fixed |
+| R93D-5 | Escape closes only while focus is inside the component root (trigger, search field or an option). It is claimed with `stopPropagation` + `preventDefault`, and focus returns to the trigger. Escape with focus outside the root is not claimed. The listener is on `window` in the capture phase, so the first Escape closes the menu and the second closes an enclosing `Modal`/`Sheet` |
+| R93D-6 | A `pointerdown` outside the root closes the menu. Focus is not moved. A press inside the root does nothing |
+| R93D-7 | A `focusout` from inside the root whose `relatedTarget` is non-null and outside the root closes the menu, and focus is not moved. A null `relatedTarget` never closes by this path. Tab between the search field and the options never closes |
+| R93D-8 | A pick returns focus to the trigger. Closing on pick stays consumer-owned. This fixes v2.11.1's drop to `<body>` |
+| R93D-9 | One focus path: a close effect focuses the trigger when focus was inside the menu and, on close, `document.activeElement` is `<body>` or null. The Escape handler does not call `focus()`. A trigger click still toggles |
+| R93D-10 | No render changes. Listeners attach only while the menu is shown and are removed on close and unmount. The latest setter is read through a ref synced in `useLayoutEffect` (the G31 pattern) |
+| R93D-11 | Release v2.12.0, minor |
+| R93D-12 | The §1 report's corrections stand (§4) |
+
+### 1 · How it is built
+
+All of it is in `SelectWalletAccount.tsx`. The markup does not change: the
+three new `ref`s render no attribute.
+
+| event (menu shown) | listener | closes when | focus afterwards |
+|---|---|---|---|
+| `pointerdown` | `document`, capture | the target is outside the root | not moved |
+| `keydown` Escape | `window`, capture | focus is inside the root | trigger (close effect) |
+| `focusout` | `document`, capture | it leaves the root for a non-null target outside it | not moved |
+| `focusin` | `document`, capture | never; it records whether focus is inside the menu | — |
+
+- **Why `window` capture for Escape.** `Modal` and `Sheet` listen on
+  `document` in the capture phase. A `window` capture listener runs first, and
+  `stopPropagation` keeps their listener from seeing the same key. On
+  `document`, the child's effect registers first, but `stopPropagation` does
+  not stop a second listener on the same node, so the dialog would close too.
+- **⚠️ The two "focus is not moved" closes must clear the focus flag, and
+  jsdom cannot show why.** Measured live in the showcase (Chromium), before
+  the fix: Tab past the last option closed the menu and then put focus on the
+  TRIGGER, not on the next field. Chrome fires `focusout` on the option; React
+  commits the close in a microtask that runs before the new target's `focusin`.
+  The close effect then sees "focus was in the menu" and `<body>`, focuses the
+  trigger, and Chrome abandons its own move. An outside press has the same
+  race. So `pointerdown` and `focusout` close through `closeLeavingFocus()`,
+  which clears the flag first. This is still R93D-9's one focus path. Only its
+  input changes.
+  - In jsdom, `after.focus()` fires `focusout` and `focusin` in one synchronous
+    step, with no microtask in between, so a test written that way passes
+    against the bug. The Tab-out and outside-press tests instead commit the
+    close with `fireEvent` (wrapped in `act`) before focus moves, as Chrome
+    does, and assert that the trigger never received a `focus` event.
+- **Measured live after the fix (showcase, 1009 wide, real key and pointer
+  input):**
+  - Escape from the trigger: closed, focus on the trigger.
+  - Escape from an option: closed, focus on the trigger.
+  - Tab from the search field to an option: stays open.
+  - Tab past the last option: closed, focus on the next field.
+  - Shift+Tab from the trigger: closed, focus on the previous control.
+  - Click on the page's search field with focus in an option: closed, focus
+    on that field.
+  - A mouse pick: closed, focus on the trigger.
+  - The trigger received no `focus` event in any of the three "not moved"
+    cases. No console errors.
+- **Not observed live:** Escape inside a `Modal`. The showcase has no
+  `SelectWalletAccount` in a dialog. The jsdom test covers it, and the ordering
+  it depends on is ordinary DOM capture dispatch.
+
+### 2 · G43 and R7, reconciled (R93D-3)
+
+- **G43 (Gate 73) still stands for `Select`.** `Select` has no Escape or
+  outside-click handling of its own: `Modal` owns Escape and the consumer owns
+  outside click.
+- **R7 (Gate 73-B) stands for every component, this one included.** No
+  geometry, scroll, resize or render path may close a menu.
+- **`SelectWalletAccount` now owns Escape, outside press and focus leaving.**
+  All three are user-driven, so they are consistent with R7's letter and its
+  intent. Each is a request through `onOpenChange(false)`, which keeps G43's
+  point that the consumer decides.
+
+### 3 · Finding, not fixed (R93D-4)
+
+`Select`, `SelectTransfer`, `DatePicker` and `TimePicker` have the same
+dismissal gap. The MVP shows the cost today: in `PresetModals`, Escape in an
+open `Select` closes the whole `Modal`, because `Modal`'s listener is the only
+one that hears it. This is for a later DS round.
+
+### 4 · Records (R93D-12)
+
+- Joint Account's layer is `Avatar/photo/Placeholder`, not
+  `avatar/photo margaret`. Margaret's photo is Main Account's.
+- In `1266:14393` the menu is part of the trigger's own `State=Typing`
+  variant, not an overlay.
+- R91D-4 was ruled for Gate 91's two glyphs. It is not a general ban on
+  custom assets (`icon_spend` and `golf_course` are later precedents).
+
+### 5 · Tests and pins
+
+`SelectWalletAccount.dismiss.test.tsx`, 14 tests. Every "does not close" or
+"stays" check runs after a fixed 60ms `settle()` with synchronous `expect`s,
+never `waitFor`. Each was also run against v2.11.1's source in a census copy.
+
+| # | test | v2.11.1 | v2.12.0 |
+|---|---|---|---|
+| 1 | Escape from the trigger closes once and leaves focus on the trigger | fails | passes |
+| 2 | Escape from inside the menu closes and returns focus to the trigger | fails | passes |
+| 3 | an outside press closes and does not move focus | fails | passes |
+| 4 | a press inside the menu does not close it | passes | passes |
+| 5 | an Escape whose focus is outside the component is not claimed | passes | passes |
+| 6 | a pick returns focus to the trigger | fails | passes |
+| 7 | inside a Modal, the first Escape closes the menu and the second closes the Modal | fails | passes |
+| 8 | the trigger still toggles, and a closed menu stays closed | passes | passes |
+| 9 | uncontrolled: a click opens the menu and Escape closes it | fails | passes |
+| 10 | unmounting while open removes every listener it added | passes | passes |
+| 11 | a closed render adds no document or window listener | passes | passes |
+| 12 | Tab out of the component closes the menu and leaves focus where Tab put it | fails | passes |
+| 13 | Tab from the search field to an option does not close the menu | passes | passes |
+| 14 | focus leaving with no destination does not close the menu | passes | passes |
+
+Tests 1–8 are the §1 probe's, promoted. Test 3's setup was tightened (focus
+starts in the menu) after the live finding in §1. Tests 9–11 are §1 §9's, and
+12–14 are R93D-7's. The seven that pass on v2.11.1 are guards.
+
+| | v2.11.1 | v2.12.0 |
+|---|---|---|
+| tests / files | 990 / 73 | **1,004 / 74** |
+| markup pins (the §1 harness, 135 cases) | — | **0 of 135 moved** |
+| computed pins (270 rows, both themes) | — | **0 of 270 moved** |
+| `dist/index.js` / `dist/index.css` | 5,613,773 / 158,982 B | **5,615,124 / 158,982 B** |
+| `build:tokens` | — | not run; no token or generated file touched |
+
+No existing test file was edited. The 27 v2.9.0 hash pins in
+`SelectWalletAccount.formField.test.tsx` pass unchanged.
+
+**Tooling note.** This repo has no `@testing-library/user-event`, so Tab is
+simulated with `focus()` and `fireEvent.focusOut`. jsdom 30's `focus()` does
+set `relatedTarget` on `focusout`, but it does not reproduce Chrome's microtask
+between `focusout` and `focusin` (§1).
+
 ## Known open items
 - **Heading font-size in source**: Figma composites wire `{fontSize.N}` (static), not a
   responsive token. Resolved at build time by mapping heading keys → responsive vars.

@@ -2285,6 +2285,7 @@ export default function App() {
             <div className="showcase-interactive">
               <div className="showcase-interactive__label">
                 Interactive — click to open; menu composes a real Field for search plus the option list (menu = example slot)
+                — Escape, a press outside it, or focus leaving it closes the menu, and a pick returns focus to the trigger (v2.12.0)
               </div>
               <SelectWalletAccountDemo />
             </div>
