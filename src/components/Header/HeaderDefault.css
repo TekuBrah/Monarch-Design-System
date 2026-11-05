@@ -53,6 +53,16 @@
   color: var(--mapped-text-default-default);
 }
 
+/* Gate 97 (G65, Decision 32 = A, Teku 4 Nov 2026). Figma draws "Ethereum" in
+   "Send Ethereum" with a raw, unbound text-range fill #627eea (Ethereum's brand
+   colour) — no token, and 3.69:1 on white as 16px semibold text, under 4.5.
+   Ruled onto text/primary/default instead: #0358cc light 6.42:1 on white,
+   #68a8ff dark 8.63:1 on black. Colour only — the run inherits the title's
+   type and stays inside its nowrap + ellipsis line. */
+.mn-header-default__title-accent {
+  color: var(--mapped-text-primary-default);
+}
+
 .mn-header-default__subtitle {
   color: var(--mapped-text-subtlest-subtlest);
 }

@@ -2886,6 +2886,137 @@ simulated with `focus()` and `fireEvent.focusOut`. jsdom 30's `focus()` does
 set `relatedTarget` on `focusout`, but it does not reproduce Chrome's microtask
 between `focusout` and `focusin` (§1).
 
+## Gate 97 DS — caption, title accent, radio row, logo fill (v2.13.0)
+
+Built on `main` at `fbc6e2f` (`v2.12.0`) and left uncommitted. Claude Code
+made no git writes. Release notes are in `CHANGELOG.md` v2.13.0, and the props
+and token rows are in `docs/component-tokens.md` (Select / Transfer
+"`caption`", Header "HeaderDefault props" and token rows, Radio "Layout: row",
+Logo "`size="fill"`"). The §1 investigation is
+`D:\Claude\_handoffs\gate97-ds\REPORT.md`, and this build's report is
+`build\REPORT.md` in the same folder. Flow 5 (Send Ethereum) needed all four.
+
+### 0 · Decision and rulings
+
+| | ruling |
+|---|---|
+| Decision 32 = A | Teku, 4 Nov 2026 ("Follow your decision A"). "Ethereum" in a two-tone title uses `text/primary/default`, emitted as `--mapped-text-primary-default` (`{Primary.600}` `#0358cc` light, `{Primary.300}` `#68a8ff` dark). Figma's raw `#627eea` is no token and, as 16px semibold text, measures **3.6895:1** on white (5.6918 on black): under 4.5. The token measures **6.4187:1** light on white and **8.6337:1** dark on black |
+| R97-1 (G64) | `SelectTransfer` gains `caption?: string`: the label slot, same position and per-appearance type class, inside or outside a `FormField`; a `<span id>`, never a `<label>`; its id appended to `aria-describedby` after the FormField's error and helper ids. Outside a FormField, with `label` and `caption`, the caption takes the slot and `label` names the input through `aria-label`. The Gate 91 suppression test stays unchanged and green |
+| R97-2 (G66) | `Radio` gains `layout?: 'inline' \| 'row'` (default `'inline'`), `description` and `trailingLabel`. `row` keeps ONE `<label>` around the whole row: [label (`type-body-caption`, subtle) above description (`type-body-m`, default)] … [trailing (`type-body-m`, default)] [16px] [the 24px control]. Geometry from Figma `1063:13768` / `1063:13778` (343 × 56) as ramp steps. The new props do nothing in `inline`; disabled, invalid and required behave as in `inline` |
+| R97-3 | In `row` the keyboard ring surrounds the whole row, only under `:focus-visible` on the input. Never after a pointer press. `inline` focus unchanged |
+| R97-4 | No hover, pressed or selected tint on the row: none is drawn |
+| R97-5 (G61) | `LogoSize` gains `'fill'`: `.mn-logo--fill { height: 100% }`, the container's height, aspect kept. A HEIGHT fill, unrelated to `sizing`. `xs` / `s` / `m` / `l` untouched |
+| R97-6 | v2.13.0, minor. Every existing render path of the four hash-pinned before the first source edit; 0 moved. The pin script may `require` Playwright from the MVP's `node_modules`, read-only |
+| G65 | `HeaderDefault` gains `titleAccent?: string`, rendered `{title} <span class="mn-header-default__title-accent">{titleAccent}</span>` inside the title span, exactly one space, coloured by Decision 32's token. The ellipsis covers the whole line; the stepper variant ignores it; the text reads "Send Ethereum" |
+| R97-7 | **MVP-side record, nothing built.** Flow 5's Network Fee sheet uses the DS's centred `OverlayHeader`. That is a recorded divergence from the case study's older frame header (`Header` `1088:11599`: left-aligned title, close right, padding 24/16/16) |
+| R97-8 | **DS-round records, nothing built.** (1) `HeaderDefault`'s title is a `<span>`, not a heading. (2) The case-study Bottom Sheet fill (`1063:13765`) binds a foreign `neutral01`. (3) The row radio's dot: Figma lists `icon/primary/on-color`, `Radio.css` uses `--mapped-text-primary-on-color`; both white in both themes. (4) The fee row's 8px padding, 16px gap and 8px radius come out of codegen as raw literals on a detached frame; all three land on ramp steps |
+
+### 1 · How each change is built
+
+- **`caption`** (`SelectTransfer.tsx`). With no caption every expression
+  reduces to its v2.12.0 value: `describedBy` is `formField?.describedBy`, the
+  `aria-label` expression is the old one, and the slot is the old
+  `showLabel && <label>`. With a caption the slot is
+  `<span id="<inputId>-caption" class="mn-select-transfer__label mn-select-transfer__caption <type>">`.
+  It reuses `.mn-select-transfer__label`'s colour and recolours (subtle; the
+  attention hover; disabled), so **`SelectTransfer.css` did not change**.
+- **`titleAccent`** (`HeaderDefault.tsx`, `.css`). A falsy accent renders
+  `null`, so the title-only markup is unchanged and an empty string adds no
+  stray space. The accent rule declares `color` and nothing else.
+- **`row`** (`Radio.tsx`, `.css`). A separate return branch, so `inline`
+  keeps its exact markup. Row order: `__text` [`__row-label` (+ the `*`),
+  `__description`] → `__trailing` → the hidden input → `__icon-wrap`. The input
+  sits directly before the control so the existing adjacent-sibling focus rule
+  still matches; in `row` that small ring is set to `none` and
+  `.mn-radio--row:has(.mn-radio__input:focus-visible)` draws the DS ring
+  (`--brand-scale-50` solid `--mapped-border-primary-default`, offset
+  `--brand-scale-50`, the Button / ListItem / Checkbox pattern) around the row.
+  `{' '}` text nodes between the flex items never render but keep spaces in
+  every name computation, jsdom included. `position: relative` on the row
+  contains the visually hidden input. The control keeps the radio atom's own
+  hover and press states; the row itself has no fill, border or tint.
+- **`fill`** (`Logo.tsx`, `.css`). One union member, one rule, doc comments
+  on `LogoSize` and the `size` prop saying it is a height fill.
+- **`src/index.ts` did not change.** The new prop types ride on the existing
+  `SelectTransferProps`, `HeaderDefaultProps`, `RadioProps` and `LogoSize`
+  exports; no new exported type was needed.
+
+### 2 · Pins (R97-6)
+
+Gate 93's harness, before the first source edit: a robocopy census copy of
+the tree with a `node_modules` junction (`build\census\control`; **`rmdir` the
+junction before deleting the copy**), `build:lib` there (5,615,124 /
+158,982 B), and `pin-cases-g97.mjs`, which carries Gate 93's MenuItem (46)
+and Menu (14) blocks verbatim.
+
+| block | existing cases |
+|---|---|
+| SelectTransfer | 76 |
+| HeaderDefault | 16 |
+| Radio | 48 |
+| MenuItem / Menu / OptionList (nest Radio) | 46 / 14 / 10 |
+| Logo (30 names × 4 sizes, plus test, showcase, ListItem ×4, SideNavigation ×2) | 129 |
+| **total** | **339** markup cases, **678** computed rows (light + dark) |
+
+Two control runs were byte-identical. On the changed tree: **markup 0 / 339
+moved, computed 0 / 678 moved.** The 17 new-prop cases (34 rows) are reported
+separately: 13 moved in markup and 30 in computed rows. The ones that did not
+move are the stepper with an accent and the inline radio given the row props
+(both must ignore them), and in markup only, the two `fill` logos (the class
+string already existed at v2.12.0; the CSS rule is new).
+
+### 3 · Measured live (headless Chromium, showcase dev server, DPR 1)
+
+| check | light | dark |
+|---|---|---|
+| Tab into two `row` radios in a `radiogroup` | ring `solid 2px rgb(4,110,255)` offset 2px on row 1 (343 × 56); control ring `none` | same |
+| ArrowDown / ArrowUp | selection and ring move to row 2, then back | same |
+| mouse click on row 2 | row 2 checked and focused, `:focus-visible` false, no ring | same |
+| `hasTouch` tap on row 2 | checked and focused, no ring | same |
+| inline radio, Tab | control ring `solid 2px rgb(4,110,255)`, label none (unchanged) | same |
+| row radio AX name | "Regular 60+ Min RM 4.60" | same |
+| caption AX (CDP) | combobox "Transfer Amount", description "More than your balance 0.313 ETH", invalid | same |
+| caption | span, 600 12px/16px, `rgb(107,119,134)` | `rgb(134,149,167)` |
+| accent | "Send Ethereum", `rgb(3,88,204)` on white | `rgb(104,168,255)` on black |
+| long accent | truncated (366 > 264), one 24px line | same |
+| `Logo fill` | 20 × 20 in `ElementWrapper m`, 40 × 40 in `xxl` | same |
+
+The accessible name and description were read through CDP
+`Accessibility.getPartialAXTree`, not Playwright's deprecated
+`page.accessibility.snapshot()`.
+
+### 4 · Tests
+
+**1,004 → 1,047, 74 → 77 files.** `SelectTransfer.caption.test.tsx` 15,
+`Radio.row.test.tsx` 16, `HeaderDefault.accent.test.tsx` 8, `Logo.test.tsx`
+7 → 11. No existing test was edited, renamed or removed (diffed by `vitest
+list`). The HeaderDefault (9) and Radio (14) test and showcase renders are
+pinned by v2.12.0 sha256 in the new files; SelectTransfer's 28 were already
+pinned by Gate 91, and the new file proves `caption={undefined}` renders them
+identically. CSS is read statically through `src/test/componentCss.ts`,
+because jsdom applies none. **No mutation proofs were run here**; Phase B
+runs them.
+
+### 5 · Findings, recorded and not fixed
+
+- The investigation's §7: G61 was a DS-owned size difference (now closed by
+  `fill`); R97-7 and R97-8 above; `Accent02` `#2d3436` is still the title's
+  raw Figma colour, mapped to `--mapped-text-default-default`.
+- The investigation's §8 corrections stand: the accent is not primary in
+  Figma (a raw `#627eea` range fill, now ruled onto primary); Flow 4 draws the
+  MYR flag in the 20px slot, so the 14px was the MVP's divergence; there is no
+  "R92-15" (the R92D table ends at R92D-14); `Radio` also takes `isInvalid`,
+  `isRequired`, `isDisabled` and `id`, and `MenuItem type="account"` is a DS
+  row with a trailing value beside a radio (no sub-line, a selection tint);
+  the caption is Figma's `Label` layer carrying a converted amount.
+- The "Gate 89-B" rule the brief cites (no ring after a pointer press) is
+  not in this repo (0 hits in `CLAUDE.md`, `CHANGELOG.md`,
+  `docs/component-tokens.md`). It was applied as the brief states it, and
+  measured above.
+- The Gate 91 suppression test covers **two** appearances (`standard`,
+  `attention`), not three; its render is at
+  `SelectTransfer.formField.test.tsx:88-89`, inside the `it.each` at `:84`.
+
 ## Known open items
 - **Heading font-size in source**: Figma composites wire `{fontSize.N}` (static), not a
   responsive token. Resolved at build time by mapping heading keys → responsive vars.

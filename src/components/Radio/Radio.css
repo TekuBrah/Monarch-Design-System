@@ -156,3 +156,61 @@
   color: var(--mapped-text-error-default);
   margin-left: var(--brand-scale-25);
 }
+
+/* === layout="row" (Gate 97, G66, R97-2) ===
+   The Network Fee row, Figma `1063:13768` / `1063:13778` (detached frames,
+   343 × 56): [label above description] … [trailing] [16px] [control].
+   8px vertical padding (Scale/200) + a 16 + 24 text stack = 56. No fill, no
+   border, and no hover, pressed or selected tint on the row (R97-4): none is
+   drawn. The control keeps the radio atom's own states. */
+.mn-radio--row {
+  position: relative; /* contains the visually hidden input */
+  display: flex;
+  align-items: center;
+  gap: var(--brand-scale-400); /* 16px: text ↔ trailing, trailing ↔ control */
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--brand-scale-200) 0; /* 8px 0 */
+  border-radius: var(--brand-scale-200); /* 8px — shapes the focus ring only */
+}
+
+.mn-radio__text {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.mn-radio__row-label {
+  color: var(--mapped-text-subtle-default);
+}
+
+.mn-radio__description,
+.mn-radio__trailing {
+  color: var(--mapped-text-default-default);
+}
+
+.mn-radio__trailing {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.mn-radio--disabled .mn-radio__row-label,
+.mn-radio--disabled .mn-radio__description,
+.mn-radio--disabled .mn-radio__trailing {
+  color: var(--mapped-text-disabled-default);
+}
+
+/* R97-3: the keyboard ring surrounds the WHOLE row, and only under
+   :focus-visible on the native input, so a pointer press never shows it.
+   Same outline token and shape as every other DS control (Button, ListItem,
+   Checkbox). The control's own small ring is suppressed in row so there is
+   exactly one ring. Inline focus is unchanged. */
+.mn-radio--row:has(.mn-radio__input:focus-visible) {
+  outline: var(--brand-scale-50) solid var(--mapped-border-primary-default); /* 2px */
+  outline-offset: var(--brand-scale-50); /* 2px */
+}
+
+.mn-radio--row .mn-radio__input:focus-visible + .mn-radio__icon-wrap {
+  outline: none;
+}

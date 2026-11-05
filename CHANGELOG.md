@@ -3,6 +3,55 @@
 All notable changes to `@monarch/design-system`.
 
 ---
+## v2.13.0
+
+Gate 97 DS. Four additive changes that Flow 5 (Send Ethereum) needs: a
+caption on `SelectTransfer`, an accent run in `HeaderDefault`'s title, a row
+layout for `Radio`, and a height-fill size for `Logo`. It is a minor release:
+new optional props and one new `LogoSize` value, and no default render
+changes. Of the 339 pinned existing render paths, the markup is identical in
+every one, and so is the computed style in all 678 light and dark rows. The
+rulings, the live measurements and the tests are in CLAUDE.md's Gate 97 DS
+section.
+
+### Added
+
+- **`SelectTransfer` `caption`** (G64, R97-1). A description of the value in
+  the label slot, such as "0.313 ETH" under a ringgit amount. It renders
+  inside or outside a `FormField`, in all three appearances, as a `<span id>`
+  (never a `<label>`). Its id is appended to the input's `aria-describedby`
+  after the FormField's error and helper ids, so the field keeps its name
+  ("Transfer Amount") and the caption is read as its description. Outside a
+  FormField, with both `label` and `caption`, the caption takes the slot and
+  `label` names the input through `aria-label`.
+- **`HeaderDefault` `titleAccent`** (G65, Decision 32 = A). A second run after
+  the title, one space between, coloured `--mapped-text-primary-default`:
+  "Send **Ethereum**". Figma's run is a raw `#627eea` with no variable, at
+  3.69:1 on white; the token measures 6.42:1 (light, on white) and 8.63:1
+  (dark, on black). The ellipsis still covers the whole line, and the stepper
+  variant ignores the prop.
+- **`Radio` `layout="row"`, `description` and `trailingLabel`** (G66, R97-2).
+  The Network Fee row: [label above description] … [trailing] [16px]
+  [control], 343 × 56, with one `<label>` wrapping the row, so a tap anywhere
+  selects it and the name is "Regular 60+ Min RM 4.60". In `row` the keyboard
+  focus ring surrounds the whole row, only under `:focus-visible` (R97-3), and
+  there is no hover, pressed or selected tint on the row (R97-4). The new props
+  do nothing in the default `inline` layout.
+- **`LogoSize` `'fill'`** (G61, R97-5). `.mn-logo--fill { height: 100% }`: the
+  logo takes its container's height and keeps its aspect ratio, so
+  `<ElementWrapper size="m">` renders a 20px mark, as Figma draws the amount
+  chip. It is a height fill, unrelated to `sizing`.
+- 43 tests: `SelectTransfer.caption.test.tsx` (15), `Radio.row.test.tsx` (16),
+  `HeaderDefault.accent.test.tsx` (8) and 4 in `Logo.test.tsx`. The suite goes
+  from 1,004 to 1,047 tests, in 77 files.
+
+### Unchanged
+
+- Every existing render of `SelectTransfer`, `HeaderDefault`, `Radio` (and of
+  `MenuItem`, `Menu` and `OptionList`, which nest it) and `Logo`. `xs`, `s`,
+  `m` and `l` are untouched. No token value and no generated file changed.
+
+---
 ## v2.12.0
 
 Gate 93 DS. `SelectWalletAccount` now closes its own menu when the user

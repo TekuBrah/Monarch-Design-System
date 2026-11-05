@@ -1513,6 +1513,7 @@ export default function App() {
   const [cbChecked, setCbChecked] = useState(false)
   const [cbNotify, setCbNotify] = useState(true)
   const [radioValue, setRadioValue] = useState('standard')
+  const [feeValue, setFeeValue] = useState('regular')
   const [tagSelected, setTagSelected] = useState<Record<string, boolean>>({ groceries: true })
   const [sidebarSearch, setSidebarSearch] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -2068,6 +2069,16 @@ export default function App() {
                 selected: <strong>{radioValue}</strong>
               </span>
             </div>
+            <div className="showcase-interactive" style={{ marginTop: '1rem' }}>
+              <div className="showcase-interactive__label" id="radio-row-demo-title">
+                layout=&quot;row&quot; — Network Fee (Gate 97, G66): one label per row, control last; Tab in for the whole-row ring
+              </div>
+              <div id="radio-row-demo" role="radiogroup" aria-labelledby="radio-row-demo-title" style={{ display: 'flex', flexDirection: 'column', width: '343px' }}>
+                {([['regular', 'Regular', '60+ Min', 'RM 4.60'], ['priority', 'Priority', '30 Minutes', 'RM 24.50']] as const).map(([val, label, description, trailing]) => (
+                  <Radio key={val} layout="row" name="network-fee" value={val} label={label} description={description} trailingLabel={trailing} isChecked={feeValue === val} onChange={() => setFeeValue(val)} />
+                ))}
+              </div>
+            </div>
           </Section>
         </>
       )}
@@ -2233,6 +2244,14 @@ export default function App() {
                 <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>sizing fill — 400px column (G19)</div>
                 <div id="select-transfer-fill-demo" style={{ width: '400px' }}>
                   <SelectTransfer sizing="fill" label="Amount" placeholder="0.00" currencyLabel="MYR" currencyFlag={flag} ariaLabel="Fill" />
+                </div>
+              </div>
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>caption — a description, not a label (Gate 97, G64); ETH mark via Logo size=&quot;fill&quot;</div>
+                <div id="select-transfer-caption-demo" style={{ width: '343px' }}>
+                  <FormField label="Transfer Amount" type="transfer" error="More than your balance">
+                    <SelectTransfer appearance="attention" sizing="fill" value="5800.00" caption="0.313 ETH" currencyLabel="ETH" currencyFlag={<ElementWrapper size="m"><Logo name="ethereum" size="fill" /></ElementWrapper>} isSelected />
+                  </FormField>
                 </div>
               </div>
             </div>
@@ -4137,6 +4156,16 @@ export default function App() {
                 </div>
               </div>
             ))}
+            <div style={{ marginTop: '1.5rem' }}>
+              <p style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>
+                size=&quot;fill&quot; — a height fill: the slot decides (Gate 97, G61)
+              </p>
+              <div id="logo-fill-demo" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                <ElementWrapper size="m"><Logo name="ethereum" size="fill" /></ElementWrapper>
+                <ElementWrapper size="m"><Logo name="flag" size="fill" /></ElementWrapper>
+                <ElementWrapper size="xxl"><Logo name="ethereum" size="fill" /></ElementWrapper>
+              </div>
+            </div>
           </Section>
         </>
       )}
@@ -4190,6 +4219,14 @@ export default function App() {
               <HeaderDefault title="Title" hasSubtitle={false} />
               <HeaderDefault hasSubtitle={false} isProgressStepper currentStep={3} totalSteps={7} />
               <HeaderDefault title="Title" hasSubtitle={false} actionLabel="Action" />
+            </div>
+          </div>
+
+          <div style={{ marginTop: '2.5rem' }}>
+            <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mapped-text-subtlest-subtlest, #aaa)', marginBottom: '0.75rem' }}>HeaderDefault — titleAccent (Gate 97, G65)</div>
+            <div id="header-accent-demo" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: '375px', border: '1px solid var(--mapped-border-subtlest-default, #ccc)', borderRadius: '0.5rem', overflow: 'hidden' }}>
+              <HeaderDefault title="Send" titleAccent="Ethereum" hasSubtitle={false} />
+              <HeaderDefault title="Send" titleAccent="Ethereum to a very long recipient name" hasSubtitle={false} actionLabel="Cancel" />
             </div>
           </div>
         </Section>

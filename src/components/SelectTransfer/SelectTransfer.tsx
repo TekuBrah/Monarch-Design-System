@@ -9,6 +9,15 @@ export interface SelectTransferProps {
   appearance?: SelectTransferAppearance
   /** Caption label above the amount. */
   label?: string
+  /** Gate 97 (G64, R97-1): a secondary readout shown in the label slot above
+   *  the amount, e.g. the token quantity the amount converts to ("0.313 ETH").
+   *  It DESCRIBES the value, it does not name it: rendered as a `<span id>`
+   *  (never a `<label>`) whose id is appended to the input's
+   *  `aria-describedby`, after a FormField's error and helper ids. It renders
+   *  inside or outside a FormField. Outside one, when `label` is also passed,
+   *  the caption takes the slot and `label` names the input through
+   *  `aria-label`. No live region: typing does not re-announce it. */
+  caption?: string
   /** Amount placeholder. */
   placeholder?: string
   /** Amount value. */
@@ -45,6 +54,7 @@ export interface SelectTransferProps {
 export function SelectTransfer({
   appearance = 'standard',
   label,
+  caption,
   placeholder,
   value,
   onAmountChange,
@@ -79,6 +89,15 @@ export function SelectTransfer({
   // `null` and the markup is v2.9.0's (R91D-8, hash-pinned).
   const formField = useFormFieldContext()
   const showLabel = !!label && !formField
+  // Gate 97 (R97-1): with no `caption` every expression below reduces to its
+  // v2.12.0 value, so every existing render path is unchanged (hash-pinned).
+  const captionId = caption ? `${inputId}-caption` : undefined
+  const describedBy = caption
+    ? [formField?.describedBy, captionId].filter(Boolean).join(' ')
+    : formField?.describedBy
+  const inputAriaLabel = caption
+    ? (formField ? undefined : label || ariaLabel)
+    : (label || formField ? undefined : ariaLabel)
 
   const isAttention = appearance === 'attention'
   const amountTypeClass = isAttention ? 'type-header-h5' : 'type-body-lg'
@@ -116,11 +135,25 @@ export function SelectTransfer({
       aria-controls={showMenu ? menuId : undefined}
       aria-autocomplete="list"
       aria-invalid={isInvalid || formField?.hasError || undefined}
-      aria-label={label || formField ? undefined : ariaLabel}
+      aria-label={inputAriaLabel}
       aria-labelledby={formField?.labelId}
-      aria-describedby={formField?.describedBy}
+      aria-describedby={describedBy}
       onChange={e => onAmountChange?.(e.target.value)}
     />
+  )
+
+  // The label slot (Figma `191:13389`): the caption when given, in the same
+  // position with the same per-appearance type class, else the v2.12.0 label.
+  const labelSlot = caption ? (
+    <span id={captionId} className={`mn-select-transfer__label mn-select-transfer__caption ${labelTypeClass}`}>
+      {caption}
+    </span>
+  ) : (
+    showLabel && (
+      <label htmlFor={inputId} className={`mn-select-transfer__label ${labelTypeClass}`}>
+        {label}
+      </label>
+    )
   )
 
   const currencyPicker = (
@@ -157,11 +190,7 @@ export function SelectTransfer({
       >
         {isAttention ? (
           <span className="mn-select-transfer__stack">
-            {showLabel && (
-              <label htmlFor={inputId} className={`mn-select-transfer__label ${labelTypeClass}`}>
-                {label}
-              </label>
-            )}
+            {labelSlot}
             <span className="mn-select-transfer__amount-row">
               {amountInput}
               <span className="mn-select-transfer__divider" aria-hidden="true" />
@@ -172,11 +201,7 @@ export function SelectTransfer({
           <>
             <div className="mn-select-transfer__main">
               <span className="mn-select-transfer__stack">
-                {showLabel && (
-                  <label htmlFor={inputId} className={`mn-select-transfer__label ${labelTypeClass}`}>
-                    {label}
-                  </label>
-                )}
+                {labelSlot}
                 {amountInput}
               </span>
             </div>

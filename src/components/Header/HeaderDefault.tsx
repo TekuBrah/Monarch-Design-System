@@ -5,6 +5,13 @@ import './HeaderDefault.css'
 
 export interface HeaderDefaultProps {
   title?: string
+  /** Gate 97 (G65, Decision 32 = A): a second run of the title, drawn in
+   *  `--mapped-text-primary-default` (Figma `text/primary/default`) after
+   *  `title` with exactly one space between: `title="Send"
+   *  titleAccent="Ethereum"` reads "Send Ethereum". It sits inside the title
+   *  span, so the ellipsis still applies to the whole line. Ignored by the
+   *  `isProgressStepper` variant, which renders no title. */
+  titleAccent?: string
   subtitle?: string
   hasSubtitle?: boolean
   isProgressStepper?: boolean
@@ -21,6 +28,7 @@ export interface HeaderDefaultProps {
 
 export function HeaderDefault({
   title = 'Title',
+  titleAccent,
   subtitle = 'Subtitle',
   hasSubtitle = true,
   isProgressStepper = false,
@@ -55,7 +63,15 @@ export function HeaderDefault({
           </>
         ) : (
           <>
-            <span className="mn-header-default__title type-body-m-semibold">{title}</span>
+            <span className="mn-header-default__title type-body-m-semibold">
+              {title}
+              {titleAccent ? (
+                <>
+                  {' '}
+                  <span className="mn-header-default__title-accent">{titleAccent}</span>
+                </>
+              ) : null}
+            </span>
             {hasSubtitle && (
               <span className="mn-header-default__subtitle type-body-caption">{subtitle}</span>
             )}

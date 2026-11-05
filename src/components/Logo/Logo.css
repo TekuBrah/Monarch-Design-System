@@ -21,6 +21,12 @@
 .mn-logo--l {
   height: var(--brand-scale-1200); /* 56px */
 }
+/* Gate 97 (G61): a HEIGHT fill. The container decides the height (Figma's
+   20px `<element>` slot is ElementWrapper size="m", --brand-scale-500), and
+   the SVG rule below keeps the aspect ratio. Not `sizing`'s width fill. */
+.mn-logo--fill {
+  height: 100%;
+}
 
 .mn-logo > svg {
   height: 100%;

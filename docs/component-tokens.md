@@ -1035,6 +1035,19 @@ Height is constrained via token; width is `auto` to preserve each logo's natural
 | `s` | 32px | `--brand-scale-800` |
 | `m` | 40px | `--brand-scale-1000` |
 | `l` | 56px | `--brand-scale-1200` |
+| `fill` | the container's height | `height: 100%` — no token of its own; the slot's token decides (Gate 97, v2.13.0) |
+
+### `size="fill"` (Gate 97, v2.13.0, G61)
+
+A **height** fill, unrelated to the `sizing?: 'fixed' | 'fill'` prop other
+components carry (which releases a width). The logo takes 100% of its
+container's height and the SVG keeps its aspect ratio (`.mn-logo > svg`:
+`height: 100%; width: auto`). Built for `SelectTransfer`'s currency mark:
+Figma draws it in a 20px `<element>` slot (`58:2154`) in both Flow 4 and
+Flow 5, so `<ElementWrapper size="m"><Logo name="ethereum" size="fill" /></ElementWrapper>`
+renders the ETH mark 20 × 20 (`--brand-scale-500`). Measured in headless
+Chromium, both themes: 20 × 20 in `m`, 40 × 40 in `xxl`. `xs` / `s` / `m` / `l`
+are unchanged: 129 existing Logo render paths pinned, 0 moved.
 
 ### Name normalization
 
@@ -1558,6 +1571,9 @@ A single radio button. Intended to be used in groups via shared `name` attribute
 | `name` | `string` | — | Groups radios for mutual exclusion |
 | `value` | `string` | — | Form value |
 | `id` | `string` | — | |
+| `layout` | `'inline' \| 'row'` | `'inline'` | Gate 97 (G66). `row` = the Network Fee row: [label above description] … [trailing] [16px] [control]. See "Layout: row" below |
+| `description` | `string` | — | `row` only; ignored in `inline` |
+| `trailingLabel` | `string` | — | `row` only; ignored in `inline` |
 
 ### Circle × state → token mapping
 
@@ -1598,6 +1614,37 @@ Label: `type-body-sm` (14px regular). Required asterisk: `type-body-caption-semi
 - **Circle and dot sizes (14px, 6px) have no exact token**: `--brand-scale-300 = 12px`, `--brand-scale-400 = 16px` — 14px falls between them. Similarly 6px has no token. Sizes set as explicit pixel values.
 - **Required `*` color**: Same as Checkbox — Figma `color.text.danger` (#ae2e24) has no token match; `--mapped-text-error-default` used.
 - **Initial build used alias fallbacks for hover/press-checked**: `--alias-primary-600/700` used directly, same class of bug as Checkbox. Fixed after token investigation.
+
+### Layout: row (Gate 97, v2.13.0, G66)
+
+**Figma:** the Network Fee sheet's rows `1063:13768` / `1063:13778` in
+`casestudy_02` (`1266:14399`), **detached frames**, 343 × 56. No DS component
+draws this row, so its shape is the review thread's ruling (R97-2 to R97-4).
+
+ONE `<label>` wraps the whole row (one native radio, no ARIA wiring), so a tap
+anywhere selects it and the name is the row's text: "Regular 60+ Min RM 4.60".
+Group rows by `name` inside a consumer `role="radiogroup"` (or `fieldset`)
+for native arrow keys. Markup order: `__text` [`__row-label`, `__description`]
+→ `__trailing` → the hidden input → `__icon-wrap` (control last).
+
+| Element | Token / class |
+|---|---|
+| Label (top line) | `--mapped-text-subtle-default`, `.type-body-caption` (12/16 regular) |
+| Description | `--mapped-text-default-default`, `.type-body-m` (16/24 regular) |
+| Trailing label | `--mapped-text-default-default`, `.type-body-m`, `nowrap` |
+| Disabled text (all three) | `--mapped-text-disabled-default` |
+| Block padding | `--brand-scale-200` (8px) top and bottom, 0 inline |
+| Gaps (text ↔ trailing, trailing ↔ control) | `--brand-scale-400` (16px) |
+| Row radius | `--brand-scale-200` (8px), shapes the focus ring only |
+| Focus ring (whole row) | `--brand-scale-50` solid `--mapped-border-primary-default`, offset `--brand-scale-50`, under `:has(.mn-radio__input:focus-visible)`; the control's own small ring is off in `row` |
+| Control | unchanged: the circle × state table above |
+
+No fill, no border, and no hover, pressed or selected tint on the row
+(R97-4): none is drawn. The control keeps the radio atom's own states.
+Measured in headless Chromium, both themes: 343 × 56; Tab and arrow keys ring
+the whole row; a mouse click or a touch tap shows no ring. `inline` is
+unchanged: 48 Radio, 46 MenuItem, 14 Menu and 10 OptionList render paths
+pinned, 0 moved.
 
 ---
 
@@ -2428,6 +2475,7 @@ currency rows additionally pass a flag swatch via `iconSlot`.
 |---|---|---|---|
 | `appearance` | `'standard' \| 'subtle' \| 'attention'` | `'standard'` | Attention = underline style |
 | `label` | `string` | — | Caption label above the amount |
+| `caption` | `string` | — | Gate 97 (G64). A description of the value in the label slot, e.g. "0.313 ETH". See "`caption`" below |
 | `placeholder` / `value` | `string` | — | Amount field |
 | `onAmountChange` | `(value: string) => void` | — | |
 | `currencyLabel` | `string` | — | Currency code, e.g. `"MYR"` |
@@ -2527,6 +2575,28 @@ v2.9.0's markup byte for byte: 28 render paths are pinned by sha256 in
   it. The visual invalid state stays on `isInvalid`.
 - **The currency button is not touched.** It keeps its own name, "Choose
   currency", and is not described by the field's messages.
+
+### `caption` (Gate 97, v2.13.0, G64)
+
+Flow 5 (`1266:14398`) turns the `Label` text layer (`191:13389`) on inside the
+`Input` and fills it with the converted token quantity, "0.313 ETH". That text
+describes the value; it does not name the field. So:
+
+- It renders in the label slot, in the same position and with the same
+  per-appearance type class (`.type-body-caption-semibold` in attention,
+  `.type-body-caption` otherwise), **inside or outside** a `FormField`.
+- It is a `<span id>`, never a `<label>`, and reuses `.mn-select-transfer__label`
+  (`--mapped-text-subtle-default`, plus the existing hover and disabled
+  recolours). No new token.
+- Its id is **appended** to the input's `aria-describedby`, after the
+  FormField's error and helper ids. Measured through Chromium's accessibility
+  tree: name "Transfer Amount", description "More than your balance 0.313 ETH".
+- Outside a FormField, with both `label` and `caption`, the caption takes the
+  slot and `label` names the input through `aria-label`.
+- No live region, so typing does not re-announce it.
+
+Without `caption` nothing changes: 76 SelectTransfer render paths pinned,
+0 moved, and the Gate 91 suppression of `label` inside a FormField stands.
 
 ## Select / Wallet Account
 
@@ -4340,6 +4410,7 @@ Two components: `HeaderBg` (mobile screen header, background-image slot) and `He
 | Prop | Type | Notes |
 |---|---|---|
 | `title` / `subtitle` | `string` | |
+| `titleAccent` | `string` | Gate 97 (G65). A second run after `title`, one space between, in `--mapped-text-primary-default`: "Send **Ethereum**". Inside the title span, so the ellipsis covers the whole line. Ignored by the stepper variant |
 | `hasSubtitle` | `boolean` | Default `true` |
 | `isProgressStepper` | `boolean` | Default `false`. Figma never combines this with `actionLabel` |
 | `currentStep` / `totalSteps` | `number` | Passed through to `ProgressStepper` |
@@ -4355,6 +4426,7 @@ Two components: `HeaderBg` (mobile screen header, background-image slot) and `He
 |---|---|
 | Back icon | `--mapped-icon-default-default` |
 | Title | `--mapped-text-default-default` (Accent02 gap — see below), `.type-body-m-semibold` |
+| Title accent (Gate 97) | `--mapped-text-primary-default` (Decision 32 = A). Figma's run is a raw, unbound `#627eea` (3.69:1 on white, under 4.5); the token measures 6.42:1 light on white, 8.63:1 dark on black. Colour only; type is the title's |
 | Subtitle, no stepper | `--mapped-text-subtlest-subtlest`, `.type-body-caption` (regular) |
 | Subtitle, with stepper | Same color, `.type-body-caption-semibold` — Figma genuinely weights this case differently from the no-stepper subtitle; preserved faithfully |
 | Stepper | Reused `ProgressStepper` |
